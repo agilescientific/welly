@@ -10,9 +10,58 @@ import time
 import re
 import warnings
 
+from namedlist import namedlist
+
 from . import las
 from . import templates
 from striplog import Striplog
+
+# The standard library OrderedDict was introduced in Python 2.7 so
+# we have a third-party option to support Python 2.6
+
+try:
+    from collections import OrderedDict
+except ImportError:
+    from ordereddict import OrderedDict
+
+HeaderItem = namedlist('HeaderItem', ['mnemonic', 'unit', 'value', 'descr'])
+
+
+class OrderedDictionary(OrderedDict):
+
+    '''A minor wrapper over OrderedDict.
+    This wrapper has a better string representation.
+    '''
+
+    def __repr__(self):
+        l = []
+        for key, value in self.items():
+            s = "'%s': %s" % (key, value)
+            l.append(s)
+        s = '{' + ',\n '.join(l) + '}'
+        return s
+
+DEFAULT_ITEMS = {
+    'head': OrderedDictionary([
+        ('UWI', HeaderItem('UWI', '', '', 'Unique Well ID')),
+        ('name', HeaderItem('name', '', '', 'Common Name')),
+        ('surface_x', HeaderItem('surface_x', '', '', 'Easting')),
+        ('surface_y', HeaderItem('surface_y', '', '', 'Northing')),
+        ('KB_elev', HeaderItem('KB_elev', '', '', 'KB elevation')),
+        ('UTMzone', HeaderItem('UTMzone', '', '', 'UTM zone')),
+        ('operator', HeaderItem('operator', '', '', 'operator')),
+        ('status', HeaderItem('status', '', '', 'current status')),
+        ('operator', HeaderItem('operator', '', '', 'operator')),
+        ('status', HeaderItem('status', '', '', 'current status')),
+        ('latlong', HeaderItem('status', '', (), 'latitude, longitude')),
+        ('FLD', HeaderItem('FLD', '', '', 'FIELD')),
+        ('LOC', HeaderItem('LOC', '', '', 'LOCATION')),
+        ('PROV', HeaderItem('PROV', '', '', 'PROVINCE')),
+        ('CNTY', HeaderItem('CNTY', '', '', 'COUNTY')),
+        ('STAT', HeaderItem('STAT', '', '', 'STATE')),
+        ('CTRY', HeaderItem('CTRY', '', '', 'COUNTRY')),
+        ('SRVC', HeaderItem('SRVC', '', '', 'SERVICE COMPANY')),
+    ])}
 
 
 class WellError(Exception):
@@ -66,10 +115,15 @@ class Well(las.LASReader):
                  lexicon=None,
                  null_subs=None,
                  unknown_as_other=True):
+        OrderedDictionary.__init__(self)
 
         # First generate the parent object if possible.
         if f:
             super(Well, self).__init__(f, null_subs, unknown_as_other)
+
+        self._text = ''  # what to print when printing text representation
+
+        self.head = OrderedDictionary(DEFAULT_ITEMS['head'].items())
 
         # Add an empty striplog dict-like for later.
         self.striplog = Extra()
