@@ -115,7 +115,8 @@ class Well(las.LASReader):
                  lexicon=None,
                  null_subs=None,
                  unknown_as_other=True):
-        OrderedDictionary.__init__(self)
+        # This needed ? >>>
+        # OrderedDictionary.__init__(self)
 
         # First generate the parent object if possible.
         if f:
