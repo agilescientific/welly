@@ -27,7 +27,6 @@ class Well(object):
     def __init__(self, params):
         for k, v in params.items():
             if k and v:
-                print('Setting', k)
                 setattr(self, k, v)
 
     @classmethod

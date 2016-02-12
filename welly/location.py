@@ -16,7 +16,6 @@ class Location(object):
 
     @classmethod
     def from_lasio_well(cls, well):
-        print('Location.from_lasio_well')
         params = {}
         params['country'] = well['CTRY'].value
         params['lat'] = well['LATI'].value

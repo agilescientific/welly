@@ -31,7 +31,6 @@ class Header(object):
 
     @classmethod
     def from_lasio_well(cls, well):
-        print('Header.from_lasio_well')
         params = {}
         params['name'] = well['WELL'].value
         params['field'] = well['FLD'].value
