@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+cd #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
 Defines well headers.
@@ -8,6 +8,23 @@ Defines well headers.
 """
 from .well import WellError
 
+import csv
+
 
 class Header (object):
-    pass
+    def __init__(self, properties):
+        for k, v in properties.items():
+            if k and v:
+                setattr(self, k, v)
+
+    def __repr__(self):
+    	return self.__dict__.repr()
+
+    @classmethod
+    def from_csv(cls, csv_file):
+        #<munch CSV>
+
+        param_dict = csv.DictReader()
+    	return cls(param_dict)
+
+

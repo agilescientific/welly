@@ -1,3 +1,4 @@
+namedlist>1.7
 numpy>=1.9.0
 matplotlib>=1.4.3
 lasio
