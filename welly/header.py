@@ -24,12 +24,6 @@ class Header(object):
         return self.__dict__.__repr__()
 
     @classmethod
-    def from_las(cls, las_file):
-        params = {}
-        # Do stuff
-        return cls(params)
-
-    @classmethod
     def from_lasio_well(cls, well):
         params = {}
         params['name'] = well['WELL'].value
