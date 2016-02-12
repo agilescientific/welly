@@ -5,14 +5,16 @@
 welly
 ==================
 """
-from .well import Well 
-from .header import Header 
+from .well import Well
+from .header import Header
 from .curve import Curve
+from .location import Location
 
 __all__ = [
            'Well',
            'Header',
            'Curve',
+           'Location',
           ]
 
 

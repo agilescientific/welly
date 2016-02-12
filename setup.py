@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf 8 -*-
 """
-Python installation file.
+Python installation file for welly project.
 """
 from setuptools import setup
 import re
@@ -20,13 +20,14 @@ else:
 
 REQUIREMENTS = ['numpy',
                 'matplotlib',
-                'namedlist'
+                'namedlist',
+                'lasio',
                 ]
 
 TEST_REQUIREMENTS = ['pytest',
                      'coveralls',
                      'pytest-cov',
-                     'pytest-mpl'
+                     'pytest-mpl',
                      ]
 
 # Test command is:
