@@ -1,4 +1,4 @@
-seisplot
+welly
 ========
 
 **Manage subsurface well data.**
