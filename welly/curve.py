@@ -84,11 +84,11 @@ class Curve(object):
         ax.set_ylim([self.stop, self.start])
         return
 
-    def _read_at_index(self, i):
+    def segment(self, depths, return_basis=False):
         """
-        Private function. Helper function for ``read_at()``.
+        Returns a 'segment' (chunk or slice) of a curve.
         """
-        pass
+        raise NotImplementedError("We haven't written this functoin yet!")
 
     def read_at(self, d, interpolation='linear', index=False, return_basis=False):
         """
