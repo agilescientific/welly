@@ -25,24 +25,42 @@ class Well(object):
     Well contains everything about the well.
     """
     def __init__(self, params):
+        """
+        Generic initializer for now.
+        """
         for k, v in params.items():
             if k and v:
                 setattr(self, k, v)
 
     @classmethod
-    def from_las(cls, fname):
-        """Wraps lasio
+    def from_lasio_well(cls, l):
         """
+        If you already have the lasio object.
+        """
+        # Build a dict of curves.
+        curves = {c.mnemonic: Curve.from_lasio_curve(c,
+                                                     basis=l['DEPT'],
+                                                     run=l.params['RUN'].value
+                                                     )
+                  for c in l.curves}
+
+        # Build a dict of the other well data.
         params = {}
-
-        l = lasio.read(fname)
-
-        curves = [Curve(c, basis=l['DEPT']) for c in l.curves]
-
         params = {'las': l,
                   'header': Header.from_lasio_well(l.well),
-                  'location': Location(l.well),
+                  'location': Location.from_lasio_well(l.well),
                   'curves': curves,
                   }
 
+        # Pass into __init__() to instatiate the object.
         return cls(params)
+
+    @classmethod
+    def from_las(cls, fname):
+        """
+        Wraps lasio.
+        """
+        l = lasio.read(fname)
+
+        # Pass to other constructor.
+        return cls.from_lasio_well(l)

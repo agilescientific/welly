@@ -10,12 +10,18 @@ Defines well location.
 
 class Location(object):
     def __init__(self, params):
+        """
+        Generic initializer for now.
+        """
         for k, v in params.items():
             if k and v:
                 setattr(self, k, v)
 
     @classmethod
     def from_lasio_well(cls, well):
+        """
+        Assumes we're starting with a lasio well object.
+        """
         params = {}
         params['country'] = well['CTRY'].value
         params['lat'] = well['LATI'].value

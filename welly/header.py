@@ -16,6 +16,9 @@ class Header(object):
     Not the same as an LAS header, but we might get info from there.
     """
     def __init__(self, params):
+        """
+        Generic initializer for now.
+        """
         for k, v in params.items():
             if k and v:
                 setattr(self, k, v)
@@ -25,6 +28,9 @@ class Header(object):
 
     @classmethod
     def from_lasio_well(cls, well):
+        """
+        Assumes we're starting with a lasio well object.
+        """
         params = {}
         params['name'] = well['WELL'].value
         params['field'] = well['FLD'].value
@@ -33,6 +39,9 @@ class Header(object):
 
     @classmethod
     def from_csv(cls, csv_file):
+        """
+        Not implemented. Will provide a route from CSV file.
+        """
         try:
             param_dict = csv.DictReader(csv_file)
             return cls(param_dict)
