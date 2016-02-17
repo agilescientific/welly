@@ -85,24 +85,22 @@ class Curve(object):
         ax.set_xlabel(self.units)
         return
 
-    def segment(self, depths, return_basis=False):
+    def segment(self, top, bottom, return_basis=True):
         """
         Returns a segment of the log between the depths specified.
         Args:
             depths (a tuple of floats giving top and base of interv)
+            return_basis: True cause like Curve object. False not implemented
         """
-        method = {'linear': utils.linear,
-                  'none': None}
+        top_idx = utils.find_previous(self.basis, top, index=True)
+        base_idx = utils.find_previous(self.basis, bottom, index=True)
+        params = self.__dict__.copy()  # copy attributes from main curve
+        params['data'] = self.data[top_idx:base_idx]
+        params['basis'] = self.basis[top_idx:base_idx]
+        params['start'] = params['basis'][0]
+        params['stop'] = params['basis'][-1]
+        return Curve(params, basis=params.pop('basis'))
 
-        top_idx = utils.find_previous(self.basis, depths[0], index=True)
-        base_idx = utils.find_previous(self.basis, depths[1], index=True)
-        values = self.data[top_idx:base_idx]
-        
-        if return_basis:
-            basis_segment = self.basis[top_idx:base_idx]
-            return values, basis_segment
-        else:
-            return values
 
     def read_at(self, d, interpolation='linear', index=False, return_basis=False):
         """
@@ -125,6 +123,15 @@ class Curve(object):
         return value
 
     def mean(self):
+        """
+        Could have all sorts of helpful transforms etc.
+        """
+        try:
+            return np.mean(self.data)
+        except:
+            raise CurveError("You can't do that.")
+
+    def resample(self):
         """
         Could have all sorts of helpful transforms etc.
         """
