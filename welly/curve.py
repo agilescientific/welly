@@ -80,7 +80,7 @@ class Curve(object):
         fig = plt.figure(figsize=(2, 10))
         ax = fig.add_subplot(111)
         ax.plot(self.data, self.basis)
-        plt.title(self.mnemonic)
+        ax.title(self.mnemonic)
         ax.set_ylim([self.stop, self.start])
         return
 
@@ -96,8 +96,12 @@ class Curve(object):
         top_idx = utils.find_previous(self.basis, depths[0], index=True)
         base_idx = utils.find_previous(self.basis, depths[1], index=True)
         values = self.data[top_idx:base_idx]
-        basis_segment = self.basis[top_idx:base_idx
-        return values
+        
+        if return_basis:
+            basis_segment = self.basis[top_idx:base_idx]
+            return values, basis_segment
+        else:
+            return values
 
     def read_at(self, d, interpolation='linear', index=False, return_basis=False):
         """
