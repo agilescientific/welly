@@ -73,15 +73,16 @@ class Curve(object):
             s = "{}: {} samples"
             return s.format(self.mnemonic, self.data.size)
 
-    def plot(self):
+    def plot(self, c='k', lw=0.5):
         """
         Plot a curve.
         """
         fig = plt.figure(figsize=(2, 10))
         ax = fig.add_subplot(111)
-        ax.plot(self.data, self.basis)
-        ax.title(self.mnemonic)
+        ax.plot(self.data, self.basis, c=c, lw=lw)
+        ax.set_title(self.mnemonic)
         ax.set_ylim([self.stop, self.start])
+        ax.set_xlabel(self.units)
         return
 
     def segment(self, depths, return_basis=False):
