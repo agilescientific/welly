@@ -86,9 +86,18 @@ class Curve(object):
 
     def segment(self, depths, return_basis=False):
         """
-        Returns a 'segment' (chunk or slice) of a curve.
+        Returns a segment of the log between the depths specified.
+        Args:
+            depths (a tuple of floats giving top and base of interv)
         """
-        raise NotImplementedError("We haven't written this functoin yet!")
+        method = {'linear': utils.linear,
+                  'none': None}
+
+        top_idx = utils.find_previous(self.basis, depths[0], index=True)
+        base_idx = utils.find_previous(self.basis, depths[1], index=True)
+        values = self.data[top_idx:base_idx]
+        basis_segment = self.basis[top_idx:base_idx
+        return values
 
     def read_at(self, d, interpolation='linear', index=False, return_basis=False):
         """
