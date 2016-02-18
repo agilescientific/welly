@@ -58,7 +58,7 @@ class Curve(object):
 
     @property
     def stop(self):
-        return self.basis[0]
+        return self.basis[-1]
 
     @property
     def step(self):
@@ -66,6 +66,17 @@ class Curve(object):
         If all steps are equal, returns the step.
 
         If not, returns None.
+        """
+        first = self.basis[1] - self.basis[0]
+        if np.all(self.basis == first):
+            return self.basis[1] - self.basis[0]
+        else:
+            return None
+
+    @step.setter
+    def step(self, value):
+        """
+        Sets a new (regular) step, retaining the existing start.
         """
         first = self.basis[1] - self.basis[0]
         if np.all(self.basis == first):
@@ -101,6 +112,7 @@ class Curve(object):
         ax.set_title(self.mnemonic)
         ax.set_ylim([self.stop, self.start])
         ax.set_xlabel(self.units)
+        ax.grid()
         return
 
     def segment(self, d):
