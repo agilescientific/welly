@@ -6,9 +6,6 @@ Defines log curves.
 :copyright: 2016 Agile Geoscience
 :license: Apache 2.0
 """
-import operator
-from functools import partial
-
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -25,7 +22,7 @@ class CurveError(Exception):
 class Curve(np.ndarray):
 
     def __new__(cls, data, params=None):
-        obj = np.asarray(data).view(cls)
+        obj = np.asarray(data).view(cls).copy()
 
         for k, v in params.items():
             setattr(obj, k, v)
@@ -35,35 +32,19 @@ class Curve(np.ndarray):
     def __array_finalize__(self, obj):
         if obj is None: return
 
-        # Set our attributes
         self.start = getattr(obj, 'start', 0)
-        self._step = getattr(obj, 'step', None)
+        self.step = getattr(obj, 'step', 0.1524)
         self.mnemonic = getattr(obj, 'mnemonic', None)
         self.units = getattr(obj, 'units', None)
 
     @property
     def stop(self):
-        return self.basis[-1]
-
-    @property
-    def step(self):
-        """
-        Getter.
-        """
-        return self._step
-
-    @step.setter
-    def step(self, value):
-        """
-        Sets a new (regular) step, retaining the existing start.
-        """
-        new_basis = np.arange(self.start, self.stop, value)
-        data = np.interp(new_basis, self.basis, self)
-        self._step = value
+        return self.start + self.shape[0] * self.step
 
     @property
     def basis(self):
-        return np.arange(self.start, self.shape[0], self.step)
+        precision_adj = self.step / 100
+        return np.arange(self.start, self.stop - precision_adj, self.step)
 
     @classmethod
     def from_lasio_curve(cls, curve, start=None, step=0.1524, run=-1, null=-999.25):
@@ -81,6 +62,22 @@ class Curve(np.ndarray):
 
         return cls(curve.data, params=params)
 
+    def apply(self, function, **kwargs):
+        """
+        Apply a function to the curve.
+
+        Args:
+            Function.
+            kwargs. Arguments for the function.
+
+        Returns:
+            Curve.
+        """
+        params = self.__dict__.copy()
+        data = function(self, **kwargs)
+        params['units'] = ''  # These will often break otherwise.
+        return Curve(data, params)
+
     def plot(self, **kwargs):
         """
         Plot a curve.
@@ -94,23 +91,6 @@ class Curve(np.ndarray):
         ax.grid()
         return
 
-# Probably do not need, at least not right now.
-    # def apply(self, function, **kwargs):
-    #     """
-    #     Apply a function to the curve.
-
-    #     Args:
-    #         Function.
-    #         kwargs. Arguments for the function.
-
-    #     Returns:
-    #         Curve.
-    #     """
-    #     params = self.__dict__.copy()
-    #     params['data'] = function(self.data, **kwargs)
-    #     params['units'] = ''
-    #     return Curve(params)
-
     def segment(self, d):
         """
         Returns a segment of the log between the depths specified.
@@ -121,9 +101,10 @@ class Curve(np.ndarray):
         Returns:
             Curve. The new curve segment.
         """
-        top_idx = self._read_at(d[0], index=True)
-        base_idx = self._read_at(d[1], index=True)
-        data = self[top_idx:base_idx]
+        top = self._read_at(d[0], index=True)
+        base = self._read_at(d[1], index=True)
+
+        data = self[top:base]
         params = self.__dict__.copy()  # copy attributes from main curve
         params['start'] = d[0]
         return Curve(data, params)
@@ -152,8 +133,10 @@ class Curve(np.ndarray):
                                    index=True,
                                    return_distance=True)
 
-        value = method[interpolation](self[i], self[i+1], d)
-        return value
+        if index:
+            return i
+        else:
+            return method[interpolation](self[i], self[i+1], d)
 
     def read_at(self, d, **kwargs):
         """
@@ -202,38 +185,38 @@ class Curve(np.ndarray):
             cutoffs = cutoffs[:-1]
 
         try:  # To use cutoff as a list.
-            params['data'] = np.digitize(self, cutoffs, right)
+            data = np.digitize(self, cutoffs, right)
         except ValueError:  # It's just a number.
-            params['data'] = np.digitize(self, [cutoffs], right)
+            data = np.digitize(self, [cutoffs], right)
 
         if (function is None) and (values is None):
-            return Curve(params)
+            return Curve(data, params)
 
-        params['data'] = params['data'].astype(float)
+        data = data.astype(float)
 
         # Set the function for reducing.
         f = function or utils.null
 
         # Find the tops of the 'zones'.
-        tops, vals = utils.find_edges(params['data'])
+        tops, vals = utils.find_edges(data)
 
         if values is None:
             # Transform each segment in turn, then deal with the last segment.
             for top, base in zip(tops[:-1], tops[1:]):
-                params['data'][top:base] = f(self[top:base])
-            params['data'][base:] = f(self[base:])
+                data[top:base] = f(np.copy(self[top:base]))
+            data[base:] = f(np.copy(self[base:]))
         else:
             for top, base, val in zip(tops[:-1], tops[1:], vals[:-1]):
-                params['data'][top:base] = values[int(val)]
-            params['data'][base:] = values[int(vals[-1])]
+                data[top:base] = values[int(val)]
+            data[base:] = values[int(vals[-1])]
 
-        return Curve(params)
+        return Curve(data, params)
 
     def mean(self):
         """
         Could have all sorts of helpful transforms etc.
         """
         try:
-            return np.mean(self)
+            return np.mean(np.copy(self))
         except:
             raise CurveError("You can't do that.")
