@@ -83,7 +83,7 @@ class Curve(object):
         self.basis = new_basis
 
     @classmethod
-    def from_lasio_curve(cls, curve, basis=None, run=-1):
+    def from_lasio_curve(cls, curve, basis=None, run=-1, null=-999.25):
         """
         Provide a lasio curve object and a depth basis.
         """
@@ -97,6 +97,7 @@ class Curve(object):
         params['units'] = curve.unit
         params['data'] = curve.data
         params['run'] = run
+        params['null'] = null
 
         return cls(params)
 
@@ -195,6 +196,9 @@ class Curve(object):
             params['data'] = np.digitize(self.data, bins, right)
         except ValueError:  # It's just a number.
             params['data'] = np.digitize(self.data, [bins], right)
+
+        if function is None:
+            return Curve(params)
 
         # Set the function for reducing.
         f = function or utils.null

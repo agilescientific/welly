@@ -63,12 +63,16 @@ def find_nearest(a, value, index=False):
 def find_previous(a, value, index=False, return_distance=False):
     """
     Find the nearest array value, or index of the array value, before some
-    given value.
+    given value. Optionally also return the fractional distance of the given
+    value from that previous value.
 
     Args:
         a (ndarray)
         value (float)
         index (bool): whether to return the index instead of the array value.
+            Default: False.
+        return_distance(bool): whether to return the fractional distance from
+            the nearest value to the specified value. Default: False.
 
     Returns:
         float. The array value (or index, as int) before the specified value.
