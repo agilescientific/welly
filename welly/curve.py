@@ -6,6 +6,9 @@ Defines log curves.
 :copyright: 2016 Agile Geoscience
 :license: Apache 2.0
 """
+import operator
+from functools import partial
+
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -51,6 +54,9 @@ class Curve(object):
         else:
             s = "{}: {} samples"
             return s.format(self.mnemonic, self.data.size)
+
+    def __pow__(self, exponent):
+        return self.apply(lambda x: pow(x, exponent))
 
     @property
     def start(self):
@@ -114,6 +120,22 @@ class Curve(object):
         ax.grid()
         return
 
+    def apply(self, function, **kwargs):
+        """
+        Apply a function to the curve.
+
+        Args:
+            Function.
+            kwargs. Arguments for the function.
+
+        Returns:
+            Curve.
+        """
+        params = self.__dict__.copy()
+        params['data'] = function(self.data, **kwargs)
+        params['units'] = ''
+        return Curve(params)
+
     def segment(self, d):
         """
         Returns a segment of the log between the depths specified.
@@ -176,40 +198,59 @@ class Curve(object):
         except:
             return self._read_at(d, **kwargs)
 
-    def block(self, bins=None, n_bins=0, right=False, function=None):
+    def block(self, cutoffs=None, values=None, n_bins=0, right=False, function=None):
         """
         Block a log based on number of bins, or on cutoffs.
 
-        Wraps ``numpy.digitize()``
-        """
-        if bins is None and n_bins == 0:
-            bins = np.mean(self.data)
+        Args:
+            cutoffs (array)
+            values (array)
+            n_bins (int)
+            right (bool)
+            function (function)
 
+        Returns:
+            Curve.
+        """
         # We'll return a copy.
         params = self.__dict__.copy()
 
-        if n_bins != 0:
-            bins = np.linspace(np.amin(self.data), np.amax(self.data), 4+1)
-            bins = bins[:-1]
+        if (values is not None) and (cutoffs is None):
+            cutoffs = values[1:]
+
+        if (cutoffs is None) and (n_bins == 0):
+            cutoffs = np.mean(self.data)
+
+        if (n_bins != 0) and (cutoffs is None):
+            mi, ma = np.amin(self.data), np.amax(self.data)
+            cutoffs = np.linspace(mi, ma, n_bins+1)
+            cutoffs = cutoffs[:-1]
 
         try:  # To use cutoff as a list.
-            params['data'] = np.digitize(self.data, bins, right)
+            params['data'] = np.digitize(self.data, cutoffs, right)
         except ValueError:  # It's just a number.
-            params['data'] = np.digitize(self.data, [bins], right)
+            params['data'] = np.digitize(self.data, [cutoffs], right)
 
-        if function is None:
+        if (function is None) and (values is None):
             return Curve(params)
+
+        params['data'] = params['data'].astype(float)
 
         # Set the function for reducing.
         f = function or utils.null
 
         # Find the tops of the 'zones'.
-        tops, _ = utils.find_edges(params['data'])
+        tops, vals = utils.find_edges(params['data'])
 
-        # Transform each segment in turn, then deal with the last segment.
-        for top, base in zip(tops[:-1], tops[1:]):
-            params['data'][top:base] = f(self.data[top:base])
-        params['data'][base:] = f(self.data[base:])
+        if values is None:
+            # Transform each segment in turn, then deal with the last segment.
+            for top, base in zip(tops[:-1], tops[1:]):
+                params['data'][top:base] = f(self.data[top:base])
+            params['data'][base:] = f(self.data[base:])
+        else:
+            for top, base, val in zip(tops[:-1], tops[1:], vals[:-1]):
+                params['data'][top:base] = values[int(val)]
+            params['data'][base:] = values[int(vals[-1])]
 
         return Curve(params)
 
