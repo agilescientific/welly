@@ -41,9 +41,37 @@ class Curve(object):
             if k and v:
                 setattr(self, k, v)
 
-        # Set a couple more.
-        self.start, self.stop = self.basis[0], self.basis[-1]
-        self.step = self.basis[1] - self.basis[0]
+    def __str__(self):
+        """
+        What to return for ``print(instance)``.
+        """
+        if self.units:
+            s = "{} [{}]: {} samples"
+            return s.format(self.mnemonic, self.units, self.data.size)
+        else:
+            s = "{}: {} samples"
+            return s.format(self.mnemonic, self.data.size)
+
+    @property
+    def start(self):
+        return self.basis[0]
+
+    @property
+    def stop(self):
+        return self.basis[0]
+
+    @property
+    def step(self):
+        """
+        If all steps are equal, returns the step.
+
+        If not, returns None.
+        """
+        first = self.basis[1] - self.basis[0]
+        if np.all(self.basis == first):
+            return self.basis[1] - self.basis[0]
+        else:
+            return None
 
     @classmethod
     def from_lasio_curve(cls, curve, basis=None, run=-1):
@@ -62,17 +90,6 @@ class Curve(object):
         params['run'] = run
 
         return cls(params)
-
-    def __str__(self):
-        """
-        What to return for ``print(instance)``.
-        """
-        if self.units:
-            s = "{} [{}]: {} samples"
-            return s.format(self.mnemonic, self.units, self.data.size)
-        else:
-            s = "{}: {} samples"
-            return s.format(self.mnemonic, self.data.size)
 
     def plot(self, **kwargs):
         """
@@ -193,9 +210,6 @@ class Curve(object):
 
     def resample(self):
         """
-        Could have all sorts of helpful transforms etc.
+        Resamples a curve to a new basis.
         """
-        try:
-            return np.mean(self.data)
-        except:
-            raise CurveError("You can't do that.")
+        pass
