@@ -39,7 +39,8 @@ class Well(object):
         """
         # Build a dict of curves.
         curves = {c.mnemonic: Curve.from_lasio_curve(c,
-                                                     basis=l['DEPT'],
+                                                     start=l.well.STRT.value,
+                                                     step=l.well.STEP.value,
                                                      run=l.params.RUN.value,
                                                      null=l.well.NULL.value
                                                      )

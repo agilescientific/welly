@@ -22,45 +22,24 @@ class CurveError(Exception):
     pass
 
 
-class Curve(object):
-    """
-    Class for log curves.
-    """
-    def __init__(self, params):
-        """
-        Args:
-            params (dict or lasio.Curve)
-            basis (array-like): An array representing depth.
-        """
-        if params['basis'] is None:
-            raise CurveError('you must provide a depth basis.')
+class Curve(np.ndarray):
 
-        # Take care of the most important things.
-        self.basis = params.pop('basis')
-        self.data = params.pop('data')
+    def __new__(cls, data, params=None):
+        obj = np.asarray(data).view(cls)
 
-        # Churn through remaining params.
         for k, v in params.items():
-            if k and v:
-                setattr(self, k, v)
+            setattr(obj, k, v)
 
-    def __str__(self):
-        """
-        What to return for ``print(instance)``.
-        """
-        if self.units:
-            s = "{} [{}]: {} samples"
-            return s.format(self.mnemonic, self.units, self.data.size)
-        else:
-            s = "{}: {} samples"
-            return s.format(self.mnemonic, self.data.size)
+        return obj
 
-    def __pow__(self, exponent):
-        return self.apply(lambda x: pow(x, exponent))
+    def __array_finalize__(self, obj):
+        if obj is None: return
 
-    @property
-    def start(self):
-        return self.basis[0]
+        # Set our attributes
+        self.start = getattr(obj, 'start', 0)
+        self._step = getattr(obj, 'step', None)
+        self.mnemonic = getattr(obj, 'mnemonic', None)
+        self.units = getattr(obj, 'units', None)
 
     @property
     def stop(self):
@@ -69,15 +48,9 @@ class Curve(object):
     @property
     def step(self):
         """
-        If all steps are equal, returns the step.
-
-        If not, returns None.
+        Getter.
         """
-        first = self.basis[1] - self.basis[0]
-        if np.all(self.basis == first):
-            return self.basis[1] - self.basis[0]
-        else:
-            return None
+        return self._step
 
     @step.setter
     def step(self, value):
@@ -85,27 +58,28 @@ class Curve(object):
         Sets a new (regular) step, retaining the existing start.
         """
         new_basis = np.arange(self.start, self.stop, value)
-        self.data = np.interp(new_basis, self.basis, self.data)
-        self.basis = new_basis
+        data = np.interp(new_basis, self.basis, self)
+        self._step = value
+
+    @property
+    def basis(self):
+        return np.arange(self.start, self.shape[0], self.step)
 
     @classmethod
-    def from_lasio_curve(cls, curve, basis=None, run=-1, null=-999.25):
+    def from_lasio_curve(cls, curve, start=None, step=0.1524, run=-1, null=-999.25):
         """
         Provide a lasio curve object and a depth basis.
         """
-        if basis is None:
-            raise CurveError('you must provide a depth basis.')
-
         params = {}
-        params['basis'] = basis
         params['mnemonic'] = curve.mnemonic
         params['description'] = curve.descr
+        params['start'] = start
+        params['step'] = step
         params['units'] = curve.unit
-        params['data'] = curve.data
         params['run'] = run
         params['null'] = null
 
-        return cls(params)
+        return cls(curve.data, params=params)
 
     def plot(self, **kwargs):
         """
@@ -113,28 +87,29 @@ class Curve(object):
         """
         fig = plt.figure(figsize=(2, 10))
         ax = fig.add_subplot(111)
-        ax.plot(self.data, self.basis, **kwargs)
+        ax.plot(self, self.basis, **kwargs)
         ax.set_title(self.mnemonic)
         ax.set_ylim([self.stop, self.start])
         ax.set_xlabel(self.units)
         ax.grid()
         return
 
-    def apply(self, function, **kwargs):
-        """
-        Apply a function to the curve.
+# Probably do not need, at least not right now.
+    # def apply(self, function, **kwargs):
+    #     """
+    #     Apply a function to the curve.
 
-        Args:
-            Function.
-            kwargs. Arguments for the function.
+    #     Args:
+    #         Function.
+    #         kwargs. Arguments for the function.
 
-        Returns:
-            Curve.
-        """
-        params = self.__dict__.copy()
-        params['data'] = function(self.data, **kwargs)
-        params['units'] = ''
-        return Curve(params)
+    #     Returns:
+    #         Curve.
+    #     """
+    #     params = self.__dict__.copy()
+    #     params['data'] = function(self.data, **kwargs)
+    #     params['units'] = ''
+    #     return Curve(params)
 
     def segment(self, d):
         """
@@ -146,12 +121,12 @@ class Curve(object):
         Returns:
             Curve. The new curve segment.
         """
-        top_idx = utils.find_previous(self.basis, d[0], index=True)
-        base_idx = utils.find_previous(self.basis, d[1], index=True)
+        top_idx = self._read_at(d[0], index=True)
+        base_idx = self._read_at(d[1], index=True)
+        data = self[top_idx:base_idx]
         params = self.__dict__.copy()  # copy attributes from main curve
-        params['data'] = self.data[top_idx:base_idx]
-        params['basis'] = self.basis[top_idx:base_idx]
-        return Curve(params)
+        params['start'] = d[0]
+        return Curve(data, params)
 
     def _read_at(self, d,
                  interpolation='linear',
@@ -177,7 +152,7 @@ class Curve(object):
                                    index=True,
                                    return_distance=True)
 
-        value = method[interpolation](self.data[i], self.data[i+1], d)
+        value = method[interpolation](self[i], self[i+1], d)
         return value
 
     def read_at(self, d, **kwargs):
@@ -219,17 +194,17 @@ class Curve(object):
             cutoffs = values[1:]
 
         if (cutoffs is None) and (n_bins == 0):
-            cutoffs = np.mean(self.data)
+            cutoffs = np.mean(self)
 
         if (n_bins != 0) and (cutoffs is None):
-            mi, ma = np.amin(self.data), np.amax(self.data)
+            mi, ma = np.amin(self), np.amax(self)
             cutoffs = np.linspace(mi, ma, n_bins+1)
             cutoffs = cutoffs[:-1]
 
         try:  # To use cutoff as a list.
-            params['data'] = np.digitize(self.data, cutoffs, right)
+            params['data'] = np.digitize(self, cutoffs, right)
         except ValueError:  # It's just a number.
-            params['data'] = np.digitize(self.data, [cutoffs], right)
+            params['data'] = np.digitize(self, [cutoffs], right)
 
         if (function is None) and (values is None):
             return Curve(params)
@@ -245,8 +220,8 @@ class Curve(object):
         if values is None:
             # Transform each segment in turn, then deal with the last segment.
             for top, base in zip(tops[:-1], tops[1:]):
-                params['data'][top:base] = f(self.data[top:base])
-            params['data'][base:] = f(self.data[base:])
+                params['data'][top:base] = f(self[top:base])
+            params['data'][base:] = f(self[base:])
         else:
             for top, base, val in zip(tops[:-1], tops[1:], vals[:-1]):
                 params['data'][top:base] = values[int(val)]
@@ -259,12 +234,6 @@ class Curve(object):
         Could have all sorts of helpful transforms etc.
         """
         try:
-            return np.mean(self.data)
+            return np.mean(self)
         except:
             raise CurveError("You can't do that.")
-
-    def resample(self):
-        """
-        Resamples a curve to a new basis.
-        """
-        pass
