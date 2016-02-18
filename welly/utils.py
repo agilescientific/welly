@@ -9,6 +9,14 @@ Utility functions for welly.
 import numpy as np
 
 
+def null(x):
+    """
+    Null function. Used for default in functions that can apply a user-
+    supplied function to data before returning.
+    """
+    return x
+
+
 def parabolic(f, x):
     """
     Interpolation. From ageobot, from somewhere else.
@@ -78,3 +86,18 @@ def find_previous(a, value, index=False, return_distance=False):
             return a[i - 1], d
         else:
             return a[i - 1]
+
+
+def find_edges(a):
+    """
+    Return two arrays: one of the changes, and one of the values.
+
+    Returns:
+        tuple: Two ndarrays, tops and values.
+    """
+    edges = a[1:] == a[:-1]
+    tops = np.where(~edges)[0] + 1
+    tops = np.append(0, tops)
+    values = a[tops]
+
+    return tops, values
