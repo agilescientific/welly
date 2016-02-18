@@ -78,11 +78,9 @@ class Curve(object):
         """
         Sets a new (regular) step, retaining the existing start.
         """
-        first = self.basis[1] - self.basis[0]
-        if np.all(self.basis == first):
-            return self.basis[1] - self.basis[0]
-        else:
-            return None
+        new_basis = np.arange(self.start, self.stop, value)
+        self.data = np.interp(new_basis, self.basis, self.data)
+        self.basis = new_basis
 
     @classmethod
     def from_lasio_curve(cls, curve, basis=None, run=-1):
