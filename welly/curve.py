@@ -74,33 +74,34 @@ class Curve(object):
             s = "{}: {} samples"
             return s.format(self.mnemonic, self.data.size)
 
-    def plot(self, c='k', lw=0.5):
+    def plot(self, **kwargs):
         """
         Plot a curve.
         """
         fig = plt.figure(figsize=(2, 10))
         ax = fig.add_subplot(111)
-        ax.plot(self.data, self.basis, c=c, lw=lw)
+        ax.plot(self.data, self.basis, **kwargs)
         ax.set_title(self.mnemonic)
         ax.set_ylim([self.stop, self.start])
         ax.set_xlabel(self.units)
         return
 
-    def segment(self, top, bottom, return_basis=True):
+    def segment(self, d):
         """
         Returns a segment of the log between the depths specified.
+
         Args:
-            depths (a tuple of floats giving top and base of interv)
-            return_basis: True cause like Curve object. False not implemented
+            d (tuple): A tuple of floats giving top and base of interval.
+
+        Returns:
+            Curve. The new curve segment.
         """
-        top_idx = utils.find_previous(self.basis, top, index=True)
-        base_idx = utils.find_previous(self.basis, bottom, index=True)
+        top_idx = utils.find_previous(self.basis, d[0], index=True)
+        base_idx = utils.find_previous(self.basis, d[1], index=True)
         params = self.__dict__.copy()  # copy attributes from main curve
         params['data'] = self.data[top_idx:base_idx]
         params['basis'] = self.basis[top_idx:base_idx]
-        params['start'] = params['basis'][0]
-        params['stop'] = params['basis'][-1]
-        return Curve(params, basis=params.pop('basis'))
+        return Curve(params)
 
     def _read_at(self, d,
                  interpolation='linear',
@@ -168,14 +169,8 @@ class Curve(object):
         except ValueError:  # It's just a number.
             params['data'] = np.digitize(self.data, [bins], right)
 
-        if function is None:
-            # Then we're done already.
-            print('no reduce')
-            return Curve(params)
-
-        # Else carry on... Set the function for reducing.
+        # Set the function for reducing.
         f = function or utils.null
-        print(f.__name__)
 
         # Find the tops of the 'zones'.
         tops, _ = utils.find_edges(params['data'])
