@@ -74,22 +74,33 @@ class Curve(object):
             s = "{}: {} samples"
             return s.format(self.mnemonic, self.data.size)
 
-    def plot(self):
+    def plot(self, c='k', lw=0.5):
         """
         Plot a curve.
         """
         fig = plt.figure(figsize=(2, 10))
         ax = fig.add_subplot(111)
-        ax.plot(self.data, self.basis)
-        plt.title(self.mnemonic)
+        ax.plot(self.data, self.basis, c=c, lw=lw)
+        ax.set_title(self.mnemonic)
         ax.set_ylim([self.stop, self.start])
+        ax.set_xlabel(self.units)
         return
 
-    def segment(self, depths, return_basis=False):
+    def segment(self, top, bottom, return_basis=True):
         """
-        Returns a 'segment' (chunk or slice) of a curve.
+        Returns a segment of the log between the depths specified.
+        Args:
+            depths (a tuple of floats giving top and base of interv)
+            return_basis: True cause like Curve object. False not implemented
         """
-        raise NotImplementedError("We haven't written this function yet!")
+        top_idx = utils.find_previous(self.basis, top, index=True)
+        base_idx = utils.find_previous(self.basis, bottom, index=True)
+        params = self.__dict__.copy()  # copy attributes from main curve
+        params['data'] = self.data[top_idx:base_idx]
+        params['basis'] = self.basis[top_idx:base_idx]
+        params['start'] = params['basis'][0]
+        params['stop'] = params['basis'][-1]
+        return Curve(params, basis=params.pop('basis'))
 
     def _read_at(self, d,
                  interpolation='linear',
@@ -177,6 +188,15 @@ class Curve(object):
         return Curve(params)
 
     def mean(self):
+        """
+        Could have all sorts of helpful transforms etc.
+        """
+        try:
+            return np.mean(self.data)
+        except:
+            raise CurveError("You can't do that.")
+
+    def resample(self):
         """
         Could have all sorts of helpful transforms etc.
         """
