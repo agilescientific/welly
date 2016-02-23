@@ -9,6 +9,17 @@ Utility functions for welly.
 import numpy as np
 
 
+def lasio_get(obj, section, item=None, attrib=None, default=None):
+    try:
+        if item is None:
+            return getattr(obj, section)
+        elif attrib is None:
+            return getattr(obj, section)[item]
+        return getattr(obj, section)[item][attrib]
+    except:
+        return default
+
+
 def null(x):
     """
     Null function. Used for default in functions that can apply a user-

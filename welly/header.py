@@ -8,6 +8,8 @@ Defines well headers.
 """
 import csv
 
+from . import utils
+
 
 class Header(object):
     """
@@ -32,9 +34,9 @@ class Header(object):
         Assumes we're starting with a lasio well object.
         """
         params = {}
-        params['name'] = well['WELL'].value
-        params['field'] = well['FLD'].value
-        params['license'] = well['LIC'].value
+        params['name'] = utils.lasio_get(well, 'WELL', 'value')
+        params['field'] = utils.lasio_get(well, 'FLD', 'value')
+        params['license'] = utils.lasio_get(well, 'LIC', 'value')
         return cls(params)
 
     @classmethod
