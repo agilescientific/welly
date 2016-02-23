@@ -8,6 +8,7 @@ Defines wells.
 """
 import lasio
 
+from . import utils
 from .curve import Curve
 from .header import Header
 from .location import Location
@@ -38,10 +39,15 @@ class Well(object):
         If you already have the lasio object.
         """
         # Build a dict of curves.
+        start = utils.lasio_get(l, 'well', 'STRT', 'value')
+        step = utils.lasio_get(l, 'well', 'STEP', 'value')
+        run = utils.lasio_get(l, 'params', 'RUN', 'value')
+        null = utils.lasio_get(l, 'well', 'NULL', 'value')
         curves = {c.mnemonic: Curve.from_lasio_curve(c,
-                                                     basis=l['DEPT'],
-                                                     run=l.params.RUN.value,
-                                                     null=l.well.NULL.value
+                                                     start=start,
+                                                     step=step,
+                                                     run=run,
+                                                     null=null,
                                                      )
                   for c in l.curves}
 
