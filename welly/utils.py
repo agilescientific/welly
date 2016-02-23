@@ -105,3 +105,18 @@ def find_edges(a):
     values = a[tops]
 
     return tops, values
+
+
+def lasio_get(l, section, item=None, attrib=None, default=None):
+    """
+    Gets attributes not found by lasio
+    """
+
+    try:
+        if item is None:
+            return getattr(l, section)
+        elif attrib is None:
+            return getattr(l, section)[item]
+        return getattr(l, section)[item][attrib]
+    except KeyError:
+        return default

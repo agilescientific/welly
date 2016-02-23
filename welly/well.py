@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+su#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
 Defines wells.
@@ -11,6 +11,7 @@ import lasio
 from .curve import Curve
 from .header import Header
 from .location import Location
+from .utils import lasio_get
 
 
 class WellError(Exception):
@@ -40,7 +41,7 @@ class Well(object):
         # Build a dict of curves.
         curves = {c.mnemonic: Curve.from_lasio_curve(c,
                                                      basis=l['DEPT'],
-                                                     run=l.params.RUN.value,
+                                                     run=lasio_get(l, 'params', 'RUN'),
                                                      null=l.well.NULL.value
                                                      )
                   for c in l.curves}

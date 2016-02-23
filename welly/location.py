@@ -31,3 +31,7 @@ class Location(object):
         params['range'] = well['RANG'].value
         params['township'] = well['TOWN'].value
         return cls(params)
+
+
+
+

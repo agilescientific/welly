@@ -96,10 +96,11 @@ class Curve(object):
         params['description'] = curve.descr
         params['units'] = curve.unit
         params['data'] = curve.data
-        params['run'] = run
+        # params['run'] = run
         params['null'] = null
 
         return cls(params)
+
 
     def plot(self, **kwargs):
         """
