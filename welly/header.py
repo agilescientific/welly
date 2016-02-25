@@ -29,7 +29,7 @@ class Header(object):
         return self.__dict__.__repr__()
 
     @classmethod
-    def from_lasio_well(cls, well):
+    def from_lasio_well(cls, well, remap=None, funcs=None):
         """
         Assumes we're starting with a lasio well object.
         """

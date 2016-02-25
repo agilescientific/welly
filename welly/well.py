@@ -55,8 +55,8 @@ class Well(object):
         params = {}
         params = {'las': l,
                   'uwi': utils.lasio_get(l, 'well', 'UWI', 'value'),
-                  'header': Header.from_lasio_well(l.well),
-                  'location': Location.from_lasio_well(l.well),
+                  'header': Header.from_lasio_well(l.well, remap=remap, funcs=funcs),
+                  'location': Location.from_lasio_well(l.well, remap=remap, funcs=funcs),
                   'curves': curves,
                   }
 
@@ -64,11 +64,11 @@ class Well(object):
         return cls(params)
 
     @classmethod
-    def from_las(cls, fname):
+    def from_las(cls, fname, remap=None, funcs=None):
         """
         Wraps lasio.
         """
         l = lasio.read(fname)
 
         # Pass to other constructor.
-        return cls.from_lasio_well(l)
+        return cls.from_lasio_well(l, remap=remap, funcs=funcs)
