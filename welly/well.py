@@ -9,6 +9,7 @@ Defines wells.
 import lasio
 
 from . import utils
+from .fields import las_fields
 from .curve import Curve
 from .header import Header
 from .location import Location
@@ -39,7 +40,25 @@ class Well(object):
         If you already have the lasio object.
         """
         # Build a dict of curves.
-        start = utils.lasio_get(l, 'well', 'STRT', 'value')
+
+        params = {}
+        for field, (sect, code) in las_fields['curve'].items():
+            params[field] = utils.lasio_get_from_well(well,
+                                                      code,
+                                                      remap=remap,
+                                                      funcs=funcs)
+
+
+
+
+        start = utils.lasio_get_from_well(l.well,
+                                          'STRT',
+                                          remap=remap,
+                                          funcs=funcs)
+        step = utils.lasio_get_from_well(l.well,
+                                          'STEP',
+                                          remap=remap,
+                                          funcs=funcs)
         step = utils.lasio_get(l, 'well', 'STEP', 'value')
         run = utils.lasio_get(l, 'params', 'RUN', 'value')
         null = utils.lasio_get(l, 'well', 'NULL', 'value')

@@ -8,6 +8,7 @@ Defines well headers.
 """
 import csv
 
+from .fields import las_fields
 from . import utils
 
 
@@ -34,9 +35,11 @@ class Header(object):
         Assumes we're starting with a lasio well object.
         """
         params = {}
-        params['name'] = utils.lasio_get(well, 'WELL', 'value')
-        params['field'] = utils.lasio_get(well, 'FLD', 'value')
-        params['license'] = utils.lasio_get(well, 'LIC', 'value')
+        for field, (_, code) in las_fields['header'].items():
+            params[field] = utils.lasio_get_from_well(well,
+                                                      code,
+                                                      remap=remap,
+                                                      funcs=funcs)
         return cls(params)
 
     @classmethod

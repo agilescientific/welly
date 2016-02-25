@@ -7,6 +7,7 @@ Defines well location.
 :license: Apache 2.0
 """
 from . import utils
+from .fields import las_fields
 from .crs import CRS
 
 
@@ -30,19 +31,9 @@ class Location(object):
         Assumes we're starting with a lasio well object.
         """
         params = {}
-        for field, code in fields.items():
-            params[field] = utils.lasio_get_from_well(well, code, remap=remap, funcs=funcs)
-
+        for field, (_, code) in las_fields['location'].items():
+            params[field] = utils.lasio_get_from_well(well,
+                                                      code,
+                                                      remap=remap,
+                                                      funcs=funcs)
         return cls(params)
-
-
-fields = {
-    # WELLY <->  LAS
-    'country': 'CTRY',
-    'latitude': 'LATI',
-    'longitude': 'LONG',
-    'datum': 'GDAT',
-    'section': 'SECT',
-    'range': 'RANG',
-    'township': 'TOWN',
-    }
