@@ -9,31 +9,12 @@ Utility functions for welly.
 import numpy as np
 
 
-def lasio_get(obj,
-              section,
-              item=None,
-              attrib=None,
-              default=None):
-
-    try:
-        if item is None:
-            result = getattr(obj, section)
-        elif attrib is None:
-            result = getattr(obj, section)[item]
-        else:
-            result = getattr(obj, section)[item][attrib]
-    except:
-        return default
-
-    return result
-
-
-def lasio_get_from_well(well,
-                        item,
-                        attrib='value',
-                        default=None,
-                        remap=None,
-                        funcs=None):
+def lasio_get(well,
+              item,
+              attrib='value',
+              default=None,
+              remap=None,
+              funcs=None):
 
     if remap is None:
         remap = {}

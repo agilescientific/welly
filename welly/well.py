@@ -40,44 +40,28 @@ class Well(object):
         If you already have the lasio object.
         """
         # Build a dict of curves.
-
         params = {}
         for field, (sect, code) in las_fields['curve'].items():
-            params[field] = utils.lasio_get_from_well(well,
-                                                      code,
-                                                      remap=remap,
-                                                      funcs=funcs)
+            params[field] = utils.lasio_get(getattr(l, sect),
+                                            code,
+                                            remap=remap,
+                                            funcs=funcs)
 
-
-
-
-        start = utils.lasio_get_from_well(l.well,
-                                          'STRT',
-                                          remap=remap,
-                                          funcs=funcs)
-        step = utils.lasio_get_from_well(l.well,
-                                          'STEP',
-                                          remap=remap,
-                                          funcs=funcs)
-        step = utils.lasio_get(l, 'well', 'STEP', 'value')
-        run = utils.lasio_get(l, 'params', 'RUN', 'value')
-        null = utils.lasio_get(l, 'well', 'NULL', 'value')
-        curves = {c.mnemonic: Curve.from_lasio_curve(c,
-                                                     start=start,
-                                                     step=step,
-                                                     run=run,
-                                                     null=null,
-                                                     )
+        curves = {c.mnemonic: Curve.from_lasio_curve(c, **params)
                   for c in l.curves}
 
         # Build a dict of the other well data.
-        params = {}
         params = {'las': l,
                   'uwi': utils.lasio_get(l, 'well', 'UWI', 'value'),
                   'header': Header.from_lasio_well(l.well, remap=remap, funcs=funcs),
                   'location': Location.from_lasio_well(l.well, remap=remap, funcs=funcs),
                   'curves': curves,
                   }
+        for field, (sect, code) in las_fields['well'].items():
+            params[field] = utils.lasio_get(getattr(l, sect),
+                                            code,
+                                            remap=remap,
+                                            funcs=funcs)
 
         # Pass into __init__() to instatiate the object.
         return cls(params)

@@ -36,10 +36,10 @@ class Header(object):
         """
         params = {}
         for field, (_, code) in las_fields['header'].items():
-            params[field] = utils.lasio_get_from_well(well,
-                                                      code,
-                                                      remap=remap,
-                                                      funcs=funcs)
+            params[field] = utils.lasio_get(well,
+                                            code,
+                                            remap=remap,
+                                            funcs=funcs)
         return cls(params)
 
     @classmethod

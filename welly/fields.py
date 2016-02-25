@@ -8,6 +8,14 @@ Field mapping from welly to LAS.
 """
 
 las_fields = {
+    'well': {
+        'name': ('well', 'UWI'),
+    },
+    'header': {
+        'name': ('well', 'WELL'),
+        'field': ('well', 'FLD'),
+        'license': ('well', 'LIC'),
+    },
     'location': {
         'country': ('well', 'CTRY'),
         'latitude': ('well', 'LATI'),
@@ -16,11 +24,6 @@ las_fields = {
         'section': ('well', 'SECT'),
         'range': ('well', 'RANG'),
         'township': ('well', 'TOWN'),
-    },
-    'header': {
-        'name': ('well', 'WELL'),
-        'field': ('well', 'FLD'),
-        'license': ('well', 'LIC'),
     },
     'curve': {
         'start': ('well', 'STRT'),
