@@ -9,6 +9,33 @@ Utility functions for welly.
 import numpy as np
 
 
+def lasio_get(well,
+              item,
+              attrib='value',
+              default=None,
+              remap=None,
+              funcs=None):
+
+    if remap is None:
+        remap = {}
+
+    item_to_fetch = remap.get(item, item)
+    if item is None:
+        return None
+
+    try:
+        result = getattr(well, item_to_fetch)[attrib]
+    except:
+        return default
+
+    # Transform if requested.
+    if funcs is not None:
+        f = funcs.get(item, null)
+        result = f(result)
+
+    return result
+
+
 def null(x):
     """
     Null function. Used for default in functions that can apply a user-
@@ -76,6 +103,8 @@ def find_previous(a, value, index=False, return_distance=False):
 
     Returns:
         float. The array value (or index, as int) before the specified value.
+            If ``return_distance==True`` then a tuple is returned, where the
+            second value is the distance.
     """
     b = a - value
     i = np.where(b > 0)[0][0]
@@ -107,6 +136,7 @@ def find_edges(a):
     return tops, values
 
 
+<<<<<<< HEAD
 def lasio_get(l, section, item=None, attrib=None, default=None):
     """
     Gets attributes not found by lasio
@@ -120,3 +150,137 @@ def lasio_get(l, section, item=None, attrib=None, default=None):
         return getattr(l, section)[item][attrib]
     except KeyError:
         return default
+=======
+def rms(a):
+    """
+    From ``bruges``
+
+    Calculates the RMS of an array.
+
+    :param a: An array.
+
+    :returns: The RMS of the array.
+    """
+
+    return np.sqrt(np.sum(a**2.0)/a.size)
+
+
+def moving_average(a, length, mode='valid'):
+    """
+    From ``bruges``
+
+    Computes the mean in a moving window. Naive implementation.
+
+    Example:
+        >>> test = np.array([1,9,9,9,9,9,9,2,3,9,2,2,3,1,1,1,1,3,4,9,9,9,8,3])
+        >>> moving_average(test, 7, mode='same')
+        [ 4.4285714  5.571428  6.7142857  7.8571428  8.          7.1428571
+          7.1428571  6.142857  5.1428571  4.2857142  3.1428571  3.
+          2.7142857  1.571428  1.7142857  2.          2.857142  4.
+          5.1428571  6.142857  6.4285714  6.1428571  5.7142857  4.5714285 ]
+
+    TODO:
+        Other types of average.
+    """
+    pad = np.floor(length/2)
+
+    if mode == 'full':
+        pad *= 2
+
+    # Make a padded version, paddding with first and last values
+    r = np.empty(a.shape[0] + 2*pad)
+    r[:pad] = a[0]
+    r[pad:-pad] = a
+    r[-pad:] = a[-1]
+
+    # Cumsum with shifting trick
+    s = np.cumsum(r, dtype=float)
+    s[length:] = s[length:] - s[:-length]
+    out = s[length-1:]/length
+
+    # Decide what to return
+    if mode == 'same':
+        if out.shape[0] != a.shape[0]:
+            # If size doesn't match, then interpolate.
+            out = (out[:-1, ...] + out[1:, ...]) / 2
+        return out
+    elif mode == 'valid':
+        return out[pad:-pad]
+    else:  # mode=='full' and we used a double pad
+        return out
+
+
+def moving_avg_conv(a, length):
+    """
+    From ``bruges``
+
+    Moving average via convolution. Seems slower than naive.
+    """
+    boxcar = np.ones(length)/length
+    return np.convolve(a, boxcar, mode="same")
+
+
+def normalize(a, new_min=0.0, new_max=1.0):
+    """
+    From ``bruges``
+
+    Normalize an array to [0,1] or to
+    arbitrary new min and max.
+
+    :param a: An array.
+    :param new_min: A float to be the new min, default 0.
+    :param new_max: A float to be the new max, default 1.
+
+    :returns: The normalized array.
+    """
+    n = (a - np.amin(a)) / np.amax(a - np.amin(a))
+    return n * (new_max - new_min) + new_min
+
+
+def top_and_tail(*arrays):
+    """
+    From ``bruges``
+
+    Top and tail all arrays to the non-NaN extent of the first array.
+
+    E.g. crop the NaNs from the top and tail of a well log.
+    """
+    if len(arrays) > 1:
+        for arr in arrays[1:]:
+            assert len(arr) == len(arrays[0])
+    nans = np.where(~np.isnan(arrays[0]))[0]
+    first, last = nans[0], nans[-1]
+    ret_arrays = []
+    for array in arrays:
+        ret_arrays.append(array[first:last+1])
+    return ret_arrays
+
+
+def extrapolate(a):
+    """
+    From ``bruges``
+
+    Extrapolate up and down an array from the first and last non-NaN samples.
+
+    E.g. Continue the first and last non-NaN values of a log up and down.
+    """
+    nans = np.where(~np.isnan(a))[0]
+    first, last = nans[0], nans[-1]
+    a[:first] = a[first]
+    a[last + 1:] = a[last]
+    return a
+
+
+def dms2dd(dms):
+    """
+    d must be negative for S and W.
+    """
+    d, m, s = dms
+    return d + m/60. + s/3600.
+
+
+def dd2dms(dd):
+    m, s = divmod(dd * 3600, 60)
+    d, m = divmod(m, 60)
+    return int(d), int(m), s
+>>>>>>> 82e5560b83db2beaf0511b51845cb9e00c29db6c

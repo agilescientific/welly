@@ -8,6 +8,8 @@ Defines wells.
 """
 import lasio
 
+from . import utils
+from .fields import las_fields
 from .curve import Curve
 from .header import Header
 from .location import Location
@@ -34,35 +36,51 @@ class Well(object):
                 setattr(self, k, v)
 
     @classmethod
-    def from_lasio_well(cls, l):
+    def from_lasio_well(cls, l, remap=None, funcs=None):
         """
         If you already have the lasio object.
         """
         # Build a dict of curves.
+<<<<<<< HEAD
         curves = {c.mnemonic: Curve.from_lasio_curve(c,
                                                      basis=l['DEPT'],
                                                      run=lasio_get(l, 'params', 'RUN'),
                                                      null=l.well.NULL.value
                                                      )
+=======
+        params = {}
+        for field, (sect, code) in las_fields['curve'].items():
+            params[field] = utils.lasio_get(getattr(l, sect),
+                                            code,
+                                            remap=remap,
+                                            funcs=funcs)
+
+        curves = {c.mnemonic: Curve.from_lasio_curve(c, **params)
+>>>>>>> 82e5560b83db2beaf0511b51845cb9e00c29db6c
                   for c in l.curves}
 
         # Build a dict of the other well data.
-        params = {}
         params = {'las': l,
-                  'header': Header.from_lasio_well(l.well),
-                  'location': Location.from_lasio_well(l.well),
+                  'uwi': utils.lasio_get(l, 'well', 'UWI', 'value'),
+                  'header': Header.from_lasio_well(l.well, remap=remap, funcs=funcs),
+                  'location': Location.from_lasio_well(l.well, remap=remap, funcs=funcs),
                   'curves': curves,
                   }
+        for field, (sect, code) in las_fields['well'].items():
+            params[field] = utils.lasio_get(getattr(l, sect),
+                                            code,
+                                            remap=remap,
+                                            funcs=funcs)
 
         # Pass into __init__() to instatiate the object.
         return cls(params)
 
     @classmethod
-    def from_las(cls, fname):
+    def from_las(cls, fname, remap=None, funcs=None):
         """
         Wraps lasio.
         """
         l = lasio.read(fname)
 
         # Pass to other constructor.
-        return cls.from_lasio_well(l)
+        return cls.from_lasio_well(l, remap=remap, funcs=funcs)
