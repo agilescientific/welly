@@ -34,7 +34,7 @@ class Well(object):
                 setattr(self, k, v)
 
     @classmethod
-    def from_lasio_well(cls, l):
+    def from_lasio_well(cls, l, remap=None, funcs=None):
         """
         If you already have the lasio object.
         """
