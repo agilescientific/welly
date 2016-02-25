@@ -54,6 +54,7 @@ class Well(object):
         # Build a dict of the other well data.
         params = {}
         params = {'las': l,
+                  'uwi': utils.lasio_get(l, 'well', 'UWI', 'value'),
                   'header': Header.from_lasio_well(l.well),
                   'location': Location.from_lasio_well(l.well),
                   'curves': curves,
