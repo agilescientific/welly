@@ -6,19 +6,23 @@ Defines well location.
 :copyright: 2016 Agile Geoscience
 :license: Apache 2.0
 """
+from . import utils
+from .crs import CRS
 
 
 class Location(object):
     def __init__(self, params):
         """
         Generic initializer for now.
-        In ``mode`` 'w', data overwrites the existing contents
         """
+        self.crs = CRS(params.pop('crs', dict()))
+
         for k, v in params.items():
             if k and v:
                 setattr(self, k, v)
 
-        self.crs = {}
+    def __repr__(self):
+        return 'Location({})'.format(self.__dict__)
 
     @classmethod
     def from_lasio_well(cls, well):
@@ -26,14 +30,12 @@ class Location(object):
         Assumes we're starting with a lasio well object.
         """
         params = {}
-        # arams['country'] = well['CTRY'].value
-        # params['lat'] = well['LATI'].value
-        # params['lon'] = well['LONG'].value
-        # params['datum'] = well['GDAT'].value
-        # params['section'] = well['SECT'].value
-        # params['range'] = well['RANG'].value
-        # params['township'] = well['TOWN'].value
-        return cls(params)
+        params['country'] = utils.lasio_get(well, 'CTRY', 'value')
+        params['lat'] = utils.lasio_get(well, 'LATI', 'value')
+        params['lon'] = utils.lasio_get(well, 'LONG', 'value')
+        params['datum'] = utils.lasio_get(well, 'GDAT', 'value')
+        params['section'] = utils.lasio_get(well, 'SECT', 'value')
+        params['range'] = utils.lasio_get(well, 'RANG', 'value')
+        params['township'] = utils.lasio_get(well, 'TOWN', 'value')
 
-    def set_crs(self, crs):
-        self.crs = crs
+        return cls(params)

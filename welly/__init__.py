@@ -9,12 +9,14 @@ from .well import Well
 from .header import Header
 from .curve import Curve
 from .location import Location
+from .crs import CRS
 
 __all__ = [
            'Well',
            'Header',
            'Curve',
            'Location',
+           'CRS',
           ]
 
 
