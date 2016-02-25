@@ -238,3 +238,17 @@ def extrapolate(a):
     a[:first] = a[first]
     a[last + 1:] = a[last]
     return a
+
+
+def dms2dd(dms):
+    """
+    d must be negative for S and W.
+    """
+    d, m, s = dms
+    return d + m/60. + s/3600.
+
+
+def dd2dms(dd):
+    m, s = divmod(dd * 3600, 60)
+    d, m = divmod(m, 60)
+    return int(d), int(m), s
