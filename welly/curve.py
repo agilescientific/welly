@@ -109,12 +109,13 @@ class Curve(np.ndarray):
         return Curve(data, params)
 
 
-    def plot(self, **kwargs):
+    def plot(self, ax=None, **kwargs):
         """
         Plot a curve.
         """
-        fig = plt.figure(figsize=(2, 10))
-        ax = fig.add_subplot(111)
+        if ax == None:
+            fig = plt.figure(figsize=(2, 10))
+            ax = fig.add_subplot(111)
         ax.plot(self, self.basis, **kwargs)
         ax.set_title(self.mnemonic)
         ax.set_ylim([self.stop, self.start])

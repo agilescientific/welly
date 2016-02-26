@@ -137,21 +137,6 @@ def find_edges(a):
     return tops, values
 
 
-<<<<<<< HEAD
-def lasio_get(l, section, item=None, attrib=None, default=None):
-    """
-    Gets attributes not found by lasio
-    """
-
-    try:
-        if item is None:
-            return getattr(l, section)
-        elif attrib is None:
-            return getattr(l, section)[item]
-        return getattr(l, section)[item][attrib]
-    except KeyError:
-        return default
-=======
 def rms(a):
     """
     From ``bruges``
@@ -284,4 +269,3 @@ def dd2dms(dd):
     m, s = divmod(dd * 3600, 60)
     d, m = divmod(m, 60)
     return int(d), int(m), s
->>>>>>> 82e5560b83db2beaf0511b51845cb9e00c29db6c
