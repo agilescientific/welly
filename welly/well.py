@@ -34,6 +34,24 @@ class Well(object):
             if k and v:
                 setattr(self, k, v)
 
+    def _repr_html_(self):
+        """
+        Jupyter Notebook magic repr function.
+        """
+        row1 = '<tr><th style="text-align:center;" colspan="2">{}<br><small>{{}}</small></th></tr>'
+        rows = row1.format(self.header.name)
+        rows = rows.format(self.header.uwi)
+        s = '<tr><td><strong>{k}</strong></td><td>{v}</td></tr>'
+        for k, v in self.location.__dict__.items():
+            rows += s.format(k=k, v=v)
+        rows += s.format(k="curves", v=self.curves.keys())
+        html = '<table>{}</table>'.format(rows)
+        return html
+
+    @property
+    def uwi(self):
+        return self.header.uwi
+
     @classmethod
     def from_lasio(cls, l, remap=None, funcs=None):
         """
@@ -53,7 +71,6 @@ class Well(object):
 
         # Build a dict of the other well data.
         params = {'las': l,
-                  'uwi': utils.lasio_get(l, 'well', 'UWI', 'value'),
                   'header': Header.from_lasio(l, remap=remap, funcs=funcs),
                   'location': Location.from_lasio(l, remap=remap, funcs=funcs),
                   'curves': curves,
