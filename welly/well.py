@@ -41,13 +41,7 @@ class Well(object):
         If you already have the lasio object.
         """
         # Build a dict of curves.
-<<<<<<< HEAD
-        curves = {c.mnemonic: Curve.from_lasio_curve(c,
-                                                     basis=l['DEPT'],
-                                                     run=lasio_get(l, 'params', 'RUN'),
-                                                     null=l.well.NULL.value
-                                                     )
-=======
+
         params = {}
         for field, (sect, code) in las_fields['curve'].items():
             params[field] = utils.lasio_get(l,
@@ -57,7 +51,6 @@ class Well(object):
                                             funcs=funcs)
 
         curves = {c.mnemonic: Curve.from_lasio_curve(c, **params)
->>>>>>> 82e5560b83db2beaf0511b51845cb9e00c29db6c
                   for c in l.curves}
 
         # Build a dict of the other well data.
