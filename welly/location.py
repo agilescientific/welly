@@ -26,13 +26,14 @@ class Location(object):
         return 'Location({})'.format(self.__dict__)
 
     @classmethod
-    def from_lasio_well(cls, well, remap=None, funcs=None):
+    def from_lasio(cls, l, remap=None, funcs=None):
         """
-        Assumes we're starting with a lasio well object.
+        Assumes we're starting with a lasio object, l.
         """
         params = {}
-        for field, (_, code) in las_fields['location'].items():
-            params[field] = utils.lasio_get(well,
+        for field, (sect, code) in las_fields['location'].items():
+            params[field] = utils.lasio_get(l,
+                                            sect,
                                             code,
                                             remap=remap,
                                             funcs=funcs)
