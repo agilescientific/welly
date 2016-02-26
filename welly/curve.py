@@ -30,7 +30,11 @@ class Curve(np.ndarray):
         return obj
 
     def __array_finalize__(self, obj):
-        if obj is None: return
+        if obj is None:
+            return
+
+        if obj.size == 1:
+            return float(obj)
 
         self.start = getattr(obj, 'start', 0)
         self.step = getattr(obj, 'step', 0.1524)
@@ -41,6 +45,8 @@ class Curve(np.ndarray):
         """
         Jupyter Notebook magic repr function.
         """
+        if self.size < 10:
+            return np.ndarray.__repr__(self)
         attribs = self.__dict__.copy()
         row1 = '<tr><th style="text-align:center;" colspan="2">{} [{{}}]</th></tr>'
         rows = row1.format(attribs.pop('mnemonic'))
