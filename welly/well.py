@@ -36,7 +36,7 @@ class Well(object):
                 setattr(self, k, v)
 
     @classmethod
-    def from_lasio_well(cls, l, remap=None, funcs=None):
+    def from_lasio(cls, l, remap=None, funcs=None):
         """
         If you already have the lasio object.
         """
@@ -50,7 +50,8 @@ class Well(object):
 =======
         params = {}
         for field, (sect, code) in las_fields['curve'].items():
-            params[field] = utils.lasio_get(getattr(l, sect),
+            params[field] = utils.lasio_get(l,
+                                            sect,
                                             code,
                                             remap=remap,
                                             funcs=funcs)
@@ -62,12 +63,13 @@ class Well(object):
         # Build a dict of the other well data.
         params = {'las': l,
                   'uwi': utils.lasio_get(l, 'well', 'UWI', 'value'),
-                  'header': Header.from_lasio_well(l.well, remap=remap, funcs=funcs),
-                  'location': Location.from_lasio_well(l.well, remap=remap, funcs=funcs),
+                  'header': Header.from_lasio(l, remap=remap, funcs=funcs),
+                  'location': Location.from_lasio(l, remap=remap, funcs=funcs),
                   'curves': curves,
                   }
         for field, (sect, code) in las_fields['well'].items():
-            params[field] = utils.lasio_get(getattr(l, sect),
+            params[field] = utils.lasio_get(l,
+                                            sect,
                                             code,
                                             remap=remap,
                                             funcs=funcs)
@@ -83,4 +85,4 @@ class Well(object):
         l = lasio.read(fname)
 
         # Pass to other constructor.
-        return cls.from_lasio_well(l, remap=remap, funcs=funcs)
+        return cls.from_lasio(l, remap=remap, funcs=funcs)

@@ -24,6 +24,10 @@ las_fields = {
         'section': ('well', 'SECT'),
         'range': ('well', 'RANG'),
         'township': ('well', 'TOWN'),
+        'kb': ('params', 'EKB'),
+        'td': ('params', 'TDD'),
+        'tdd': ('params', 'TDD'),
+        'tdl': ('params', 'TDL'),
     },
     'curve': {
         'start': ('well', 'STRT'),
