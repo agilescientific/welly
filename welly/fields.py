@@ -9,12 +9,12 @@ Field mapping from welly to LAS.
 
 las_fields = {
     'well': {
-        'name': ('well', 'UWI'),
     },
     'header': {
         'name': ('well', 'WELL'),
         'field': ('well', 'FLD'),
         'license': ('well', 'LIC'),
+        'uwi': ('well', 'UWI'),
     },
     'location': {
         'country': ('well', 'CTRY'),
