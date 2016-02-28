@@ -6,6 +6,7 @@ Defines wells.
 :copyright: 2016 Agile Geoscience
 :license: Apache 2.0
 """
+import matplotlib.pyplot as plt
 import lasio
 
 from . import utils
@@ -96,3 +97,34 @@ class Well(object):
 
         # Pass to other constructor.
         return cls.from_lasio(l, remap=remap, funcs=funcs)
+
+    def plot(self, legend=None, tracks=None):
+        """
+        Plot some well data, e.g. as a composite log.
+
+        If legend is None, you should get random colours.
+
+        If tracks is None, you get a plot of every log and every striplog in
+        the legend. If legend and tracks are None, you get everything.
+
+        Tracks is a list of mnemonics. It can include lists, to plot multiple
+        curves into a track.
+
+        Let's just do curves for now.
+
+        e.g. tracks = ['GR', 'RHOB', ['DT', 'DTS']]
+        """
+        tracks = tracks or list(self.curves.keys())
+        ntracks = len(tracks)
+        fig, axarr = plt.subplots(1, ntracks,
+                                  figsize=(2*ntracks, 15),
+                                  sharey=True)
+
+        for i, t in enumerate(tracks):
+            if type(t) == str:
+                self.curves[t].plot(ax=axarr[i])
+            else:
+                for u in t:
+                    self.curves[u].plot(ax=axarr[i])
+
+        return None

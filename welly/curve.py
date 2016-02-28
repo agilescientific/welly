@@ -108,20 +108,27 @@ class Curve(np.ndarray):
         params['units'] = ''  # These will often break otherwise.
         return Curve(data, params)
 
-
     def plot(self, ax=None, **kwargs):
         """
         Plot a curve.
         """
-        if ax == None:
+        if ax is None:
             fig = plt.figure(figsize=(2, 10))
             ax = fig.add_subplot(111)
+            return_ax = False
+        else:
+            return_ax = True
+
         ax.plot(self, self.basis, **kwargs)
         ax.set_title(self.mnemonic)
         ax.set_ylim([self.stop, self.start])
         ax.set_xlabel(self.units)
         ax.grid()
-        return
+
+        if return_ax:
+            return ax
+        else:
+            return None
 
     def new_basis(self, start=None, stop=None, step=None):
         """
