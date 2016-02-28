@@ -8,6 +8,7 @@ Defines log curves.
 """
 import numpy as np
 import matplotlib.pyplot as plt
+from striplog import Decor, Legend, Component
 
 from . import utils
 
@@ -119,19 +120,30 @@ class Curve(np.ndarray):
         else:
             return_ax = True
 
-        if legend is not None:
-            try:
-                c = l.get_decor(self).colour
-            except:
-                c = None
-        else:
-            c = None
+        # if this curve has a mnemonic, then it's not a striplog
+        if self.mnemonic:
+            if legend is not None:
+                decor = legend.get_decor(Component({'mnemonic': self.mnemonic}))
+                axkwargs = {}
+                axkwargs['xticks'] = list(map(float, decor.xticks.split(',')))
+                axkwargs['xscale'] = decor.logarithmic
+                axkwargs['xlim'] = (decor.xleft, decor.xright)
+                ax.set(**axkwargs)
+                ax.set_title(self.mnemonic)
+                ax.set_xlabel(self.units)
+                ax.plot(self, self.basis, c=decor.colour)
+            else:
+                ax.plot(self, self.basis)
+                ax.set_title(self.mnemonic)
+                ax.set_xlabel(self.units)
+        else:  # it's a striplog...
+            if legend is not None:
+                ax.plot(self, legend=legend, **kwargs)
+            else:
+                ax.plot(self, **kwargs)
 
-        ax.plot(self, self.basis, c=c, **kwargs)
-        ax.set_title(self.mnemonic)
         ax.set_ylim([self.stop, self.start])
-        ax.set_xlabel(self.units)
-        ax.grid()
+        ax.grid('on', color='grey', lw=0.25, linestyle='-', alpha=0.5)
 
         if return_ax:
             return ax
