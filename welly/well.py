@@ -120,7 +120,7 @@ class Well(object):
         # Set up the figure.
         ntracks = len(tracks)
         fig, axarr = plt.subplots(1, ntracks,
-                                  figsize=(2*ntracks, 15),
+                                  figsize=(2*ntracks, 13),
                                   sharey=True)
 
         for i, t in enumerate(tracks):
