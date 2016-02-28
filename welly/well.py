@@ -98,7 +98,7 @@ class Well(object):
         # Pass to other constructor.
         return cls.from_lasio(l, remap=remap, funcs=funcs)
 
-    def plot(self, slegend=None, clegend=None, tracks=None):
+    def plot(self, legend=None, tracks=None):
         """
         Plot some well data, e.g. as a composite log.
 
@@ -128,15 +128,11 @@ class Well(object):
                                   sharey=True)
 
         for i, track in enumerate(tracks):
-            for data in track:
-                if hasattr(self.data[data], 'mnemonic'):  # if not a striplog
-                    legend = clegend
-                else:
-                    legend = slegend
-                try:  # ...treating as a plottable objectself.
-                    self.data[data].plot(ax=axarr[i], legend=legend)
-                except TypeError:  # ...it's a list.
-                    for u in data:
-                        self.data[u].plot(ax=axarr[i], legend=legend)
+
+            try:  # ...treating as a plottable objectself.
+                self.data[track].plot(ax=axarr[i], legend=legend)
+            except TypeError:  # ...it's a list.
+                for u in track:
+                    self.data[u].plot(ax=axarr[i], legend=legend)
 
         return None

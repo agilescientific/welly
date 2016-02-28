@@ -120,9 +120,8 @@ class Curve(np.ndarray):
         else:
             return_ax = True
 
-        # if this curve has a mnemonic, then it's not a striplog
-        if self.mnemonic:
-            if legend is not None:
+        if legend is not None:
+            try:
                 decor = legend.get_decor(Component({'mnemonic': self.mnemonic}))
                 axkwargs = {}
                 axkwargs['xticks'] = list(map(float, decor.xticks.split(',')))
@@ -132,15 +131,14 @@ class Curve(np.ndarray):
                 ax.set_title(self.mnemonic)
                 ax.set_xlabel(self.units)
                 ax.plot(self, self.basis, c=decor.colour)
-            else:
+            except:
                 ax.plot(self, self.basis)
                 ax.set_title(self.mnemonic)
                 ax.set_xlabel(self.units)
-        else:  # it's a striplog...
-            if legend is not None:
-                ax.plot(self, legend=legend, **kwargs)
-            else:
-                ax.plot(self, **kwargs)
+        else:
+            ax.plot(self, self.basis, **kwargs)
+            ax.set_title(self.mnemonic)
+            ax.set_xlabel(self.units)
 
         ax.set_ylim([self.stop, self.start])
         ax.grid('on', color='grey', lw=0.25, linestyle='-', alpha=0.5)
