@@ -124,9 +124,9 @@ class Well(object):
                                   sharey=True)
 
         for i, t in enumerate(tracks):
-            if type(t) == str:
+            try:  # ...treating as a plottable objectself.
                 self.data[t].plot(ax=axarr[i], legend=legend)
-            else:
+            except TypeError:  # ...it's a list.
                 for u in t:
                     self.data[u].plot(ax=axarr[i], legend=legend)
 
