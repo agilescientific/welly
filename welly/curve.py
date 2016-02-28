@@ -108,7 +108,7 @@ class Curve(np.ndarray):
         params['units'] = ''  # These will often break otherwise.
         return Curve(data, params)
 
-    def plot(self, ax=None, **kwargs):
+    def plot(self, ax=None, legend=None, **kwargs):
         """
         Plot a curve.
         """
@@ -119,7 +119,15 @@ class Curve(np.ndarray):
         else:
             return_ax = True
 
-        ax.plot(self, self.basis, **kwargs)
+        if legend is not None:
+            try:
+                c = l.get_decor(self).colour
+            except:
+                c = None
+        else:
+            c = None
+
+        ax.plot(self, self.basis, c=c, **kwargs)
         ax.set_title(self.mnemonic)
         ax.set_ylim([self.stop, self.start])
         ax.set_xlabel(self.units)
@@ -275,17 +283,20 @@ class Curve(np.ndarray):
 
         # Find the tops of the 'zones'.
         tops, vals = utils.find_edges(data)
-        np.append(tops, None)
-        np.append(vals, None)
+
+        # End of array trick... adding this should remove the
+        # need for the marked lines below. But it doesn't.
+        #np.append(tops, None)
+        #np.append(vals, None)
 
         if values is None:
             # Transform each segment in turn, then deal with the last segment.
             for top, base in zip(tops[:-1], tops[1:]):
                 data[top:base] = f(np.copy(self[top:base]))
-            #data[base:] = f(np.copy(self[base:]))
+            data[base:] = f(np.copy(self[base:]))  # See above
         else:
             for top, base, val in zip(tops[:-1], tops[1:], vals[:-1]):
                 data[top:base] = values[int(val)]
-            #data[base:] = values[int(vals[-1])]
+            data[base:] = values[int(vals[-1])]  # See above
 
         return Curve(data, params)

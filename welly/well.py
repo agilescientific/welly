@@ -46,7 +46,7 @@ class Well(object):
         s = '<tr><td><strong>{k}</strong></td><td>{v}</td></tr>'
         for k, v in self.location.__dict__.items():
             rows += s.format(k=k, v=v)
-        rows += s.format(k="curves", v=self.curves.keys())
+        rows += s.format(k="data", v=list(self.data.keys()))
         html = '<table>{}</table>'.format(rows)
         return html
 
@@ -76,7 +76,7 @@ class Well(object):
         params = {'las': l,
                   'header': Header.from_lasio(l, remap=remap, funcs=funcs),
                   'location': Location.from_lasio(l, remap=remap, funcs=funcs),
-                  'curves': curves,
+                  'data': curves,
                   }
         for field, (sect, code) in las_fields['well'].items():
             params[field] = utils.lasio_get(l,
@@ -114,7 +114,10 @@ class Well(object):
 
         e.g. tracks = ['GR', 'RHOB', ['DT', 'DTS']]
         """
-        tracks = tracks or list(self.curves.keys())
+        # Set tracks to 'all' if it's None.
+        tracks = tracks or list(self.data.keys())
+
+        # Set up the figure.
         ntracks = len(tracks)
         fig, axarr = plt.subplots(1, ntracks,
                                   figsize=(2*ntracks, 15),
@@ -122,9 +125,9 @@ class Well(object):
 
         for i, t in enumerate(tracks):
             if type(t) == str:
-                self.curves[t].plot(ax=axarr[i])
+                self.data[t].plot(ax=axarr[i], legend=legend)
             else:
                 for u in t:
-                    self.curves[u].plot(ax=axarr[i])
+                    self.data[u].plot(ax=axarr[i], legend=legend)
 
         return None
