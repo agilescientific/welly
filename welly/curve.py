@@ -8,7 +8,6 @@ Defines log curves.
 """
 import numpy as np
 import matplotlib.pyplot as plt
-from striplog import Decor, Legend, Component
 
 from . import utils
 
@@ -120,28 +119,35 @@ class Curve(np.ndarray):
         else:
             return_ax = True
 
+        c = None
+        d = None
         if legend is not None:
             try:
-                decor = legend.get_decor(Component({'mnemonic': self.mnemonic}))
-                axkwargs = {}
-                axkwargs['xticks'] = list(map(float, decor.xticks.split(',')))
-                axkwargs['xscale'] = decor.logarithmic
-                axkwargs['xlim'] = (decor.xleft, decor.xright)
-                ax.set(**axkwargs)
-                ax.set_title(self.mnemonic)
-                ax.set_xlabel(self.units)
-                ax.plot(self, self.basis, c=decor.colour)
+                d = legend.get_decor(self)
+                c = d.colour
             except:
-                ax.plot(self, self.basis)
-                ax.set_title(self.mnemonic)
-                ax.set_xlabel(self.units)
-        else:
-            ax.plot(self, self.basis, **kwargs)
-            ax.set_title(self.mnemonic)
-            ax.set_xlabel(self.units)
+                pass
+
+        if d is not None:
+            # Then attempt to get parameters from decor.
+            axkwargs = {}
+
+            xticks = getattr(d, 'xticks', None)
+            if xticks is not None:
+                axkwargs['xticks'] = list(map(float, xticks.split(',')))
+
+            xscale = getattr(d, 'xscale', None)
+            if xscale is not None:
+                axkwargs['xscale'] = xscale
+
+            ax.set(**axkwargs)
+
+        ax.set_title(self.mnemonic)
+        ax.set_xlabel(self.units)
+        ax.plot(self, self.basis, c=c)
 
         ax.set_ylim([self.stop, self.start])
-        ax.grid('on', color='grey', lw=0.25, linestyle='-', alpha=0.5)
+        ax.grid('on', color='k',  alpha=0.15, lw=0.25, linestyle='-')
 
         if return_ax:
             return ax

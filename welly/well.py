@@ -124,11 +124,10 @@ class Well(object):
         # Set up the figure.
         ntracks = len(tracks)
         fig, axarr = plt.subplots(1, ntracks,
-                                  figsize=(2 * ntracks, 13),
+                                  figsize=(2*ntracks, 13),
                                   sharey=True)
 
         for i, track in enumerate(tracks):
-
             try:  # ...treating as a plottable objectself.
                 self.data[track].plot(ax=axarr[i], legend=legend)
             except TypeError:  # ...it's a list.
