@@ -29,7 +29,7 @@ las_fields = {
         'tdd': ('params', 'TDD'),
         'tdl': ('params', 'TDL'),
     },
-    'curve': {
+    'data': {
         'start': ('well', 'STRT'),
         'step': ('well', 'STEP'),
         'null': ('well', 'NULL'),

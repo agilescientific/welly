@@ -40,6 +40,7 @@ class Curve(np.ndarray):
         self.step = getattr(obj, 'step', 0.1524)
         self.mnemonic = getattr(obj, 'mnemonic', None)
         self.units = getattr(obj, 'units', None)
+        self.run = getattr(obj, 'run', None)
 
     def _repr_html_(self):
         """

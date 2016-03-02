@@ -6,6 +6,8 @@ Defines wells.
 :copyright: 2016 Agile Geoscience
 :license: Apache 2.0
 """
+import datetime
+
 import matplotlib.pyplot as plt
 import lasio
 
@@ -62,7 +64,7 @@ class Well(object):
 
         # Build a dict of curves.
         curve_params = {}
-        for field, (sect, code) in las_fields['curve'].items():
+        for field, (sect, code) in las_fields['data'].items():
             curve_params[field] = utils.lasio_get(l,
                                                   sect,
                                                   code,
@@ -76,15 +78,14 @@ class Well(object):
         params = {'las': l,
                   'header': Header.from_lasio(l, remap=remap, funcs=funcs),
                   'location': Location.from_lasio(l, remap=remap, funcs=funcs),
-                  'data': curves,
-                  }
+                  'data': curves}
+
         for field, (sect, code) in las_fields['well'].items():
             params[field] = utils.lasio_get(l,
                                             sect,
                                             code,
                                             remap=remap,
                                             funcs=funcs)
-
         return cls(params)
 
     @classmethod
@@ -97,13 +98,61 @@ class Well(object):
         # Pass to other constructor.
         return cls.from_lasio(l, remap=remap, funcs=funcs)
 
+    def to_lasio(self, basis=None):
+        # Create an empty lasio object.
+        l = lasio.LASFile()
+        l.well.DATE = str(datetime.datetime.today())
 
-    def to_las(fname):
+        # Deal with header.
+        for obj, dic in las_fields.items():
+            if obj == 'data':
+                continue
+            for attr, (sect, item) in dic.items():
+                value = getattr(getattr(self, obj), attr, None)
+                try:
+                    getattr(l, sect)[item].value = value
+                except:
+                    h = lasio.HeaderItem(item, "", value, "")
+                    getattr(l, sect)[item] = h
+
+        # Add a depth basis.
+        try:
+            if basis is None:
+                basis = self.data.get('DEPT', self.data.get('DEPTH', None))
+            l.add_curve('DEPT', basis)
+        except:
+            raise Exception("Please provide a depth basis.")
+
+        # Add meta from basis.
+        setattr(l.well, 'STRT', basis[0])
+        setattr(l.well, 'STOP', basis[-1])
+        setattr(l.well, 'STEP', basis[1]-basis[0])
+
+        # Add data entities.
+        other = ''
+        for k, d in self.data.items():
+
+            try:
+                # Treat as CURVE
+                l.add_curve(k.upper(), d, unit=d.units, descr=d.description)
+            except:
+                # Treat as OTHER
+                other += "{}\n".format(k.upper()) + d.to_csv()
+
+        # Write OTHER, if any.
+        if other:
+            l.other = other
+
+        return l
+
+    def to_las(self, fname, basis=None):
         """
         Save a LAS file.
         """
+        with open(fname, 'w') as f:
+            self.to_lasio(basis=basis).write(f)
 
-        pass
+        return
 
     def add_curves_from_las(self, fname, remap=None, funcs=None):
         """
@@ -119,7 +168,7 @@ class Well(object):
         Given a lasio object, add curves from it.
         """
         params = {}
-        for field, (sect, code) in las_fields['curve'].items():
+        for field, (sect, code) in las_fields['data'].items():
             params[field] = utils.lasio_get(l,
                                             sect,
                                             code,
