@@ -59,17 +59,17 @@ class Well(object):
         """
         If you already have the lasio object.
         """
+
         # Build a dict of curves.
-
-        params = {}
+        curve_params = {}
         for field, (sect, code) in las_fields['curve'].items():
-            params[field] = utils.lasio_get(l,
-                                            sect,
-                                            code,
-                                            remap=remap,
-                                            funcs=funcs)
+            curve_params[field] = utils.lasio_get(l,
+                                                  sect,
+                                                  code,
+                                                  remap=remap,
+                                                  funcs=funcs)
 
-        curves = {c.mnemonic: Curve.from_lasio_curve(c, **params)
+        curves = {c.mnemonic: Curve.from_lasio_curve(c, **curve_params)
                   for c in l.curves}
 
         # Build a dict of the other well data.
@@ -85,7 +85,6 @@ class Well(object):
                                             remap=remap,
                                             funcs=funcs)
 
-        # Pass into __init__() to instatiate the object.
         return cls(params)
 
     @classmethod
@@ -97,6 +96,42 @@ class Well(object):
 
         # Pass to other constructor.
         return cls.from_lasio(l, remap=remap, funcs=funcs)
+
+
+    def to_las(fname):
+        """
+        Save a LAS file.
+        """
+
+        pass
+
+    def add_curves_from_las(self, fname, remap=None, funcs=None):
+        """
+        Given a lasio object, add curves from it.
+        """
+        l = lasio.read(fname)
+
+        # Pass to other constructor.
+        return self.add_curves_from_lasio(l, remap=remap, funcs=funcs)
+
+    def add_curves_from_lasio(self, l, remap=None, funcs=None):
+        """
+        Given a lasio object, add curves from it.
+        """
+        params = {}
+        for field, (sect, code) in las_fields['curve'].items():
+            params[field] = utils.lasio_get(l,
+                                            sect,
+                                            code,
+                                            remap=remap,
+                                            funcs=funcs)
+
+        curves = {c.mnemonic: Curve.from_lasio_curve(c, **params)
+                  for c in l.curves}
+
+        # Update data with new curves.
+        # This will clobber anything with the same key!
+        self.data.update(curves)
 
     def plot(self, legend=None, tracks=None):
         """
