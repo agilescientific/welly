@@ -148,7 +148,7 @@ class Curve(np.ndarray):
         ax.plot(self, self.basis, c=c)
 
         ax.set_ylim([self.stop, self.start])
-        ax.grid('on', color='k',  alpha=0.15, lw=0.25, linestyle='-')
+        ax.grid('on', color='k',  alpha=0.2, lw=0.25, linestyle='-')
 
         if return_ax:
             return ax

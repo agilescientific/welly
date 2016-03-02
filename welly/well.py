@@ -219,3 +219,44 @@ class Well(object):
                     self.data[u].plot(ax=axarr[i], legend=legend)
 
         return None
+
+    def plot_new(self, legend=None, tracks=None):
+        """
+        Even nicer plotting.
+        """
+        from matplotlib.gridspec import GridSpec
+
+        # Set tracks to 'all' if it's None.
+        tracks = tracks or list(self.data.keys())
+
+        # Set up the figure.
+        ntracks = len(tracks)
+        fig = plt.figure(figsize=(2*ntracks, 12))
+        gs = GridSpec(1, ntracks)
+
+        for i, track in enumerate(tracks):
+            ax = fig.add_subplot(gs[0, i])
+            try:  # ...treating as a plottable objectself.
+                self.data[track].plot(ax=ax, legend=legend)
+            except TypeError:  # ...it's a list.
+                for u in track:
+                    self.data[u].plot(ax=ax, legend=legend)
+
+        # Adjust the grid.
+        gs.update(wspace=0)
+
+        # Show only the outside spines.
+        all_axes = fig.get_axes()
+        for ax in all_axes:
+            for sp in ax.spines.values():
+                sp.set_visible(False)
+            if ax.is_first_row():
+                ax.spines['top'].set_visible(True)
+            if ax.is_last_row():
+                ax.spines['bottom'].set_visible(True)
+            if ax.is_first_col():
+                ax.spines['left'].set_visible(True)
+            if ax.is_last_col():
+                ax.spines['right'].set_visible(True)
+
+        return None
