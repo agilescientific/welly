@@ -47,6 +47,8 @@ class Well(object):
         rows = rows.format(self.header.uwi)
         s = '<tr><td><strong>{k}</strong></td><td>{v}</td></tr>'
         for k, v in self.location.__dict__.items():
+            if k in ['deviation', 'position']:
+                continue
             rows += s.format(k=k, v=v)
         rows += s.format(k="data", v=list(self.data.keys()))
         html = '<table>{}</table>'.format(rows)
@@ -212,35 +214,75 @@ class Well(object):
                                   sharey=True)
 
         for i, track in enumerate(tracks):
+            if ntracks == 1:
+                axarr = [axarr]
             try:  # ...treating as a plottable objectself.
                 self.data[track].plot(ax=axarr[i], legend=legend)
             except TypeError:  # ...it's a list.
-                for u in track:
-                    self.data[u].plot(ax=axarr[i], legend=legend)
+                for j, u in enumerate(track):
+                    if j == 0:
+                        thisax = axarr[i]
+                    else:
+                        thisax = thisax.twiny()
+                    try:
+                        self.data[u].plot(ax=thisax, legend=legend)
+                    except KeyError:
+                        continue
 
         return None
 
-    def plot_new(self, legend=None, tracks=None):
+    def plot_new(self, legend=None, tracks=None, track_titles=None):
         """
         Even nicer plotting.
+
+        tracks (dict)
         """
         from matplotlib.gridspec import GridSpec
 
         # Set tracks to 'all' if it's None.
-        tracks = tracks or list(self.data.keys())
+        tracks = tracks or self.data.keys()
+        track_titles = track_titles or tracks
 
         # Set up the figure.
         ntracks = len(tracks)
         fig = plt.figure(figsize=(2*ntracks, 12))
         gs = GridSpec(1, ntracks)
 
-        for i, track in enumerate(tracks):
-            ax = fig.add_subplot(gs[0, i])
+        # Plot first axis.
+        ax0 = fig.add_subplot(gs[0, 0])
+        try:  # ...treating as a plottable objectself.
+            self.data[tracks[0]].plot(ax=ax0, legend=legend)
+        except TypeError:  # ...it's a list.
+            for t in tracks[0]:
+                self.data[t].plot(ax=ax0, legend=legend)
+        ax0.set_title(track_titles[0])
+
+        # Plot special depth axis.
+        # http://stackoverflow.com/questions/7733693/matplotlib-overlay-plots-with-different-scales/7734614
+        # daxes = [ax0, ax0.twinx()]
+        # fig.subplots_adjust(left=0.25)
+        # daxes[-1].spines['left'].set_position(('axes', 0.))
+
+        # Try to put depth scale on right too.
+        # ax00 = ax0.twinx()
+        # ax00.yaxis.set_label_position("right")
+
+        # Plot remaining axes.
+        for i, track in enumerate(tracks[1:]):
+            ax = fig.add_subplot(gs[0, i+1], sharey=ax0)
+            plt.setp(ax.get_yticklabels(), visible=False)
             try:  # ...treating as a plottable objectself.
                 self.data[track].plot(ax=ax, legend=legend)
             except TypeError:  # ...it's a list.
-                for u in track:
-                    self.data[u].plot(ax=ax, legend=legend)
+                for t in track:
+                    try:
+                        self.data[t].plot(ax=ax, legend=legend)
+                    except KeyError:
+                        continue
+            ax.set_title(track_titles[i+1])
+
+        # Title
+        fig.suptitle(self.header.name, size=16)
 
         # Adjust the grid.
         gs.update(wspace=0)
@@ -248,14 +290,23 @@ class Well(object):
         # Show only the outside spines.
         all_axes = fig.get_axes()
         for ax in all_axes:
+            # Turn off y ticks.
+            ax.yaxis.set_ticks_position('none')
+
+            # Turn off all spines.
             for sp in ax.spines.values():
                 sp.set_visible(False)
+
+            # Turn back on for left-hand sides.
+            ax.spines['left'].set_visible(True)
+
+            # Turn some others back on.
             if ax.is_first_row():
                 ax.spines['top'].set_visible(True)
             if ax.is_last_row():
                 ax.spines['bottom'].set_visible(True)
-            if ax.is_first_col():
-                ax.spines['left'].set_visible(True)
+            # if ax.is_first_col():
+            #     ax.spines['left'].set_visible(True)
             if ax.is_last_col():
                 ax.spines['right'].set_visible(True)
 

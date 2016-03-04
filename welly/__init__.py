@@ -10,6 +10,7 @@ from .header import Header
 from .curve import Curve
 from .location import Location
 from .crs import CRS
+from . import tools
 
 __all__ = [
            'Well',
@@ -17,6 +18,7 @@ __all__ = [
            'Curve',
            'Location',
            'CRS',
+           'tools',  # Various classes in here
           ]
 
 
