@@ -47,6 +47,9 @@ class Curve(np.ndarray):
         self.mnemonic = getattr(obj, 'mnemonic', None)
         self.units = getattr(obj, 'units', None)
         self.run = getattr(obj, 'run', None)
+        self.service_company = getattr(obj, 'service_company', None)
+        self.date = getattr(obj, 'date', None)
+        self.code = getattr(obj, 'code', None)
 
     def _repr_html_(self):
         """
@@ -84,7 +87,13 @@ class Curve(np.ndarray):
         return np.arange(self.start, self.stop - precision_adj, self.step)
 
     @classmethod
-    def from_lasio_curve(cls, curve, start=None, step=0.1524, run=-1, null=-999.25):
+    def from_lasio_curve(cls, curve,
+                         start=None,
+                         step=0.1524,
+                         run=-1,
+                         null=-999.25,
+                         service_company=None,
+                         date=None):
         """
         Provide a lasio curve object and a depth basis.
         """
@@ -96,7 +105,9 @@ class Curve(np.ndarray):
         params['units'] = curve.unit
         params['run'] = run
         params['null'] = null
-
+        params['service_company'] = service_company
+        params['date'] = date
+        params['code'] = curve.API_code
         return cls(curve.data, params=params)
 
     def apply(self, function, **kwargs):

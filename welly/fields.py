@@ -15,9 +15,14 @@ las_fields = {
         'field': ('well', 'FLD'),
         'license': ('well', 'LIC'),
         'uwi': ('well', 'UWI'),
+        'company': ('well', 'COMP'),
     },
     'location': {
+        'location': ('well', 'LOC'),
         'country': ('well', 'CTRY'),
+        'province': ('well', 'PROV'),
+        'state': ('well', 'STAT'),
+        'county': ('well', 'CNTY'),
         'latitude': ('well', 'LATI'),
         'longitude': ('well', 'LONG'),
         'datum': ('well', 'GDAT'),
@@ -25,6 +30,7 @@ las_fields = {
         'range': ('well', 'RANG'),
         'township': ('well', 'TOWN'),
         'kb': ('params', 'EKB'),
+        'gl': ('params', 'EGL'),
         'td': ('params', 'TDD'),
         'tdd': ('params', 'TDD'),
         'tdl': ('params', 'TDL'),
@@ -34,5 +40,7 @@ las_fields = {
         'step': ('well', 'STEP'),
         'null': ('well', 'NULL'),
         'run': ('params', 'RUN'),
+        'service_company': ('well', 'SRVC'),
+        'date': ('well', 'DATE'),
     }
 }
