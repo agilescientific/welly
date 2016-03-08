@@ -26,6 +26,9 @@ class Header(object):
             if k and v:
                 setattr(self, k, v)
 
+        # if getattr(self, 'uwi', None) is None:
+        #     self.uwi = ''
+
     def __repr__(self):
         return self.__dict__.__repr__()
 

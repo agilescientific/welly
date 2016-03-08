@@ -43,14 +43,19 @@ class Well(object):
         Jupyter Notebook magic repr function.
         """
         row1 = '<tr><th style="text-align:center;" colspan="2">{}<br><small>{{}}</small></th></tr>'
-        rows = row1.format(self.header.name)
-        rows = rows.format(self.header.uwi)
+        rows = row1.format(getattr(self.header, 'name', ''))
+        rows = rows.format(getattr(self.header, 'uwi', ''))
         s = '<tr><td><strong>{k}</strong></td><td>{v}</td></tr>'
-        for k, v in self.location.__dict__.items():
-            if k in ['deviation', 'position']:
-                continue
-            rows += s.format(k=k, v=v)
-        rows += s.format(k="data", v=list(self.data.keys()))
+
+        if getattr(self, 'location', None) is not None:
+            for k, v in self.location.__dict__.items():
+                if k in ['deviation', 'position']:
+                    continue
+                rows += s.format(k=k, v=v)
+
+        if getattr(self, 'data', None) is not None:
+            rows += s.format(k="data", v=list(self.data.keys()))
+
         html = '<table>{}</table>'.format(rows)
         return html
 

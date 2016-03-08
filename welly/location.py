@@ -134,6 +134,7 @@ class Location(object):
         if method == 'mc':
             _x = np.sin(Ib) * (1 - np.cos(Ab - Aa))
             dogleg = np.arccos(np.cos(Ib - Ia) - np.sin(Ia) * _x)
+            dogleg[dogleg == 0] = 1e-9
             rf = 2 / dogleg * np.tan(dogleg / 2)  # ratio factor
             rf[np.isnan(rf)] = 1  # Adjust for NaN.
             delta_N *= rf
