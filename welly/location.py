@@ -64,16 +64,16 @@ class Location(object):
         return self.position[:, 2]  # Last column of position log.
 
     @property
-    def md2tvd(self):
+    def md2tvd(self, kind='cubic'):
         if self.position is None:
             return lambda x: x
-        return interp1d(self.md, self.tvd, kind='cubic', assume_sorted=True)
+        return interp1d(self.md, self.tvd, kind=kind, assume_sorted=True)
 
     @property
-    def tvd2md(self):
+    def tvd2md(self, kind='cubic'):
         if self.position is None:
             return lambda x: x
-        return interp1d(self.tvd, self.md, kind='cubic', assume_sorted=True)
+        return interp1d(self.tvd, self.md, kind=kind, assume_sorted=True)
 
     def compute_position_log(self,
                              td=None,
