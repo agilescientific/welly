@@ -105,7 +105,7 @@ class Well(object):
         # Pass to other constructor.
         return cls.from_lasio(l, remap=remap, funcs=funcs)
 
-    def to_lasio(self, basis=None):
+    def to_lasio(self, basis=None, keys=None):
         # Create an empty lasio object.
         l = lasio.LASFile()
         l.well.DATE = str(datetime.datetime.today())
@@ -137,8 +137,10 @@ class Well(object):
 
         # Add data entities.
         other = ''
+        keys = keys or self.data.keys()
         for k, d in self.data.items():
-
+            if k not in keys:
+                continue
             try:
                 # Treat as CURVE
                 l.add_curve(k.upper(), d, unit=d.units, descr=d.description)
@@ -152,12 +154,12 @@ class Well(object):
 
         return l
 
-    def to_las(self, fname, basis=None):
+    def to_las(self, fname, basis=None, keys=None):
         """
         Save a LAS file.
         """
         with open(fname, 'w') as f:
-            self.to_lasio(basis=basis).write(f)
+            self.to_lasio(basis=basis, keys=keys).write(f)
 
         return
 
