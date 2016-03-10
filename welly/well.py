@@ -220,7 +220,10 @@ class Well(object):
                                   figsize=(2*ntracks, 13),
                                   sharey=True)
 
+        kwargs = {}
         for i, track in enumerate(tracks):
+            if '.' in track:
+                track, kwargs['field'] = track.split('.')
             if ntracks == 1:
                 axarr = [axarr]
             try:  # ...treating as a plottable objectself.
@@ -232,7 +235,7 @@ class Well(object):
                     else:
                         thisax = thisax.twiny()
                     try:
-                        self.data[u].plot(ax=thisax, legend=legend)
+                        self.data[u].plot(ax=thisax, legend=legend, **kwargs)
                     except KeyError:
                         continue
 
