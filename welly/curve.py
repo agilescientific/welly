@@ -160,9 +160,12 @@ class Curve(np.ndarray):
 
             ax.set(**axkwargs)
 
+        lw = getattr(d, 'lineweight', None) or getattr(d, 'lw', 1)
+        ls = getattr(d, 'linestyle', None) or getattr(d, 'ls', '-')
+
         ax.set_title(self.mnemonic)
         ax.set_xlabel(self.units)
-        ax.plot(self, self.basis, c=c)
+        ax.plot(self, self.basis, c=c, lw=lw, ls=ls)
 
         ax.set_ylim([self.stop, self.start])
         ax.grid('on', color='k',  alpha=0.2, lw=0.25, linestyle='-')
