@@ -175,7 +175,7 @@ class Curve(np.ndarray):
         else:
             return None
 
-    def new_basis(self, start=None, stop=None, step=None):
+    def new_basis(self, start=None, stop=None, step=None, null=np.nan):
         """
         Reset the start, stop, and/or step.
         """
@@ -206,7 +206,7 @@ class Curve(np.ndarray):
             new_adj_stop = new_stop + step/100  # To guarantee inclusion.
             new_basis = np.arange(new_start, new_adj_stop, step)
             basis = old_basis[new_start_index:new_stop_index]
-            data = np.interp(new_basis, basis, data)
+            data = np.interp(new_basis, basis, data, left=null, right=null)
             params['step'] = float(step)
 
         return Curve(data, params)
