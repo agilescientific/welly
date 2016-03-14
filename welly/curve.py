@@ -168,12 +168,13 @@ class Curve(np.ndarray):
         ax.plot(self, self.basis, c=c, lw=lw, ls=ls)
 
         ax.set_ylim([self.stop, self.start])
-        ax.grid('on', color='k',  alpha=0.2, lw=0.25, linestyle='-')
+        ax.grid('on', color='k', alpha=0.2, lw=0.25, linestyle='-')
 
         if return_ax:
             return ax
         else:
             return None
+
 
     def new_basis(self, start=None, stop=None, step=None, null=np.nan):
         """
@@ -185,22 +186,31 @@ class Curve(np.ndarray):
         if start is not None:
             # This will crop the top of the log.
             # Get the first surviving index.
-            new_start_index = self._read_at(start, index=True) + 1
-            new_start = float(start)
+            if start > self.start:
+                new_start_index = 0
+                new_start = float(start)
+            else:
+                new_start_index = self._read_at(start, index=True) + 1
+                new_start = float(start)
         else:
             new_start_index = 0
             new_start = self.start
 
         if stop is not None:
             adj = 0 if step is None else 1
-            new_stop_index = self._read_at(stop, index=True) + adj
-            new_stop = float(stop)
+            if stop < self.stop:
+                new_stop_index = self._read_at(stop, index=True) + adj
+                new_stop = float(stop)
+            else:
+                new_stop_index = -1  # this is a hack because off by one, WTF
+                new_stop = float(stop)
         else:
             new_stop_index = None
             new_stop = self.stop
 
         data = np.copy(self)[new_start_index:new_stop_index]
         params['start'] = new_start
+        # params['stop'] = new_stop
 
         if step is not None:
             new_adj_stop = new_stop + step/100  # To guarantee inclusion.
