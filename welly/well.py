@@ -137,7 +137,7 @@ class Well(object):
 
         # Add data entities.
         other = ''
-        keys = keys or self.data.keys()
+        keys = utils.flatten_list(keys) or self.data.keys()
         for k, d in self.data.items():
             if k not in keys:
                 continue

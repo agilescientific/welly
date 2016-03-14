@@ -9,6 +9,15 @@ Utility functions for welly.
 import numpy as np
 
 
+def flatten_list(l):
+    """http://stackoverflow.com/a/12472564/3381305"""
+    if (l == []) or (l is None):
+        return l
+    if isinstance(l[0], list):
+        return flatten_list(l[0]) + flatten_list(l[1:])
+    return l[:1] + flatten_list(l[1:])
+
+
 def lasio_get(l,
               section,
               item,
