@@ -10,6 +10,7 @@ import datetime
 
 import matplotlib.pyplot as plt
 import lasio
+import numpy as np
 
 from . import utils
 from .fields import las_fields
@@ -95,6 +96,20 @@ class Well(object):
                                             funcs=funcs)
         return cls(params)
 
+    def survey_basis(self):
+        starts, stops, steps = [], [], []
+        for c in self.data:
+            try:
+                starts.append(c.basis[0])
+                stops.append(c.basis[-1])
+                steps.append(c.basis[1] - c.basis[0])
+            except:
+                pass
+        if starts and stops and steps:
+            return np.arange(min(starts), max(stops)+1e-9, min(steps))
+        else:
+            return None
+
     @classmethod
     def from_las(cls, fname, remap=None, funcs=None):
         """
@@ -123,9 +138,10 @@ class Well(object):
                     getattr(l, sect)[item] = h
 
         # Add a depth basis.
+        if basis is None:
+            basis = self.survey_basis()
+
         try:
-            if basis is None:
-                basis = self.data.get('DEPT', self.data.get('DEPTH', None))
             l.add_curve('DEPT', basis)
         except:
             raise Exception("Please provide a depth basis.")
@@ -142,8 +158,8 @@ class Well(object):
             if k not in keys:
                 continue
             try:
-                # Treat as CURVE
-                l.add_curve(k.upper(), d, unit=d.units, descr=d.description)
+                # Continue treating as CURVE.
+                l.add_curve(k.upper(), d.to_basis_like(basis), unit=d.units, descr=d.description)
             except:
                 # Treat as OTHER
                 other += "{}\n".format(k.upper()) + d.to_csv()
