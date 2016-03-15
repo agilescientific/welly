@@ -9,6 +9,7 @@ Defines wells.
 import datetime
 
 import matplotlib.pyplot as plt
+import matplotlib as mpl
 import lasio
 import numpy as np
 
@@ -212,97 +213,102 @@ class Well(object):
         # This will clobber anything with the same key!
         self.data.update(curves)
 
-    def plot(self, legend=None, tracks=None):
-        """
-        Plot some well data, e.g. as a composite log.
+    def _plot_depth_track(self, ax, kind='MD'):
+        ax.depth_track = True
 
-        If legend is None, you should get random colours.
+        for sp in ax.spines.values():
+            sp.set_color('gray')
 
-        If tracks is None, you get a plot of every log and every striplog in
-        the legend. If legend and tracks are None, you get everything.
+        if ax.is_first_col():
+            pad = -10
+            ax.spines['left'].set_color('none')
+            ax.yaxis.set_ticks_position('right')
+            for label in ax.get_yticklabels():
+                label.set_horizontalalignment('right')
+        elif ax.is_last_col():
+            pad = -10
+            ax.spines['right'].set_color('none')
+            ax.yaxis.set_ticks_position('left')
+            for label in ax.get_yticklabels():
+                label.set_horizontalalignment('left')
+        else:
+            pad = -30
+            for label in ax.get_yticklabels():
+                label.set_horizontalalignment('center')
 
-        Tracks is a list of mnemonics. It can include lists, to plot multiple
-        curves into a track. E.g. tracks = ['GR', 'RHOB', ['DT', 'DTS']]
-        """
-        # Set tracks to 'all' if it's None.
-        tracks = tracks or list(self.data.keys())
+        ax.tick_params(axis='y', colors='gray', labelsize=12, pad=pad)
+        ax.set_xticks([])
 
-        # Set up the figure.
-        ntracks = len(tracks)
-        fig, axarr = plt.subplots(1, ntracks,
-                                  figsize=(2*ntracks, 13),
-                                  sharey=True)
+        ax.yaxis.set_major_locator(mpl.ticker.MultipleLocator(250))
+        ax.yaxis.set_minor_locator(mpl.ticker.MultipleLocator(50))
 
-        kwargs = {}
-        for i, track in enumerate(tracks):
-            if '.' in track:
-                track, kwargs['field'] = track.split('.')
-            if ntracks == 1:
-                axarr = [axarr]
-            try:  # ...treating as a plottable objectself.
-                self.data[track].plot(ax=axarr[i], legend=legend)
-            except TypeError:  # ...it's a list.
-                for j, u in enumerate(track):
-                    if j == 0:
-                        thisax = axarr[i]
-                    else:
-                        thisax = thisax.twiny()
-                    try:
-                        self.data[u].plot(ax=thisax, legend=legend, **kwargs)
-                    except KeyError:
-                        continue
+        if kind == 'TVD':
+            tx = ax.get_yticks()
+            if self.location.position is not None:
+                tx = self.location.md2tvd(tx)
+            tx = ['{:.1f}'.format(f) for f in tx]
+            ax._sharey = None
+            ax.set_yticklabels(tx)
+        else:
+            pass
 
-        return None
+        return ax
 
-    def plot_new(self, legend=None, tracks=None, track_titles=None):
+    def plot(self, legend=None, tracks=None, track_titles=None):
         """
         Even nicer plotting.
 
         tracks (dict)
         """
-        from matplotlib.gridspec import GridSpec
+        # These will be treated differently.
+        depth_tracks = ['MD', 'TVD']
 
         # Set tracks to 'all' if it's None.
         tracks = tracks or self.data.keys()
         track_titles = track_titles or tracks
 
+        # Figure out widths because we can't us gs.update() for that.
+        widths = [0.4 if t in depth_tracks else 1.0 for t in tracks]
+
         # Set up the figure.
         ntracks = len(tracks)
         fig = plt.figure(figsize=(2*ntracks, 12))
-        gs = GridSpec(1, ntracks)
+        gs = mpl.gridspec.GridSpec(1, ntracks, width_ratios=widths)
 
         # Plot first axis.
         ax0 = fig.add_subplot(gs[0, 0])
-        try:  # ...treating as a plottable objectself.
-            self.data[tracks[0]].plot(ax=ax0, legend=legend)
-        except TypeError:  # ...it's a list.
-            for t in tracks[0]:
-                self.data[t].plot(ax=ax0, legend=legend)
+        ax0.depth_track = False
+        if tracks[0] in depth_tracks:
+            ax0 = self._plot_depth_track(ax=ax0, kind=tracks[0])
+        else:
+            try:  # ...treating as a plottable objectself.
+                ax0 = self.data[tracks[0]].plot(ax=ax0, legend=legend)
+            except TypeError:  # ...it's a list.
+                for t in tracks[0]:
+                    ax0 = self.data[t].plot(ax=ax0, legend=legend)
+        tx = ax0.get_xticks()
+        ax0.set_xticks(tx[1:-1])
         ax0.set_title(track_titles[0])
-
-        # Plot special depth axis.
-        # http://stackoverflow.com/questions/7733693/matplotlib-overlay-plots-with-different-scales/7734614
-        # daxes = [ax0, ax0.twinx()]
-        # fig.subplots_adjust(left=0.25)
-        # daxes[-1].spines['left'].set_position(('axes', 0.))
-
-        # Try to put depth scale on right too.
-        # ax00 = ax0.twinx()
-        # ax00.yaxis.set_label_position("right")
 
         # Plot remaining axes.
         for i, track in enumerate(tracks[1:]):
             ax = fig.add_subplot(gs[0, i+1], sharey=ax0)
+            ax.depth_track = False
+            ax.set_title(track_titles[i+1])
+            if track in depth_tracks:
+                ax = self._plot_depth_track(ax=ax, kind=track)
+                continue
             plt.setp(ax.get_yticklabels(), visible=False)
             try:  # ...treating as a plottable objectself.
-                self.data[track].plot(ax=ax, legend=legend)
+                ax = self.data[track].plot(ax=ax, legend=legend)
             except TypeError:  # ...it's a list.
                 for t in track:
                     try:
-                        self.data[t].plot(ax=ax, legend=legend)
+                        ax = self.data[t].plot(ax=ax, legend=legend)
                     except KeyError:
                         continue
-            ax.set_title(track_titles[i+1])
+            tx = ax.get_xticks()
+            ax.set_xticks(tx[1:-1])
 
         # Title
         fig.suptitle(self.header.name, size=16)
@@ -310,27 +316,14 @@ class Well(object):
         # Adjust the grid.
         gs.update(wspace=0)
 
-        # Show only the outside spines.
+        # Adjust spines and ticks for non-depth tracks.
         all_axes = fig.get_axes()
         for ax in all_axes:
-            # Turn off y ticks.
-            ax.yaxis.set_ticks_position('none')
-
-            # Turn off all spines.
-            for sp in ax.spines.values():
-                sp.set_visible(False)
-
-            # Turn back on for left-hand sides.
-            ax.spines['left'].set_visible(True)
-
-            # Turn some others back on.
-            if ax.is_first_row():
+            if not ax.depth_track:
+                ax.yaxis.set_ticks_position('none')
                 ax.spines['top'].set_visible(True)
-            if ax.is_last_row():
                 ax.spines['bottom'].set_visible(True)
-            # if ax.is_first_col():
-            #     ax.spines['left'].set_visible(True)
-            if ax.is_last_col():
-                ax.spines['right'].set_visible(True)
+                for sp in ax.spines.values():
+                    sp.set_color('gray')
 
         return None
