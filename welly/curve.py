@@ -176,48 +176,47 @@ class Curve(np.ndarray):
             return None
 
 
-    def new_basis(self, start=None, stop=None, step=None, null=np.nan):
+    def to_basis_like(self, basis):
+        """
+        Make a new basis, given an existing one. Wraps ``to_basis()``.
+
+        Pass in a curve or the basis of a curve.
+        """
+        try:  # To treat as a curve.
+            curve = basis
+            basis = curve.basis
+            undefined = curve.null
+        except:
+            undefined = None
+        start = basis[0]
+        step = basis[1] - basis[0]
+        stop = basis[-1]
+
+        return self.to_basis(start, stop, step, undefined=undefined)
+
+    def to_basis(self, start=None, stop=None, step=None, undefined=None):
         """
         Reset the start, stop, and/or step.
+
+        Needs to handle extrapolating / padding
         """
+        new_start = start or self.start
+        new_step = step or self.step
+        new_stop = stop or self.stop
+
+        if undefined is None:
+            undefined = np.nan
+        undefined = {'left': undefined,
+                     'right': undefined
+                     }
+
+        new_adj_stop = new_stop + new_step/100  # To guarantee inclusion.
+        new_basis = np.arange(new_start, new_adj_stop, new_step)
+        data = np.interp(new_basis, self.basis, self, **undefined)
+
         params = self.__dict__.copy()
-        old_basis = self.basis
-
-        if start is not None:
-            # This will crop the top of the log.
-            # Get the first surviving index.
-            if start > self.start:
-                new_start_index = 0
-                new_start = float(start)
-            else:
-                new_start_index = self._read_at(start, index=True) + 1
-                new_start = float(start)
-        else:
-            new_start_index = 0
-            new_start = self.start
-
-        if stop is not None:
-            adj = 0 if step is None else 1
-            if stop < self.stop:
-                new_stop_index = self._read_at(stop, index=True) + adj
-                new_stop = float(stop)
-            else:
-                new_stop_index = -1  # this is a hack because off by one, WTF
-                new_stop = float(stop)
-        else:
-            new_stop_index = None
-            new_stop = self.stop
-
-        data = np.copy(self)[new_start_index:new_stop_index]
-        params['start'] = new_start
-        # params['stop'] = new_stop
-
-        if step is not None:
-            new_adj_stop = new_stop + step/100  # To guarantee inclusion.
-            new_basis = np.arange(new_start, new_adj_stop, step)
-            basis = old_basis[new_start_index:new_stop_index]
-            data = np.interp(new_basis, basis, data, left=null, right=null)
-            params['step'] = float(step)
+        params['step'] = float(new_step)
+        params['start'] = float(new_start)
 
         return Curve(data, params)
 
@@ -333,8 +332,8 @@ class Curve(np.ndarray):
 
         # End of array trick... adding this should remove the
         # need for the marked lines below. But it doesn't.
-        #np.append(tops, None)
-        #np.append(vals, None)
+        # np.append(tops, None)
+        # np.append(vals, None)
 
         if values is None:
             # Transform each segment in turn, then deal with the last segment.
