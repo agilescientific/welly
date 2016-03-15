@@ -46,7 +46,8 @@ class Curve(np.ndarray):
 
         self.mnemonic = getattr(obj, 'mnemonic', None)
         self.units = getattr(obj, 'units', None)
-        self.run = getattr(obj, 'run', None)
+        self.run = getattr(obj, 'run', 0)
+        self.null = getattr(obj, 'null', -999.25)
         self.service_company = getattr(obj, 'service_company', None)
         self.date = getattr(obj, 'date', None)
         self.code = getattr(obj, 'code', None)
