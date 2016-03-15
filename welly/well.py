@@ -96,9 +96,11 @@ class Well(object):
                                             funcs=funcs)
         return cls(params)
 
-    def survey_basis(self):
+    def survey_basis(self, keys=None):
         starts, stops, steps = [], [], []
         for k, d in self.data.items():
+            if (keys is not None) and (k not in keys):
+                continue
             try:
                 starts.append(d.basis[0])
                 stops.append(d.basis[-1])
@@ -139,8 +141,7 @@ class Well(object):
 
         # Add a depth basis.
         if basis is None:
-            basis = self.survey_basis()
-
+            basis = self.survey_basis(keys=keys)
         try:
             l.add_curve('DEPT', basis)
         except:
@@ -154,9 +155,8 @@ class Well(object):
         # Add data entities.
         other = ''
         keys = utils.flatten_list(keys) or self.data.keys()
-        for k, d in self.data.items():
-            if k not in keys:
-                continue
+        for k in keys:
+            d = self.data[k]
             if d.null:
                 d[np.isnan(d)] = d.null
             try:
@@ -216,21 +216,13 @@ class Well(object):
         """
         Plot some well data, e.g. as a composite log.
 
-        slegend is the legend of the striplog
-
-        clegend is the legend of the curves
-
         If legend is None, you should get random colours.
 
         If tracks is None, you get a plot of every log and every striplog in
         the legend. If legend and tracks are None, you get everything.
 
         Tracks is a list of mnemonics. It can include lists, to plot multiple
-        curves into a track.
-
-        Let's just do curves for now.
-
-        e.g. tracks = ['GR', 'RHOB', ['DT', 'DTS']]
+        curves into a track. E.g. tracks = ['GR', 'RHOB', ['DT', 'DTS']]
         """
         # Set tracks to 'all' if it's None.
         tracks = tracks or list(self.data.keys())
