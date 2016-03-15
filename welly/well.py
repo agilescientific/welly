@@ -98,11 +98,11 @@ class Well(object):
 
     def survey_basis(self):
         starts, stops, steps = [], [], []
-        for c in self.data:
+        for k, d in self.data.items():
             try:
-                starts.append(c.basis[0])
-                stops.append(c.basis[-1])
-                steps.append(c.basis[1] - c.basis[0])
+                starts.append(d.basis[0])
+                stops.append(d.basis[-1])
+                steps.append(d.basis[1] - d.basis[0])
             except:
                 pass
         if starts and stops and steps:
@@ -157,12 +157,17 @@ class Well(object):
         for k, d in self.data.items():
             if k not in keys:
                 continue
+            if d.null:
+                d[np.isnan(d)] = d.null
             try:
-                # Continue treating as CURVE.
-                l.add_curve(k.upper(), d.to_basis_like(basis), unit=d.units, descr=d.description)
+                new_data = np.copy(d.to_basis_like(basis))
+                l.add_curve(k.upper(), new_data, unit=d.units, descr=d.description)
             except:
-                # Treat as OTHER
-                other += "{}\n".format(k.upper()) + d.to_csv()
+                try:
+                    # Treat as OTHER
+                    other += "{}\n".format(k.upper()) + d.to_csv()
+                except:
+                    pass
 
         # Write OTHER, if any.
         if other:
