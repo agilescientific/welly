@@ -21,11 +21,15 @@ class CurveError(Exception):
 
 class Curve(np.ndarray):
 
-    def __new__(cls, data, params=None):
+    def __new__(cls, data, basis=None, params=None):
         obj = np.asarray(data).view(cls).copy()
 
         for k, v in params.items():
             setattr(obj, k, v)
+
+        if basis is not None:
+            setattr(obj, 'start', basis[0])
+            setattr(obj, 'step', basis[1]-basis[0])
 
         return obj
 
@@ -36,14 +40,8 @@ class Curve(np.ndarray):
         if obj.size == 1:
             return float(obj)
 
-        basis = getattr(obj, 'basis', None)
-        if basis is None:
-            self.start = getattr(obj, 'start', 0)
-            self.step = getattr(obj, 'step', 0.1524)
-        else:
-            self.start = basis[0]
-            self.step = basis[1] - basis[0]
-
+        self.start = getattr(obj, 'start', 0)
+        self.step = getattr(obj, 'step', 0)
         self.mnemonic = getattr(obj, 'mnemonic', None)
         self.units = getattr(obj, 'units', None)
         self.run = getattr(obj, 'run', 0)
