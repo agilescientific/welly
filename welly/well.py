@@ -157,7 +157,7 @@ class Well(object):
         keys = utils.flatten_list(keys) or self.data.keys()
         for k in keys:
             d = self.data[k]
-            if d.null:
+            if getattr(d, 'null', None) is not None:
                 d[np.isnan(d)] = d.null
             try:
                 new_data = np.copy(d.to_basis_like(basis))
