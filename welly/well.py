@@ -276,35 +276,42 @@ class Well(object):
         gs = mpl.gridspec.GridSpec(1, ntracks, width_ratios=widths)
 
         # Plot first axis.
+        kwargs = {}
         ax0 = fig.add_subplot(gs[0, 0])
         ax0.depth_track = False
-        if tracks[0] in depth_tracks:
-            ax0 = self._plot_depth_track(ax=ax0, kind=tracks[0])
+        track = tracks[0]
+        if '.' in track:
+            track, kwargs['field'] = track.split('.')
+        if track in depth_tracks:
+            ax0 = self._plot_depth_track(ax=ax0, kind=track)
         else:
-            try:  # ...treating as a plottable objectself.
-                ax0 = self.data[tracks[0]].plot(ax=ax0, legend=legend)
+            try:  # ...treating as a plottable object.
+                ax0 = self.data[track].plot(ax=ax0, legend=legend, **kwargs)
             except TypeError:  # ...it's a list.
-                for t in tracks[0]:
-                    ax0 = self.data[t].plot(ax=ax0, legend=legend)
+                for t in track:
+                    ax0 = self.data[t].plot(ax=ax0, legend=legend, **kwargs)
         tx = ax0.get_xticks()
         ax0.set_xticks(tx[1:-1])
         ax0.set_title(track_titles[0])
 
         # Plot remaining axes.
         for i, track in enumerate(tracks[1:]):
+            kwargs = {}
             ax = fig.add_subplot(gs[0, i+1], sharey=ax0)
             ax.depth_track = False
             ax.set_title(track_titles[i+1])
             if track in depth_tracks:
                 ax = self._plot_depth_track(ax=ax, kind=track)
                 continue
+            if '.' in track:
+                track, kwargs['field'] = track.split('.')
             plt.setp(ax.get_yticklabels(), visible=False)
             try:  # ...treating as a plottable objectself.
-                ax = self.data[track].plot(ax=ax, legend=legend)
+                ax = self.data[track].plot(ax=ax, legend=legend, **kwargs)
             except TypeError:  # ...it's a list.
                 for t in track:
                     try:
-                        ax = self.data[t].plot(ax=ax, legend=legend)
+                        ax = self.data[t].plot(ax=ax, legend=legend, **kwargs)
                     except KeyError:
                         continue
             tx = ax.get_xticks()
