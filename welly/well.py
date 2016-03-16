@@ -310,6 +310,8 @@ class Well(object):
                 ax = self.data[track].plot(ax=ax, legend=legend, **kwargs)
             except TypeError:  # ...it's a list.
                 for t in track:
+                    if '.' in track:
+                        track, kwargs['field'] = track.split('.')
                     try:
                         ax = self.data[t].plot(ax=ax, legend=legend, **kwargs)
                     except KeyError:
