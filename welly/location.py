@@ -67,13 +67,13 @@ class Location(object):
     def md2tvd(self, kind='cubic'):
         if self.position is None:
             return lambda x: x
-        return interp1d(self.md, self.tvd, kind=kind, assume_sorted=True)
+        return interp1d(self.md, self.tvd, kind=kind, assume_sorted=True, bounds_error=False)
 
     @property
     def tvd2md(self, kind='cubic'):
         if self.position is None:
             return lambda x: x
-        return interp1d(self.tvd, self.md, kind=kind, assume_sorted=True)
+        return interp1d(self.tvd, self.md, kind=kind, assume_sorted=True, bounds_error=False)
 
     def compute_position_log(self,
                              td=None,
