@@ -98,6 +98,7 @@ class Well(object):
         return cls(params)
 
     def survey_basis(self, keys=None):
+        keys = utils.flatten_list(keys)
         starts, stops, steps = [], [], []
         for k, d in self.data.items():
             if (keys is not None) and (k not in keys):
@@ -254,7 +255,7 @@ class Well(object):
 
         return ax
 
-    def plot(self, legend=None, tracks=None, track_titles=None):
+    def plot(self, legend=None, tracks=None, track_titles=None, extents=None):
         """
         Even nicer plotting.
 
@@ -266,6 +267,13 @@ class Well(object):
         # Set tracks to 'all' if it's None.
         tracks = tracks or self.data.keys()
         track_titles = track_titles or tracks
+
+        # Figure out limits
+        if extents is not None:
+            upper, lower = extents
+        else:
+            b = self.survey_basis(keys=tracks)
+            upper, lower = b[0], b[-1]
 
         # Figure out widths because we can't us gs.update() for that.
         widths = [0.4 if t in depth_tracks else 1.0 for t in tracks]
@@ -318,6 +326,9 @@ class Well(object):
                         continue
             tx = ax.get_xticks()
             ax.set_xticks(tx[1:-1])
+
+        # Only need to set the last ax.
+        ax.set_ylim([lower, upper])
 
         # Title
         fig.suptitle(self.header.name, size=16)
