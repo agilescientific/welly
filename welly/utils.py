@@ -7,6 +7,76 @@ Utility functions for welly.
 :license: Apache 2.0
 """
 import numpy as np
+import matplotlib.pyplot as plt
+
+
+def sharey(axes):
+    """
+    Shared axes limits without shared locators, ticks, etc.
+
+    By Joe Kington
+    """
+    linker = Linker(axes)
+    for ax in axes:
+        ax._linker = linker
+
+
+def unsharey(ax):
+    """
+    Remove sharing from an axes.
+
+    By Joe Kington
+    """
+
+    ax._linker.unlink(ax)
+    ax._linker = None
+
+
+class Linker(object):
+    """
+    Keeps y-limits of a sequence of axes in sync when panning/zooming.
+
+    By Joe Kington
+    """
+    def __init__(self, axes):
+        self.axes = axes
+        self._cids = {}
+        for ax in self.axes:
+            self.link(ax)
+
+    def unlink(self, ax):
+        ax.callbacks.disconnect(self._cids.pop(ax))
+
+    def link(self, ax):
+        self._cids[ax] = ax.callbacks.connect('ylim_changed', self.rescale)
+
+    def rescale(self, axes):
+        limits = axes.yaxis._scale.get_transform().transform(axes.get_ylim())
+        for ax in self.axes:
+            lim = ax.yaxis._scale.get_transform().inverted().transform(limits)
+            ax.set_ylim(lim, emit=False, auto=None)
+
+            # Note - This is specifically for this application!
+            fix_ticks(ax)
+
+
+def fix_ticks(ax):
+    """
+    Center ticklabels and hide any outside axes limits.
+
+    By Joe Kington
+    """
+    plt.setp(ax.get_yticklabels(), ha='center', x=0.5,
+             transform=ax._yaxis_transform)
+
+    # We'll still wind up with some tick labels beyond axes limits for reasons
+    # I don't fully understand...
+    limits = ax.get_ylim()
+    for label, loc in zip(ax.yaxis.get_ticklabels(), ax.yaxis.get_ticklocs()):
+        if loc < min(limits) or loc > max(limits):
+            label.set(visible=False)
+        else:
+            label.set(visible=True)
 
 
 def flatten_list(l):
@@ -16,6 +86,14 @@ def flatten_list(l):
     if isinstance(l[0], list):
         return flatten_list(l[0]) + flatten_list(l[1:])
     return l[:1] + flatten_list(l[1:])
+
+
+def list_and_add(a, b):
+    if not isinstance(b, list):
+        b = [b]
+    if not isinstance(a, list):
+        a = [a]
+    return a + b
 
 
 def lasio_get(l,

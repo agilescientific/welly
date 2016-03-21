@@ -18,7 +18,12 @@ from .fields import las_fields
 from .curve import Curve
 from .header import Header
 from .location import Location
-from .utils import lasio_get
+
+###############################################
+# This module is not used directly, but must
+# be imported in order to register new scales.
+from . import scales  # DO NOT DELETE
+###############################################
 
 
 class WellError(Exception):
@@ -214,8 +219,19 @@ class Well(object):
         # This will clobber anything with the same key!
         self.data.update(curves)
 
-    def _plot_depth_track(self, ax, kind='MD'):
-        ax.depth_track = True
+    def _plot_depth_track(self, ax, md, kind='MD'):
+        """
+        Depth track plotting.
+        """
+        if kind == 'MD':
+            ax.set_yscale('bounded', vmin=md.min(), vmax=md.max())
+            # ax.set_ylim([md.max(), md.min()])
+        elif kind == 'TVD':
+            tvd = self.location.md2tvd(md)
+            ax.set_yscale('piecewise', x=tvd, y=md)
+            # ax.set_ylim([tvd.max(), tvd.min()])
+        else:
+            raise Exception("Kind must be MD or TVD")
 
         for sp in ax.spines.values():
             sp.set_color('gray')
@@ -240,26 +256,16 @@ class Well(object):
         ax.tick_params(axis='y', colors='gray', labelsize=12, pad=pad)
         ax.set_xticks([])
 
-        ax.yaxis.set_major_locator(mpl.ticker.MultipleLocator(250))
-        ax.yaxis.set_minor_locator(mpl.ticker.MultipleLocator(50))
-
-        if kind == 'TVD':
-            tx = ax.get_yticks()
-            if self.location.position is not None:
-                tx = self.location.md2tvd(tx)
-            tx = ['{:.1f}'.format(f) for f in tx]
-            ax._sharey = None
-            ax.set_yticklabels(tx)
-        else:
-            pass
+        ax.set(xticks=[])
+        ax.depth_track = True
 
         return ax
 
-    def plot(self, legend=None, tracks=None, track_titles=None, extents=None):
+    def plot(self, legend=None, tracks=None, track_titles=None, basis=None):
         """
         Even nicer plotting.
 
-        tracks (dict)
+        tracks (list)
         """
         # These will be treated differently.
         depth_tracks = ['MD', 'TVD']
@@ -269,11 +275,9 @@ class Well(object):
         track_titles = track_titles or tracks
 
         # Figure out limits
-        if extents is not None:
-            upper, lower = extents
-        else:
-            b = self.survey_basis(keys=tracks)
-            upper, lower = b[0], b[-1]
+        if basis is None:
+            basis = self.survey_basis(keys=tracks)
+        upper, lower = basis[0], basis[-1]
 
         # Figure out widths because we can't us gs.update() for that.
         widths = [0.4 if t in depth_tracks else 1.0 for t in tracks]
@@ -281,6 +285,7 @@ class Well(object):
         # Set up the figure.
         ntracks = len(tracks)
         fig = plt.figure(figsize=(2*ntracks, 12))
+        fig.suptitle(self.header.name, size=16)
         gs = mpl.gridspec.GridSpec(1, ntracks, width_ratios=widths)
 
         # Plot first axis.
@@ -291,7 +296,7 @@ class Well(object):
         if '.' in track:
             track, kwargs['field'] = track.split('.')
         if track in depth_tracks:
-            ax0 = self._plot_depth_track(ax=ax0, kind=track)
+            ax0 = self._plot_depth_track(ax=ax0, md=basis, kind=track)
         else:
             try:  # ...treating as a plottable object.
                 ax0 = self.data[track].plot(ax=ax0, legend=legend, **kwargs)
@@ -305,11 +310,11 @@ class Well(object):
         # Plot remaining axes.
         for i, track in enumerate(tracks[1:]):
             kwargs = {}
-            ax = fig.add_subplot(gs[0, i+1], sharey=ax0)
+            ax = fig.add_subplot(gs[0, i+1])
             ax.depth_track = False
             ax.set_title(track_titles[i+1])
             if track in depth_tracks:
-                ax = self._plot_depth_track(ax=ax, kind=track)
+                ax = self._plot_depth_track(ax=ax, md=basis, kind=track)
                 continue
             if '.' in track:
                 track, kwargs['field'] = track.split('.')
@@ -318,7 +323,7 @@ class Well(object):
                 ax = self.data[track].plot(ax=ax, legend=legend, **kwargs)
             except TypeError:  # ...it's a list.
                 for t in track:
-                    if '.' in track:
+                    if '.' in t:
                         track, kwargs['field'] = track.split('.')
                     try:
                         ax = self.data[t].plot(ax=ax, legend=legend, **kwargs)
@@ -327,19 +332,21 @@ class Well(object):
             tx = ax.get_xticks()
             ax.set_xticks(tx[1:-1])
 
-        # Only need to set the last ax.
-        ax.set_ylim([lower, upper])
-
-        # Title
-        fig.suptitle(self.header.name, size=16)
+        # Set sharing.
+        axes = fig.get_axes()
+        utils.sharey(axes)
+        axes[0].set_ylim([lower, upper])
 
         # Adjust the grid.
         gs.update(wspace=0)
 
         # Adjust spines and ticks for non-depth tracks.
-        all_axes = fig.get_axes()
-        for ax in all_axes:
+        for ax in axes:
+            if ax.depth_track:
+                pass
             if not ax.depth_track:
+                ax.set(yticks=[])
+                ax.autoscale(False)
                 ax.yaxis.set_ticks_position('none')
                 ax.spines['top'].set_visible(True)
                 ax.spines['bottom'].set_visible(True)
