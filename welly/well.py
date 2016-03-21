@@ -285,7 +285,8 @@ class Well(object):
         # Set up the figure.
         ntracks = len(tracks)
         fig = plt.figure(figsize=(2*ntracks, 12), facecolor='w')
-        fig.suptitle(self.header.name, size=16)
+        fig.suptitle(self.header.name, size=16, zorder=100,
+                     bbox=dict(facecolor='w', alpha=1.0, ec='none'))
         gs = mpl.gridspec.GridSpec(1, ntracks, width_ratios=widths)
 
         # Plot first axis.
@@ -321,16 +322,24 @@ class Well(object):
             plt.setp(ax.get_yticklabels(), visible=False)
             try:  # ...treating as a plottable objectself.
                 ax = self.data[track].plot(ax=ax, legend=legend, **kwargs)
+                ax.text(0.5, 1.00, ax.get_title(), color='k', fontsize=12,
+                        transform=ax.transAxes, ha='center', va='bottom')
             except TypeError:  # ...it's a list.
-                for t in track:
+                for j, t in enumerate(track):
                     if '.' in t:
                         track, kwargs['field'] = track.split('.')
                     try:
                         ax = self.data[t].plot(ax=ax, legend=legend, **kwargs)
+                        ax.text(0.5, 1.0 + 0.02 * j, ax.get_title(),
+                                color=legend.get_decor(self.data[t]).colour,
+                                transform=ax.transAxes,
+                                ha='center', va='bottom', fontsize=12)
                     except KeyError:
                         continue
+
             tx = ax.get_xticks()
             ax.set_xticks(tx[1:-1])
+            ax.title.set_visible(False)  # turn off "Title" because we're using text
 
         # Set sharing.
         axes = fig.get_axes()
