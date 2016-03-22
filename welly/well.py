@@ -271,7 +271,7 @@ class Well(object):
         depth_tracks = ['MD', 'TVD']
 
         # Set tracks to 'all' if it's None.
-        tracks = tracks or self.data.keys()
+        tracks = tracks or list(self.data.keys())
         track_titles = track_titles or tracks
 
         # Figure out limits
