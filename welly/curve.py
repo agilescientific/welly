@@ -167,12 +167,13 @@ class Curve(np.ndarray):
         ax.plot(self, self.basis, c=c, lw=lw, ls=ls)
 
         ax.set_ylim([self.stop, self.start])
-        ax.grid('on', color='k',  alpha=0.2, lw=0.25, linestyle='-')
+        ax.grid('on', color='k', alpha=0.2, lw=0.25, linestyle='-')
 
         if return_ax:
             return ax
         else:
             return None
+
 
     def to_basis_like(self, basis):
         """
@@ -330,8 +331,8 @@ class Curve(np.ndarray):
 
         # End of array trick... adding this should remove the
         # need for the marked lines below. But it doesn't.
-        #np.append(tops, None)
-        #np.append(vals, None)
+        # np.append(tops, None)
+        # np.append(vals, None)
 
         if values is None:
             # Transform each segment in turn, then deal with the last segment.

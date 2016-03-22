@@ -284,7 +284,7 @@ class Well(object):
 
         # Set up the figure.
         ntracks = len(tracks)
-        fig = plt.figure(figsize=(2*ntracks, 12))
+        fig = plt.figure(figsize=(2*ntracks, 12), facecolor='w')
         fig.suptitle(self.header.name, size=16)
         gs = mpl.gridspec.GridSpec(1, ntracks, width_ratios=widths)
 
