@@ -164,13 +164,16 @@ class Well(object):
 
         # Add data entities.
         other = ''
-        keys = utils.flatten_list(keys) or self.data.keys()
+        keys = utils.flatten_list(keys) or list(self.data.keys())
         for k in keys:
             d = self.data[k]
             if getattr(d, 'null', None) is not None:
                 d[np.isnan(d)] = d.null
             try:
                 new_data = np.copy(d.to_basis_like(basis))
+            except:
+                raise WellError("basis shift failed")
+            try:
                 l.add_curve(k.upper(), new_data, unit=d.units, descr=d.description)
             except:
                 try:

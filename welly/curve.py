@@ -24,6 +24,8 @@ class Curve(np.ndarray):
     def __new__(cls, data, basis=None, params=None):
         obj = np.asarray(data).view(cls).copy()
 
+        params = params or {}
+
         for k, v in params.items():
             setattr(obj, k, v)
 
@@ -123,7 +125,7 @@ class Curve(np.ndarray):
         params = self.__dict__.copy()
         data = function(self, **kwargs)
         params['units'] = ''  # These will often break otherwise.
-        return Curve(data, params)
+        return Curve(data, params=params)
 
     def plot(self, ax=None, legend=None, **kwargs):
         """
@@ -217,26 +219,7 @@ class Curve(np.ndarray):
         params['step'] = float(new_step)
         params['start'] = float(new_start)
 
-        return Curve(data, params)
-
-    # DEPRECATE WHEN WE KNOW WHAT NEW_BASIS DOES
-    def segment(self, d):
-        """
-        Returns a segment of the log between the depths specified.
-
-        Args:
-            d (tuple): A tuple of floats giving top and base of interval.
-
-        Returns:
-            Curve. The new curve segment.
-        """
-        top = self._read_at(d[0], index=True) + 1  # b/c returns index before
-        base = self._read_at(d[1], index=True)
-
-        data = self[top:base]
-        params = self.__dict__.copy()
-        params['start'] = d[0]
-        return Curve(data, params)
+        return Curve(data, params=params)
 
     def _read_at(self, d,
                  interpolation='linear',
@@ -319,7 +302,7 @@ class Curve(np.ndarray):
             data = np.digitize(self, [cutoffs], right)
 
         if (function is None) and (values is None):
-            return Curve(data, params)
+            return Curve(data, params=params)
 
         data = data.astype(float)
 
@@ -344,4 +327,4 @@ class Curve(np.ndarray):
                 data[top:base] = values[int(val)]
             data[base:] = values[int(vals[-1])]  # See above
 
-        return Curve(data, params)
+        return Curve(data, params=params)

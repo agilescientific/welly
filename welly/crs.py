@@ -110,7 +110,7 @@ class CRS(collections.abc.MutableMapping):
 
     def to_string(self):
         """
-        Turn a CRS dict into a PROJ.4 string. Mapping keys are tested against the
+        Turn a CRS dict into a PROJ.4 string. Mapping keys are tested against
         ``all_proj_keys`` list. Values of ``True`` are omitted, leaving the key
         bare: {'no_defs': True} -> "+no_defs" and items where the value is
         otherwise not a str, int, or float are omitted.
@@ -122,7 +122,7 @@ class CRS(collections.abc.MutableMapping):
             str. The string representation.
         """
         def filt(x):
-            return x[0] in self.proj4_params.keys() and x[1] is not False
+            return '+'+x[0] in self.proj4_params.keys() and x[1] is not False
 
         items = []
         for k, v in sorted(filter(filt, self.items())):
