@@ -45,6 +45,9 @@ class Well(object):
             if k and v:
                 setattr(self, k, v)
 
+        if getattr(self, 'data', None) is None:
+            self.data = {}
+
     def _repr_html_(self):
         """
         Jupyter Notebook magic repr function.
@@ -68,7 +71,7 @@ class Well(object):
 
     @property
     def uwi(self):
-        return self.header.uwi
+        return getattr(self.header, 'uwi', None) or ''
 
     @classmethod
     def from_lasio(cls, l, remap=None, funcs=None):

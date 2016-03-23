@@ -104,7 +104,11 @@ class CRS(collections.abc.MutableMapping):
             raise ValueError("EPSG codes are positive integers")
         return cls({'init': "epsg:{}".format(code), 'no_defs': True})
 
-    def to_string(self, crs):
+    @property
+    def data(self):
+        return self.__dict__
+
+    def to_string(self):
         """
         Turn a CRS dict into a PROJ.4 string. Mapping keys are tested against the
         ``all_proj_keys`` list. Values of ``True`` are omitted, leaving the key
@@ -121,7 +125,7 @@ class CRS(collections.abc.MutableMapping):
             return x[0] in self.proj4_params.keys() and x[1] is not False
 
         items = []
-        for k, v in sorted(filter(filt, crs.items())):
+        for k, v in sorted(filter(filt, self.items())):
             items.append(
                 "+" + "=".join(
                     map(str, filter(

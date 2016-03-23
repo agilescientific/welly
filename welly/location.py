@@ -24,7 +24,10 @@ class Location(object):
 
         for k, v in params.items():
             if k and v:
-                setattr(self, k, v)
+                try:
+                    setattr(self, k, float(v))
+                except:
+                    setattr(self, k, v)
 
         if getattr(self, 'deviation', None) is None:
             self.deviation = None
@@ -162,4 +165,8 @@ class Location(object):
 
         self.position = result
 
+        return
+
+    def crs_from_epsg(self, epsg):
+        self.crs = CRS.from_epsg(epsg)
         return
