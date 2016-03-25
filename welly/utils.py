@@ -80,7 +80,17 @@ def fix_ticks(ax):
 
 
 def flatten_list(l):
-    """http://stackoverflow.com/a/12472564/3381305"""
+    """
+    Unpacks lists in a list:
+
+        [1, 2, [3, 4], [5, [6, 7]]]
+
+    becomes
+
+        [1, 2, 3, 4, 5, 6, 7]
+
+    http://stackoverflow.com/a/12472564/3381305
+    """
     if (l == []) or (l is None):
         return l
     if isinstance(l[0], list):
@@ -89,6 +99,16 @@ def flatten_list(l):
 
 
 def list_and_add(a, b):
+    """
+    Concatenate anything into a list.
+
+    Args:
+        a: the first thing
+        b: the second thing
+
+    Returns:
+        list. All the things in a list.
+    """
     if not isinstance(b, list):
         b = [b]
     if not isinstance(a, list):
@@ -103,10 +123,24 @@ def lasio_get(l,
               default=None,
               remap=None,
               funcs=None):
+    """
+    Grabs, renames and transforms stuff from a lasio object.
 
-    if remap is None:
-        remap = {}
+    Args:
+        l (lasio): a lasio instance.
+        section (str): The LAS section to grab from, eg ``well``
+        item (str): The item in the LAS section to grab from, eg ``name``
+        attrib (str): The attribute of the item to grab, eg ``value``
+        default (str): What to return instead.
+        remap (dict): Optional. A dict of 'old': 'new' LAS field names.
+        funcs (dict): Optional. A dict of 'las field': function() for
+            implementing a transform before loading. Can be a lambda.
 
+    Returns:
+        The transformed item.
+    """
+
+    remap = remap or {}
     item_to_fetch = remap.get(item, item)
     if item_to_fetch is None:
         return None
