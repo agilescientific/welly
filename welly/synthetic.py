@@ -8,10 +8,11 @@ Defines a synthetic seismogram.
 """
 import numpy as np
 
-from . import utils
-
 
 class Synthetic(np.ndarray):
+    """
+    Incomplete.
+    """
 
     def __new__(cls, data, params=None):
         obj = np.asarray(data).view(cls).copy()
