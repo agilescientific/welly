@@ -159,13 +159,15 @@ class Curve(np.ndarray):
         params['units'] = ''  # These will often break otherwise.
         return Curve(data, params=params)
 
-    def plot(self, ax=None, legend=None, **kwargs):
+    def plot(self, ax=None, legend=None, return_fig=False, **kwargs):
         """
         Plot a curve.
 
         Args:
             ax (ax): A matplotlib axis.
             legend (striplog.legend): A legend. Optional.
+            return_fig (bool): whether to return the matplotlib figure.
+                Default False.
             kwargs: Arguments for ``ax.set()``
 
         Returns:
@@ -213,6 +215,8 @@ class Curve(np.ndarray):
 
         if return_ax:
             return ax
+        elif return_fig:
+            return fig
         else:
             return None
 

@@ -331,7 +331,12 @@ class Well(object):
 
         return ax
 
-    def plot(self, legend=None, tracks=None, track_titles=None, basis=None):
+    def plot(self,
+             legend=None,
+             tracks=None,
+             track_titles=None,
+             basis=None,
+             return_fig=False):
         """
         Plot multiple tracks.
 
@@ -345,6 +350,8 @@ class Well(object):
                 to guess.
             basis (ndarray): Optional. The basis of the plot, if you don't
                 want welly to guess (probably the best idea).
+            return_fig (bool): Whether to return the matplotlig figure. Default
+                False.
 
         Returns:
             None. The plot is a side-effect.
@@ -435,7 +442,10 @@ class Well(object):
                 for sp in ax.spines.values():
                     sp.set_color('gray')
 
-        return None
+        if return_fig:
+            return fig
+        else:
+            return None
 
     def survey_basis(self, keys=None):
         """

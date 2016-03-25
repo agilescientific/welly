@@ -29,6 +29,20 @@ def test_well():
     assert well.to_lasio().well['FLD'].value == "Windsor Block"
 
 
+def test_html_repr():
+    well = Well.from_las(FNAME)
+    html = well._repr_html_()
+
+    name = """<table><tr><th style="text-align:center;" colspan="2">Kennetcook #2<br><small>Long = 63* 45'24.460  W</small></th></tr>"""
+    data = """<tr><td><strong>data</strong></td><td>"""
+    prov = """<tr><td><strong>province</strong></td><td>Nova Scotia</td></tr>"""
+    assert name in html
+    assert data in html
+    assert prov in html
+    for d in ['HCAL', 'RLA1', 'DT', 'DPHI_LIM', 'RLA3', 'RT_HRLT', 'CALI', 'DTS', 'DPHI_DOL', 'RLA5', 'RXO_HRLT', 'RLA4', 'SP', 'RXOZ', 'NPHI_LIM', 'DPHI_SAN', 'RLA2', 'PEF', 'RHOB', 'NPHI_SAN', 'RM_HRLT', 'DEPT', 'NPHI_DOL', 'GR', 'DRHO']:
+        assert d in html
+
+
 def test_well_write():
     w = Well.from_las(FNAME)
     w.to_las('tests/test.las')
