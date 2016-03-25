@@ -272,7 +272,7 @@ def rms(a):
     return np.sqrt(np.sum(a**2.0)/a.size)
 
 
-def moving_average(a, length, mode='valid'):
+def moving_average(self, length, mode='valid'):
     """
     From ``bruges``
 
@@ -295,10 +295,10 @@ def moving_average(a, length, mode='valid'):
         pad *= 2
 
     # Make a padded version, paddding with first and last values
-    r = np.empty(a.shape[0] + 2*pad)
-    r[:pad] = a[0]
-    r[pad:-pad] = a
-    r[-pad:] = a[-1]
+    r = np.empty(self.shape[0] + 2*pad)
+    r[:pad] = self[0]
+    r[pad:-pad] = self
+    r[-pad:] = self[-1]
 
     # Cumsum with shifting trick
     s = np.cumsum(r, dtype=float)
@@ -307,7 +307,7 @@ def moving_average(a, length, mode='valid'):
 
     # Decide what to return
     if mode == 'same':
-        if out.shape[0] != a.shape[0]:
+        if out.shape[0] != self.shape[0]:
             # If size doesn't match, then interpolate.
             out = (out[:-1, ...] + out[1:, ...]) / 2
         return out
@@ -317,14 +317,14 @@ def moving_average(a, length, mode='valid'):
         return out
 
 
-def moving_avg_conv(a, length):
+def moving_avg_conv(self, length):
     """
     From ``bruges``
 
     Moving average via convolution. Seems slower than naive.
     """
     boxcar = np.ones(length)/length
-    return np.convolve(a, boxcar, mode="same")
+    return np.convolve(self, boxcar, mode="same")
 
 
 def normalize(a, new_min=0.0, new_max=1.0):

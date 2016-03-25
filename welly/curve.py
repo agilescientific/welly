@@ -394,3 +394,43 @@ class Curve(np.ndarray):
             data[base:] = values[int(vals[-1])]  # See above
 
         return Curve(data, params=params)
+
+    def _rolling_window(self, window):
+        """
+        Private function. Smoother for the despiker to work on.
+
+        Args:
+            window (int): the window length.
+        """
+        # Force odd.
+        if window % 2 == 0:
+            window += 1
+        shape = self.shape[:-1] + (self.shape[-1] - window + 1, window)
+        strides = self.strides + (self.strides[-1],)
+        rolled = np.lib.stride_tricks.as_strided(self,
+                                                 shape=shape,
+                                                 strides=strides)
+        rolled = np.median(rolled, -1)
+        rolled = np.pad(rolled, window//2, mode='edge')
+
+        return rolled
+
+    def despike(self, window=33, z=2):
+        """
+        Args:
+            window (int): window length in samples. Default 33 (or 5 m for
+                most curves).
+            z (float): Z score
+
+        Returns:
+            Curve.
+        """
+        z *= np.std(self)  # Transform to curve's units
+        curve_sm = self._rolling_window(window)
+        spikes = np.where(self - curve_sm > z)[0]
+        spukes = np.where(curve_sm - self > z)[0]
+        out = np.copy(self)
+        params = self.__dict__.copy()
+        out[spikes] = curve_sm[spikes] + z
+        out[spukes] = curve_sm[spukes] - z
+        return Curve(out, params=params)

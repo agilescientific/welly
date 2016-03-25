@@ -11,7 +11,9 @@ FNAME = 'tests/P-129_out.LAS'
 
 
 def test_curve():
-
+    """
+    Test basic stuff.
+    """
     well = Well.from_las(FNAME)
     gr = well.data['GR']
 
@@ -33,6 +35,9 @@ def test_curve():
 
 
 def test_basis():
+    """
+    Test basis change.
+    """
     well = Well.from_las(FNAME)
     gr = well.data['GR']
 
@@ -46,6 +51,9 @@ def test_basis():
 
 
 def test_read():
+    """
+    Test reading for single number and array.
+    """
     well = Well.from_las(FNAME)
     gr = well.data['GR']
 
@@ -57,6 +65,9 @@ def test_read():
 
 
 def test_block():
+    """
+    Test log blocking.
+    """
     well = Well.from_las(FNAME)
     gr = well.data['GR']
 
@@ -71,3 +82,12 @@ def test_block():
     b = gr.block(cutoffs=[50, 100], values=[12, 24, 36])
     assert b.max() == 36
     assert b.mean() - 25.077528 < 0.001
+
+
+def test_despike():
+    """
+    Test despiker with even window and z != 2.
+    """
+    well = Well.from_las(FNAME)
+    gr = well.data['GR']
+    assert gr.max() - gr.despike(window=50, z=1).max() - 91.83918 < 0.001
