@@ -20,8 +20,14 @@ class CurveError(Exception):
 
 
 class Curve(np.ndarray):
-
+    """
+    A fancy ndarray. Gives some utility functions, plotting, etc, for curve
+    data.
+    """
     def __new__(cls, data, basis=None, params=None):
+        """
+        I am just following the numpy guide for subclassing ndarray...
+        """
         obj = np.asarray(data).view(cls).copy()
 
         params = params or {}
@@ -36,6 +42,9 @@ class Curve(np.ndarray):
         return obj
 
     def __array_finalize__(self, obj):
+        """
+        I am just following the numpy guide for subclassing ndarray...
+        """
         if obj is None:
             return
 
@@ -89,6 +98,7 @@ class Curve(np.ndarray):
 
     @classmethod
     def from_lasio_curve(cls, curve,
+                         basis=None,
                          start=None,
                          step=0.1524,
                          run=-1,
@@ -96,8 +106,29 @@ class Curve(np.ndarray):
                          service_company=None,
                          date=None):
         """
-        Provide a lasio curve object and a depth basis.
+        Makes a curve object from a lasio curve object and either a depth
+        basis or start and step information.
+
+        Args:
+            curve (ndarray)
+            basis (ndarray)
+            start (float)
+            step (float): default: 0.1524
+            run (int): default: -1
+            null (float): default: -999.25
+            service_company (str): Optional.
+            data (str): Optional.
+
+        Returns:
+            Curve. An instance of the class.
         """
+        if start is None:
+            if basis is not None:
+                start = basis[0]
+                step = basis[1] - basis[0]
+            else:
+                raise CurveError("You must provide a basis or a start depth.")
+
         params = {}
         params['mnemonic'] = curve.mnemonic
         params['description'] = curve.descr
@@ -109,14 +140,15 @@ class Curve(np.ndarray):
         params['service_company'] = service_company
         params['date'] = date
         params['code'] = curve.API_code
+
         return cls(curve.data, params=params)
 
     def apply(self, function, **kwargs):
         """
-        Apply a function to the curve.
+        Apply a function to the curve. Pretty sure we don't need this.
 
         Args:
-            Function.
+            function (function): A functon to apply.
             kwargs. Arguments for the function.
 
         Returns:
@@ -130,6 +162,14 @@ class Curve(np.ndarray):
     def plot(self, ax=None, legend=None, **kwargs):
         """
         Plot a curve.
+
+        Args:
+            ax (ax): A matplotlib axis.
+            legend (striplog.legend): A legend. Optional.
+            kwargs: Arguments for ``ax.set()``
+
+        Returns:
+            ax. If you passed in an ax, otherwise None.
         """
         if ax is None:
             fig = plt.figure(figsize=(2, 10))
@@ -179,9 +219,16 @@ class Curve(np.ndarray):
 
     def to_basis_like(self, basis):
         """
-        Make a new basis, given an existing one. Wraps ``to_basis()``.
+        Make a new curve in a new basis, given an existing one. Wraps
+        ``to_basis()``.
 
         Pass in a curve or the basis of a curve.
+
+        Args:
+            basis (ndarray): A basis, but can also be a Curve instance.
+
+        Returns:
+            Curve. The current instance in the new basis.
         """
         try:  # To treat as a curve.
             curve = basis
@@ -197,9 +244,19 @@ class Curve(np.ndarray):
 
     def to_basis(self, start=None, stop=None, step=None, undefined=None):
         """
-        Reset the start, stop, and/or step.
+        Make a new curve in a new basis, given a new start, step, and stop.
+        You only need to set the parameters you want to change. If the new
+        extents go beyond the current extents, the curve is padded with the
+        ``undefined`` parameter.
 
-        Needs to handle extrapolating / padding
+        Args:
+            start (float)
+            stop (float)
+            step (float)
+            undefined (float)
+
+        Returns:
+            Curve. The current instance in the new basis.
         """
         new_start = start or self.start
         new_step = step or self.step
@@ -229,13 +286,13 @@ class Curve(np.ndarray):
         Private function. Implements read_at() for a single depth.
 
         Args:
-            d (float or array-like)
+            d (float)
             interpolation (str)
             index(bool)
             return_basis (bool)
 
         Returns:
-            float or ndarray.
+            float
         """
         method = {'linear': utils.linear,
                   'none': None}
@@ -268,16 +325,21 @@ class Curve(np.ndarray):
         except:
             return self._read_at(d, **kwargs)
 
-    def block(self, cutoffs=None, values=None, n_bins=0, right=False, function=None):
+    def block(self,
+              cutoffs=None,
+              values=None,
+              n_bins=0,
+              right=False,
+              function=None):
         """
         Block a log based on number of bins, or on cutoffs.
 
         Args:
             cutoffs (array)
-            values (array)
+            values (array): the values to map to. Defaults to [0, 1, 2,...]
             n_bins (int)
             right (bool)
-            function (function)
+            function (function): transform the log if you want.
 
         Returns:
             Curve.
