@@ -9,12 +9,15 @@ import numpy as np
 from welly import Well
 from welly import utils
 
+# Some globals.
 FNAME = 'tests/P-129_out.LAS'
 DNAME = 'tests/P-129_deviation_survey.csv'
 
 
 def test_deviation():
-
+    """
+    Test that we can load a deviation survey and compute position.
+    """
     well = Well.from_las(FNAME)
     dev = np.loadtxt(DNAME, delimiter=',', skiprows=1)
     well.location.add_deviation(dev)
@@ -24,9 +27,14 @@ def test_deviation():
 
 
 def test_well_remap():
-
+    """
+    This is about loading messy data from LAS by renaming and transforming
+    fields.
+    """
     def transform_ll(text):
-
+        """
+        The transforming function.
+        """
         def callback(match):
             d = match.group(1).strip()
             m = match.group(2).strip()
