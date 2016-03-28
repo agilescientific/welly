@@ -32,6 +32,8 @@ class Mock(MagicMock):
             return Mock()
 
 MOCK_MODULES = ['numpy',
+                'scipy',
+                'scipy.interpolate',
                 'matplotlib',
                 'matplotlib.pyplot',
                 'matplotlib.patches']
