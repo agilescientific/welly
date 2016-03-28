@@ -15,7 +15,7 @@ from . import utils
 
 class Synthetic(np.ndarray):
     """
-    Incomplete.
+    Synthetic seismograms.
     """
 
     def __new__(cls, data, basis=None, params=None):
