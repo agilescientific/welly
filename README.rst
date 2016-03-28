@@ -3,21 +3,35 @@ welly
 
 **Manage subsurface well data.**
 
-.. image:: https://img.shields.io/badge/status-alpha-orange.svg
-    :target: #
-    :alt: Project status
+.. image:: https://img.shields.io/travis/agile-geoscience/welly.svg
+    :target: https://travis-ci.org/agile-geoscience/welly
+    :alt: Travis build status
+    
+.. image:: https://img.shields.io/pypi/status/welly.svg
+    :target: https://pypi.python.org/pypi/welly/
+    :alt: Development status
 
-.. image:: https://img.shields.io/github/release/agile-geoscience/welly.svg
-    :target: #
-    :alt: Release
-
-.. image:: https://img.shields.io/badge/python-3.4,_3.5-blue.svg
-    :target: #
+.. image:: https://img.shields.io/pypi/v/welly.svg
+    :target: https://pypi.python.org/pypi/welly/
+    :alt: Latest version
+    
+.. image:: https://img.shields.io/pypi/pyversions/welly.svg
+    :target: https://pypi.python.org/pypi/welly/
     :alt: Python version
+    
+.. image:: https://coveralls.io/repos/agile-geoscience/welly/badge.svg?branch=master&service=github
+    :target: https://coveralls.io/github/agile-geoscience/welly?branch=master
+    :alt: Coveralls
 
-.. image:: https://img.shields.io/badge/license-Apache_2.0-blue.svg
+.. image:: https://img.shields.io/codacy/cd6dc74cd86142b4b47f6206bdaf3d8b.svg 
+    :target: https://www.codacy.com/app/matt/welly/dashboard
+    :alt: Codacy code review
+
+.. image:: https://img.shields.io/pypi/l/welly.svg
     :target: http://www.apache.org/licenses/LICENSE-2.0
     :alt: License
+
+
 
 
 philosophy
