@@ -8,6 +8,7 @@ Defines log curves.
 """
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib as mpl
 
 from . import utils
 
@@ -158,6 +159,95 @@ class Curve(np.ndarray):
         data = function(self, **kwargs)
         params['units'] = ''  # These will often break otherwise.
         return Curve(data, params=params)
+
+    def plot_2d(self, ax=None,
+                width=None,
+                aspect=60,
+                cmap=None,
+                ticks=(1, 10),
+                return_fig=False):
+        """
+        Plot a 2D curve.
+
+        Args:
+            ax (ax): A matplotlib axis.
+            width (int): The width of the image.
+            aspect (int): The aspect ratio (not quantitative at all).
+            cmap (str): The colourmap to use.
+            ticks (tuple): The tick interval on the y-axis.
+            return_fig (bool): whether to return the matplotlib figure.
+                Default False.
+
+        Returns:
+            ax. If you passed in an ax, otherwise None.
+        """
+        if ax is None:
+            fig = plt.figure(figsize=(2, 10))
+            ax = fig.add_subplot(111)
+            return_ax = False
+        else:
+            return_ax = True
+
+        cmap = cmap or 'viridis'
+        default = int(self.shape[0] / aspect)
+        if self.ndim == 1:
+            a = np.expand_dims(self, axis=1)
+            a = np.repeat(a, width or default, axis=1)
+        elif self.ndim == 2:
+            a = self[:, :width]
+        elif self.ndim == 3:
+            if 2 < self.shape[-1] < 5:
+                # Interpret as RGB or RGBA.
+                a = utils.normalize(np.copy(self))
+                cmap = None  # Actually doesn't matter.
+            else:
+                # Take first slice.
+                a = self[:, :width, 0]
+        else:
+            raise NotImplementedError("Can only handle up to 3 dimensions.")
+
+        # At this point, a is either a 2D array, or a 2D (rgb) array.
+        extent = [0, width or default, self.stop, self.start]
+        _ = ax.imshow(a, cmap=cmap, extent=extent)
+        ax.set_xticks([])
+
+        # Rely on interval order.
+        lower, upper = self.stop, self.start
+        rng = abs(upper - lower)
+
+        ax.set_ylim([lower, upper])
+
+        # Make sure ticks is a tuple.
+        try:
+            ticks = tuple(ticks)
+        except TypeError:
+            ticks = (1, ticks)
+
+        # Avoid MAXTICKS error.
+        while rng/ticks[0] > 250:
+            mi, ma = 10*ticks[0], ticks[1]
+            if ma <= mi:
+                ma = 10 * mi
+            ticks = (mi, ma)
+
+        # Carry on plotting...
+        minorLocator = mpl.ticker.MultipleLocator(ticks[0])
+        ax.yaxis.set_minor_locator(minorLocator)
+
+        majorLocator = mpl.ticker.MultipleLocator(ticks[1])
+        majorFormatter = mpl.ticker.FormatStrFormatter('%d')
+        ax.yaxis.set_major_locator(majorLocator)
+        ax.yaxis.set_major_formatter(majorFormatter)
+
+        ax.yaxis.set_ticks_position('left')
+        ax.get_yaxis().set_tick_params(which='both', direction='out')
+
+        if return_ax:
+            return ax
+        elif return_fig:
+            return fig
+        else:
+            return None
 
     def plot(self, ax=None, legend=None, return_fig=False, **kwargs):
         """

@@ -272,6 +272,25 @@ def rms(a):
     return np.sqrt(np.sum(a**2.0)/a.size)
 
 
+def normalize(a, new_min=0.0, new_max=1.0):
+    """
+    From ``bruges``
+
+    Normalize an array to [0,1] or to arbitrary new min and max.
+
+    Args:
+        a (ndarray)
+        new_min (float): the new min, default 0.
+        new_max (float): the new max, default 1.
+
+    Returns:
+        ndarray. The normalized array.
+    """
+
+    n = (a - np.amin(a)) / np.amax(a - np.amin(a))
+    return n * (new_max - new_min) + new_min
+
+
 def moving_average(self, length, mode='valid'):
     """
     From ``bruges``
