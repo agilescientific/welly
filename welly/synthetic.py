@@ -52,12 +52,14 @@ class Synthetic(np.ndarray):
         precision_adj = self.dt / 100
         return np.arange(self.start, self.stop - precision_adj, self.dt)
 
-    def plot(self, ax=None, return_fig=False):
+    def plot(self, ax=None, return_fig=False, **kwargs):
         """
-        Plot a curve.
+        Plot a synthetic.
 
         Args:
             ax (ax): A matplotlib axis.
+            legend (Legend): For now, only here to match API for other plot
+                methods.
             return_fig (bool): whether to return the matplotlib figure.
                 Default False.
 
@@ -76,6 +78,7 @@ class Synthetic(np.ndarray):
 
         ax.plot(hyperamp, hypertime, 'k')
         ax.fill_betweenx(hypertime, hyperamp, 0, hyperamp > 0.0, facecolor='k', lw=0)
+        ax.invert_yaxis()
         ax.set_title(self.mnemonic)
 
         if return_ax:

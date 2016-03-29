@@ -399,13 +399,45 @@ def extrapolate(a):
 
 def dms2dd(dms):
     """
-    d must be negative for S and W.
+    DMS to decimal degrees.
+
+    Args:
+        dms (list). d must be negative for S and W.
+
+    Return:
+        float.
     """
     d, m, s = dms
     return d + m/60. + s/3600.
 
 
 def dd2dms(dd):
+    """
+    Decimal degrees to DMS.
+
+    Args:
+        dd (float). Decimal degrees.
+
+    Return:
+        tuple. Degrees, minutes, and seconds.
+    """
     m, s = divmod(dd * 3600, 60)
     d, m = divmod(m, 60)
     return int(d), int(m), s
+
+
+def ricker(f, length, dt):
+    """
+    A Ricker wavelet.
+
+    Args:
+        f (float): frequency in Haz, e.g. 25 Hz.
+        length (float): Length in s, e.g. 0.128.
+        dt (float): sample interval in s, e.g. 0.001.
+
+    Returns:
+        tuple. time basis, amplitude values.
+    """
+    t = np.linspace(-length/2, (length-dt)/2, length/dt)
+    y = (1. - 2.*(np.pi**2)*(f**2)*(t**2))*np.exp(-(np.pi**2)*(f**2)*(t**2))
+    return t, y

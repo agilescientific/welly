@@ -18,6 +18,7 @@ from .fields import las_fields
 from .curve import Curve
 from .header import Header
 from .location import Location
+from .synthetic import Synthetic
 
 ###############################################
 # This module is not used directly, but must
@@ -398,6 +399,7 @@ class Well(object):
         ax0.set_title(track_titles[0])
 
         # Plot remaining axes.
+        axes = [ax0]
         for i, track in enumerate(tracks[1:]):
             kwargs = {}
             ax = fig.add_subplot(gs[0, i+1])
@@ -409,20 +411,30 @@ class Well(object):
             if '.' in track:
                 track, kwargs['field'] = track.split('.')
             plt.setp(ax.get_yticklabels(), visible=False)
-            try:  # ...treating as a plottable objectself.
+            try:  # ...treating as a plottable object.
                 ax = self.data[track].plot(ax=ax, legend=legend, **kwargs)
+<<<<<<< HEAD
                 ax.text(0.5, 1.00, ax.get_title(), color='k', fontsize=12,
                         transform=ax.transAxes, ha='center', va='bottom')
+=======
+                if track != 'SYN':
+                    axes.append(ax)
+>>>>>>> f62b51e4d80328aacff44679b00eedca65740cd1
             except TypeError:  # ...it's a list.
                 for j, t in enumerate(track):
                     if '.' in t:
                         track, kwargs['field'] = track.split('.')
                     try:
                         ax = self.data[t].plot(ax=ax, legend=legend, **kwargs)
+<<<<<<< HEAD
                         ax.text(0.5, 1.0 + 0.02 * j, ax.get_title(),
                                 color=legend.get_decor(self.data[t]).colour,
                                 transform=ax.transAxes,
                                 ha='center', va='bottom', fontsize=12)
+=======
+                        if track != 'SYN':
+                            axes.append(ax)
+>>>>>>> f62b51e4d80328aacff44679b00eedca65740cd1
                     except KeyError:
                         continue
 
@@ -431,7 +443,7 @@ class Well(object):
             ax.title.set_visible(False)  # turn off "Title" because we're using text
 
         # Set sharing.
-        axes = fig.get_axes()
+        # axes = fig.get_axes()
         utils.sharey(axes)
         axes[0].set_ylim([lower, upper])
 
@@ -483,3 +495,58 @@ class Well(object):
             return np.arange(min(starts), max(stops)+1e-9, min(steps))
         else:
             return None
+
+    def make_synthetic(self,
+                       srd=0,
+                       v_repl_seismic=2000,
+                       v_repl_log=2000,
+                       f=50,
+                       dt=0.001):
+        """
+        Early hack. Use with extreme caution.
+
+        Hands-free. There'll be a more granualr version in synthetic.py.
+
+        Assumes DT is in µs/m and RHOB is kg/m3.
+
+        There is no handling yet for TVD.
+
+        The datum handling is probably sketchy.
+
+        TODO:
+            A lot.
+        """
+        kb = getattr(self.location, 'kb', None) or 0
+        data0 = self.data['DT'].start
+        log_start_time = ((srd - kb) / v_repl_seismic) + (data0 / v_repl_log)
+
+        # Basic log values.
+        dt_log = self.data['DT'].despike()  # assume µs/m
+        rho_log = self.data['RHOB'].despike()  # assume kg/m3
+        if not np.allclose(dt_log.basis, rho_log.basis):
+            rho_log = rho_log.to_basis_like(dt_log)
+        Z = (1e6 / dt_log) * rho_log
+
+        # Two-way-time.
+        scaled_dt = dt_log.step * np.nan_to_num(dt_log) / 1e6
+        twt = 2 * np.cumsum(scaled_dt)
+        t = twt + log_start_time
+
+        # Move to time.
+        t_max = t[-1] + 10*dt
+        t_reg = np.arange(0, t_max+1e-9, dt)
+        Z_t = np.interp(x=t_reg, xp=t, fp=Z)
+
+        # Make RC series.
+        rc_t = (Z_t[1:] - Z_t[:-1]) / (Z_t[1:] + Z_t[:-1])
+        rc_t = np.nan_to_num(rc_t)
+
+        # Convolve.
+        _, ricker = utils.ricker(f=f, length=0.128, dt=dt)
+        synth = np.convolve(ricker, rc_t, mode='same')
+
+        params = {'dt': dt}
+
+        self.data['SYN'] = Synthetic(synth, basis=t_reg, params=params)
+
+        return None
