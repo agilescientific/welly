@@ -413,28 +413,16 @@ class Well(object):
             plt.setp(ax.get_yticklabels(), visible=False)
             try:  # ...treating as a plottable object.
                 ax = self.data[track].plot(ax=ax, legend=legend, **kwargs)
-<<<<<<< HEAD
-                ax.text(0.5, 1.00, ax.get_title(), color='k', fontsize=12,
-                        transform=ax.transAxes, ha='center', va='bottom')
-=======
                 if track != 'SYN':
                     axes.append(ax)
->>>>>>> f62b51e4d80328aacff44679b00eedca65740cd1
             except TypeError:  # ...it's a list.
                 for j, t in enumerate(track):
                     if '.' in t:
                         track, kwargs['field'] = track.split('.')
                     try:
                         ax = self.data[t].plot(ax=ax, legend=legend, **kwargs)
-<<<<<<< HEAD
-                        ax.text(0.5, 1.0 + 0.02 * j, ax.get_title(),
-                                color=legend.get_decor(self.data[t]).colour,
-                                transform=ax.transAxes,
-                                ha='center', va='bottom', fontsize=12)
-=======
                         if track != 'SYN':
                             axes.append(ax)
->>>>>>> f62b51e4d80328aacff44679b00eedca65740cd1
                     except KeyError:
                         continue
 
