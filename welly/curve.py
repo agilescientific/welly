@@ -310,6 +310,8 @@ class Curve(np.ndarray):
         else:
             return None
 
+    def extrapolate(self):
+        return utils.extrapolate(self)
 
     def to_basis_like(self, basis):
         """
