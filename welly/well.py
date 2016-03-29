@@ -194,7 +194,8 @@ class Well(object):
             try:
                 new_data = np.copy(d.to_basis_like(basis))
             except:
-                raise WellError("basis shift failed")
+                # Basis shift failed; is probably not a curve
+                pass
             try:
                 descr = d.description
                 l.add_curve(k.upper(), new_data, unit=d.units, descr=descr)
@@ -525,8 +526,11 @@ class Well(object):
         _, ricker = utils.ricker(f=f, length=0.128, dt=dt)
         synth = np.convolve(ricker, rc_t, mode='same')
 
-        params = {'dt': dt}
+        params = {'dt': dt,
+                  'z start': dt_log.start,
+                  'z stop': dt_log.stop
+                  }
 
-        self.data['SYN'] = Synthetic(synth, basis=t_reg, params=params)
+        self.data['Synthetic'] = Synthetic(synth, basis=t_reg, params=params)
 
         return None

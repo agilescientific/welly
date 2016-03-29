@@ -16,4 +16,4 @@ def test_synthetic():
     s = Synthetic(data, params=params)
 
     assert s.dt == 0.004
-    assert s.mnemonic == 'SYN'
+    assert s.name == 'Synthetic'

@@ -8,9 +8,8 @@ Defines a synthetic seismogram.
 """
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib as mpl
 
-from . import utils
+from .curve import Curve
 
 
 class Synthetic(np.ndarray):
@@ -41,16 +40,34 @@ class Synthetic(np.ndarray):
 
         self.start = getattr(obj, 'start', 0)
         self.dt = getattr(obj, 'dt', 0.001)
-        self.mnemonic = getattr(obj, 'mnemonic', 'SYN')
+        self.name = getattr(obj, 'name', 'Synthetic')
 
     @property
     def stop(self):
+        """
+        Compute stop rather than storing it.
+        """
         return self.start + self.shape[0] * self.dt
 
     @property
     def basis(self):
+        """
+        Compute basis rather than storing it.
+        """
         precision_adj = self.dt / 100
         return np.arange(self.start, self.stop - precision_adj, self.dt)
+
+    def as_curve(self, start=None, stop=None):
+        """
+        Get the synthetic as a Curve, in depth. Facilitates plotting along-
+        side other curve data.
+        """
+        params = {'start': start or getattr(self, 'z start', None),
+                  'mnemonic': 'SYN',
+                  'step': 0.1524
+                  }
+
+        return Curve(data, params=params)
 
     def plot(self, ax=None, return_fig=False, **kwargs):
         """
@@ -79,7 +96,7 @@ class Synthetic(np.ndarray):
         ax.plot(hyperamp, hypertime, 'k')
         ax.fill_betweenx(hypertime, hyperamp, 0, hyperamp > 0.0, facecolor='k', lw=0)
         ax.invert_yaxis()
-        ax.set_title(self.mnemonic)
+        ax.set_title(self.name)
 
         if return_ax:
             return ax
