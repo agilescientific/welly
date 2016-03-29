@@ -194,7 +194,8 @@ class Well(object):
             try:
                 new_data = np.copy(d.to_basis_like(basis))
             except:
-                raise WellError("basis shift failed")
+                # Basis shift failed; is probably not a curve
+                pass
             try:
                 descr = d.description
                 l.add_curve(k.upper(), new_data, unit=d.units, descr=descr)
@@ -399,7 +400,6 @@ class Well(object):
         ax0.set_title(track_titles[0])
 
         # Plot remaining axes.
-        axes = [ax0]
         for i, track in enumerate(tracks[1:]):
             kwargs = {}
             ax = fig.add_subplot(gs[0, i+1])
@@ -413,16 +413,12 @@ class Well(object):
             plt.setp(ax.get_yticklabels(), visible=False)
             try:  # ...treating as a plottable object.
                 ax = self.data[track].plot(ax=ax, legend=legend, **kwargs)
-                if track != 'SYN':
-                    axes.append(ax)
             except TypeError:  # ...it's a list.
                 for j, t in enumerate(track):
                     if '.' in t:
                         track, kwargs['field'] = track.split('.')
                     try:
                         ax = self.data[t].plot(ax=ax, legend=legend, **kwargs)
-                        if track != 'SYN':
-                            axes.append(ax)
                     except KeyError:
                         continue
 
@@ -431,7 +427,7 @@ class Well(object):
             ax.title.set_visible(False)  # turn off "Title" because we're using text
 
         # Set sharing.
-        # axes = fig.get_axes()
+        axes = fig.get_axes()
         utils.sharey(axes)
         axes[0].set_ylim([lower, upper])
 
@@ -533,8 +529,11 @@ class Well(object):
         _, ricker = utils.ricker(f=f, length=0.128, dt=dt)
         synth = np.convolve(ricker, rc_t, mode='same')
 
-        params = {'dt': dt}
+        params = {'dt': dt,
+                  'z start': dt_log.start,
+                  'z stop': dt_log.stop
+                  }
 
-        self.data['SYN'] = Synthetic(synth, basis=t_reg, params=params)
+        self.data['Synthetic'] = Synthetic(synth, basis=t_reg, params=params)
 
         return None
