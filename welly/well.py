@@ -398,7 +398,6 @@ class Well(object):
         ax0.set_title(track_titles[0])
 
         # Plot remaining axes.
-        axes = [ax0]
         for i, track in enumerate(tracks[1:]):
             kwargs = {}
             ax = fig.add_subplot(gs[0, i+1])
@@ -412,23 +411,19 @@ class Well(object):
             plt.setp(ax.get_yticklabels(), visible=False)
             try:  # ...treating as a plottable object.
                 ax = self.data[track].plot(ax=ax, legend=legend, **kwargs)
-                if track != 'SYN':
-                    axes.append(ax)
             except TypeError:  # ...it's a list.
                 for t in track:
                     if '.' in t:
                         track, kwargs['field'] = track.split('.')
                     try:
                         ax = self.data[t].plot(ax=ax, legend=legend, **kwargs)
-                        if track != 'SYN':
-                            axes.append(ax)
                     except KeyError:
                         continue
             tx = ax.get_xticks()
             ax.set_xticks(tx[1:-1])
 
         # Set sharing.
-        # axes = fig.get_axes()
+        axes = fig.get_axes()
         utils.sharey(axes)
         axes[0].set_ylim([lower, upper])
 
