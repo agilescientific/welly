@@ -14,7 +14,7 @@ from . import utils
 
 class Header(object):
     """
-    The well header.
+    The well metadata or header information.
 
     Not the same as an LAS header, but we might get info from there.
     """
@@ -36,6 +36,13 @@ class Header(object):
     def from_lasio(cls, l, remap=None, funcs=None):
         """
         Assumes we're starting with a lasio object, l.
+
+        Args:
+            l (lasio): A lasio instance.
+            remap (dict): Optional. A dict of 'old': 'new' LAS field names.
+            funcs (dict): Optional. A dict of 'las field': function() for
+                implementing a transform before loading. Can be a lambda.
+
         """
         params = {}
         for field, (sect, code) in las_fields['header'].items():

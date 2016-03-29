@@ -14,7 +14,7 @@ from .curve import Curve
 
 class RGBLog(object):
     """
-    Attempt at RGB
+    Attempt at RGB. Incomplete.
     """
     def __init__(self, curves):
         pass

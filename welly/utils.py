@@ -80,7 +80,17 @@ def fix_ticks(ax):
 
 
 def flatten_list(l):
-    """http://stackoverflow.com/a/12472564/3381305"""
+    """
+    Unpacks lists in a list:
+
+        [1, 2, [3, 4], [5, [6, 7]]]
+
+    becomes
+
+        [1, 2, 3, 4, 5, 6, 7]
+
+    http://stackoverflow.com/a/12472564/3381305
+    """
     if (l == []) or (l is None):
         return l
     if isinstance(l[0], list):
@@ -89,6 +99,16 @@ def flatten_list(l):
 
 
 def list_and_add(a, b):
+    """
+    Concatenate anything into a list.
+
+    Args:
+        a: the first thing
+        b: the second thing
+
+    Returns:
+        list. All the things in a list.
+    """
     if not isinstance(b, list):
         b = [b]
     if not isinstance(a, list):
@@ -103,10 +123,24 @@ def lasio_get(l,
               default=None,
               remap=None,
               funcs=None):
+    """
+    Grabs, renames and transforms stuff from a lasio object.
 
-    if remap is None:
-        remap = {}
+    Args:
+        l (lasio): a lasio instance.
+        section (str): The LAS section to grab from, eg ``well``
+        item (str): The item in the LAS section to grab from, eg ``name``
+        attrib (str): The attribute of the item to grab, eg ``value``
+        default (str): What to return instead.
+        remap (dict): Optional. A dict of 'old': 'new' LAS field names.
+        funcs (dict): Optional. A dict of 'las field': function() for
+            implementing a transform before loading. Can be a lambda.
 
+    Returns:
+        The transformed item.
+    """
+
+    remap = remap or {}
     item_to_fetch = remap.get(item, item)
     if item_to_fetch is None:
         return None
@@ -238,7 +272,26 @@ def rms(a):
     return np.sqrt(np.sum(a**2.0)/a.size)
 
 
-def moving_average(a, length, mode='valid'):
+def normalize(a, new_min=0.0, new_max=1.0):
+    """
+    From ``bruges``
+
+    Normalize an array to [0,1] or to arbitrary new min and max.
+
+    Args:
+        a (ndarray)
+        new_min (float): the new min, default 0.
+        new_max (float): the new max, default 1.
+
+    Returns:
+        ndarray. The normalized array.
+    """
+
+    n = (a - np.amin(a)) / np.amax(a - np.amin(a))
+    return n * (new_max - new_min) + new_min
+
+
+def moving_average(self, length, mode='valid'):
     """
     From ``bruges``
 
@@ -261,10 +314,10 @@ def moving_average(a, length, mode='valid'):
         pad *= 2
 
     # Make a padded version, paddding with first and last values
-    r = np.empty(a.shape[0] + 2*pad)
-    r[:pad] = a[0]
-    r[pad:-pad] = a
-    r[-pad:] = a[-1]
+    r = np.empty(self.shape[0] + 2*pad)
+    r[:pad] = self[0]
+    r[pad:-pad] = self
+    r[-pad:] = self[-1]
 
     # Cumsum with shifting trick
     s = np.cumsum(r, dtype=float)
@@ -273,7 +326,7 @@ def moving_average(a, length, mode='valid'):
 
     # Decide what to return
     if mode == 'same':
-        if out.shape[0] != a.shape[0]:
+        if out.shape[0] != self.shape[0]:
             # If size doesn't match, then interpolate.
             out = (out[:-1, ...] + out[1:, ...]) / 2
         return out
@@ -283,14 +336,14 @@ def moving_average(a, length, mode='valid'):
         return out
 
 
-def moving_avg_conv(a, length):
+def moving_avg_conv(self, length):
     """
     From ``bruges``
 
     Moving average via convolution. Seems slower than naive.
     """
     boxcar = np.ones(length)/length
-    return np.convolve(a, boxcar, mode="same")
+    return np.convolve(self, boxcar, mode="same")
 
 
 def normalize(a, new_min=0.0, new_max=1.0):

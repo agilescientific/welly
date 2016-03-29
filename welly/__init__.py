@@ -8,6 +8,7 @@ welly
 from .well import Well
 from .header import Header
 from .curve import Curve
+from .synthetic import Synthetic
 from .location import Location
 from .crs import CRS
 from . import tools
@@ -16,6 +17,7 @@ __all__ = [
            'Well',
            'Header',
            'Curve',
+           'Synthetic',
            'Location',
            'CRS',
            'tools',  # Various classes in here

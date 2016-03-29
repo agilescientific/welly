@@ -1,21 +1,38 @@
-sudo: false
+sudo: required
 
 language: python
 
 python:
-   - 2.7
-   - 3.3
-   - 3.4
-   - 3.5
+  - 2.7
+  - 3.3
+  - 3.4
+  - 3.5
 
 before_install:
-   - pip install coveralls
-   - pip install pytest-cov
-   - pip install pytest-mpl
+  - sudo apt-get update
+  - if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
+      wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh;
+    else
+      wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
+    fi
+  - chmod +x miniconda.sh
+  - bash miniconda.sh -b -p $HOME/miniconda
+  - export PATH="$HOME/miniconda/bin:$PATH"
+  - hash -r
+  - conda config --set always_yes yes --set changeps1 no
+  - conda update -q conda
+  - conda info -a
+  - conda create -q -n testenv python=$TRAVIS_PYTHON_VERSION numpy scipy
+  - source activate testenv
+  - pip install coveralls
+  - pip install pytest-cov
+  - pip install pytest-mpl
 
-install: pip install -r requirements.txt
+install:
+  - pip install -r requirements.txt
 
-script: python run_tests.py
+script:
+  - python run_tests.py
 
 after_success:
    - coveralls

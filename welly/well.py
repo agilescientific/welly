@@ -45,6 +45,9 @@ class Well(object):
             if k and v:
                 setattr(self, k, v)
 
+        if getattr(self, 'data', None) is None:
+            self.data = {}
+
     def _repr_html_(self):
         """
         Jupyter Notebook magic repr function.
@@ -68,14 +71,27 @@ class Well(object):
 
     @property
     def uwi(self):
-        return self.header.uwi
+        """
+        Property. Simply a shortcut to the UWI from the header, or the
+        empty string if there isn't one.
+        """
+        return getattr(self.header, 'uwi', None) or ''
 
     @classmethod
     def from_lasio(cls, l, remap=None, funcs=None):
         """
-        If you already have the lasio object.
-        """
+        Constructor. If you already have the lasio object, then this makes a
+        well object from it.
 
+        Args:
+            l (lasio object): a lasio object.
+            remap (dict): Optional. A dict of 'old': 'new' LAS field names.
+            funcs (dict): Optional. A dict of 'las field': function() for
+                implementing a transform before loading. Can be a lambda.
+
+        Returns:
+            well. The well object.
+        """
         # Build a dict of curves.
         curve_params = {}
         for field, (sect, code) in las_fields['data'].items():
@@ -102,27 +118,20 @@ class Well(object):
                                             funcs=funcs)
         return cls(params)
 
-    def survey_basis(self, keys=None):
-        keys = utils.flatten_list(keys)
-        starts, stops, steps = [], [], []
-        for k, d in self.data.items():
-            if (keys is not None) and (k not in keys):
-                continue
-            try:
-                starts.append(d.basis[0])
-                stops.append(d.basis[-1])
-                steps.append(d.basis[1] - d.basis[0])
-            except:
-                pass
-        if starts and stops and steps:
-            return np.arange(min(starts), max(stops)+1e-9, min(steps))
-        else:
-            return None
-
     @classmethod
     def from_las(cls, fname, remap=None, funcs=None):
         """
-        Wraps lasio.
+        Constructor. Essentially just wraps ``from_lasio()``, but is more
+        convenient for most purposes.
+
+        Args:
+            fname (str): The path of the LAS file.
+            remap (dict): Optional. A dict of 'old': 'new' LAS field names.
+            funcs (dict): Optional. A dict of 'las field': function() for
+                implementing a transform before loading. Can be a lambda.
+
+        Returns:
+            well. The well object.
         """
         l = lasio.read(fname)
 
@@ -130,6 +139,21 @@ class Well(object):
         return cls.from_lasio(l, remap=remap, funcs=funcs)
 
     def to_lasio(self, basis=None, keys=None):
+        """
+        Makes a lasio object from the current well.
+
+        Args:
+            basis (ndarray): Optional. The basis to export the curves in. If
+                you don't specify one, it will survey all the curves with
+                ``survey_basis()``.
+            keys (list): List of strings: the keys of the data items to
+                include, if not all of them. You can have nested lists, such
+                as you might use for ``tracks`` in ``well.plot()``.
+
+        Returns:
+            lasio. The lasio object.
+        """
+
         # Create an empty lasio object.
         l = lasio.LASFile()
         l.well.DATE = str(datetime.datetime.today())
@@ -161,14 +185,18 @@ class Well(object):
 
         # Add data entities.
         other = ''
-        keys = utils.flatten_list(keys) or self.data.keys()
+        keys = utils.flatten_list(keys) or list(self.data.keys())
         for k in keys:
             d = self.data[k]
             if getattr(d, 'null', None) is not None:
                 d[np.isnan(d)] = d.null
             try:
                 new_data = np.copy(d.to_basis_like(basis))
-                l.add_curve(k.upper(), new_data, unit=d.units, descr=d.description)
+            except:
+                raise WellError("basis shift failed")
+            try:
+                descr = d.description
+                l.add_curve(k.upper(), new_data, unit=d.units, descr=descr)
             except:
                 try:
                     # Treat as OTHER
@@ -184,7 +212,20 @@ class Well(object):
 
     def to_las(self, fname, basis=None, keys=None):
         """
-        Save a LAS file.
+        Writes the current well instance as a LAS file. Essentially just wraps
+        ``to_lasio()``, but is more convenient for most purposes.
+
+        Args:
+            fname (str): The path of the LAS file to create.
+            basis (ndarray): Optional. The basis to export the curves in. If
+                you don't specify one, it will survey all the curves with
+                ``survey_basis()``.
+            keys (list): List of strings: the keys of the data items to
+                include, if not all of them. You can have nested lists, such
+                as you might use for ``tracks`` in ``well.plot()``.
+
+        Returns:
+            None. Writes the file as a side-effect.
         """
         with open(fname, 'w') as f:
             self.to_lasio(basis=basis, keys=keys).write(f)
@@ -193,7 +234,17 @@ class Well(object):
 
     def add_curves_from_las(self, fname, remap=None, funcs=None):
         """
-        Given a lasio object, add curves from it.
+        Given a LAS file, add curves from it to the current well instance.
+        Essentially just wraps ``add_curves_from_lasio()``.
+
+        Args:
+            fname (str): The path of the LAS file to read curves from.
+            remap (dict): Optional. A dict of 'old': 'new' LAS field names.
+            funcs (dict): Optional. A dict of 'las field': function() for
+                implementing a transform before loading. Can be a lambda.
+
+        Returns:
+            None. Works in place.
         """
         l = lasio.read(fname)
 
@@ -202,7 +253,17 @@ class Well(object):
 
     def add_curves_from_lasio(self, l, remap=None, funcs=None):
         """
-        Given a lasio object, add curves from it.
+        Given a LAS file, add curves from it to the current well instance.
+        Essentially just wraps ``add_curves_from_lasio()``.
+
+        Args:
+            fname (str): The path of the LAS file to read curves from.
+            remap (dict): Optional. A dict of 'old': 'new' LAS field names.
+            funcs (dict): Optional. A dict of 'las field': function() for
+                implementing a transform before loading. Can be a lambda.
+
+        Returns:
+            None. Works in place.
         """
         params = {}
         for field, (sect, code) in las_fields['data'].items():
@@ -215,13 +276,22 @@ class Well(object):
         curves = {c.mnemonic: Curve.from_lasio_curve(c, **params)
                   for c in l.curves}
 
-        # Update data with new curves.
         # This will clobber anything with the same key!
         self.data.update(curves)
 
+        return None
+
     def _plot_depth_track(self, ax, md, kind='MD'):
         """
-        Depth track plotting.
+        Private function. Depth track plotting.
+
+        Args:
+            ax (ax): A matplotlib axis.
+            md (ndarray): The measured depths of the track.
+            kind (str): The kind of track to plot.
+
+        Returns:
+            ax.
         """
         if kind == 'MD':
             ax.set_yscale('bounded', vmin=md.min(), vmax=md.max())
@@ -261,11 +331,30 @@ class Well(object):
 
         return ax
 
-    def plot(self, legend=None, tracks=None, track_titles=None, basis=None):
+    def plot(self,
+             legend=None,
+             tracks=None,
+             track_titles=None,
+             basis=None,
+             return_fig=False):
         """
-        Even nicer plotting.
+        Plot multiple tracks.
 
-        tracks (list)
+        Args:
+            legend (striplog.legend): A legend instance.
+            tracks (list): A list of strings and/or lists of strings. The
+                tracks you want to plot from ``data``. Optional, but you will
+                usually want to give it.
+            track_titles (list): Optional. A list of strings and/or lists of
+                strings. The names to give the tracks, if you don't want welly
+                to guess.
+            basis (ndarray): Optional. The basis of the plot, if you don't
+                want welly to guess (probably the best idea).
+            return_fig (bool): Whether to return the matplotlig figure. Default
+                False.
+
+        Returns:
+            None. The plot is a side-effect.
         """
         # These will be treated differently.
         depth_tracks = ['MD', 'TVD']
@@ -362,4 +451,35 @@ class Well(object):
                 for sp in ax.spines.values():
                     sp.set_color('gray')
 
-        return None
+        if return_fig:
+            return fig
+        else:
+            return None
+
+    def survey_basis(self, keys=None):
+        """
+        Look at the basis of all the curves in the ``well.data`` and return a
+        basis with the minimum start, maximum depth, and minimum step.
+
+        Args:
+            keys (list): List of strings: the keys of the data items to
+                survey, if not all of them.
+
+        Returns:
+            ndarray. The 'most complete common basis'.
+        """
+        keys = utils.flatten_list(keys)
+        starts, stops, steps = [], [], []
+        for k, d in self.data.items():
+            if (keys is not None) and (k not in keys):
+                continue
+            try:
+                starts.append(d.basis[0])
+                stops.append(d.basis[-1])
+                steps.append(d.basis[1] - d.basis[0])
+            except:
+                pass
+        if starts and stops and steps:
+            return np.arange(min(starts), max(stops)+1e-9, min(steps))
+        else:
+            return None

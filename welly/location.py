@@ -15,16 +15,19 @@ from .crs import CRS
 
 
 class Location(object):
+    """
+    Contains all location and spatial information.
+    """
     def __init__(self, params):
-        """
-        Generic initializer for now.
-        """
         self.td = None
         self.crs = CRS(params.pop('crs', dict()))
 
         for k, v in params.items():
             if k and v:
-                setattr(self, k, v)
+                try:
+                    setattr(self, k, float(v))
+                except:
+                    setattr(self, k, v)
 
         if getattr(self, 'deviation', None) is None:
             self.deviation = None
@@ -36,10 +39,33 @@ class Location(object):
     def __repr__(self):
         return 'Location({})'.format(self.__dict__)
 
+    def crs_from_epsg(self, epsg):
+        """
+        Sets the CRS using an EPSG code.
+
+        Args:
+            epsg (int): The EPSG code.
+
+        Returns:
+            None.
+        """
+        self.crs = CRS.from_epsg(epsg)
+        return
+
     @classmethod
     def from_lasio(cls, l, remap=None, funcs=None):
         """
-        Assumes we're starting with a lasio object, l.
+        Make a Location object from a lasio object. Assumes we're starting
+        with a lasio object, l.
+
+        Args:
+            l (lasio).
+            remap (dict): Optional. A dict of 'old': 'new' LAS field names.
+            funcs (dict): Optional. A dict of 'las field': function() for
+                implementing a transform before loading. Can be a lambda.
+
+        Returns:
+            Location. An instance of this class.
         """
         params = {}
         for field, (sect, code) in las_fields['location'].items():
@@ -51,20 +77,50 @@ class Location(object):
         return cls(params)
 
     def add_deviation(self, dev, td=None):
+        """
+        Add a deviation survey to this instance, and try to compute a position
+        log from it.
+        """
         self.deviation = dev
-        self.compute_position_log(td=td)
+        try:
+            self.compute_position_log(td=td)
+        except:
+            self.position = None
         return
 
     @property
     def md(self):
+        """
+        The measured depth of the deviation survey.
+
+        Returns:
+            ndarray.
+        """
         return self.deviation[:, 0]  # First column of deviation survey.
 
     @property
     def tvd(self):
+        """
+        The true vertical depth of the deviation survey.
+
+        Returns:
+            ndarray.
+        """
         return self.position[:, 2]  # Last column of position log.
 
     @property
     def md2tvd(self, kind='linear'):
+        """
+        Provides an transformation and interpolation function that converts
+        MD to TVD.
+
+        Args:
+            kind (str): The kind of interpolation to do, e.g. 'linear',
+                'cubic', 'nearest'.
+
+        Returns:
+            function.
+        """
         if self.position is None:
             return lambda x: x
         return interp1d(self.md, self.tvd,
@@ -75,6 +131,17 @@ class Location(object):
 
     @property
     def tvd2md(self, kind='linear'):
+        """
+        Provides an transformation and interpolation function that converts
+        MD to TVD.
+
+        Args:
+            kind (str): The kind of interpolation to do, e.g. 'linear',
+                'cubic', 'nearest'.
+
+        Returns:
+            function.
+        """
         if self.position is None:
             return lambda x: x
         return interp1d(self.tvd, self.md,

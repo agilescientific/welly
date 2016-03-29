@@ -8,6 +8,7 @@ Defines log curves.
 """
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib as mpl
 
 from . import utils
 
@@ -20,9 +21,17 @@ class CurveError(Exception):
 
 
 class Curve(np.ndarray):
-
+    """
+    A fancy ndarray. Gives some utility functions, plotting, etc, for curve
+    data.
+    """
     def __new__(cls, data, basis=None, params=None):
+        """
+        I am just following the numpy guide for subclassing ndarray...
+        """
         obj = np.asarray(data).view(cls).copy()
+
+        params = params or {}
 
         for k, v in params.items():
             setattr(obj, k, v)
@@ -34,6 +43,9 @@ class Curve(np.ndarray):
         return obj
 
     def __array_finalize__(self, obj):
+        """
+        I am just following the numpy guide for subclassing ndarray...
+        """
         if obj is None:
             return
 
@@ -87,6 +99,7 @@ class Curve(np.ndarray):
 
     @classmethod
     def from_lasio_curve(cls, curve,
+                         basis=None,
                          start=None,
                          step=0.1524,
                          run=-1,
@@ -94,8 +107,29 @@ class Curve(np.ndarray):
                          service_company=None,
                          date=None):
         """
-        Provide a lasio curve object and a depth basis.
+        Makes a curve object from a lasio curve object and either a depth
+        basis or start and step information.
+
+        Args:
+            curve (ndarray)
+            basis (ndarray)
+            start (float)
+            step (float): default: 0.1524
+            run (int): default: -1
+            null (float): default: -999.25
+            service_company (str): Optional.
+            data (str): Optional.
+
+        Returns:
+            Curve. An instance of the class.
         """
+        if start is None:
+            if basis is not None:
+                start = basis[0]
+                step = basis[1] - basis[0]
+            else:
+                raise CurveError("You must provide a basis or a start depth.")
+
         params = {}
         params['mnemonic'] = curve.mnemonic
         params['description'] = curve.descr
@@ -107,14 +141,15 @@ class Curve(np.ndarray):
         params['service_company'] = service_company
         params['date'] = date
         params['code'] = curve.API_code
+
         return cls(curve.data, params=params)
 
     def apply(self, function, **kwargs):
         """
-        Apply a function to the curve.
+        Apply a function to the curve. Pretty sure we don't need this.
 
         Args:
-            Function.
+            function (function): A functon to apply.
             kwargs. Arguments for the function.
 
         Returns:
@@ -123,11 +158,110 @@ class Curve(np.ndarray):
         params = self.__dict__.copy()
         data = function(self, **kwargs)
         params['units'] = ''  # These will often break otherwise.
-        return Curve(data, params)
+        return Curve(data, params=params)
 
-    def plot(self, ax=None, legend=None, **kwargs):
+    def plot_2d(self, ax=None,
+                width=None,
+                aspect=60,
+                cmap=None,
+                ticks=(1, 10),
+                return_fig=False):
+        """
+        Plot a 2D curve.
+
+        Args:
+            ax (ax): A matplotlib axis.
+            width (int): The width of the image.
+            aspect (int): The aspect ratio (not quantitative at all).
+            cmap (str): The colourmap to use.
+            ticks (tuple): The tick interval on the y-axis.
+            return_fig (bool): whether to return the matplotlib figure.
+                Default False.
+
+        Returns:
+            ax. If you passed in an ax, otherwise None.
+        """
+        if ax is None:
+            fig = plt.figure(figsize=(2, 10))
+            ax = fig.add_subplot(111)
+            return_ax = False
+        else:
+            return_ax = True
+
+        cmap = cmap or 'viridis'
+        default = int(self.shape[0] / aspect)
+        if self.ndim == 1:
+            a = np.expand_dims(self, axis=1)
+            a = np.repeat(a, width or default, axis=1)
+        elif self.ndim == 2:
+            a = self[:, :width]
+        elif self.ndim == 3:
+            if 2 < self.shape[-1] < 5:
+                # Interpret as RGB or RGBA.
+                a = utils.normalize(np.copy(self))
+                cmap = None  # Actually doesn't matter.
+            else:
+                # Take first slice.
+                a = self[:, :width, 0]
+        else:
+            raise NotImplementedError("Can only handle up to 3 dimensions.")
+
+        # At this point, a is either a 2D array, or a 2D (rgb) array.
+        extent = [0, width or default, self.stop, self.start]
+        _ = ax.imshow(a, cmap=cmap, extent=extent)
+        ax.set_xticks([])
+
+        # Rely on interval order.
+        lower, upper = self.stop, self.start
+        rng = abs(upper - lower)
+
+        ax.set_ylim([lower, upper])
+
+        # Make sure ticks is a tuple.
+        try:
+            ticks = tuple(ticks)
+        except TypeError:
+            ticks = (1, ticks)
+
+        # Avoid MAXTICKS error.
+        while rng/ticks[0] > 250:
+            mi, ma = 10*ticks[0], ticks[1]
+            if ma <= mi:
+                ma = 10 * mi
+            ticks = (mi, ma)
+
+        # Carry on plotting...
+        minorLocator = mpl.ticker.MultipleLocator(ticks[0])
+        ax.yaxis.set_minor_locator(minorLocator)
+
+        majorLocator = mpl.ticker.MultipleLocator(ticks[1])
+        majorFormatter = mpl.ticker.FormatStrFormatter('%d')
+        ax.yaxis.set_major_locator(majorLocator)
+        ax.yaxis.set_major_formatter(majorFormatter)
+
+        ax.yaxis.set_ticks_position('left')
+        ax.get_yaxis().set_tick_params(which='both', direction='out')
+
+        if return_ax:
+            return ax
+        elif return_fig:
+            return fig
+        else:
+            return None
+
+    def plot(self, ax=None, legend=None, return_fig=False, **kwargs):
         """
         Plot a curve.
+
+        Args:
+            ax (ax): A matplotlib axis.
+            legend (striplog.legend): A legend. Optional.
+            return_fig (bool): whether to return the matplotlib figure.
+                Default False.
+            kwargs: Arguments for ``ax.set()``
+
+        Returns:
+            ax. If you passed in an ax, otherwise None.
         """
         if ax is None:
             fig = plt.figure(figsize=(2, 10))
@@ -179,15 +313,24 @@ class Curve(np.ndarray):
 
         if return_ax:
             return ax
+        elif return_fig:
+            return fig
         else:
             return None
 
 
     def to_basis_like(self, basis):
         """
-        Make a new basis, given an existing one. Wraps ``to_basis()``.
+        Make a new curve in a new basis, given an existing one. Wraps
+        ``to_basis()``.
 
         Pass in a curve or the basis of a curve.
+
+        Args:
+            basis (ndarray): A basis, but can also be a Curve instance.
+
+        Returns:
+            Curve. The current instance in the new basis.
         """
         try:  # To treat as a curve.
             curve = basis
@@ -203,9 +346,19 @@ class Curve(np.ndarray):
 
     def to_basis(self, start=None, stop=None, step=None, undefined=None):
         """
-        Reset the start, stop, and/or step.
+        Make a new curve in a new basis, given a new start, step, and stop.
+        You only need to set the parameters you want to change. If the new
+        extents go beyond the current extents, the curve is padded with the
+        ``undefined`` parameter.
 
-        Needs to handle extrapolating / padding
+        Args:
+            start (float)
+            stop (float)
+            step (float)
+            undefined (float)
+
+        Returns:
+            Curve. The current instance in the new basis.
         """
         new_start = start or self.start
         new_step = step or self.step
@@ -225,26 +378,7 @@ class Curve(np.ndarray):
         params['step'] = float(new_step)
         params['start'] = float(new_start)
 
-        return Curve(data, params)
-
-    # DEPRECATE WHEN WE KNOW WHAT NEW_BASIS DOES
-    def segment(self, d):
-        """
-        Returns a segment of the log between the depths specified.
-
-        Args:
-            d (tuple): A tuple of floats giving top and base of interval.
-
-        Returns:
-            Curve. The new curve segment.
-        """
-        top = self._read_at(d[0], index=True) + 1  # b/c returns index before
-        base = self._read_at(d[1], index=True)
-
-        data = self[top:base]
-        params = self.__dict__.copy()
-        params['start'] = d[0]
-        return Curve(data, params)
+        return Curve(data, params=params)
 
     def _read_at(self, d,
                  interpolation='linear',
@@ -254,13 +388,13 @@ class Curve(np.ndarray):
         Private function. Implements read_at() for a single depth.
 
         Args:
-            d (float or array-like)
+            d (float)
             interpolation (str)
             index(bool)
             return_basis (bool)
 
         Returns:
-            float or ndarray.
+            float
         """
         method = {'linear': utils.linear,
                   'none': None}
@@ -293,16 +427,21 @@ class Curve(np.ndarray):
         except:
             return self._read_at(d, **kwargs)
 
-    def block(self, cutoffs=None, values=None, n_bins=0, right=False, function=None):
+    def block(self,
+              cutoffs=None,
+              values=None,
+              n_bins=0,
+              right=False,
+              function=None):
         """
         Block a log based on number of bins, or on cutoffs.
 
         Args:
             cutoffs (array)
-            values (array)
+            values (array): the values to map to. Defaults to [0, 1, 2,...]
             n_bins (int)
             right (bool)
-            function (function)
+            function (function): transform the log if you want.
 
         Returns:
             Curve.
@@ -327,7 +466,7 @@ class Curve(np.ndarray):
             data = np.digitize(self, [cutoffs], right)
 
         if (function is None) and (values is None):
-            return Curve(data, params)
+            return Curve(data, params=params)
 
         data = data.astype(float)
 
@@ -352,4 +491,44 @@ class Curve(np.ndarray):
                 data[top:base] = values[int(val)]
             data[base:] = values[int(vals[-1])]  # See above
 
-        return Curve(data, params)
+        return Curve(data, params=params)
+
+    def _rolling_window(self, window):
+        """
+        Private function. Smoother for the despiker to work on.
+
+        Args:
+            window (int): the window length.
+        """
+        # Force odd.
+        if window % 2 == 0:
+            window += 1
+        shape = self.shape[:-1] + (self.shape[-1] - window + 1, window)
+        strides = self.strides + (self.strides[-1],)
+        rolled = np.lib.stride_tricks.as_strided(self,
+                                                 shape=shape,
+                                                 strides=strides)
+        rolled = np.median(rolled, -1)
+        rolled = np.pad(rolled, window//2, mode='edge')
+
+        return rolled
+
+    def despike(self, window=33, z=2):
+        """
+        Args:
+            window (int): window length in samples. Default 33 (or 5 m for
+                most curves).
+            z (float): Z score
+
+        Returns:
+            Curve.
+        """
+        z *= np.std(self)  # Transform to curve's units
+        curve_sm = self._rolling_window(window)
+        spikes = np.where(self - curve_sm > z)[0]
+        spukes = np.where(curve_sm - self > z)[0]
+        out = np.copy(self)
+        params = self.__dict__.copy()
+        out[spikes] = curve_sm[spikes] + z
+        out[spukes] = curve_sm[spukes] - z
+        return Curve(out, params=params)
