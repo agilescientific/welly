@@ -62,10 +62,12 @@ class Well(object):
             for k, v in self.location.__dict__.items():
                 if k in ['deviation', 'position']:
                     continue
+                if k == 'crs':
+                    v = v.__repr__()
                 rows += s.format(k=k, v=v)
 
         if getattr(self, 'data', None) is not None:
-            rows += s.format(k="data", v=list(self.data.keys()))
+            rows += s.format(k="data", v=', '.join(sorted(list(self.data.keys()))))
 
         html = '<table>{}</table>'.format(rows)
         return html
