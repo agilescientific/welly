@@ -25,7 +25,7 @@ class Location(object):
         for k, v in params.items():
             if k and v:
                 try:
-                    setattr(self, k, float(v))
+                    setattr(self, k, float(v.replace(',', '')))
                 except:
                     setattr(self, k, v)
 

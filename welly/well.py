@@ -248,10 +248,19 @@ class Well(object):
         Returns:
             None. Works in place.
         """
-        l = lasio.read(fname)
+        try:  # To treat as a single file
+            self.add_curves_from_lasio(lasio.read(fname),
+                                       remap=remap,
+                                       funcs=funcs
+                                       )
+        except:  # It's a list!
+            for f in fname:
+                self.add_curves_from_lasio(lasio.read(f),
+                                           remap=remap,
+                                           funcs=funcs
+                                           )
 
-        # Pass to other constructor.
-        return self.add_curves_from_lasio(l, remap=remap, funcs=funcs)
+        return None
 
     def add_curves_from_lasio(self, l, remap=None, funcs=None):
         """
