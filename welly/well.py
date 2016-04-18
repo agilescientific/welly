@@ -349,7 +349,8 @@ class Well(object):
              tracks=None,
              track_titles=None,
              basis=None,
-             return_fig=False):
+             return_fig=False,
+             extents='td'):
         """
         Plot multiple tracks.
 
@@ -365,6 +366,11 @@ class Well(object):
                 want welly to guess (probably the best idea).
             return_fig (bool): Whether to return the matplotlig figure. Default
                 False.
+            extents (str): What to use for the y limits:
+                'td' — plot 0 to TD.
+                'curves' — use a basis that accommodates all the curves.
+                'all' — use a basis that accommodates everything.
+                (tuple) — give the upper and lower explictly.
 
         Returns:
             None. The plot is a side-effect.
@@ -379,7 +385,20 @@ class Well(object):
         # Figure out limits
         if basis is None:
             basis = self.survey_basis(keys=tracks)
-        upper, lower = basis[0], basis[-1]
+
+        if extents == 'curves':
+            upper, lower = basis[0], basis[-1]
+        elif extents == 'td':
+            upper, lower = 0, self.location.td
+            if not lower:
+                lower = basis[-1]
+        elif extents == 'all':
+            raise NotImplementedError("You cannot do that yet.")
+        else:
+            try:
+                upper, lower = extents
+            except:
+                upper, lower = basis[0], basis[-1]
 
         # Figure out widths because we can't us gs.update() for that.
         widths = [0.4 if t in depth_tracks else 1.0 for t in tracks]
@@ -488,6 +507,30 @@ class Well(object):
         else:
             return None
 
+    def unify_basis(self, keys=None):
+        """
+        Give everything, or everything in the list of keys, the same basis.
+        Args:
+            keys (list): List of strings: the keys of the data items to
+                unify, if not all of them.
+
+        Returns:
+            None. Works in place.
+        """
+        basis = self.survey_basis(keys=keys)
+        if basis is None:
+            raise WellError("Could not retrieve common basis.")
+
+        for k, d in self.data.items():
+            if (keys is not None) and (k not in keys):
+                continue
+            try:  # To treat as a curve.
+                d = d.to_basis(basis=basis)
+            except:  # It's probably a striplog.
+                continue
+
+        return
+
     def make_synthetic(self,
                        srd=0,
                        v_repl_seismic=2000,
@@ -545,3 +588,14 @@ class Well(object):
         self.data['Synthetic'] = Synthetic(synth, basis=t_reg, params=params)
 
         return None
+
+    def data_as_matrix(self, keys=None):
+        """
+        Provide a feature matrix, given a list of data items.
+        """
+        basis = self.survey_basis(keys=keys)
+        if keys is None:
+            keys = list(self.data.keys())
+        data = filter(None, [self.data.get(k) for k in keys])
+        data = [d.to_basis(basis=basis) for d in data]
+        return np.vstack(data).T

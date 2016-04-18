@@ -332,20 +332,23 @@ class Curve(np.ndarray):
             undefined = curve.null
         except:
             undefined = None
-        start = basis[0]
-        step = basis[1] - basis[0]
-        stop = basis[-1]
 
-        return self.to_basis(start, stop, step, undefined=undefined)
+        return self.to_basis(basis=basis,
+                             undefined=undefined)
 
-    def to_basis(self, start=None, stop=None, step=None, undefined=None):
+    def to_basis(self, basis=None,
+                 start=None,
+                 stop=None,
+                 step=None,
+                 undefined=None):
         """
-        Make a new curve in a new basis, given a new start, step, and stop.
-        You only need to set the parameters you want to change. If the new
-        extents go beyond the current extents, the curve is padded with the
-        ``undefined`` parameter.
+        Make a new curve in a new basis, given a basis, or a new start, step,
+        and/or stop. You only need to set the parameters you want to change.
+        If the new extents go beyond the current extents, the curve is padded
+        with the ``undefined`` parameter.
 
         Args:
+            basis (ndarray)
             start (float)
             stop (float)
             step (float)
@@ -354,19 +357,19 @@ class Curve(np.ndarray):
         Returns:
             Curve. The current instance in the new basis.
         """
-        new_start = start or self.start
-        new_step = step or self.step
-        new_stop = stop or self.stop
+        if basis is None:
+            new_start = start or self.start
+            new_step = step or self.step
+            new_stop = stop or self.stop
+            new_adj_stop = new_stop + new_step/100  # To guarantee inclusion.
+            basis = np.arange(new_start, new_adj_stop, new_step)
+        else:
+            new_start = basis[0]
+            new_step = basis[1] - basis[0]
 
-        if undefined is None:
-            undefined = np.nan
-        undefined = {'left': undefined,
-                     'right': undefined
-                     }
+        undefined = {'left': undefined or np.nan, 'right': undefined or np.nan}
 
-        new_adj_stop = new_stop + new_step/100  # To guarantee inclusion.
-        new_basis = np.arange(new_start, new_adj_stop, new_step)
-        data = np.interp(new_basis, self.basis, self, **undefined)
+        data = np.interp(basis, self.basis, self, **undefined)
 
         params = self.__dict__.copy()
         params['step'] = float(new_step)
