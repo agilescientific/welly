@@ -66,6 +66,8 @@ def test_well_plot():
     """
     well = Well.from_las(FNAME)
 
-    fig = well.plot(tracks=['MD', 'GR', 'DT'], return_fig=True)
+    fig = well.plot(tracks=['MD', 'GR', 'DT'],
+                    extents='curves',
+                    return_fig=True)
 
     return fig
