@@ -589,7 +589,7 @@ class Well(object):
 
         return None
 
-    def data_as_matrix(self, keys=None):
+    def data_as_matrix(self, keys=None, return_basis=False):
         """
         Provide a feature matrix, given a list of data items.
         """
@@ -598,4 +598,8 @@ class Well(object):
         basis = self.survey_basis(keys=keys)
         data = [self.data.get(k) for k in keys]
         data = [d.to_basis(basis=basis) for d in data if d is not None]
-        return np.vstack(data).T
+
+        if return_basis:
+            return np.vstack(data).T, basis
+        else:
+            return np.vstack(data).T
