@@ -90,4 +90,4 @@ def test_despike():
     """
     well = Well.from_las(FNAME)
     gr = well.data['GR']
-    assert gr.max() - gr.despike(window=50, z=1).max() - 91.83918 < 0.001
+    assert gr.max() - gr.despike(50, z=1).max() - 91.83918 < 0.001

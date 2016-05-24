@@ -490,42 +490,67 @@ class Curve(np.ndarray):
 
         return Curve(data, params=params)
 
-    def _rolling_window(self, window):
+    def _rolling_window(self, window_length, func1d):
         """
-        Private function. Smoother for the despiker to work on.
+        Private function. Smoother for other smoothing/conditioning functions.
 
         Args:
-            window (int): the window length.
+            window_length (int): the window length.
+            func1d (function): a function that takes a 1D array and returns a
+                scalar.
+
+        Returns:
+            ndarray: the resulting array.
         """
         # Force odd.
-        if window % 2 == 0:
-            window += 1
-        shape = self.shape[:-1] + (self.shape[-1] - window + 1, window)
+        if window_length % 2 == 0:
+            window_length += 1
+
+        shape = self.shape[:-1] + (self.shape[-1] - window_length + 1,
+                                   window_length)
         strides = self.strides + (self.strides[-1],)
         rolled = np.lib.stride_tricks.as_strided(self,
                                                  shape=shape,
                                                  strides=strides)
-        rolled = np.median(rolled, -1)
-        rolled = np.pad(rolled, window//2, mode='edge')
+        result = np.apply_along_axis(func1d, -1, rolled)
+        result = np.pad(result, window_length//2, mode='edge')
 
-        return rolled
+        return result
 
-    def despike(self, window=33, z=2):
+    def despike(self, window_length=33, z=2):
         """
         Args:
             window (int): window length in samples. Default 33 (or 5 m for
-                most curves).
+                most curves sampled at 0.1524 m intervals).
             z (float): Z score
 
         Returns:
             Curve.
         """
         z *= np.std(self)  # Transform to curve's units
-        curve_sm = self._rolling_window(window)
+        curve_sm = self._rolling_window(window_length, np.median)
         spikes = np.where(self - curve_sm > z)[0]
         spukes = np.where(curve_sm - self > z)[0]
         out = np.copy(self)
         params = self.__dict__.copy()
         out[spikes] = curve_sm[spikes] + z
         out[spukes] = curve_sm[spukes] - z
+        return Curve(out, params=params)
+
+    def smooth(self, window_length, func1d=None):
+        """
+        Runs any kind of function over a window.
+
+        Args:
+            window_length (int): the window length. Required.
+            func1d (function): a function that takes a 1D array and returns a
+                scalar. Default: ``np.mean()``.
+
+        Returns:
+            Curve.
+        """
+        if func1d is None:
+            func1d = np.mean
+        params = self.__dict__.copy()
+        out = self._rolling_window(window_length, func1d)
         return Curve(out, params=params)
