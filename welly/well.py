@@ -596,9 +596,9 @@ class Well(object):
         """
         Provide a feature matrix, given a list of data items.
         """
-        basis = self.survey_basis(keys=keys)
         if keys is None:
             keys = list(self.data.keys())
-        data = filter(None, [self.data.get(k) for k in keys])
-        data = [d.to_basis(basis=basis) for d in data]
+        basis = self.survey_basis(keys=keys)
+        data = [self.data.get(k) for k in keys]
+        data = [d.to_basis(basis=basis) for d in data if d is not None]
         return np.vstack(data).T
