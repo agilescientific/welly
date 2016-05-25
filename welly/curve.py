@@ -490,7 +490,7 @@ class Curve(np.ndarray):
 
         return Curve(data, params=params)
 
-    def _rolling_window(self, window_length, func1d):
+    def _rolling_window(self, window_length, func1d, return_rolled=False):
         """
         Private function. Smoother for other smoothing/conditioning functions.
 
@@ -515,7 +515,10 @@ class Curve(np.ndarray):
         result = np.apply_along_axis(func1d, -1, rolled)
         result = np.pad(result, window_length//2, mode='edge')
 
-        return result
+        if return_rolled:
+            return result, rolled
+        else:
+            return result
 
     def despike(self, window_length=33, z=2):
         """

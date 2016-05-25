@@ -589,15 +589,43 @@ class Well(object):
 
         return None
 
-    def data_as_matrix(self, keys=None, return_basis=False):
+    def data_as_matrix(self, keys=None,
+                       return_basis=False,
+                       basis=None,
+                       window_length=None):
         """
         Provide a feature matrix, given a list of data items.
+
+        I think this will probably fail if there are striplogs in the data
+        dictionary for this well.
+
+        TODO:
+            Deal with striplogs and other data, if present.
+
+        Args:
+            keys (list): List of the logs to export from the data dictionary.
+            return_basis (bool): Whether or not to return the basis that was
+                used.
+            basis (ndarray): The basis to use.
+            window (int): The number of samples to return around each sample.
+
         """
         if keys is None:
             keys = list(self.data.keys())
-        basis = self.survey_basis(keys=keys)
+        if basis is None:
+            basis = self.survey_basis(keys=keys)
         data = [self.data.get(k) for k in keys]
         data = [d.to_basis(basis=basis) for d in data if d is not None]
+
+        if window_length is not None:
+            d_new = []
+            for d in data:
+                _, r = d._rolling_window(window_length,
+                                         func1d=np.mean,  # Doesn't matter
+                                         return_rolled=True,
+                                         )
+                d_new.append(r.T)
+            data = d_new
 
         if return_basis:
             return np.vstack(data).T, basis
