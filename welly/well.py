@@ -592,7 +592,8 @@ class Well(object):
     def data_as_matrix(self, keys=None,
                        return_basis=False,
                        basis=None,
-                       window_length=None):
+                       window_length=None,
+                       alias=None):
         """
         Provide a feature matrix, given a list of data items.
 
@@ -614,6 +615,26 @@ class Well(object):
         """
         if keys is None:
             keys = list(self.data.keys())
+        else:
+            # Only look at the alias list if keys were passed.
+            if alias is not None:
+                _keys = []
+                for k in keys:
+                    if k in alias:
+                        added = False
+                        for a in alias[k]:
+                            if a in self.data:
+                                _keys.append(a)
+                                added = True
+                                break
+                        if not added:
+                            _keys.append(k)
+                    else:
+                        _keys.append(k)
+                print("You asked for {}".format(keys))
+                print("You are getting {}".format(_keys))
+                keys = _keys
+
         if basis is None:
             basis = self.survey_basis(keys=keys)
 
