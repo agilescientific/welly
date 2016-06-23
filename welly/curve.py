@@ -514,14 +514,13 @@ class Curve(np.ndarray):
         if window_length % 2 == 0:
             window_length += 1
 
-        shape = self.shape[:-1] + (self.shape[-1] - window_length + 1,
-                                   window_length)
+        shape = self.shape[:-1] + (self.shape[-1], window_length)
         strides = self.strides + (self.strides[-1],)
-        rolled = np.lib.stride_tricks.as_strided(self,
+        data = np.pad(self, window_length//2, mode='edge')
+        rolled = np.lib.stride_tricks.as_strided(data,
                                                  shape=shape,
                                                  strides=strides)
         result = np.apply_along_axis(func1d, -1, rolled)
-        result = np.pad(result, window_length//2, mode='edge')
 
         if return_rolled:
             return result, rolled

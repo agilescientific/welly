@@ -595,12 +595,15 @@ class Well(object):
     def data_as_matrix(self, keys=None,
                        return_basis=False,
                        basis=None,
-                       window_length=None):
+                       window_length=None,
+                       alias=None):
         """
         Provide a feature matrix, given a list of data items.
 
         I think this will probably fail if there are striplogs in the data
         dictionary for this well.
+
+
 
         TODO:
             Deal with striplogs and other data, if present.
@@ -615,10 +618,40 @@ class Well(object):
         """
         if keys is None:
             keys = list(self.data.keys())
+        else:
+            # Only look at the alias list if keys were passed.
+            if alias is not None:
+                _keys = []
+                for k in keys:
+                    if k in alias:
+                        added = False
+                        for a in alias[k]:
+                            if a in self.data:
+                                _keys.append(a)
+                                added = True
+                                break
+                        if not added:
+                            _keys.append(k)
+                    else:
+                        _keys.append(k)
+                print("You asked for {}".format(keys))
+                print("You are getting {}".format(_keys))
+                keys = _keys
+
         if basis is None:
             basis = self.survey_basis(keys=keys)
+
+        # Get the data, or None is curve is missing.
         data = [self.data.get(k) for k in keys]
-        data = [d.to_basis(basis=basis) for d in data if d is not None]
+
+        # Now cast to the correct basis, and replace any missing curves with
+        # an empty Curve. The sklearn imputer will deal with it. We will change
+        # the elements in place.
+        for i, d in enumerate(data):
+            if d is not None:
+                data[i] = d.to_basis(basis=basis)
+            else:
+                data[i] = Curve(np.empty_like(basis), basis=basis)
 
         if window_length is not None:
             d_new = []
