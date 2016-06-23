@@ -599,6 +599,8 @@ class Well(object):
         I think this will probably fail if there are striplogs in the data
         dictionary for this well.
 
+
+
         TODO:
             Deal with striplogs and other data, if present.
 
@@ -614,8 +616,18 @@ class Well(object):
             keys = list(self.data.keys())
         if basis is None:
             basis = self.survey_basis(keys=keys)
+
+        # Get the data, or None is curve is missing.
         data = [self.data.get(k) for k in keys]
-        data = [d.to_basis(basis=basis) for d in data if d is not None]
+
+        # Now cast to the correct basis, and replace any missing curves with
+        # an empty Curve. The sklearn imputer will deal with it. We will change
+        # the elements in place.
+        for i, d in enumerate(data):
+            if d is not None:
+                data[i] = d.to_basis(basis=basis)
+            else:
+                data[i] = Curve(np.empty_like(basis), basis=basis)
 
         if window_length is not None:
             d_new = []
