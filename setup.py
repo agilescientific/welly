@@ -20,8 +20,8 @@ else:
 
 REQUIREMENTS = ['numpy',
                 'matplotlib',
-                'namedlist',
                 'lasio',
+                'striplog',
                 ]
 
 TEST_REQUIREMENTS = ['pytest',
@@ -33,7 +33,7 @@ TEST_REQUIREMENTS = ['pytest',
 # Test command is:
 # py.test --mpl --cov striplog
 
-CLASSIFIERS = ['Development Status :: 2 - Pre-Alpha',
+CLASSIFIERS = ['Development Status :: 3 - Alpha',
                'Intended Audience :: Science/Research',
                'Natural Language :: English',
                'License :: OSI Approved :: Apache Software License',

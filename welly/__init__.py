@@ -5,6 +5,7 @@
 welly
 ==================
 """
+from .project import Project
 from .well import Well
 from .header import Header
 from .curve import Curve
@@ -14,6 +15,7 @@ from .crs import CRS
 from . import tools
 
 __all__ = [
+           'Project',
            'Well',
            'Header',
            'Curve',
