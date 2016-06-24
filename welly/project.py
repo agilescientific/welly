@@ -93,10 +93,11 @@ class Project(object):
         """
         Jupyter Notebook magic repr function.
         """
-        header = '<tr><th>UWI</th></tr>'
+        header = '<tr><th>UWI</th><th>Data</th></tr>'
         rows = ''
         for well in self.__list:
-            rows += '<tr><td>{}</td></tr>'.format(well.uwi)
+            curves = len(well.data)
+            rows += '<tr><td>{}</td><td>{} curves</td></tr>'.format(well.uwi, curves)
         html = '<table>{}{}</table>'.format(header, rows)
         return html
 
