@@ -49,6 +49,13 @@ class Well(object):
         if getattr(self, 'data', None) is None:
             self.data = {}
 
+    def __eq__(self, other):
+        if (not self.uwi) or (not other.uwi):
+            raise WellError("One or both UWIs is blank, cannot determine equality.")
+        if self.uwi == other.uwi:
+            return True
+        return False
+
     def _repr_html_(self):
         """
         Jupyter Notebook magic repr function.
