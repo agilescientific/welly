@@ -346,23 +346,6 @@ def moving_avg_conv(self, length):
     return np.convolve(self, boxcar, mode="same")
 
 
-def normalize(a, new_min=0.0, new_max=1.0):
-    """
-    From ``bruges``
-
-    Normalize an array to [0,1] or to
-    arbitrary new min and max.
-
-    :param a: An array.
-    :param new_min: A float to be the new min, default 0.
-    :param new_max: A float to be the new max, default 1.
-
-    :returns: The normalized array.
-    """
-    n = (a - np.amin(a)) / np.amax(a - np.amin(a))
-    return n * (new_max - new_min) + new_min
-
-
 def top_and_tail(*arrays):
     """
     From ``bruges``
@@ -441,3 +424,49 @@ def ricker(f, length, dt):
     t = np.linspace(-length/2, (length-dt)/2, length/dt)
     y = (1. - 2.*(np.pi**2)*(f**2)*(t**2))*np.exp(-(np.pi**2)*(f**2)*(t**2))
     return t, y
+
+
+def hex_to_rgb(hexx):
+    """
+    Utility function to convert hex to (r,g,b) triples.
+    http://ageo.co/1CFxXpO
+
+    Args:
+        hexx (str): A hexadecimal colour, starting with '#'.
+
+    Returns:
+        tuple: The equivalent RGB triple, in the range 0 to 255.
+    """
+    h = hexx.strip('#')
+    l = len(h)
+
+    return tuple(int(h[i:i+l//3], 16) for i in range(0, l, l//3))
+
+
+def hex_is_dark(hexx, percent=50):
+    """
+    Function to decide if a hex colour is dark.
+
+    Args:
+        hexx (str): A hexadecimal colour, starting with '#'.
+
+    Returns:
+        bool: The colour's brightness is less than the given percent.
+    """
+    r, g, b = hex_to_rgb(hexx)
+    luma = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 2.55  # per ITU-R BT.709
+
+    return (luma < percent)
+
+
+def text_colour_for_hex(hexx, percent=50, dark='#000000', light='#ffffff'):
+    """
+    Function to decide what colour to use for a given hex colour.
+
+    Args:
+        hexx (str): A hexadecimal colour, starting with '#'.
+
+    Returns:
+        bool: The colour's brightness is less than the given percent.
+    """
+    return light if hex_is_dark(hexx, percent=percent) else dark

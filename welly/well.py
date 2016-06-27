@@ -658,7 +658,8 @@ class Well(object):
             if d is not None:
                 data[i] = d.to_basis(basis=basis)
             else:
-                data[i] = Curve(np.empty_like(basis), basis=basis)
+                # Empty_like gives unpredictable results
+                data[i] = Curve(np.full(basis.shape, np.nan), basis=basis)
 
         if window_length is not None:
             d_new = []

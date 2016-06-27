@@ -121,7 +121,7 @@ class Project(object):
         list_of_Wells = [Well.from_las(f) for f in glob.iglob(path)]
         return cls(list_of_Wells)
 
-    def data_as_matrix(self, logs, window):
+    def data_as_matrix(self, keys, window_length=3):
         """
         Make X.
 
@@ -129,12 +129,12 @@ class Project(object):
 
         """
         # Seed with known size.
-        X = np.zeros(window * len(logs))
+        X = np.zeros(window_length * len(keys))
 
         # Build up the data.
         for w in self.__list:
-            _X, _ = w.data_as_matrix(logs,
-                                     window_length=window,
+            _X, _ = w.data_as_matrix(keys,
+                                     window_length=window_length,
                                      return_basis=True,
                                      alias=self.alias)
             X = np.vstack([X, _X])
