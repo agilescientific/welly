@@ -12,6 +12,8 @@ from collections import Counter
 import numpy as np
 
 from .well import Well, WellError
+from . import utils
+from .defaults import ALIAS  # For access by user.
 
 
 class Project(object):
@@ -94,49 +96,81 @@ class Project(object):
         """
         Jupyter Notebook magic repr function.
         """
-        all_curves = []
-        for well in self:
-            all_curves += list(well.data.keys())
-        all_curves = [c for c in all_curves if c not in ["DEPTH", "DEPT"]]
-        top = Counter(all_curves).most_common()
-        curve_names = [i[0] for i in top]
-        # Make header
-        html_head = '<tr><th>Well (UWI) </th><th>Data </th>'
-        for thing in curve_names:
-            html_head += ('<th>' + thing + '</th>')
-        html_head += ('</tr>')
-        # Make rows
-        rows = ''
-        for well in self.__list:
-            this_row = ''
-            ncurves = str(len(well.data))
-            curves = [c if c in well.data.keys() else str(0) for c in curve_names]
-            this_row += '<td>{}</td><td>{} curves</td>'.format(well.uwi, ncurves)
-            for curve in curves:
-                if curve in well.data:
-                    color = 'grey'
-                if curve == str(0):
-                    color = 'white'
-                    curve = ''
-                this_row += ('<td bgcolor=' + color + '>' + curve + '</td>')
-            this_row += ('</tr>')
-            rows += this_row
-        html = '<table>{}{}</table>'.format(html_head, rows)
+        # Make header.
+        r = '</th><th>'.join(['UWI', 'Data', 'Curves'])
+        rows = '<tr><th>{}</th></tr>'.format(r)
+
+        # Make rows.
+        for w in self.__list:
+            rows += '<tr><td>{}</td>'.format(w.uwi)
+            rows += '<td>{}&nbsp;curves</td>'.format(len(w.data))
+            rows += '<td>{}</td></tr>'.format(', '.join(w.data.keys()))
+        html = '<table>{}</table>'.format(rows)
+
         return html
 
-        def make_one_row(well, curves):
-            this_row = ''
-            ncurves = str(len(well.data))
-            this_row += '<td>{}</td><td>{} curves</td>'.format(well.uwi, ncurves)
+    @property
+    def uwis(self):
+        return [w.uwi for w in self.__list]
+
+    def __all_curve_names(self, uwis=None, unique=True, count=False, nodepth=True):
+        """
+        Utility function to get all curve names from all wells, regardless
+        of data type or repetition.
+        """
+        uwis = uwis or self.uwis
+        c = utils.flatten_list([list(w.data.keys()) for w in self if w.uwi in uwis])
+        if nodepth:
+            c = filter(lambda x: x not in ['DEPT', 'DEPTH'], c)
+        if unique:
+            if count:
+                return Counter(c).most_common()
+            else:
+                return [i[0] for i in Counter(c).most_common()]
+        return list(c)
+
+    def _curve_table_html_(self, uwis=None, keys=None, alias=None):
+        """
+        Another version of the curve table.
+        """
+        uwis = uwis or self.uwis
+        wells = [w for w in self.__list if w.uwi in uwis]
+        counter = self.__all_curve_names(uwis=uwis, count=True)
+        keys = utils.flatten_list(keys) or [i[0] for i in counter]
+        alias = alias or self.alias
+
+        # Get every curve name in the project, and count them all. Determines
+        # the order of the table columns.
+
+        # Make header.
+        curve_names = [i[0] for i in counter if i[0] in keys]
+        r = '</th><th>'.join(['UWI', 'Data'] + curve_names)
+        rows = '<tr><th>{}</th></tr>'.format(r)
+
+        # Make summary row.
+        curve_counts = [str(i[1])+'&nbsp;wells' for i in counter if i[0] in keys]
+        r = '</td><td>'.join(['', ''] + curve_counts)
+        rows += '<tr><td>{}</td></tr>'.format(r)
+
+        # Make rows.
+        for w in wells:
+
+            curves = []
+            for c in curve_names:
+                m = w.get_mnemonic(c, alias=alias)
+                if c in w.data:
+                    curves.append(('#CCEECC', m))
+                elif m in w.data:
+                    curves.append(('#FFFFCC', m))
+                else:
+                    curves.append(('#FFCCCC', ''))
+
+            rows += '<td>{}</td><td>{}&nbsp;curves</td>'.format(w.uwi, len(w.data))
             for curve in curves:
-                if curve in well.data:
-                    color = 'grey'
-                if curve == str(0):
-                    color = 'white'
-                    curve = ''
-                this_row += ('<td bgcolor=' + color + '>' + curve + '</td>')
-            this_row += ('</tr>')
-            return this_row
+                rows += '<td bgcolor={}>{}</td>'.format(*curve)
+            rows += '</tr>'
+        html = '<table>{}</table>'.format(rows)
+
         return html
 
     @classmethod

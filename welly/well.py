@@ -541,6 +541,47 @@ class Well(object):
 
         return
 
+    def get_mnemonic(self, mnemonic, alias=None):
+        """
+        Instead of picking curves by name directly from the data dict, you
+        can pick them up with this method, which takes account of the alias
+        dict you pass it. If you do not pass an alias dict, then you get the
+        curve you asked for, if it exists, or None. NB Wells do not have alias
+        dicts, but Projects do.
+
+        Args:
+            mnemonic (str): the name of the curve you want.
+            alias (dict): an alias dictionary, like welly.
+
+        Returns:
+            Curve.
+        """
+        alias = alias or {}
+        aliases = alias.get(mnemonic, [mnemonic])
+        for a in aliases:
+            if a in self.data:
+                return a
+        return None
+
+    def get_curve(self, mnemonic, alias=None):
+        """
+        Wraps get_mnemonic.
+
+        Instead of picking curves by name directly from the data dict, you
+        can pick them up with this method, which takes account of the alias
+        dict you pass it. If you do not pass an alias dict, then you get the
+        curve you asked for, if it exists, or None. NB Wells do not have alias
+        dicts, but Projects do.
+
+        Args:
+            mnemonic (str): the name of the curve you want.
+            alias (dict): an alias dictionary, like welly.
+
+        Returns:
+            Curve.
+        """
+        return self.data.get(self.get_mnemonic(mnemonic, alias=alias), None)
+
     def make_synthetic(self,
                        srd=0,
                        v_repl_seismic=2000,
