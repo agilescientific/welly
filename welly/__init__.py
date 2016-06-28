@@ -9,6 +9,7 @@ from .project import Project
 from .well import Well
 from .header import Header
 from .curve import Curve
+from .scorecard import Scorecard
 from .synthetic import Synthetic
 from .location import Location
 from .crs import CRS
@@ -19,6 +20,7 @@ __all__ = [
            'Well',
            'Header',
            'Curve',
+           'Scorecard',
            'Synthetic',
            'Location',
            'CRS',
