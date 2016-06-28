@@ -7,6 +7,7 @@ Defines a multi-well 'project'.
 :license: Apache 2.0
 """
 import glob
+from collections import Counter
 
 import numpy as np
 
@@ -93,12 +94,49 @@ class Project(object):
         """
         Jupyter Notebook magic repr function.
         """
-        header = '<tr><th>UWI</th><th>Data</th></tr>'
+        all_curves = []
+        for well in self:
+            all_curves += list(well.data.keys())
+        all_curves = [c for c in all_curves if c not in ["DEPTH", "DEPT"]]
+        top = Counter(all_curves).most_common()
+        curve_names = [i[0] for i in top]
+        # Make header
+        html_head = '<tr><th>Well (UWI) </th><th>Data </th>'
+        for thing in curve_names:
+            html_head += ('<th>' + thing + '</th>')
+        html_head += ('</tr>')
+        # Make rows
         rows = ''
         for well in self.__list:
-            curves = len(well.data)
-            rows += '<tr><td>{}</td><td>{} curves</td></tr>'.format(well.uwi, curves)
-        html = '<table>{}{}</table>'.format(header, rows)
+            this_row = ''
+            ncurves = str(len(well.data))
+            curves = [c if c in well.data.keys() else str(0) for c in curve_names]
+            this_row += '<td>{}</td><td>{} curves</td>'.format(well.uwi, ncurves)
+            for curve in curves:
+                if curve in well.data:
+                    color = 'grey'
+                if curve == str(0):
+                    color = 'white'
+                    curve = ''
+                this_row += ('<td bgcolor=' + color + '>' + curve + '</td>')
+            this_row += ('</tr>')
+            rows += this_row
+        html = '<table>{}{}</table>'.format(html_head, rows)
+        return html
+
+        def make_one_row(well, curves):
+            this_row = ''
+            ncurves = str(len(well.data))
+            this_row += '<td>{}</td><td>{} curves</td>'.format(well.uwi, ncurves)
+            for curve in curves:
+                if curve in well.data:
+                    color = 'grey'
+                if curve == str(0):
+                    color = 'white'
+                    curve = ''
+                this_row += ('<td bgcolor=' + color + '>' + curve + '</td>')
+            this_row += ('</tr>')
+            return this_row
         return html
 
     @classmethod
