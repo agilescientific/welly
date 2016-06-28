@@ -143,3 +143,15 @@ class Project(object):
         X = X[1:]
 
         return X
+
+    def striplogs_as_vector(self, key, window_length=3):
+        """
+        Make y.
+
+        All striplogs need to have the same name.
+
+        """
+        # Seed with known size.
+        y = np.zeros(1)
+
+        return y
