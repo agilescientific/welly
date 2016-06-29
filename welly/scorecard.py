@@ -7,6 +7,8 @@ Makes scorecard for a well.
 """
 from collections import OrderedDict
 
+from .well import Well
+
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
@@ -40,7 +42,7 @@ colours = OrderedDict([('green', ['MV', 'B/E', 'GAPI', 'NAPI', 'API', 'MM']),
                        ('grey', [])])
 
 
-class Inventory(Well):
+class Scorecard(Well):
     """
     Creates a scorecard representation of a well.
     """
