@@ -1,5 +1,4 @@
 # !/usr/bin/env python
-# -*- coding: utf-8 -*-
 """
 Makes scorecard for a well.
 
@@ -13,7 +12,7 @@ import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 import matplotlib.patheffects as PathEffects
 
-from .well import Well
+# from .well import Well
 
 track_titles = ['MD',
                 'Lithology',
@@ -41,28 +40,33 @@ colours = OrderedDict([('green', ['MV', 'B/E', 'GAPI', 'NAPI', 'API', 'MM']),
                        ('grey', [])])
 
 
-class Scorecard(Well):
+class Inventory(Well):
     """
     Creates a scorecard representation of a well.
     """
 
-    def __init__(self, params):
+
+    def __init__(self, well):
         """
         Generic initializer for now.
         """
-        for k, v in params.items():
-            if k and v:
-                setattr(self, k, v)
+        self.data = well.data
+        self.location = well.location
+        self.header = well.header
+        self.width  = 8  # width of scorecard plot in inches
+        self.vscale = 250  # meters per inch (vertical scale)
+        self.striplog = well.data['Canstrat']
+        self.topsdata = well.data['tops']
+        if not well.location.td:
+            self.location.td = well.survey_basis()[-1]
 
-        if getattr(self, 'data', None) is None:
-            self.data = {}
 
-    def scorecard_fig(self, figheight=6, figwidth=8):
+    def scorecard_fig(self):
         """
         Makes a well scorecard figure from contents of a well object
         param: vscale: vertical scale in metres per inch.
         """
-        fig = plt.figure(figsize=(figwidth, figheight))
+        fig = plt.figure(figsize=(8, 6))
         gs = gridspec.GridSpec(1, 6, width_ratios=[3, 3, 3, 3, 3, 1])
         ax1 = plt.subplot(gs[0])
         ax2 = plt.subplot(gs[1])
@@ -73,37 +77,43 @@ class Scorecard(Well):
         axarr = [ax1, ax2, ax3, ax4, ax5, ax6]
         return fig, axarr
 
+
     def plot_bars(self, axarr, fs=8, start=0, buff=0.2):
         """
         Plots various bars in tracks.
         """
         trackplace = np.zeros(len(axarr))
-        basis = self.data['DEPT'] or self.data['DEPTH']
+        basis = self.data['DEPT'] 
         for curve in self.data.keys():
-            if curve != 'DEPT' or 'DEPTH' and type(self.data[curve]) == type(basis):
-                top, base, height = self.get_bar_range(self.data[curve])
-                name, units, descr = self.get_curve_text(self.data[curve])
+            if type(self.data[curve]) == type(basis):
+                if curve != 'DEPT' or 'DEPTH':
+                    top, base, height = self.get_bar_range(self.data[curve])
+                    name, units, descr = self.get_curve_text(self.data[curve])
 
-                # This is a little convoluted because the dictionary is backwards.
-                # Alternative would be to reverse it, and just use the set of colours
-                # for the colour index lookup.
-                _colour = [k if (units.upper() in v) else None for k, v in colours.items()]
-                colour = (list(filter(None, _colour)) or ['grey'])[0]
-                p = list(colours.keys()).index(colour)
+                    # This is a little convoluted because the dictionary is backwards.
+                    # Alternative would be to reverse it, and just use the set of colours
+                    # for the colour index lookup.
+                    _colour = [k if (units.upper() in v) else None for k, v in colours.items()]
+                    colour = (list(filter(None, _colour)) or ['grey'])[0]
+                    p = list(colours.keys()).index(colour)
 
-                ax = axarr[p]
-                # Plot the bar
-                for t, b, h in zip(top, base, height):
-                    ax.bar(start + trackplace[p] + buff, h, bottom=self.data[curve].basis[t],
-                           width=0.8, alpha=0.2, color=colour)
-                    # Plot the name in the middle
-                    ax.text(start + trackplace[p] + 0.5 + buff, 0 + 350, name,
-                            fontsize=fs, ha='center', va='top', rotation='vertical')
-                    # Plot curve units
-                    ax.text(start + trackplace[p] + 0.5 + buff, 0 + 50, units,
-                            fontsize=fs, ha='center', va='top', rotation='vertical')
-                trackplace[p] += 1
+                    ax = axarr[p]
+                    # Plot the bar
+                    for t, b, h in zip(top, base, height):
+                        ax.bar(start + trackplace[p] + buff, h, bottom=self.data[curve].basis[t],
+                               width=0.8, alpha=0.2, color=colour)
+                        # Plot the name in the middle
+                        ax.text(start + trackplace[p] + 0.5 + buff, 0 + 350, name,
+                                fontsize=fs, ha='center', va='top', rotation='vertical')
+                        # Plot curve units
+                        ax.text(start + trackplace[p] + 0.5 + buff, 0 + 50, units,
+                                fontsize=fs, ha='center', va='top', rotation='vertical')
+                    ax.set_ylim([self.location.td, 0])
+                    trackplace[p] += 1
+
         [ax.set_xlim(-1, max(trackplace)+1) for ax in axarr]
+        [ax.set_yticks([]) for ax in axarr[1:]]
+        [ax.set_xticks([]) for ax in axarr]
         return axarr
 
     def get_bar_range(self, curve):
@@ -127,7 +137,7 @@ class Scorecard(Well):
         height = curve.basis[base] - curve.basis[top]
         return top, base, height
 
-    def get_curve_text(curve):
+    def get_curve_text(self, curve):
         name = curve.mnemonic
         units = curve.units
         descr = curve.description
@@ -142,7 +152,7 @@ class Scorecard(Well):
                     ha='center', va='bottom', transform=ax.transAxes)
         return
 
-    def plot_striplog(self, well, axarr, striplog, legend):
+    def plot_striplog(self, axarr, striplog, legend):
         """
         Plot stiplog (if the well has one).
         """
@@ -150,26 +160,26 @@ class Scorecard(Well):
             axarr[-1] = striplog.plot(ax=axarr[-1], aspect=0.2,
                                       legend=legend, match_only=['lithology'])
             axarr[-1].set_title('Canstrat \n Lithology')
-            axarr[-1].set_ylim([self.get_td(well), 0])
+            axarr[-1].set_ylim([self.location.td, 0])
             axarr[-1].set_yticklabels([])
             axarr[-1].spines['right'].set_visible(True)
             axarr[-1].spines['top'].set_visible(True)
             axarr[-1].spines['bottom'].set_visible(True)
         return
 
-    def put_tops(self, well, axarr, topsdata):
+    def put_tops(self, axarr, topsdata):
         """
         Put tops across all tracks.
         """
         if topsdata is not None:
             for i, ax in enumerate(axarr):
-                ax.set_ylim([self.get_td(well), 0])
+                ax.set_ylim([self.location.td, 0])
                 ax.set_xticks([])
                 if i > 0:
                     ax.set_yticks([])
 
-                for pick in well.data[topsdata]:
-                    name = pick.primary.formation
+                for pick in topsdata:
+                    name = pick.data['formation']
                     depth = pick.top.middle
                     ax.axhline(depth, lw=2, color='k', xmax=1.05,
                                path_effects=[PathEffects.SimpleLineShadow(),
@@ -179,32 +189,39 @@ class Scorecard(Well):
                                 ha='left', va='center')
         return
 
-    def put_side_text(self, well, ax, axarr):
+
+    def put_side_text(self, axarr):
         # Label kb elevation.
-        axarr[-1].text(x=1.4, y=1.0, s='KB elev.:'+str(well.location.kb)+' m',
-                       fontsize=8, ha='left', va='top', transform=ax.transAxes)
-        # Label td elevation (measured depth).
-        axarr[-1].text(x=1.4, y=0.0, s='TD:'+str(round(well.location.td))+' m',
-                       fontsize=8, ha='left', va='bottom', transform=ax.transAxes)
+        ax = axarr[-1]
+        if self.location.kb is not None:
+            ax.text(x=1.4, y=1.0, s='KB elev.:'+str(self.location.kb)+' m',
+                    fontsize=8, ha='left', va='top', transform=ax.transAxes)
+        # Label td elevation (measured depth)
+        if self.location.td is not None:
+            ax.text(x=1.4, y=0.0, s='TD:'+str(round(self.location.td))+' m',
+                    fontsize=8, ha='left', va='bottom', transform=ax.transAxes)
         return
 
-    def put_header_text(self, well, fig):
-        fig.text(x=0.05, y=0.925, s=well.header.name, fontsize=14)
-        fig.text(x=0.05, y=0.910, s='UWI: '+well.header.uwi, fontsize=12)
+
+    def put_header_text(self, fig):
+        fig.text(x=0.05, y=0.925, s=self.header.name, fontsize=14)
+        fig.text(x=0.05, y=0.910, s='UWI: '+ self.header.uwi, fontsize=12)
         fig.subplots_adjust(wspace=0, hspace=0)
         return fig
 
-    def adjust_fig_dims(self, well, fig, width, vscale):
-        fig.set_figheight(self.get_td(well)/vscale)
-        fig.set_figwidth(width)
+
+    def adjust_fig_dims(self, fig):
+        fig.set_figheight(self.location.td/self.vscale)
+        fig.set_figwidth(self.width)
         return fig
 
-    def scorecard(self, well, striplog, topsdata):
-        fig, axarr = self.scorecard_fig(self)
+
+    def scorecard(self, strip_name, strip_legend, tops_name='none'):
+        fig, axarr = self.scorecard_fig()
         axarr = self.plot_bars(axarr)
         self.put_track_names(axarr)
-        self.put_striplog(axarr)
-        self.put_tops(axarr)
+        self.plot_striplog(axarr, self.data[strip_name], strip_legend)
+        self.put_tops(axarr, self.data[tops_name])
         self.put_side_text(axarr)
         self.put_header_text(fig)
         self.adjust_fig_dims(fig)
