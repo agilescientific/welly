@@ -6,6 +6,9 @@ Utility functions for welly.
 :copyright: 2016 Agile Geoscience
 :license: Apache 2.0
 """
+import re
+import glob
+
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -470,3 +473,23 @@ def text_colour_for_hex(hexx, percent=50, dark='#000000', light='#ffffff'):
         bool: The colour's brightness is less than the given percent.
     """
     return light if hex_is_dark(hexx, percent=percent) else dark
+
+
+def get_lines(handle, line):
+    """
+    Get zero-indexed line from an open file-like.
+    """
+    for i, l in enumerate(handle):
+        if i == line:
+            return l
+
+
+def find_file(pattern, path):
+    """
+    A bit like grep. Finds a pattern, looking in path. Returns the filename.
+    """
+    for fname in glob.iglob(path):
+        with open(fname) as f:
+            if re.search(pattern, get_lines(f, 1)):
+                return fname
+    return

@@ -111,8 +111,9 @@ class Well(object):
                                                   remap=remap,
                                                   funcs=funcs)
 
+        depth_curves = ['DEPT', 'DEPTH', 'TIME']
         curves = {c.mnemonic: Curve.from_lasio_curve(c, **curve_params)
-                  for c in l.curves}
+                  for c in l.curves if c.mnemonic not in depth_curves}
 
         # Build a dict of the other well data.
         params = {'las': l,
@@ -581,6 +582,23 @@ class Well(object):
             Curve.
         """
         return self.data.get(self.get_mnemonic(mnemonic, alias=alias), None)
+
+    def count_curves(self, keys, alias=None):
+        """
+        Counts the number of curves in the well that will be selected with the
+        given key list and the given alias dict. Use by Project's curve table.
+        """
+        return len(list(filter(None, [self.get_mnemonic(k, alias=alias) for k in keys])))
+
+    def alias_has_multiple(self, mnemonic, alias):
+        return len([a for a in alias[mnemonic] if a in self.data]) > 1
+
+    def curve_quality(self):
+        """
+        Get the quality of each curve — from its get_quality() method — and
+        add the well-level quality measures, eg a lot of correlation between
+        2 curves.
+        """
 
     def make_synthetic(self,
                        srd=0,

@@ -109,69 +109,14 @@ class Project(object):
 
         return html
 
+    def pop(self, index):
+        item = self.__list.pop(index)
+        self.__index = 0
+        return item
+
     @property
     def uwis(self):
         return [w.uwi for w in self.__list]
-
-    def __all_curve_names(self, uwis=None, unique=True, count=False, nodepth=True):
-        """
-        Utility function to get all curve names from all wells, regardless
-        of data type or repetition.
-        """
-        uwis = uwis or self.uwis
-        c = utils.flatten_list([list(w.data.keys()) for w in self if w.uwi in uwis])
-        if nodepth:
-            c = filter(lambda x: x not in ['DEPT', 'DEPTH'], c)
-        if unique:
-            if count:
-                return Counter(c).most_common()
-            else:
-                return [i[0] for i in Counter(c).most_common()]
-        return list(c)
-
-    def _curve_table_html_(self, uwis=None, keys=None, alias=None):
-        """
-        Another version of the curve table.
-        """
-        uwis = uwis or self.uwis
-        wells = [w for w in self.__list if w.uwi in uwis]
-        counter = self.__all_curve_names(uwis=uwis, count=True)
-        keys = utils.flatten_list(keys) or [i[0] for i in counter]
-        alias = alias or self.alias
-
-        # Get every curve name in the project, and count them all. Determines
-        # the order of the table columns.
-
-        # Make header.
-        curve_names = [i[0] for i in counter if i[0] in keys]
-        r = '</th><th>'.join(['UWI', 'Data'] + curve_names)
-        rows = '<tr><th>{}</th></tr>'.format(r)
-
-        # Make summary row.
-        curve_counts = [str(i[1])+'&nbsp;wells' for i in counter if i[0] in keys]
-        r = '</td><td>'.join(['', ''] + curve_counts)
-        rows += '<tr><td>{}</td></tr>'.format(r)
-
-        # Make rows.
-        for w in wells:
-
-            curves = []
-            for c in curve_names:
-                m = w.get_mnemonic(c, alias=alias)
-                if c in w.data:
-                    curves.append(('#CCEECC', m))
-                elif m in w.data:
-                    curves.append(('#FFFFCC', m))
-                else:
-                    curves.append(('#FFCCCC', ''))
-
-            rows += '<td>{}</td><td>{}&nbsp;curves</td>'.format(w.uwi, len(w.data))
-            for curve in curves:
-                rows += '<td bgcolor={}>{}</td>'.format(*curve)
-            rows += '</tr>'
-        html = '<table>{}</table>'.format(rows)
-
-        return html
 
     @classmethod
     def from_las(cls, path, remap=None, funcs=None):
@@ -193,7 +138,157 @@ class Project(object):
         list_of_Wells = [Well.from_las(f) for f in glob.iglob(path)]
         return cls(list_of_Wells)
 
-    def data_as_matrix(self, keys, window_length=3):
+    def add_canstrat_striplogs(self, path, name='canstrat'):
+        """
+        This may be to specific a method... just move it to the workflow.
+
+        Requires striplog.
+        """
+        from striplog import Striplog
+
+        for w in self.__list:
+            dat_file = utils.find_file(w.uwi, path)
+
+            if dat_file is None:
+                print("- Omitting {}: no data".format(w.uwi))
+                continue
+
+            # If we got here, we're using it.
+            print("+ Adding {}".format(w.uwi))
+
+            w.data[name] = Striplog.from_canstrat(dat_file)
+
+        return
+
+    def __all_curve_names(self, uwis=None, unique=True, count=False, nodepth=True):
+        """
+        Utility function to get all curve names from all wells, regardless
+        of data type or repetition.
+        """
+        uwis = uwis or self.uwis
+        c = utils.flatten_list([list(w.data.keys()) for w in self if w.uwi in uwis])
+        if nodepth:
+            c = filter(lambda x: x not in ['DEPT', 'DEPTH'], c)
+        if unique:
+            if count:
+                return Counter(c).most_common()
+            else:
+                return [i[0] for i in Counter(c).most_common()]
+        return list(c)
+
+    def get_mnemonics(self, mnemonics, uwis=None, alias=None):
+        """
+        Looks at all the wells in turn and returns the highest thing
+        in the alias table.
+
+        Args:
+            mnemonics (list)
+            alias (dict)
+
+        Returns:
+            list. A list of lists.
+        """
+        # Let's not do the nested comprehension...
+        uwis = uwis or self.uwis
+        wells = [w for w in self.__list if w.uwi in uwis]
+        all_wells = []
+        for w in wells:
+            this_well = [w.get_mnemonic(m, alias=alias) for m in mnemonics]
+            all_wells.append(this_well)
+        return all_wells
+
+    def count_mnemonic(self, mnemonic, uwis=uwis, alias=None):
+        """
+        Counts the wells that have a given curve, given the mnemonic and an
+        alias dict.
+        """
+        all_mnemonics = self.get_mnemonics([mnemonic], uwis=uwis, alias=alias)
+        return len(list(filter(None, utils.flatten_list(all_mnemonics))))
+
+    def curve_table_html(self, uwis=None, keys=None, alias=None):
+        """
+        Another version of the curve table.
+        """
+        uwis = uwis or self.uwis
+        wells = [w for w in self.__list if w.uwi in uwis]
+        counter = self.__all_curve_names(uwis=uwis, count=True)
+        keys = utils.flatten_list(keys) or [i[0] for i in counter]
+
+        if alias is None:
+            alias = self.alias
+
+        # Make header.
+        r = '</th><th>'.join(['UWI', 'Data'] + keys)
+        rows = '<tr><th>{}</th></tr>'.format(r)
+
+        # Make summary row.
+        well_counts = [str(self.count_mnemonic(m, uwis=uwis, alias=alias))+'&nbsp;wells' for m in keys]
+        r = '</td><td>'.join(['', ''] + well_counts)
+        rows += '<tr><td>{}</td></tr>'.format(r)
+
+        # Make rows.
+        for w in wells:
+
+            this_well = [w.get_curve(m, alias=alias) for m in keys]
+
+            curves = []
+            for c in this_well:
+                if c is None:
+                    curves.append(('#FFCCCC', '', ''))
+                else:
+                    curves.append(('#CCEECC', c.mnemonic, c.units))
+
+            rows += '<td><span style="font-weight:bold;">{}</span></td><td>{}/{}&nbsp;curves</td>'.format(w.uwi,
+                                                                   w.count_curves(keys, alias),
+                                                                   len(w.data))
+            for curve in curves:
+                rows += '<td style="background-color:{}; line-height:80%; padding:5px 4px 2px 4px;">{}<br /><span style="font-size:70%; color:#33AA33">{}</span></td>'.format(*curve)
+            rows += '</tr>'
+        html = '<table>{}</table>'.format(rows)
+
+        return html
+
+    def get_wells(self, uwis=None):
+        if uwis is None:
+            return Project(self.__list)
+        return Project([w for w in self if w.uwi in uwis])
+
+    def data_as_matrix(self, X_keys, y_key,
+                       legend=None,
+                       match_only=None,
+                       basis=None,
+                       window_length=3,
+                       test=None):
+
+        train_, test_ = [], []
+        for w in self.__list:
+            if w.uwi in test:
+                test_.append(w.uwi)
+            else:
+                train_.append(w.uwi)
+
+        X_train, y_train = self._data_as_matrix(X_keys=X_keys, y_key=y_key,
+                                                legend=legend,
+                                                match_only=match_only,
+                                                basis=basis,
+                                                window_length=window_length,
+                                                uwis=train_)
+
+        X_test, y_test = self._data_as_matrix(X_keys=X_keys, y_key=y_key,
+                                                legend=legend,
+                                                match_only=match_only,
+                                                basis=basis,
+                                                window_length=window_length,
+                                                uwis=test_)
+
+        return X_train, X_test, y_train, y_test
+
+    def _data_as_matrix(self, X_keys, y_key,
+                        legend=None,
+                        match_only=None,
+                        basis=None,
+                        window_length=3,
+                        uwis=None):
         """
         Make X.
 
@@ -201,29 +296,30 @@ class Project(object):
 
         """
         # Seed with known size.
-        X = np.zeros(window_length * len(keys))
+        X = np.zeros(window_length * len(X_keys))
+        y = np.zeros(1)
 
         # Build up the data.
-        for w in self.__list:
-            _X, _ = w.data_as_matrix(keys,
+        for w in self.get_wells(uwis):
+
+            _X, z = w.data_as_matrix(X_keys,
+                                     basis=basis,
                                      window_length=window_length,
                                      return_basis=True,
                                      alias=self.alias)
             X = np.vstack([X, _X])
 
+            try:
+                _y = w.data[y_key].to_basis(basis=z)
+            except:
+                _y = w.data[y_key].to_log(basis=z,
+                                          legend=legend,
+                                          match_only=match_only)
+
+            y = np.hstack([y, _y])
+
         # Get rid of the 'seed'.
         X = X[1:]
+        y = y[1:]
 
-        return X
-
-    def striplogs_as_vector(self, key, window_length=3):
-        """
-        Make y.
-
-        All striplogs need to have the same name.
-
-        """
-        # Seed with known size.
-        y = np.zeros(1)
-
-        return y
+        return X, y

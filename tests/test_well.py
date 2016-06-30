@@ -15,7 +15,7 @@ def test_well():
     assert well.header.license == 'P-129'
     assert well.location.country == 'CA'
     assert well.location.gl == 90.3
-    assert len(well.data) == 25
+    assert len(well.data) == 24
     assert well.data['GR'][0] - 46.69865036 < 0.001
     assert len(well.survey_basis()) == 12718
 
@@ -39,7 +39,7 @@ def test_html_repr():
     assert name in html
     assert data in html
     assert prov in html
-    for d in ['HCAL', 'RLA1', 'DT', 'DPHI_LIM', 'RLA3', 'RT_HRLT', 'CALI', 'DTS', 'DPHI_DOL', 'RLA5', 'RXO_HRLT', 'RLA4', 'SP', 'RXOZ', 'NPHI_LIM', 'DPHI_SAN', 'RLA2', 'PEF', 'RHOB', 'NPHI_SAN', 'RM_HRLT', 'DEPT', 'NPHI_DOL', 'GR', 'DRHO']:
+    for d in ['HCAL', 'RLA1', 'DT', 'DPHI_LIM', 'RLA3', 'RT_HRLT', 'CALI', 'DTS', 'DPHI_DOL', 'RLA5', 'RXO_HRLT', 'RLA4', 'SP', 'RXOZ', 'NPHI_LIM', 'DPHI_SAN', 'RLA2', 'PEF', 'RHOB', 'NPHI_SAN', 'RM_HRLT', 'NPHI_DOL', 'GR', 'DRHO']:
         assert d in html
 
 
