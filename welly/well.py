@@ -593,13 +593,6 @@ class Well(object):
     def alias_has_multiple(self, mnemonic, alias):
         return len([a for a in alias[mnemonic] if a in self.data]) > 1
 
-    def curve_quality(self):
-        """
-        Get the quality of each curve — from its get_quality() method — and
-        add the well-level quality measures, eg a lot of correlation between
-        2 curves.
-        """
-
     def make_synthetic(self,
                        srd=0,
                        v_repl_seismic=2000,
@@ -657,6 +650,66 @@ class Well(object):
         self.data['Synthetic'] = Synthetic(synth, basis=t_reg, params=params)
 
         return None
+
+    def qc_data(self, tests, alias=None):
+        """
+        Run a series of tests against the data and return the corresponding
+        results.
+
+        Args:
+            tests (list): a list of functions.
+
+        Returns:
+            list. The results. Stick to booleans (True = pass) or ints.
+        """
+        alias = alias or {}
+
+        this_well = {}
+
+        # We're going to try to run tests on every curve the well has.
+        for mnem, curve in self.data.items():
+
+            # Gather the tests.
+            # First, anything called 'all', 'All', or 'ALL'.
+            # Second, anything with the name of the curve we're in now.
+            # Third, anything that the alias list has for this curve.
+            # (This requires a reverse look-up so it's a bit messy.)
+            this_tests = tests.get('all', [])+tests.get('All', [])+tests.get('ALL', [])\
+                + tests.get(mnem, [])\
+                + utils.flatten_list([tests.get(a) for a in curve.get_alias(alias)])
+            this_tests = filter(None, this_tests)
+
+            # Perform tests and gather results.
+            this_curve = {}
+            for test in this_tests:
+                result = test(curve)
+                this_curve[test.__name__] = result
+            this_well[mnem] = this_curve
+
+        return this_well
+
+    def qc_table_html(self, tests, alias=None):
+        """
+        Makes a nice table out of ``qc_data()``
+        """
+        data = self.qc_data(tests, alias=alias)
+        all_tests = [list(d.keys()) for d in data.values()]
+        tests = list(set(utils.flatten_list(all_tests)))
+
+        # Header row.
+        r = '</th><th>'.join(['UWI', 'Tests'] + tests)
+        rows = '<tr><th>{}</th></tr>'.format(r)
+
+        # Quality results.
+        for curve, results in data.items():
+            rows += '<tr><th>{}</th><td>{}</td>'.format(curve, len(results))
+            for test in tests:
+                result = results.get(test, '')
+                rows += '<td>{}</td>'.format(result)
+            rows += '</tr>'
+
+        html = '<table>{}</table>'.format(rows)
+        return html
 
     def data_as_matrix(self, keys=None,
                        return_basis=False,
