@@ -13,6 +13,7 @@ from .synthetic import Synthetic
 from .location import Location
 from .crs import CRS
 from . import tools
+from . import quality
 
 __all__ = [
            'Project',
@@ -22,6 +23,7 @@ __all__ = [
            'Synthetic',
            'Location',
            'CRS',
+           'quality',
            'tools',  # Various classes in here
           ]
 

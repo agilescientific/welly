@@ -468,12 +468,8 @@ class Curve(np.ndarray):
         except:
             return self._read_at(d, **kwargs)
 
-    def quality(self, tests):
+    def quality(self, tests, alias=None):
         """
-        Not sure we need this, since it's really just a list comp. Maybe Well
-        is the only place we need to implement. Let's see if we need to
-        add anything to it...
-
         Run a series of tests and return the corresponding results.
 
         Args:
@@ -482,7 +478,37 @@ class Curve(np.ndarray):
         Returns:
             list. The results. Stick to booleans (True = pass) or ints.
         """
-        return [test(self) for test in tests]
+        # Gather the tests.
+        # First, anything called 'all', 'All', or 'ALL'.
+        # Second, anything with the name of the curve we're in now.
+        # Third, anything that the alias list has for this curve.
+        # (This requires a reverse look-up so it's a bit messy.)
+        this_tests =\
+            tests.get('all', [])+tests.get('All', [])+tests.get('ALL', [])\
+            + tests.get(self.mnemonic, [])\
+            + utils.flatten_list([tests.get(a) for a in self.get_alias(alias)])
+        this_tests = filter(None, this_tests)
+
+        return {test.__name__: test(self) for test in this_tests}
+
+    def quality_score(self, tests, alias=None):
+        """
+        Run a series of tests and return the normalized score.
+            1.0:   Passed all tests.
+            (0-1): Passed a fraction of tests.
+            0.0:   Passed no tests.
+            -1.0:  Took no tests.
+
+        Args:
+            tests (list): a list of functions.
+
+        Returns:
+            float. The fraction of tests passed, or -1 for 'took no tests'.
+        """
+        results = self.quality(tests, alias=alias).values()
+        if results:
+            return sum(results) / len(results)
+        return -1
 
     def block(self,
               cutoffs=None,

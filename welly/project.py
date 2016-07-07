@@ -205,7 +205,7 @@ class Project(object):
         all_mnemonics = self.get_mnemonics([mnemonic], uwis=uwis, alias=alias)
         return len(list(filter(None, utils.flatten_list(all_mnemonics))))
 
-    def curve_table_html(self, uwis=None, keys=None, alias=None):
+    def curve_table_html(self, uwis=None, keys=None, alias=None, tests=None):
         """
         Another version of the curve table.
         """
@@ -214,6 +214,7 @@ class Project(object):
         counter = self.__all_curve_names(uwis=uwis, count=True)
         keys = utils.flatten_list(keys) or [i[0] for i in counter]
 
+        tests = tests or {}
         if alias is None:
             alias = self.alias
 
@@ -226,6 +227,13 @@ class Project(object):
         r = '</td><td>'.join(['', ''] + well_counts)
         rows += '<tr><td>{}</td></tr>'.format(r)
 
+        q_colours = {
+            0: '#FF3333',
+            1: '#33FF33',
+            -1: '#CCCCCC'
+            # default: '#FFFFCC'  # Done with get when we use this dict.
+        }
+
         # Make rows.
         for w in wells:
 
@@ -234,18 +242,25 @@ class Project(object):
             curves = []
             for c in this_well:
                 if c is None:
-                    curves.append(('#FFCCCC', '', ''))
+                    curves.append(('#FFCCCC', '', '#CCCCCC', ''))
                 else:
-                    curves.append(('#CCEECC', c.mnemonic, c.units))
+                    q_colour = q_colours.get(c.quality_score(tests), '#FFCC33')
+                    curves.append(('#CCEECC', c.mnemonic, q_colour, c.units))
 
-            rows += '<td><span style="font-weight:bold;">{}</span></td><td>{}/{}&nbsp;curves</td>'.format(w.uwi,
-                                                                   w.count_curves(keys, alias),
-                                                                   len(w.data))
+            # Make general columns.
+            s = '<td><span style="font-weight:bold;">{}</span></td><td>{}/{}&nbsp;curves</td>'
+            rows += s.format(w.uwi, w.count_curves(keys, alias), len(w.data))
+
+            # Make curve data columns.
             for curve in curves:
-                rows += '<td style="background-color:{}; line-height:80%; padding:5px 4px 2px 4px;">{}<br /><span style="font-size:70%; color:#33AA33">{}</span></td>'.format(*curve)
+                s = '<td style="background-color:{}; line-height:80%; padding:5px 4px 2px 4px;">{}'
+                s += '<div style="font-size:80%; float:right; padding:4px 0px 4px 6px; color:{};">&#x2b24;</div>'
+                s += '<br /><span style="font-size:70%; color:#33AA33">{}</span></td>'
+                rows += s.format(*curve)
             rows += '</tr>'
-        html = '<table>{}</table>'.format(rows)
 
+        # Make the table and get out of here.
+        html = '<table>{}</table>'.format(rows)
         return html
 
     def get_wells(self, uwis=None):

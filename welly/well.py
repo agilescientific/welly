@@ -674,17 +674,17 @@ class Well(object):
             # Second, anything with the name of the curve we're in now.
             # Third, anything that the alias list has for this curve.
             # (This requires a reverse look-up so it's a bit messy.)
-            this_tests = tests.get('all', [])+tests.get('All', [])+tests.get('ALL', [])\
-                + tests.get(mnem, [])\
-                + utils.flatten_list([tests.get(a) for a in curve.get_alias(alias)])
-            this_tests = filter(None, this_tests)
+            # this_tests = tests.get('all', [])+tests.get('All', [])+tests.get('ALL', [])\
+            #     + tests.get(mnem, [])\
+            #     + utils.flatten_list([tests.get(a) for a in curve.get_alias(alias)])
+            # this_tests = filter(None, this_tests)
 
             # Perform tests and gather results.
-            this_curve = {}
-            for test in this_tests:
-                result = test(curve)
-                this_curve[test.__name__] = result
-            this_well[mnem] = this_curve
+            # this_curve = {}
+            # for test in this_tests:
+            #     result = test(curve)
+            #     this_curve[test.__name__] = result
+            this_well[mnem] = curve.quality(tests)
 
         return this_well
 
@@ -697,15 +697,31 @@ class Well(object):
         tests = list(set(utils.flatten_list(all_tests)))
 
         # Header row.
-        r = '</th><th>'.join(['UWI', 'Tests'] + tests)
+        r = '</th><th>'.join(['UWI', 'Passed', 'Score'] + tests)
         rows = '<tr><th>{}</th></tr>'.format(r)
+
+        styles = {
+            True: "#CCEECC",
+            False: "#FFCCCC",
+        }
 
         # Quality results.
         for curve, results in data.items():
-            rows += '<tr><th>{}</th><td>{}</td>'.format(curve, len(results))
+
+            if results:
+                norm_score = sum(results.values()) / len(results)
+            else:
+                norm_score = -1
+
+            rows += '<tr><th>{}</th>'.format(curve)
+            rows += '<td>{} / {}</td>'.format(sum(results.values()), len(results))
+            rows += '<td>{}</td>'.format(norm_score)
+
             for test in tests:
                 result = results.get(test, '')
-                rows += '<td>{}</td>'.format(result)
+                style = styles.get(result, "#EEEEEE")
+                rows += '<td style="background-color:{};">'.format(style)
+                rows += '{}</td>'.format(result)
             rows += '</tr>'
 
         html = '<table>{}</table>'.format(rows)
