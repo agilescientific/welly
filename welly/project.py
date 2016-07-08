@@ -242,7 +242,7 @@ class Project(object):
             curves = []
             for c in this_well:
                 if c is None:
-                    curves.append(('#FFCCCC', '', '#CCCCCC', ''))
+                    curves.append(('#CCCCCC', '', '#CCCCCC', ''))
                 else:
                     q_colour = q_colours.get(c.quality_score(tests), '#FFCC33')
                     curves.append(('#CCEECC', c.mnemonic, q_colour, c.units))

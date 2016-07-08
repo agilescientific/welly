@@ -662,31 +662,7 @@ class Well(object):
         Returns:
             list. The results. Stick to booleans (True = pass) or ints.
         """
-        alias = alias or {}
-
-        this_well = {}
-
-        # We're going to try to run tests on every curve the well has.
-        for mnem, curve in self.data.items():
-
-            # Gather the tests.
-            # First, anything called 'all', 'All', or 'ALL'.
-            # Second, anything with the name of the curve we're in now.
-            # Third, anything that the alias list has for this curve.
-            # (This requires a reverse look-up so it's a bit messy.)
-            # this_tests = tests.get('all', [])+tests.get('All', [])+tests.get('ALL', [])\
-            #     + tests.get(mnem, [])\
-            #     + utils.flatten_list([tests.get(a) for a in curve.get_alias(alias)])
-            # this_tests = filter(None, this_tests)
-
-            # Perform tests and gather results.
-            # this_curve = {}
-            # for test in this_tests:
-            #     result = test(curve)
-            #     this_curve[test.__name__] = result
-            this_well[mnem] = curve.quality(tests)
-
-        return this_well
+        return {m: c.quality(tests, alias or {}) for m, c in self.data.items()}
 
     def qc_table_html(self, tests, alias=None):
         """
@@ -715,7 +691,7 @@ class Well(object):
 
             rows += '<tr><th>{}</th>'.format(curve)
             rows += '<td>{} / {}</td>'.format(sum(results.values()), len(results))
-            rows += '<td>{}</td>'.format(norm_score)
+            rows += '<td>{:.3f}</td>'.format(norm_score)
 
             for test in tests:
                 result = results.get(test, '')

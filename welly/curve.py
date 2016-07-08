@@ -486,7 +486,7 @@ class Curve(np.ndarray):
         this_tests =\
             tests.get('all', [])+tests.get('All', [])+tests.get('ALL', [])\
             + tests.get(self.mnemonic, [])\
-            + utils.flatten_list([tests.get(a) for a in self.get_alias(alias)])
+            + utils.flatten_list([tests.get(a) for a in self.get_alias(alias=alias)])
         this_tests = filter(None, this_tests)
 
         return {test.__name__: test(self) for test in this_tests}
