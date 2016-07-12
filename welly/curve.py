@@ -53,7 +53,7 @@ class Curve(np.ndarray):
             return float(obj)
 
         self.start = getattr(obj, 'start', 0)
-        self.step = getattr(obj, 'step', 0)
+        self.step = getattr(obj, 'step', 1)
         self.mnemonic = getattr(obj, 'mnemonic', None)
         self.units = getattr(obj, 'units', None)
         self.run = getattr(obj, 'run', 0)

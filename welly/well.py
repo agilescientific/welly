@@ -49,6 +49,9 @@ class Well(object):
         if getattr(self, 'data', None) is None:
             self.data = {}
 
+        if getattr(self, 'header', None) is None:
+            self.header = Header({})
+
     def __eq__(self, other):
         if (not self.uwi) or (not other.uwi):
             raise WellError("One or both UWIs is blank, cannot determine equality.")
@@ -745,8 +748,8 @@ class Well(object):
                             _keys.append(k)
                     else:
                         _keys.append(k)
-                print("You asked for {}".format(keys))
-                print("You are getting {}".format(_keys))
+                # print("You asked for {}".format(keys))
+                # print("You are getting {}".format(_keys))
                 keys = _keys
 
         if basis is None:

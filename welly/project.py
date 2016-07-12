@@ -25,7 +25,7 @@ class Project(object):
 
     """
     def __init__(self, list_of_Wells):
-        self.alias = None
+        self.alias = {}
         self.__list = list_of_Wells
         self.__index = 0
         self._iter = iter(self.__list)  # Set up iterable.
@@ -254,7 +254,12 @@ class Project(object):
             # Make curve data columns.
             for curve in curves:
                 s = '<td style="background-color:{}; line-height:80%; padding:5px 4px 2px 4px;">{}'
-                s += '<div style="font-size:80%; float:right; padding:4px 0px 4px 6px; color:{};">&#x2b24;</div>'
+                t = '<div style="font-size:80%; float:right; padding:4px 0px 4px 6px; color:{{}};">{}</div>'
+                if tests:
+                    t = t.format('&#x2b24;')
+                else:
+                    t = t.format('')
+                s += t
                 s += '<br /><span style="font-size:70%; color:#33AA33">{}</span></td>'
                 rows += s.format(*curve)
             rows += '</tr>'
@@ -263,18 +268,24 @@ class Project(object):
         html = '<table>{}</table>'.format(rows)
         return html
 
+    def find_curves(self, curve):
+        return [w for w in self if curve in w.data.keys()]
+
     def get_wells(self, uwis=None):
         if uwis is None:
             return Project(self.__list)
         return Project([w for w in self if w.uwi in uwis])
 
     def data_as_matrix(self, X_keys, y_key,
+                       alias=None,
                        legend=None,
                        match_only=None,
                        basis=None,
                        window_length=3,
-                       test=None):
+                       test=None,
+                       remove_zeros=False):
 
+        test = test or []
         train_, test_ = [], []
         for w in self.__list:
             if w.uwi in test:
@@ -283,22 +294,36 @@ class Project(object):
                 train_.append(w.uwi)
 
         X_train, y_train = self._data_as_matrix(X_keys=X_keys, y_key=y_key,
+                                                alias=alias,
                                                 legend=legend,
                                                 match_only=match_only,
                                                 basis=basis,
                                                 window_length=window_length,
                                                 uwis=train_)
 
+        if remove_zeros:
+            X_train = X_train[np.nonzero(y_train)]
+            y_train = y_train[np.nonzero(y_train)]
+
+        if not test:
+            return X_train, y_train
+
         X_test, y_test = self._data_as_matrix(X_keys=X_keys, y_key=y_key,
-                                                legend=legend,
-                                                match_only=match_only,
-                                                basis=basis,
-                                                window_length=window_length,
-                                                uwis=test_)
+                                              alias=alias,
+                                              legend=legend,
+                                              match_only=match_only,
+                                              basis=basis,
+                                              window_length=window_length,
+                                              uwis=test_)
+
+        if remove_zeros:
+            X_test = X_test[np.nonzero(y_test)]
+            y_test = y_test[np.nonzero(y_test)]
 
         return X_train, X_test, y_train, y_test
 
     def _data_as_matrix(self, X_keys, y_key,
+                        alias=None,
                         legend=None,
                         match_only=None,
                         basis=None,
@@ -307,9 +332,9 @@ class Project(object):
         """
         Make X.
 
-        Needs to return z probably...
-
         """
+        alias = alias or self.alias
+
         # Seed with known size.
         X = np.zeros(window_length * len(X_keys))
         y = np.zeros(1)
@@ -321,8 +346,10 @@ class Project(object):
                                      basis=basis,
                                      window_length=window_length,
                                      return_basis=True,
-                                     alias=self.alias)
+                                     alias=alias)
             X = np.vstack([X, _X])
+
+            y_key = w.get_mnemonic(y_key, alias=alias)
 
             try:
                 _y = w.data[y_key].to_basis(basis=z)
