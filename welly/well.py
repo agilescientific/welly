@@ -7,6 +7,7 @@ Defines wells.
 :license: Apache 2.0
 """
 import datetime
+from io import StringIO
 
 import matplotlib.pyplot as plt
 import matplotlib as mpl
@@ -19,6 +20,10 @@ from .curve import Curve
 from .header import Header
 from .location import Location
 from .synthetic import Synthetic
+from .canstrat import well_to_card_1
+from .canstrat import well_to_card_2
+from .canstrat import interval_to_card_7
+from .canstrat import write_row
 
 ###############################################
 # This module is not used directly, but must
@@ -705,6 +710,41 @@ class Well(object):
 
         html = '<table>{}</table>'.format(rows)
         return html
+
+    def to_canstrat(self, key, log, filename=None, as_text=False):
+        """
+        Make a Canstrat DAT (aka ASCII) file.
+
+        Args:
+           filename (str)
+           key (str)
+           log (str): the log name, should be 6 characters.
+           as_text (bool): if you don't want to write a file.
+        """
+        if (filename is None):
+            if (not as_text):
+                raise WellError("You must provide a filename or set as_text to True.")
+
+        strip = self.data[key]
+        strip = strip.fill()  # Default is to fill with 'null' intervals.
+
+        record = {1: [well_to_card_1(self)],
+                  2: [well_to_card_2(self, key)],
+                  8: [],
+                  7: [interval_to_card_7(iv) for iv in strip]
+                 }
+
+        result = ''
+        for c in [1,2,8,7]:
+            for d in record[c]:
+                result += write_row(d, card=c, log=log)
+
+        if as_text:
+            return result
+        else:
+            with open(filename, 'w') as f:
+                f.write(result)
+            return None
 
     def data_as_matrix(self, keys=None,
                        return_basis=False,

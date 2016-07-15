@@ -13,6 +13,36 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
+def null(x):
+    """
+    Null function. Used for default in functions that can apply a user-
+    supplied function to data before returning.
+    """
+    return x
+
+
+def null_default(x):
+    """
+    Null function. Used for default in functions that can apply a user-
+    supplied function to data before returning.
+    """
+    def null(y):
+        return x
+
+    return null
+
+
+def skip(x):
+    """
+    Always returns None.
+    """
+    return
+
+
+def are_close(x, y):
+    return abs(x - y) < 0.00001
+
+
 def sharey(axes):
     """
     Shared axes limits without shared locators, ticks, etc.
