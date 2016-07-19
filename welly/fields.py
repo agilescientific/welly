@@ -37,6 +37,7 @@ las_fields = {
     },
     'data': {
         'start': ('well', 'STRT'),
+        'stop': ('well', 'STOP'),
         'step': ('well', 'STEP'),
         'null': ('well', 'NULL'),
         'run': ('params', 'RUN'),

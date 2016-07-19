@@ -520,6 +520,6 @@ def find_file(pattern, path):
     """
     for fname in glob.iglob(path):
         with open(fname) as f:
-            if re.search(pattern, get_lines(f, 1)):
+            if re.search(pattern, f.read()):
                 return fname
     return
