@@ -205,14 +205,20 @@ class Project(object):
         all_mnemonics = self.get_mnemonics([mnemonic], uwis=uwis, alias=alias)
         return len(list(filter(None, utils.flatten_list(all_mnemonics))))
 
-    def curve_table_html(self, uwis=None, keys=None, alias=None, tests=None):
+    def curve_table_html(self,
+                         uwis=None,
+                         keys=None,
+                         alias=None,
+                         tests=None,
+                         exclude=None):
         """
         Another version of the curve table.
         """
         uwis = uwis or self.uwis
+        exclude = exclude or []
         wells = [w for w in self.__list if w.uwi in uwis]
         counter = self.__all_curve_names(uwis=uwis, count=True)
-        keys = utils.flatten_list(keys) or [i[0] for i in counter]
+        keys = utils.flatten_list(keys) or [i[0] for i in counter if i[0] not in exclude]
 
         tests = tests or {}
         if alias is None:
@@ -223,7 +229,8 @@ class Project(object):
         rows = '<tr><th>{}</th></tr>'.format(r)
 
         # Make summary row.
-        well_counts = [str(self.count_mnemonic(m, uwis=uwis, alias=alias))+'&nbsp;wells' for m in keys]
+        well_counts = [str(self.count_mnemonic(m, uwis=uwis, alias=alias))+'&nbsp;wells'
+                       for m in keys]
         r = '</td><td>'.join(['', ''] + well_counts)
         rows += '<tr><td>{}</td></tr>'.format(r)
 
@@ -237,7 +244,8 @@ class Project(object):
         # Make rows.
         for w in wells:
 
-            this_well = [w.get_curve(m, alias=alias) for m in keys]
+            this_well = [w.get_curve(m, alias=alias)
+                         for m in keys]
 
             curves = []
             for c in this_well:
