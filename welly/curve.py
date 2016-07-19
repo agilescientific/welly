@@ -129,6 +129,7 @@ class Curve(np.ndarray):
     def from_lasio_curve(cls, curve,
                          basis=None,
                          start=None,
+                         stop=None,
                          step=0.1524,
                          run=-1,
                          null=-999.25,
@@ -142,6 +143,7 @@ class Curve(np.ndarray):
             curve (ndarray)
             basis (ndarray)
             start (float)
+            stop (float)
             step (float): default: 0.1524
             run (int): default: -1
             null (float): default: -999.25
@@ -157,6 +159,12 @@ class Curve(np.ndarray):
                 step = basis[1] - basis[0]
             else:
                 raise CurveError("You must provide a basis or a start depth.")
+
+        if step == 0:
+            if stop is None:
+                raise CurveError("You must provide a step or a stop depth.")
+            else:
+                step = (stop - start) / (curve.data.shape[0] - 1)
 
         params = {}
         params['mnemonic'] = curve.mnemonic
