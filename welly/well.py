@@ -6,6 +6,7 @@ Defines wells.
 :copyright: 2016 Agile Geoscience
 :license: Apache 2.0
 """
+import re
 import datetime
 from io import StringIO
 
@@ -550,6 +551,18 @@ class Well(object):
 
         return
 
+    def get_mnemonics_from_regex(self, pattern):
+        """
+        Should probably integrate getting curves with regex, vs getting with
+        aliases, even though mixing them is probably confusing. For now I can't
+        think of another use case for these wildcards, so I'll just implement
+        for the curve table and we can worry about a nice solution later if we
+        ever come back to it.
+        """
+        regex = re.compile(pattern)
+        keys = self.data.keys()
+        return [m.group(0) for k in keys for m in [regex.search(k)] if m]
+
     def get_mnemonic(self, mnemonic, alias=None):
         """
         Instead of picking curves by name directly from the data dict, you
@@ -599,7 +612,7 @@ class Well(object):
         return len(list(filter(None, [self.get_mnemonic(k, alias=alias) for k in keys])))
 
     def alias_has_multiple(self, mnemonic, alias):
-        return len([a for a in alias[mnemonic] if a in self.data]) > 1
+        return 1 < len([a for a in alias[mnemonic] if a in self.data])
 
     def make_synthetic(self,
                        srd=0,

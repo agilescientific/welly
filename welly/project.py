@@ -226,8 +226,16 @@ class Project(object):
             limit (int): Curve must be present in at least this many wells.
         """
         uwis = uwis or self.uwis
-        exclude = exclude or []
         wells = [w for w in self.__list if w.uwi in uwis]
+
+        # This is hacky. See remark in well.get_mnemonics_from_regex().
+        if exclude is not None:
+            exclude = utils.flatten_list([w.get_mnemonics_from_regex(e) for e in exclude for w in wells])
+            if alias is not None:
+                exclude = [alias.get(e, e) for e in exclude]
+        else:
+            exclude = []
+
         counter = self.__all_curve_names(uwis=uwis, count=True)
         all_keys = [i[0] for i in counter
                     if (i[0] not in exclude) and (i[1] >= limit)]
