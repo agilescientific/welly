@@ -210,15 +210,28 @@ class Project(object):
                          keys=None,
                          alias=None,
                          tests=None,
-                         exclude=None):
+                         exclude=None,
+                         limit=0):
         """
         Another version of the curve table.
+
+        Args:
+            uwis (list): Only these UWIs. List of ``str``.
+            keys (list): Only these names. List of ``str``.
+            alias (dict): Alias table, maps names to mnemomnics in order of
+                preference.
+            tests (dict): Test table, maps names to lists of functions.
+            exclude (list): Except these names. List of ``str``. Ignored if
+                you pass ``keys``.
+            limit (int): Curve must be present in at least this many wells.
         """
         uwis = uwis or self.uwis
         exclude = exclude or []
         wells = [w for w in self.__list if w.uwi in uwis]
         counter = self.__all_curve_names(uwis=uwis, count=True)
-        keys = utils.flatten_list(keys) or [i[0] for i in counter if i[0] not in exclude]
+        all_keys = [i[0] for i in counter
+                    if (i[0] not in exclude) and (i[1] >= limit)]
+        keys = utils.flatten_list(keys) or all_keys
 
         tests = tests or {}
         if alias is None:
@@ -229,9 +242,10 @@ class Project(object):
         rows = '<tr><th>{}</th></tr>'.format(r)
 
         # Make summary row.
-        well_counts = [str(self.count_mnemonic(m, uwis=uwis, alias=alias))+'&nbsp;wells'
+        well_counts = [self.count_mnemonic(m, uwis=uwis, alias=alias)
                        for m in keys]
-        r = '</td><td>'.join(['', ''] + well_counts)
+        well_count_strs = [str(c)+'&nbsp;wells' for c in well_counts]
+        r = '</td><td>'.join(['', ''] + well_count_strs)
         rows += '<tr><td>{}</td></tr>'.format(r)
 
         q_colours = {
