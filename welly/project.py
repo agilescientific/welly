@@ -228,6 +228,9 @@ class Project(object):
         uwis = uwis or self.uwis
         wells = [w for w in self.__list if w.uwi in uwis]
 
+        if not isinstance(exclude, (list, tuple, set,)):
+            raise WellError("exclude should be a list, not a string")
+
         # This is hacky. See remark in well.get_mnemonics_from_regex().
         if exclude is not None:
             exclude = utils.flatten_list([w.get_mnemonics_from_regex(e) for e in exclude for w in wells])
