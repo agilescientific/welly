@@ -728,6 +728,10 @@ class Well(object):
         """
         Make a Canstrat DAT (aka ASCII) file.
 
+        TODO:
+            The data part should probably belong to striplog, and only the
+            header should be written by the well.
+
         Args:
            filename (str)
            key (str)
