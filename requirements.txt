@@ -3,3 +3,4 @@ numpy>=1.9.0
 matplotlib>=1.4.3
 scipy
 lasio
+striplog>=0.7.1

@@ -24,8 +24,9 @@ class Project(object):
     the contained data.
 
     """
-    def __init__(self, list_of_Wells):
+    def __init__(self, list_of_Wells, source=''):
         self.alias = {}
+        self.source = source
         self.__list = list_of_Wells
         self.__index = 0
         self._iter = iter(self.__list)  # Set up iterable.

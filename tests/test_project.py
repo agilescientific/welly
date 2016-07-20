@@ -14,14 +14,22 @@ def test_project():
 
     w = Well.from_las('tests/2.las')
     project += w
-    assert w in p
+    assert w in project
     assert len(project) == 2
 
     project += project
 
-    assert project.uwis[0] == '1'
+    assert project.uwis[0] == 1
 
-    s = "<table><tr><th>UWI</th><th>Data</th><th>Curves</th></tr><tr><td>300A524400060300</td>"
-    assert s in p._repr_html_()
+    s = "<table><tr><th>UWI</th><th>Data</th><th>Curves</th></tr><tr><td>1</td>"
+    assert s in project._repr_html_()
 
-    assert p[1] == w
+    assert project[1] == w
+
+    assert len(project.get_mnemonics(['DT'])) == 4
+
+    html = project.curve_table_html()
+    assert "<table><tr><th>UWI</th><th>Data</th>" in html
+    assert "<th>DPHI_SAN</th>" in html
+    s =  """<td style="background-color:#CCEECC; line-height:80%; padding:5px 4px 2px 4px;">DTS<div style="font-size:80%; float:right; padding:4px 0px 4px 6px; color:#CCCCCC;"></div><br /><span style="font-size:70%; color:#33AA33">us/ft</span></td>"""
+    assert s in html
