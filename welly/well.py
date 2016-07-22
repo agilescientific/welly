@@ -365,6 +365,7 @@ class Well(object):
              legend=None,
              tracks=None,
              track_titles=None,
+             alias=None,
              basis=None,
              return_fig=False,
              extents='td'):
@@ -438,10 +439,10 @@ class Well(object):
             ax0 = self._plot_depth_track(ax=ax0, md=basis, kind=track)
         else:
             try:  # ...treating as a plottable object.
-                ax0 = self.data[track].plot(ax=ax0, legend=legend, **kwargs)
+                ax0 = self.get_curve(track, alias=alias).plot(ax=ax0, legend=legend, **kwargs)
             except TypeError:  # ...it's a list.
                 for t in track:
-                    ax0 = self.data[t].plot(ax=ax0, legend=legend, **kwargs)
+                    ax0 = self.get_curve(t, alias=alias).plot(ax=ax0, legend=legend, **kwargs)
         tx = ax0.get_xticks()
         ax0.set_xticks(tx[1:-1])
         ax0.set_title(track_titles[0])
@@ -459,13 +460,13 @@ class Well(object):
                 track, kwargs['field'] = track.split('.')
             plt.setp(ax.get_yticklabels(), visible=False)
             try:  # ...treating as a plottable object.
-                ax = self.data[track].plot(ax=ax, legend=legend, **kwargs)
+                ax = self.get_curve(track, alias=alias).plot(ax=ax, legend=legend, **kwargs)
             except TypeError:  # ...it's a list.
                 for j, t in enumerate(track):
                     if '.' in t:
                         track, kwargs['field'] = track.split('.')
                     try:
-                        ax = self.data[t].plot(ax=ax, legend=legend, **kwargs)
+                        ax = self.get_curve(t, alias=alias).plot(ax=ax, legend=legend, **kwargs)
                     except KeyError:
                         continue
 
