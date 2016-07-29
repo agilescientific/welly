@@ -33,3 +33,14 @@ def test_project():
     assert "<th>DPHI_SAN</th>" in html
     s =  """<td style="background-color:#CCEECC; line-height:80%; padding:5px 4px 2px 4px;">DTS<div style="font-size:80%; float:right; padding:4px 0px 4px 6px; color:#CCCCCC;"></div><br /><span style="font-size:70%; color:#33AA33">us/ft</span></td>"""
     assert s in html
+
+def test_data_as_matrix():
+    alias = {'Sonic': ['DT', 'foo']}
+    project = Project.from_las('tests/*.las')
+    X_train, y_train = project.data_as_matrix(X_keys=['DEPT', 'HCAL', 'Sonic'],
+                                              y_key='CALI',
+                                              alias=alias,
+                                              window_length=1,
+                                              remove_zeros=True,
+                                              )
+    assert X_train.shape[0] == y_train.size

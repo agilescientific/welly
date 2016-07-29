@@ -452,7 +452,6 @@ class Well(object):
             kwargs = {}
             ax = fig.add_subplot(gs[0, i+1])
             ax.depth_track = False
-            ax.set_title(track_titles[i+1])
             if track in depth_tracks:
                 ax = self._plot_depth_track(ax=ax, md=basis, kind=track)
                 continue
@@ -472,7 +471,8 @@ class Well(object):
 
             tx = ax.get_xticks()
             ax.set_xticks(tx[1:-1])
-            ax.title.set_visible(False)  # turn off "Title" because we're using text
+            ax.set_title(track_titles[i+1])
+            # ax.title.set_visible(False)  # turn off "Title" because we're using text
 
         # Set sharing.
         axes = fig.get_axes()
@@ -542,11 +542,11 @@ class Well(object):
         if basis is None:
             raise WellError("Could not retrieve common basis.")
 
-        for k, d in self.data.items():
+        for k in self.data:
             if (keys is not None) and (k not in keys):
                 continue
             try:  # To treat as a curve.
-                d = d.to_basis(basis=basis)
+                self.data[k] = self.data[k].to_basis(basis)
             except:  # It's probably a striplog.
                 continue
 
@@ -768,6 +768,7 @@ class Well(object):
                        return_basis=False,
                        basis=None,
                        window_length=None,
+                       step=1,
                        alias=None):
         """
         Provide a feature matrix, given a list of data items.
@@ -829,9 +830,10 @@ class Well(object):
         if window_length is not None:
             d_new = []
             for d in data:
-                _, r = d._rolling_window(window_length,
-                                         func1d=np.mean,  # Doesn't matter
-                                         return_rolled=True,
+                r = d._rolling_window(window_length,
+                                         func1d=utils.null,
+                                         step=step,
+                                         return_rolled=False,
                                          )
                 d_new.append(r.T)
             data = d_new

@@ -499,6 +499,53 @@ class Curve(np.ndarray):
 
         return {test.__name__: test(self) for test in this_tests}
 
+    def qflag(self, tests, alias=None):
+        """
+        Run a test and return the corresponding results on a sample-by-sample
+        basis.
+
+        Args:
+            tests (list): a list of functions.
+
+        Returns:
+            list. The results. Stick to booleans (True = pass) or ints.
+        """
+        # Gather the tests.
+        # First, anything called 'all', 'All', or 'ALL'.
+        # Second, anything with the name of the curve we're in now.
+        # Third, anything that the alias list has for this curve.
+        # (This requires a reverse look-up so it's a bit messy.)
+        this_tests =\
+            tests.get('all', [])+tests.get('All', [])+tests.get('ALL', [])\
+            + tests.get(self.mnemonic, [])\
+            + utils.flatten_list([tests.get(a) for a in self.get_alias(alias=alias)])
+        this_tests = filter(None, this_tests)
+
+        return {test.__name__: test(self) for test in this_tests}
+
+    def qflags(self, tests, alias=None):
+        """
+        Run a series of tests and return the corresponding results.
+
+        Args:
+            tests (list): a list of functions.
+
+        Returns:
+            list. The results. Stick to booleans (True = pass) or ints.
+        """
+        # Gather the tests.
+        # First, anything called 'all', 'All', or 'ALL'.
+        # Second, anything with the name of the curve we're in now.
+        # Third, anything that the alias list has for this curve.
+        # (This requires a reverse look-up so it's a bit messy.)
+        this_tests =\
+            tests.get('all', [])+tests.get('All', [])+tests.get('ALL', [])\
+            + tests.get(self.mnemonic, [])\
+            + utils.flatten_list([tests.get(a) for a in self.get_alias(alias=alias)])
+        this_tests = filter(None, this_tests)
+
+        return {test.__name__: test(self) for test in this_tests}
+
     def quality_score(self, tests, alias=None):
         """
         Run a series of tests and return the normalized score.
@@ -584,7 +631,7 @@ class Curve(np.ndarray):
 
         return Curve(data, params=params)
 
-    def _rolling_window(self, window_length, func1d, return_rolled=False):
+    def _rolling_window(self, window_length, func1d, step=1, return_rolled=False):
         """
         Private function. Smoother for other smoothing/conditioning functions.
 
@@ -592,6 +639,8 @@ class Curve(np.ndarray):
             window_length (int): the window length.
             func1d (function): a function that takes a 1D array and returns a
                 scalar.
+            step (int): if you want to skip samples in the shifted versions.
+                Don't use this for smoothing, you will get strange results.
 
         Returns:
             ndarray: the resulting array.
@@ -601,8 +650,8 @@ class Curve(np.ndarray):
             window_length += 1
 
         shape = self.shape[:-1] + (self.shape[-1], window_length)
-        strides = self.strides + (self.strides[-1],)
-        data = np.pad(self, window_length//2, mode='edge')
+        strides = self.strides + (step*self.strides[-1],)
+        data = np.pad(self, step*(window_length//2), mode='edge')
         rolled = np.lib.stride_tricks.as_strided(data,
                                                  shape=shape,
                                                  strides=strides)

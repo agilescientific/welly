@@ -28,6 +28,16 @@ def test_well():
     # Check we can make one.
     assert well.to_lasio().well['FLD'].value == "Windsor Block"
 
+    # Check we can add curves.
+    well.add_curves_from_las(['tests/1.las'])
+    assert len(well.data['HCAL']) == 4  # New short curve.
+
+    # Unify basis.
+    # well.data['GR'] = well.data['GR'].to_basis(start=100, stop=200, step=1)
+    assert len(well.data['HCAL']) != len(well.data['RHOB'])
+    well.unify_basis()
+    assert len(well.data['HCAL']) == len(well.data['RHOB'])
+
 
 def test_html_repr():
     well = Well.from_las(FNAME)

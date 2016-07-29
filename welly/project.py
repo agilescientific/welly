@@ -36,7 +36,7 @@ class Project(object):
         return "Project({0})".format('\n'.join(s))
 
     def __str__(self):
-        s = [w.uwi for w in self.__list]
+        s = [str(w.uwi) for w in self.__list]
         return '\n'.join(s)
 
     def __getitem__(self, key):
@@ -312,7 +312,8 @@ class Project(object):
                        legend=None,
                        match_only=None,
                        basis=None,
-                       window_length=3,
+                       window_length=None,
+                       step=1,
                        test=None,
                        remove_zeros=False):
 
@@ -330,6 +331,7 @@ class Project(object):
                                                 match_only=match_only,
                                                 basis=basis,
                                                 window_length=window_length,
+                                                step=step,
                                                 uwis=train_)
 
         if remove_zeros:
@@ -345,6 +347,7 @@ class Project(object):
                                               match_only=match_only,
                                               basis=basis,
                                               window_length=window_length,
+                                              step=step,
                                               uwis=test_)
 
         if remove_zeros:
@@ -358,13 +361,17 @@ class Project(object):
                         legend=None,
                         match_only=None,
                         basis=None,
-                        window_length=3,
+                        window_length=None,
+                        step=1,
                         uwis=None):
         """
         Make X.
 
         """
         alias = alias or self.alias
+
+        if window_length is None:
+            window_length = 1
 
         # Seed with known size.
         X = np.zeros(window_length * len(X_keys))
@@ -376,6 +383,7 @@ class Project(object):
             _X, z = w.data_as_matrix(X_keys,
                                      basis=basis,
                                      window_length=window_length,
+                                     step=step,
                                      return_basis=True,
                                      alias=alias)
             X = np.vstack([X, _X])
