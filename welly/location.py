@@ -52,6 +52,19 @@ class Location(object):
         self.crs = CRS.from_epsg(epsg)
         return
 
+    def crs_from_string(self, string):
+        """
+        Sets the CRS using a PROJ4 string.
+
+        Args:
+            string (int): The PROJ4 string, eg '+init=epsg:4269 +no_defs'.
+
+        Returns:
+            None.
+        """
+        self.crs = CRS.from_string(string)
+        return
+
     @classmethod
     def from_lasio(cls, l, remap=None, funcs=None):
         """

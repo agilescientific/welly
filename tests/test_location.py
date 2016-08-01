@@ -73,3 +73,6 @@ def test_well_remap():
     well.location.crs_from_epsg(4269)
     assert well.location.crs.data['no_defs']
     assert well.location.crs.to_string() == '+init=epsg:4269 +no_defs'
+
+    well.location.crs_from_string('+init=epsg:4267')
+    assert well.location.crs.init == 'epsg:4267'

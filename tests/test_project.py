@@ -24,7 +24,11 @@ def test_project():
     s = "<table><tr><th>UWI</th><th>Data</th><th>Curves</th></tr><tr><td>1</td>"
     assert s in project._repr_html_()
 
+    # Check __getitem__.
     assert project[1] == w
+    assert len(project[:2]) == 2
+    l = [0, 1]
+    assert len(project[l]) == 2
 
     assert len(project.get_mnemonics(['DT'])) == 4
 

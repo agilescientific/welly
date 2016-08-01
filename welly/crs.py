@@ -96,7 +96,7 @@ class CRS(collections.abc.MutableMapping):
             lambda kv: len(kv) == 2 and (kv[0], parse(kv[1])) or (kv[0], True),
             (p.split('=') for p in parts))
 
-        return cls({k: v for k, v in items if k in cls.proj4_params.keys()})
+        return cls({k: v for k, v in items if '+'+k in PROJ4_PARAMS.keys()})
 
     @classmethod
     def from_epsg(cls, code):

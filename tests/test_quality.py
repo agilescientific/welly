@@ -46,3 +46,8 @@ def test_quality():
     assert sum(r['GR'].values()) == 3
     assert len(r['DT'].values()) == 6
     assert sum(r['DT'].values()) == 4
+
+    html = w.qc_table_html(tests, alias=alias)
+    assert len(html) == 10057
+    assert '<table><tr><th>UWI</th><th>Passed</th><th>Score</th>' in html
+    assert '<tr><th>GR</th><td>3 / 6</td><td>0.500</td><td style=' in html
