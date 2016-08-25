@@ -8,8 +8,10 @@ Defines a multi-well 'project'.
 """
 import glob
 from collections import Counter
+import re
 
 import numpy as np
+import matplotlib.pyplot as plt
 
 from .well import Well, WellError
 from . import utils
@@ -215,7 +217,6 @@ class Project(object):
                          limit=0):
         """
         Another version of the curve table.
-
         Args:
             uwis (list): Only these UWIs. List of ``str``.
             keys (list): Only these names. List of ``str``.
@@ -299,8 +300,43 @@ class Project(object):
         html = '<table>{}</table>'.format(rows)
         return html
 
-    def find_curves(self, curve):
-        return [w for w in self if curve in w.data.keys()]
+    def plot_kdes(self, mnemonic, alias=None, uwi_regex=None, return_fig=False):
+        """
+        Plot KDEs for all curves with the given name.
+        """
+        wells = self.find_wells_with_curve(mnemonic, alias=alias)
+        fig, axs = plt.subplots(len(wells), 1, figsize=(10, 1.5*len(wells)))
+
+        curves = [w.get_curve(mnemonic, alias=alias) for w in wells]
+        all_data = np.hstack(curves)
+        all_data = all_data[~np.isnan(all_data)]
+
+        # Find values for common axis to exclude outliers.
+        amax = np.percentile(all_data, 99)
+        amin = np.percentile(all_data,  1)
+
+        for i, w in enumerate(wells):
+            c = w.get_curve(mnemonic, alias=alias)
+
+            if uwi_regex is not None:
+                label = re.sub(uwi_regex, r'\1', w.uwi)
+            else:
+                label = w.uwi
+
+            axs[i] = c.plot_kde(ax=axs[i], amax=amax, amin=amin, label=label+'-'+c.mnemonic)
+
+        plt.show()
+
+        if return_fig:
+            return fig
+        else:
+            return
+
+    def find_wells_with_curve(self, mnemonic, alias=None):
+        """
+        Returns all the wells which have the named curve.
+        """
+        return [w for w in self if w.get_curve(mnemonic, alias=alias) is not None]
 
     def get_wells(self, uwis=None):
         if uwis is None:

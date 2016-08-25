@@ -486,16 +486,21 @@ class Curve(np.ndarray):
         Returns:
             list. The results. Stick to booleans (True = pass) or ints.
         """
-        # Gather the tests.
+        # Gather the test s.
         # First, anything called 'all', 'All', or 'ALL'.
         # Second, anything with the name of the curve we're in now.
         # Third, anything that the alias list has for this curve.
         # (This requires a reverse look-up so it's a bit messy.)
         this_tests =\
-            tests.get('all', [])+tests.get('All', [])+tests.get('ALL', [])\
+            tests.get('each', [])+tests.get('Each', [])+tests.get('EACH', [])\
             + tests.get(self.mnemonic, [])\
             + utils.flatten_list([tests.get(a) for a in self.get_alias(alias=alias)])
         this_tests = filter(None, this_tests)
+
+        # If we explicitly set zero tests for a particular key, then this
+        # overrides the 'all' and 'alias' tests.
+        if not tests.get(self.mnemonic, 1):
+            this_tests = []
 
         return {test.__name__: test(self) for test in this_tests}
 
@@ -516,7 +521,7 @@ class Curve(np.ndarray):
         # Third, anything that the alias list has for this curve.
         # (This requires a reverse look-up so it's a bit messy.)
         this_tests =\
-            tests.get('all', [])+tests.get('All', [])+tests.get('ALL', [])\
+            tests.get('each', [])+tests.get('Each', [])+tests.get('EACH', [])\
             + tests.get(self.mnemonic, [])\
             + utils.flatten_list([tests.get(a) for a in self.get_alias(alias=alias)])
         this_tests = filter(None, this_tests)
@@ -539,7 +544,7 @@ class Curve(np.ndarray):
         # Third, anything that the alias list has for this curve.
         # (This requires a reverse look-up so it's a bit messy.)
         this_tests =\
-            tests.get('all', [])+tests.get('All', [])+tests.get('ALL', [])\
+            tests.get('each', [])+tests.get('Each', [])+tests.get('EACH', [])\
             + tests.get(self.mnemonic, [])\
             + utils.flatten_list([tests.get(a) for a in self.get_alias(alias=alias)])
         this_tests = filter(None, this_tests)
@@ -699,3 +704,54 @@ class Curve(np.ndarray):
         params = self.__dict__.copy()
         out = self._rolling_window(window_length, func1d)
         return Curve(out, params=params)
+
+    def plot_kde(self, ax=None, amax=None, amin=None, label=None, return_fig=False):
+        """
+        Plot a KDE for the curve. Very nice summary of KDEs:
+        https://jakevdp.github.io/blog/2013/12/01/kernel-density-estimation/
+
+        Args:
+            ax (axis): Optional matplotlib (MPL) axis to plot into. Returned.
+            amax (float): Optional max value to permit.
+            amin (float): Optional min value to permit.
+            label (string): What to put on the y-axis. Defaults to curve name.
+            return_fig (bool): If you want to return the MPL figure object.
+
+        Returns:
+            None, axis, figure: depending on what you ask for.
+        """
+        from scipy.stats import gaussian_kde
+
+        if ax is None:
+            fig = plt.figure()
+            ax = fig.add_subplot(111)
+            return_ax = False
+        else:
+            return_ax = True
+
+        a = self[~np.isnan(self)]
+
+        # Find values for common axis to exclude outliers.
+        if amax is None:
+            amax = np.percentile(a, 99)
+        if amin is None:
+            amin = np.percentile(a,  1)
+
+        x = a[np.abs(a - 0.5 * (amax + amin)) < 0.5 * (amax - amin)]
+        x_grid = np.linspace(amin, amax, 100)
+
+        kde = gaussian_kde(x)
+        std_a = kde.evaluate(x_grid)
+
+        img = np.array([std_a]) / np.max([std_a])
+        extent = [amin, amax, 0, 1]
+        ax.imshow(img, aspect='auto', cmap='viridis', extent=extent)
+        ax.set_yticklabels([])
+        ax.set_ylabel(label or self.mnemonic)
+
+        if return_ax:
+            return ax
+        elif return_fig:
+            return fig
+        else:
+            return None

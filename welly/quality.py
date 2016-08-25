@@ -7,8 +7,15 @@ Quality functions for welly.
 :license: Apache 2.0
 """
 import numpy as np
+from scipy.spatial.distance import pdist, squareform
 
 from . import utils
+
+
+def no_similarities(well, keys, alias):
+    X = well.data_as_matrix(keys=keys, alias=alias)
+    d = squareform(pdist(X.T, 'hamming'))
+    return list(np.sum(d, axis=1) > 0.9 * len(keys) - 1)
 
 
 def all_positive(curve):
@@ -35,9 +42,14 @@ def no_gaps(curve):
 
 
 def no_flat(curve):
+
+    def consecutive(data, stepsize=1):
+        return np.split(data, np.where(np.diff(data) != stepsize)[0]+1)
+
     tolerance = max(3, curve.size//100)
     zeros = np.where(np.diff(curve) == 0)[0]
-    return zeros.size < tolerance
+    tolerated = [a.size < tolerance for a in consecutive(zeros)]
+    return np.all(tolerated)
 
 
 def no_monotonic(curve):
