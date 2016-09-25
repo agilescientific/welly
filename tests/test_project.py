@@ -33,9 +33,9 @@ def test_project():
     assert len(project.get_mnemonics(['DT'])) == 4
 
     html = project.curve_table_html()
-    assert "<table><tr><th>UWI</th><th>Data</th>" in html
+    assert '<table><tr><th>Idx</th><th>UWI</th><th>Data</th><th>Quality</th>' in html
     assert "<th>DPHI_SAN</th>" in html
-    s =  """<td style="background-color:#CCEECC; line-height:80%; padding:5px 4px 2px 4px;">DTS<div style="font-size:80%; float:right; padding:4px 0px 4px 6px; color:#CCCCCC;"></div><br /><span style="font-size:70%; color:#33AA33">us/ft</span></td>"""
+    s =  """<td style="background-color:#CCEECC; line-height:80%; padding:5px 4px 2px 4px;">DTS"""
     assert s in html
 
 def test_data_as_matrix():

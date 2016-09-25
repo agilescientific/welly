@@ -35,7 +35,10 @@ def _colour_read(x):
 
 
 def _get_date(date_string):
-    date = dt.datetime.strptime(date_string, "%y-%m-%d")
+    try:
+        date = dt.datetime.strptime(date_string, "%y-%m-%d")
+    except:
+        date = dt.datetime.strptime("00-01-01", "%y-%m-%d")
     if dt.datetime.today() < date:
         date -= dt.timedelta(days=100*365.25)
     return dt.datetime.date(date)

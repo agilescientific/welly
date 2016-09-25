@@ -13,6 +13,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
+def round_to_n(x, n):
+    """
+    Round to sig figs
+    """
+    return round(x, -int(floor(log10(x))) + (n - 1))
+
 def null(x):
     """
     Null function. Used for default in functions that can apply a user-

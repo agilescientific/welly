@@ -500,7 +500,7 @@ class Well(object):
         else:
             return None
 
-    def survey_basis(self, keys=None):
+    def survey_basis(self, keys=None, step=None):
         """
         Look at the basis of all the curves in the ``well.data`` and return a
         basis with the minimum start, maximum depth, and minimum step.
@@ -524,7 +524,8 @@ class Well(object):
             except:
                 pass
         if starts and stops and steps:
-            return np.arange(min(starts), max(stops)+1e-9, min(steps))
+            step = step or min(steps)
+            return np.arange(min(starts), max(stops)+1e-9, step)
         else:
             return None
 
@@ -673,6 +674,25 @@ class Well(object):
 
         return None
 
+    def qc_curve_group(self, tests, alias=None):
+        """
+        Run tests on a cohort of curves.
+        """
+        keys = [k for k, v in self.data.items() if isinstance(v, Curve)]
+        if not keys:
+            return {}
+
+        all_tests = tests.get('all', tests.get('All', tests.get('ALL', [])))
+        data = {test.__name__: test(self, keys, alias) for test in all_tests}
+
+        results = {}
+        for i, key in enumerate(keys):
+            this = {}
+            for test, result in data.items():
+                this[test] = result[i]
+            results[key] = this
+        return results
+
     def qc_data(self, tests, alias=None):
         """
         Run a series of tests against the data and return the corresponding
@@ -684,7 +704,16 @@ class Well(object):
         Returns:
             list. The results. Stick to booleans (True = pass) or ints.
         """
-        return {m: c.quality(tests, alias or {}) for m, c in self.data.items()}
+        # We'll get a result for each curve here.
+        r = {m: c.quality(tests, alias) for m, c in self.data.items()}
+
+        s = self.qc_curve_group(tests, alias=alias)
+
+        for m, results in r.items():
+            if m in s:
+                results.update(s[m])
+
+        return r
 
     def qc_table_html(self, tests, alias=None):
         """
@@ -695,7 +724,7 @@ class Well(object):
         tests = list(set(utils.flatten_list(all_tests)))
 
         # Header row.
-        r = '</th><th>'.join(['UWI', 'Passed', 'Score'] + tests)
+        r = '</th><th>'.join(['Curve', 'Passed', 'Score'] + tests)
         rows = '<tr><th>{}</th></tr>'.format(r)
 
         styles = {
@@ -767,8 +796,9 @@ class Well(object):
     def data_as_matrix(self, keys=None,
                        return_basis=False,
                        basis=None,
+                       step=None,
                        window_length=None,
-                       step=1,
+                       window_step=1,
                        alias=None):
         """
         Provide a feature matrix, given a list of data items.
@@ -787,6 +817,7 @@ class Well(object):
                 used.
             basis (ndarray): The basis to use.
             window (int): The number of samples to return around each sample.
+            step (float): Override the step in the basis from survey_basis.
 
         """
         if keys is None:
@@ -812,7 +843,7 @@ class Well(object):
                 keys = _keys
 
         if basis is None:
-            basis = self.survey_basis(keys=keys)
+            basis = self.survey_basis(keys=keys, step=step)
 
         # Get the data, or None is curve is missing.
         data = [self.data.get(k) for k in keys]
@@ -831,10 +862,10 @@ class Well(object):
             d_new = []
             for d in data:
                 r = d._rolling_window(window_length,
-                                         func1d=utils.null,
-                                         step=step,
-                                         return_rolled=False,
-                                         )
+                                      func1d=utils.null,
+                                      step=window_step,
+                                      return_rolled=False,
+                                      )
                 d_new.append(r.T)
             data = d_new
 

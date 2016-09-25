@@ -1,6 +1,7 @@
-namedlist>=1.7
-numpy>=1.9.0
-matplotlib>=1.4.3
+numpy>=1.10.0
+matplotlib>=1.5.0
 scipy
-lasio
-striplog>=0.7.1
+tqdm
+striplog>=0.7.2
+namedlist
+git+https://github.com/kwinkunks/lasio.git

@@ -12,10 +12,18 @@ from scipy.spatial.distance import pdist, squareform
 from . import utils
 
 
+# All
+# Runs on multiple curves
 def no_similarities(well, keys, alias):
     X = well.data_as_matrix(keys=keys, alias=alias)
     d = squareform(pdist(X.T, 'hamming'))
-    return list(np.sum(d, axis=1) > 0.9 * len(keys) - 1)
+    return list(np.sum(d, axis=1) > (len(keys) - 1.5))
+
+
+# Each
+# Single curve
+def not_empty(curve):
+    return not bool(np.all(np.isnan(curve)))
 
 
 def all_positive(curve):
@@ -74,6 +82,26 @@ def all_between(lower, upper):
         u = all(upper > curve[~np.isnan(curve)])
         return l and u
     return all_between
+
+
+def mean_above(value):
+    def mean_above(curve):
+        return np.nanmean(curve) > value
+    return mean_above
+
+
+def mean_below(value):
+    def mean_below(curve):
+        return np.nanmean(curve) < value
+    return mean_below
+
+
+def mean_between(lower, upper):
+    def mean_between(curve):
+        l = lower < np.nanmean(curve)
+        u = upper > np.nanmean(curve)
+        return bool(l and u)
+    return mean_between
 
 
 def check_units(list_of_units):

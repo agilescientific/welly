@@ -12,6 +12,7 @@ import re
 
 import numpy as np
 import matplotlib.pyplot as plt
+from tqdm import tqdm
 
 from .well import Well, WellError
 from . import utils
@@ -138,10 +139,10 @@ class Project(object):
         Returns:
             project. The project object.
         """
-        list_of_Wells = [Well.from_las(f) for f in glob.iglob(path)]
+        list_of_Wells = [Well.from_las(f) for f in tqdm(glob.iglob(path))]
         return cls(list_of_Wells)
 
-    def add_canstrat_striplogs(self, path, name='canstrat'):
+    def add_canstrat_striplogs(self, path, uwi_transform=None, name='canstrat'):
         """
         This may be to specific a method... just move it to the workflow.
 
@@ -149,8 +150,10 @@ class Project(object):
         """
         from striplog import Striplog
 
+        uwi_transform = uwi_transform or utils.null
+
         for w in self.__list:
-            dat_file = utils.find_file(w.uwi, path)
+            dat_file = utils.find_file(uwi_transform(w.uwi), path)
 
             if dat_file is None:
                 print("- Omitting {}: no data".format(w.uwi))
@@ -244,18 +247,19 @@ class Project(object):
         keys = utils.flatten_list(keys) or all_keys
 
         tests = tests or {}
-        if alias is None:
-            alias = self.alias
+        alias = alias or self.alias
 
         # Make header.
-        r = '</th><th>'.join(['UWI', 'Data'] + keys)
+        keys_ = [k+'*' if k in alias else k for k in keys]
+        r = '</th><th>'.join(['Idx', 'UWI', 'Data', 'Quality'] + keys_)
         rows = '<tr><th>{}</th></tr>'.format(r)
 
         # Make summary row.
         well_counts = [self.count_mnemonic(m, uwis=uwis, alias=alias)
                        for m in keys]
-        well_count_strs = [str(c)+'&nbsp;wells' for c in well_counts]
-        r = '</td><td>'.join(['', ''] + well_count_strs)
+        w = len(wells)
+        well_count_strs = ['{}/{}&nbsp;wells'.format(c, w) for c in well_counts]
+        r = '</td><td>'.join(['', '', '', '%'] + well_count_strs)
         rows += '<tr><td>{}</td></tr>'.format(r)
 
         q_colours = {
@@ -266,33 +270,51 @@ class Project(object):
         }
 
         # Make rows.
-        for w in wells:
+        for i, w in enumerate(wells):
 
             this_well = [w.get_curve(m, alias=alias)
                          for m in keys]
 
+            q_well = w.qc_data(tests, alias)
+
             curves = []
+            q, q_total, q_count = 0, 0, 0
+
             for c in this_well:
                 if c is None:
-                    curves.append(('#CCCCCC', '', '#CCCCCC', ''))
+                    curves.append(('#CCCCCC', '', '', '#CCCCCC', '', ''))
                 else:
-                    q_colour = q_colours.get(c.quality_score(tests), '#FFCC33')
-                    curves.append(('#CCEECC', c.mnemonic, q_colour, c.units))
+                    if tests:
+                        q_this = q_well.get(c.mnemonic)
+                        if q_this:
+                            results = q_this.values()
+                            if results:
+                                q = sum(results) / len(results)
+                    q_colour = q_colours.get(q, '#FFCC33')
+                    c_mean = '{:.2f}'.format(float(np.nanmean(c)))
+                    curves.append(('#CCEECC', c.mnemonic, str(q), q_colour, c_mean, c.units))
+                q_total += q
+                q_count += 1
 
             # Make general columns.
-            s = '<td><span style="font-weight:bold;">{}</span></td><td>{}/{}&nbsp;curves</td>'
-            rows += s.format(w.uwi, w.count_curves(keys, alias), len(w.data))
+            count = w.count_curves(keys, alias)
+            if count == 0:
+                score = '–'
+            else:
+                score = '{:.0f}'.format(100*(q_total/q_count)) if q_total >= 0 else '–'
+            s = '<td>{}</td><td><span style="font-weight:bold;">{}</span></td><td>{}/{}&nbsp;curves</td><td>{}</td>'
+            rows += s.format(i, w.uwi, count, len(w.data), score)
 
             # Make curve data columns.
             for curve in curves:
                 s = '<td style="background-color:{}; line-height:80%; padding:5px 4px 2px 4px;">{}'
-                t = '<div style="font-size:80%; float:right; padding:4px 0px 4px 6px; color:{{}};">{}</div>'
+                t = '<div title="{{}}" style="font-size:80%; float:right; cursor: default; padding:4px 0px 4px 6px; color:{{}};">{0}</div>'
                 if tests:
                     t = t.format('&#x2b24;')
                 else:
                     t = t.format('')
                 s += t
-                s += '<br /><span style="font-size:70%; color:#33AA33">{}</span></td>'
+                s += '<br /><span style="font-size:70%; color:#33AA33">{} {}</span></td>'
                 rows += s.format(*curve)
             rows += '</tr>'
 
@@ -305,7 +327,7 @@ class Project(object):
         Plot KDEs for all curves with the given name.
         """
         wells = self.find_wells_with_curve(mnemonic, alias=alias)
-        fig, axs = plt.subplots(len(wells), 1, figsize=(10, 1.5*len(wells)))
+        fig, axs = plt.subplots(len(self), 1, figsize=(10, 1.5*len(self)))
 
         curves = [w.get_curve(mnemonic, alias=alias) for w in wells]
         all_data = np.hstack(curves)
@@ -315,7 +337,7 @@ class Project(object):
         amax = np.percentile(all_data, 99)
         amin = np.percentile(all_data,  1)
 
-        for i, w in enumerate(wells):
+        for i, w in enumerate(self):
             c = w.get_curve(mnemonic, alias=alias)
 
             if uwi_regex is not None:
@@ -323,7 +345,10 @@ class Project(object):
             else:
                 label = w.uwi
 
-            axs[i] = c.plot_kde(ax=axs[i], amax=amax, amin=amin, label=label+'-'+c.mnemonic)
+            if c is not None:
+                axs[i] = c.plot_kde(ax=axs[i], amax=amax, amin=amin, label=label+'-'+str(c.mnemonic))
+            else:
+                continue
 
         plt.show()
 
@@ -348,10 +373,15 @@ class Project(object):
                        legend=None,
                        match_only=None,
                        basis=None,
+                       step=None,
                        window_length=None,
-                       step=1,
+                       window_step=1,
                        test=None,
-                       remove_zeros=False):
+                       remove_zeros=False,
+                       include_basis=False,
+                       include_index=False,
+                       include=None,
+                       ):
 
         test = test or []
         train_, test_ = [], []
@@ -366,9 +396,14 @@ class Project(object):
                                                 legend=legend,
                                                 match_only=match_only,
                                                 basis=basis,
-                                                window_length=window_length,
                                                 step=step,
-                                                uwis=train_)
+                                                window_length=window_length,
+                                                window_step=window_step,
+                                                uwis=train_,
+                                                include_basis=include_basis,
+                                                include_index=include_index,
+                                                include=include
+                                                )
 
         if remove_zeros:
             X_train = X_train[np.nonzero(y_train)]
@@ -382,9 +417,14 @@ class Project(object):
                                               legend=legend,
                                               match_only=match_only,
                                               basis=basis,
-                                              window_length=window_length,
                                               step=step,
-                                              uwis=test_)
+                                              window_length=window_length,
+                                              window_step=window_step,
+                                              uwis=test_,
+                                              include_basis=include_basis,
+                                              include_index=include_index,
+                                              include=include
+                                              )
 
         if remove_zeros:
             X_test = X_test[np.nonzero(y_test)]
@@ -397,32 +437,81 @@ class Project(object):
                         legend=None,
                         match_only=None,
                         basis=None,
+                        step=None,
                         window_length=None,
-                        step=1,
-                        uwis=None):
+                        window_step=1,
+                        uwis=None,
+                        include_basis=False,
+                        include_index=False,
+                        include=None
+                        ):
         """
         Make X.
 
         """
         alias = alias or self.alias
+        if include is not None:
+            include = np.array(include)
 
         if window_length is None:
             window_length = 1
 
         # Seed with known size.
-        X = np.zeros(window_length * len(X_keys))
+        cols = window_length * len(X_keys)
+        cols += sum([include_basis, include_index])
+
+        def get_cols(q):
+            if q is None: return 0
+            a = np.array(q)
+            try:
+                s = a.shape[0]
+            except IndexError:
+                s = 1
+            return s
+        cols += get_cols(include)
+
+        X = np.zeros(cols)
         y = np.zeros(1)
 
         # Build up the data.
-        for w in self.get_wells(uwis):
+        for i, w in enumerate(self.get_wells(uwis)):
+
+            print(w.uwi, end=' ')
 
             _X, z = w.data_as_matrix(X_keys,
                                      basis=basis,
-                                     window_length=window_length,
                                      step=step,
+                                     window_length=window_length,
+                                     window_step=window_step,
                                      return_basis=True,
                                      alias=alias)
+            if include is not None:
+                try:
+                    if np.ndim(include) == 0:
+                        x = include * np.ones_like(z)
+                        _X = np.hstack([np.expand_dims(x, 1), _X])
+                    elif np.ndim(include) == 1:
+                        for c in include:
+                            x = c * np.ones_like(z)
+                            _X = np.hstack([np.expand_dims(x, 1), _X])
+                    elif np.ndim(include) == 2:
+                        for c in include:
+                            x = c[i] * np.ones_like(z)
+                            _X = np.hstack([np.expand_dims(x, 1), _X])
+                    else:
+                        raise IndexError('Too many dimensions in include.')
+                except:
+                    raise WellError('Problem braodcasting include into X matrix.')
+
+            if include_basis:
+                _X = np.hstack([np.expand_dims(z, 1), _X])
+
+            if include_index:
+                index = i * np.ones_like(z)
+                _X = np.hstack([np.expand_dims(index, 1), _X])
+
             X = np.vstack([X, _X])
+            print(_X.shape[0])
 
             y_key = w.get_mnemonic(y_key, alias=alias)
 
