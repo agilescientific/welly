@@ -22,6 +22,8 @@ class Header(object):
         """
         Generic initializer for now.
         """
+        setattr(self, 'name', 'unknown')
+        
         for k, v in params.items():
             if k and v:
                 setattr(self, k, v)
