@@ -127,6 +127,7 @@ class Curve(np.ndarray):
 
     @classmethod
     def from_lasio_curve(cls, curve,
+                         depth=None,
                          basis=None,
                          start=None,
                          stop=None,
@@ -153,6 +154,19 @@ class Curve(np.ndarray):
         Returns:
             Curve. An instance of the class.
         """
+        data = curve.data
+
+        # See if we have uneven sampling.
+        if depth is not None:
+            d = np.diff(depth)
+            if not np.allclose(d - np.mean(d), np.zeros_like(d)):
+                # Sampling is uneven.
+                step = np.median(d)
+                start, stop = depth[0], depth[-1]+0.00001  # adjustment
+                basis = np.arange(start, stop, step)
+                data = np.interp(basis, depth, data)
+
+        # Carry on with easier situations.
         if start is None:
             if basis is not None:
                 start = basis[0]
@@ -166,6 +180,8 @@ class Curve(np.ndarray):
             else:
                 step = (stop - start) / (curve.data.shape[0] - 1)
 
+        # Interpolate into this 
+
         params = {}
         params['mnemonic'] = curve.mnemonic
         params['description'] = curve.descr
@@ -178,7 +194,7 @@ class Curve(np.ndarray):
         params['date'] = date
         params['code'] = curve.API_code
 
-        return cls(curve.data, params=params)
+        return cls(data, params=params)
 
     def get_alias(self, alias):
         """

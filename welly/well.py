@@ -121,6 +121,13 @@ class Well(object):
                                                   funcs=funcs)
 
         depth_curves = ['DEPT', 'DEPTH', 'TIME']
+
+        # This is annoying, but I need the whole depth array to
+        # deal with edge cases, eg non-uniform sampling.
+        depth, = [c.data for c in l.curves if c.mnemonic in depth_curves]
+        curve_params['depth'] = depth
+
+        # Make the curve dictionary.
         curves = {c.mnemonic: Curve.from_lasio_curve(c, **curve_params)
                   for c in l.curves if c.mnemonic not in depth_curves}
 
@@ -368,7 +375,8 @@ class Well(object):
              alias=None,
              basis=None,
              return_fig=False,
-             extents='td'):
+             extents='td',
+             **kwargs):
         """
         Plot multiple tracks.
 
@@ -407,7 +415,11 @@ class Well(object):
         if extents == 'curves':
             upper, lower = basis[0], basis[-1]
         elif extents == 'td':
-            upper, lower = 0, self.location.td
+            try:
+                upper, lower = 0, self.location.td
+            except:
+                m = "Could not read self.location.td, try extents='curves'"
+                raise WellErro(m)
             if not lower:
                 lower = basis[-1]
         elif extents == 'all':
@@ -429,7 +441,7 @@ class Well(object):
         gs = mpl.gridspec.GridSpec(1, ntracks, width_ratios=widths)
 
         # Plot first axis.
-        kwargs = {}
+        #kwargs = {}
         ax0 = fig.add_subplot(gs[0, 0])
         ax0.depth_track = False
         track = tracks[0]
@@ -440,6 +452,8 @@ class Well(object):
         else:
             try:  # ...treating as a plottable object.
                 ax0 = self.get_curve(track, alias=alias).plot(ax=ax0, legend=legend, **kwargs)
+            except AttributeError:  # ...it's not there.
+                pass
             except TypeError:  # ...it's a list.
                 for t in track:
                     ax0 = self.get_curve(t, alias=alias).plot(ax=ax0, legend=legend, **kwargs)
@@ -449,7 +463,7 @@ class Well(object):
 
         # Plot remaining axes.
         for i, track in enumerate(tracks[1:]):
-            kwargs = {}
+            #kwargs = {}
             ax = fig.add_subplot(gs[0, i+1])
             ax.depth_track = False
             if track in depth_tracks:
@@ -460,6 +474,8 @@ class Well(object):
             plt.setp(ax.get_yticklabels(), visible=False)
             try:  # ...treating as a plottable object.
                 ax = self.get_curve(track, alias=alias).plot(ax=ax, legend=legend, **kwargs)
+            except AttributeError:  # ...it's not there.
+                continue
             except TypeError:  # ...it's a list.
                 for j, t in enumerate(track):
                     if '.' in t:
@@ -500,7 +516,7 @@ class Well(object):
         else:
             return None
 
-    def survey_basis(self, keys=None, step=None):
+    def survey_basis(self, keys=None, alias=None, step=None):
         """
         Look at the basis of all the curves in the ``well.data`` and return a
         basis with the minimum start, maximum depth, and minimum step.
@@ -514,14 +530,15 @@ class Well(object):
         """
         keys = utils.flatten_list(keys)
         starts, stops, steps = [], [], []
-        for k, d in self.data.items():
-            if (keys is not None) and (k not in keys):
+        for k in self.data:
+            d = self.get_curve(k, alias=alias)
+            if (keys is not None) and (d is None):
                 continue
             try:
                 starts.append(d.basis[0])
                 stops.append(d.basis[-1])
                 steps.append(d.basis[1] - d.basis[0])
-            except:
+            except Exception as e:
                 pass
         if starts and stops and steps:
             step = step or min(steps)

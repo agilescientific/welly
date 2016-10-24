@@ -17,7 +17,8 @@ def round_to_n(x, n):
     """
     Round to sig figs
     """
-    return round(x, -int(floor(log10(x))) + (n - 1))
+    return round(x, -int(np.floor(np.log10(x))) + (n - 1))
+
 
 def null(x):
     """
@@ -195,14 +196,6 @@ def lasio_get(l,
         result = f(result)
 
     return result
-
-
-def null(x):
-    """
-    Null function. Used for default in functions that can apply a user-
-    supplied function to data before returning.
-    """
-    return x
 
 
 def parabolic(f, x):

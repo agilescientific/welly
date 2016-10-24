@@ -160,7 +160,7 @@ class Project(object):
                 continue
 
             # If we got here, we're using it.
-            print("+ Adding {}".format(w.uwi))
+            print("+ Adding {} from {}".format(w.uwi, dat_file))
 
             w.data[name] = Striplog.from_canstrat(dat_file)
 
@@ -372,6 +372,9 @@ class Project(object):
                        alias=None,
                        legend=None,
                        match_only=None,
+                       field=None,
+                       field_function=None,
+                       legend_field=None,
                        basis=None,
                        step=None,
                        window_length=None,
@@ -395,6 +398,9 @@ class Project(object):
                                                 alias=alias,
                                                 legend=legend,
                                                 match_only=match_only,
+                                                field=field,
+                                                field_function=field_function,
+                                                legend_field=legend_field,
                                                 basis=basis,
                                                 step=step,
                                                 window_length=window_length,
@@ -416,6 +422,9 @@ class Project(object):
                                               alias=alias,
                                               legend=legend,
                                               match_only=match_only,
+                                              field=field,
+                                              field_function=field_function,
+                                              legend_field=legend_field,
                                               basis=basis,
                                               step=step,
                                               window_length=window_length,
@@ -436,6 +445,9 @@ class Project(object):
                         alias=None,
                         legend=None,
                         match_only=None,
+                        field=None,
+                        field_function=None,
+                        legend_field=None,
                         basis=None,
                         step=None,
                         window_length=None,
@@ -520,7 +532,11 @@ class Project(object):
             except:
                 _y = w.data[y_key].to_log(basis=z,
                                           legend=legend,
-                                          match_only=match_only)
+                                          match_only=match_only,
+                                          field=field,
+                                          field_function=field_function,
+                                          legend_field=legend_field,
+                                          )
 
             y = np.hstack([y, _y])
 
