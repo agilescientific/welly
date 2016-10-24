@@ -119,3 +119,14 @@ porg_txt = """1 POR-N_1 PORGRADE_3 POROSITY GRADE 3 3%
 9 POR-N_9 PORGRADE_39 POROSITY GRADE 39 >33%"""
 
 porgrade = {w[0]: float(w[5])/100 for w in [r.split() for r in porg_txt.split('\n')]}
+
+# Codes for oil stains.
+stain_txt = """Q OIL-C_Q OILSTN_QUEST OIL STAIN 1 Questionable stain
+D OIL-C_D OILSTN_DEAD OIL STAIN 2 Dead Stain
+M OIL-C_M OILSTN_MEDSPOT OIL STAIN 3 Medium-Spotted Stain
+G OIL-C_G OILSTN_GOOD OIL STAIN 4 Good Stain"""
+
+stain = {w[0]: w[2][7:].title() for w in [r.split() for r in stain_txt.split('\n')]}
+stain[' '] = 'None'
+
+oil = {' ': 0, 'Q': 1, 'D': 2, 'M': 3, 'G': 4}
