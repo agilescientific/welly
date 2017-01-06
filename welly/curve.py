@@ -677,7 +677,7 @@ class Curve(np.ndarray):
         Returns:
             Curve.
         """
-        z *= np.std(self)  # Transform to curve's units
+        z *= np.nanstd(self)  # Transform to curve's units
         curve_sm = self._rolling_window(window_length, np.median)
         spikes = np.where(self - curve_sm > z)[0]
         spukes = np.where(curve_sm - self > z)[0]
