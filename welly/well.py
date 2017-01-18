@@ -127,7 +127,7 @@ class Well(object):
         # Build a dict of the other well data.
         params = {'las': l,
                   'header': Header.from_lasio(l, remap=remap, funcs=funcs),
-                  'location': Location.from_lasio(l, remap=remap, funcs=funcs),
+                  'location': Location.from_lasio(l, remap=remap, funcs={'LOC':str}),
                   'data': curves}
 
         for field, (sect, code) in las_fields['well'].items():
