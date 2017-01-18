@@ -86,7 +86,7 @@ class Location(object):
                                             sect,
                                             code,
                                             remap=remap,
-                                            funcs=funcs)
+                                            funcs={'location':str})
         return cls(params)
 
     def add_deviation(self, dev, td=None):
