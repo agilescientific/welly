@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
 Defines wells.
@@ -120,16 +119,18 @@ class Well(object):
                                                   remap=remap,
                                                   funcs=funcs)
 
-        depth_curves = ['DEPT', 'DEPTH', 'TIME']
-
         # This is annoying, but I need the whole depth array to
         # deal with edge cases, eg non-uniform sampling.
-        depth, = [c.data for c in l.curves if c.mnemonic in depth_curves]
-        curve_params['depth'] = depth
+        # Take the first matching depth-like curve.
+        #depth = [c.data for c in l.curves if c.mnemonic[:4] in depth_curves][0]
+
+        # Ignore that and try using lasio's idea of depth in metres:
+        curve_params['depth'] = l.depth_m
 
         # Make the curve dictionary.
+        depth_curves = ['DEPT', 'TIME']
         curves = {c.mnemonic: Curve.from_lasio_curve(c, **curve_params)
-                  for c in l.curves if c.mnemonic not in depth_curves}
+                  for c in l.curves if c.mnemonic[:4] not in depth_curves}
 
         # Build a dict of the other well data.
         params = {'las': l,
@@ -419,7 +420,7 @@ class Well(object):
                 upper, lower = 0, self.location.td
             except:
                 m = "Could not read self.location.td, try extents='curves'"
-                raise WellErro(m)
+                raise WellError(m)
             if not lower:
                 lower = basis[-1]
         elif extents == 'all':
@@ -456,7 +457,10 @@ class Well(object):
                 pass
             except TypeError:  # ...it's a list.
                 for t in track:
-                    ax0 = self.get_curve(t, alias=alias).plot(ax=ax0, legend=legend, **kwargs)
+                    try:
+                        ax0 = self.get_curve(t, alias=alias).plot(ax=ax0, legend=legend, **kwargs)
+                    except AttributeError:  # ...it's not there.
+                        pass
         tx = ax0.get_xticks()
         ax0.set_xticks(tx[1:-1])
         ax0.set_title(track_titles[0])
@@ -482,6 +486,8 @@ class Well(object):
                         track, kwargs['field'] = track.split('.')
                     try:
                         ax = self.get_curve(t, alias=alias).plot(ax=ax, legend=legend, **kwargs)
+                    except AttributeError:
+                        continue
                     except KeyError:
                         continue
 
@@ -623,11 +629,12 @@ class Well(object):
         """
         return self.data.get(self.get_mnemonic(mnemonic, alias=alias), None)
 
-    def count_curves(self, keys, alias=None):
+    def count_curves(self, keys=None, alias=None):
         """
         Counts the number of curves in the well that will be selected with the
         given key list and the given alias dict. Use by Project's curve table.
         """
+        keys = keys or list(self.data.keys())
         return len(list(filter(None, [self.get_mnemonic(k, alias=alias) for k in keys])))
 
     def alias_has_multiple(self, mnemonic, alias):
@@ -796,10 +803,10 @@ class Well(object):
                   2: [well_to_card_2(self, key)],
                   8: [],
                   7: [interval_to_card_7(iv) for iv in strip]
-                 }
+                  }
 
         result = ''
-        for c in [1,2,8,7]:
+        for c in [1, 2, 8, 7]:
             for d in record[c]:
                 result += write_row(d, card=c, log=log)
 

@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
 Defines log curves.
@@ -11,6 +10,7 @@ import matplotlib.pyplot as plt
 import matplotlib as mpl
 
 from . import utils
+from copy import deepcopy
 
 
 class CurveError(Exception):
@@ -61,6 +61,12 @@ class Curve(np.ndarray):
         self.service_company = getattr(obj, 'service_company', None)
         self.date = getattr(obj, 'date', None)
         self.code = getattr(obj, 'code', None)
+
+    def __copy__(self):
+        cls = self.__class__
+        result = cls.__new__(cls)
+        result.__dict__.update(self.__dict__)
+        return result
 
     def _repr_html_(self):
         """
@@ -142,6 +148,7 @@ class Curve(np.ndarray):
 
         Args:
             curve (ndarray)
+            depth (ndarray)
             basis (ndarray)
             start (float)
             stop (float)
@@ -155,6 +162,7 @@ class Curve(np.ndarray):
             Curve. An instance of the class.
         """
         data = curve.data
+        unit = curve.unit
 
         # See if we have uneven sampling.
         if depth is not None:
@@ -165,6 +173,9 @@ class Curve(np.ndarray):
                 start, stop = depth[0], depth[-1]+0.00001  # adjustment
                 basis = np.arange(start, stop, step)
                 data = np.interp(basis, depth, data)
+            else:
+                step = np.median(d)
+                start = depth[0]
 
         # Carry on with easier situations.
         if start is None:
@@ -187,7 +198,7 @@ class Curve(np.ndarray):
         params['description'] = curve.descr
         params['start'] = start
         params['step'] = step
-        params['units'] = curve.unit
+        params['units'] = unit
         params['run'] = run
         params['null'] = null
         params['service_company'] = service_company
@@ -203,22 +214,6 @@ class Curve(np.ndarray):
         """
         alias = alias or {}
         return [k for k, v in alias.items() if self.mnemonic in v]
-
-    def apply(self, function, **kwargs):
-        """
-        Apply a function to the curve. Pretty sure we don't need this.
-
-        Args:
-            function (function): A functon to apply.
-            kwargs. Arguments for the function.
-
-        Returns:
-            Curve.
-        """
-        params = self.__dict__.copy()
-        data = function(self, **kwargs)
-        params['units'] = ''  # These will often break otherwise.
-        return Curve(data, params=params)
 
     def plot_2d(self, ax=None,
                 width=None,
@@ -341,7 +336,7 @@ class Curve(np.ndarray):
 
         if d is not None:
             # Then attempt to get parameters from decor.
-            axkwargs = {}
+            axkwargs = kwargs
 
             xticks = getattr(d, 'xticks', None)
             if xticks is not None:
@@ -703,7 +698,7 @@ class Curve(np.ndarray):
         out[spukes] = curve_sm[spukes] - z
         return Curve(out, params=params)
 
-    def smooth(self, window_length, func1d=None):
+    def apply(self, window_length, func1d=None):
         """
         Runs any kind of function over a window.
 
@@ -721,7 +716,14 @@ class Curve(np.ndarray):
         out = self._rolling_window(window_length, func1d)
         return Curve(out, params=params)
 
-    def plot_kde(self, ax=None, amax=None, amin=None, label=None, return_fig=False):
+    smooth = apply
+
+    def plot_kde(self,
+                 ax=None,
+                 amax=None,
+                 amin=None,
+                 label=None,
+                 return_fig=False):
         """
         Plot a KDE for the curve. Very nice summary of KDEs:
         https://jakevdp.github.io/blog/2013/12/01/kernel-density-estimation/

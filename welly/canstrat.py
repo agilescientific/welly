@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf 8 -*-
 """
 Functions for importing Canstrat ASCII files.
@@ -125,14 +124,14 @@ columns = {
 
 def well_to_card_1(well):
     dictionary = {}
-    dictionary['elev']  = well.location.kb
+    dictionary['elev'] = well.location.kb
     dictionary['kb'] = 'KB'
-    dictionary['location']  = ''
-    dictionary['loctype']  = ''
-    dictionary['metric']  = 'M'
-    dictionary['name']  = well.header.name
-    dictionary['td']  = well.location.td
-    dictionary['units']  = 'M'
+    dictionary['location'] = ''
+    dictionary['loctype'] = ''
+    dictionary['metric'] = 'M'
+    dictionary['name'] = well.header.name
+    dictionary['td'] = well.location.td
+    dictionary['units'] = 'M'
     return dictionary
 
 
@@ -141,31 +140,31 @@ def well_to_card_2(well, key):
     Args:
         well (Well)
         key (str): The key of the predicted Striplog in `well.data`.
-        
+
     Returns:
         dict.
     """
     dictionary = {}
-    dictionary['comp']  = ''
+    dictionary['comp'] = ''
     dictionary['spud'] = ''
-    dictionary['start']  = well.data[key].start.z
-    dictionary['stop']  = well.data[key].stop.z
-    dictionary['status']  = ''
-    dictionary['uwi']  = well.header.uwi
+    dictionary['start'] = well.data[key].start.z
+    dictionary['stop'] = well.data[key].stop.z
+    dictionary['status'] = ''
+    dictionary['uwi'] = well.header.uwi
     return dictionary
 
 
 def interval_to_card_7(iv):
     dictionary = {}
-    dictionary['top']  = getattr(getattr(iv, 'top'), 'z')
+    dictionary['top'] = getattr(getattr(iv, 'top'), 'z')
     dictionary['base'] = getattr(getattr(iv, 'base'), 'z')
     if not iv:
         # Then this interval is empty
         dictionary['skip'] = 'X'
         return dictionary
-    dictionary['rtc_id']  = getattr(getattr(iv, 'primary'), 'component')  # Will be transformed into code
-    dictionary['rtc_idperc']  = 100
-    dictionary['porgrade']  = 0
+    dictionary['rtc_id'] = getattr(getattr(iv, 'primary'), 'component')
+    dictionary['rtc_idperc'] = 100
+    dictionary['porgrade'] = 0
     return dictionary
 
 
@@ -175,10 +174,10 @@ def _put_field(coldict, key, value):
         result = coldict[key]['write'](value)
     else:
         result = ''
-        
+
     if result is None:
         result = ''
-    
+
     result = str(result)
 
     # Reset the stop, depending on what we got.
@@ -196,24 +195,24 @@ def cols(c):
                    'read': r,
                    'write': w} for k, (s, l, r, w) in columns[c].items()}
     return coldict
-    
+
 
 def write_row(dictionary, card, log):
     """
     Processes a single row from the file.
-    """ 
+    """
     rowhdr = {'card': card, 'log': log}
 
     # Do this as a list of 1-char strings.
     # Can't use a string b/c strings are immutable.
     row = [' '] * 80
-    
+
     # Make the row header.
     for e in ['log', 'card']:
         strt, stop, item = _put_field(cols(0), e, rowhdr[e])
         if item is not None:
             row[strt:stop] = list(item)
-    
+
     # Now make the rest of the row.
     for field in cols(card):
         strt, stop, item = _put_field(cols(card), field, dictionary.get(field))

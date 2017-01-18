@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
 Defines a multi-well 'project'.
@@ -359,21 +358,23 @@ class Project(object):
 
     def find_wells_with_curve(self, mnemonic, alias=None):
         """
-        Returns all the wells which have the named curve.
+        Returns a new Project with only the wells which have the named curve.
         """
-        return [w for w in self if w.get_curve(mnemonic, alias=alias) is not None]
+        return Project(w for w in self if w.get_curve(mnemonic, alias=alias) is not None)
 
     def get_wells(self, uwis=None):
         if uwis is None:
             return Project(self.__list)
         return Project([w for w in self if w.uwi in uwis])
 
-    def data_as_matrix(self, X_keys, y_key,
+    def data_as_matrix(self, X_keys,
+                       y_key=None,
                        alias=None,
                        legend=None,
                        match_only=None,
                        field=None,
                        field_function=None,
+                       table=None,
                        legend_field=None,
                        basis=None,
                        step=None,
@@ -400,6 +401,7 @@ class Project(object):
                                                 match_only=match_only,
                                                 field=field,
                                                 field_function=field_function,
+                                                table=table,
                                                 legend_field=legend_field,
                                                 basis=basis,
                                                 step=step,
@@ -424,6 +426,7 @@ class Project(object):
                                               match_only=match_only,
                                               field=field,
                                               field_function=field_function,
+                                              table=table,
                                               legend_field=legend_field,
                                               basis=basis,
                                               step=step,
@@ -441,13 +444,14 @@ class Project(object):
 
         return X_train, X_test, y_train, y_test
 
-    def _data_as_matrix(self, X_keys, y_key,
+    def _data_as_matrix(self, X_keys, y_key=None,
                         alias=None,
                         legend=None,
                         match_only=None,
                         field=None,
                         field_function=None,
                         legend_field=None,
+                        table=None,
                         basis=None,
                         step=None,
                         window_length=None,
@@ -525,6 +529,9 @@ class Project(object):
             X = np.vstack([X, _X])
             print(_X.shape[0])
 
+            if y_key is None:
+                continue
+
             y_key = w.get_mnemonic(y_key, alias=alias)
 
             try:
@@ -535,6 +542,7 @@ class Project(object):
                                           match_only=match_only,
                                           field=field,
                                           field_function=field_function,
+                                          table=table,
                                           legend_field=legend_field,
                                           )
 
@@ -542,6 +550,9 @@ class Project(object):
 
         # Get rid of the 'seed'.
         X = X[1:]
-        y = y[1:]
+        if y_key is None:
+            y = None
+        else:
+            y = y[1:]
 
         return X, y

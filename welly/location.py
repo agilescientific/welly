@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
 Defines well location.
@@ -25,7 +24,11 @@ class Location(object):
         for k, v in params.items():
             if k and v:
                 try:
-                    setattr(self, k, float(v.replace(',', '')))
+                    v_ = float(v.replace(',', ''))
+                    if not np.isinf(v_):
+                        setattr(self, k, v_)
+                    else:
+                        setattr(self, k, v)
                 except:
                     setattr(self, k, v)
 
