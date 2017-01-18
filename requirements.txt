@@ -3,5 +3,4 @@ matplotlib>=1.5.0
 scipy
 tqdm
 striplog>=0.7.2
-namedlist
 git+https://github.com/kwinkunks/lasio.git

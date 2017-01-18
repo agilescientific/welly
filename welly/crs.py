@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
 CRS functions. Modeled on fiona by Sean Gillies.
