@@ -18,6 +18,7 @@ def no_similarities(well, keys, alias):
     d = squareform(pdist(X.T, 'hamming'))
     return list(np.sum(d, axis=1) > (len(keys) - 1.5))
 
+
 # Each
 # Single curve
 def not_empty(curve):
@@ -108,25 +109,29 @@ def check_units(list_of_units):
     return check_units
 
 
-def no_spikes(tolerance):  # tolerance is 'number of spiky samples allowed'
+def no_spikes(tolerance):
+    """
+    Arg ``tolerance`` is the number of spiky samples allowed.
+    """
     def no_spikes(curve):
         diff = np.abs(curve - curve.despike())
         return np.count_nonzero(diff) < tolerance
     return no_spikes
 
+
 def fraction_not_nans(curve):
     """
-    returns the fraction of the curve extents that 
-    are good (non-nan data)
+    Returns the fraction of the curve extents that are good (non-nan data).
     """
     return 1 - (len(np.extract(np.isnan(curve), curve)) / len(curve))
 
+
 def fraction_not_zeros(curve):
     """
-    returns the fraction of the curve extents that 
-    are not zeros 
+    Returns the fraction of the curve extents that are not zeros.
     """
     return np.count_nonzero(curve) / len(curve)
+
 
 def fraction_within_range(xmin, xmax):
     def fraction_within_range(curve):
@@ -137,10 +142,14 @@ def fraction_within_range(xmin, xmax):
         return 1 - ((greaterthan_max + lessthan_min) / nsamps)
     return fraction_within_range
 
+
 def count_spikes(curve):
     diff = np.abs(curve - curve.despike())
     return np.count_nonzero(diff)
 
+
 def spike_locations(curve):
-    """return the indicies of the spikes"""
-    return 
+    """
+    Return the indicies of the spikes.
+    """
+    return
