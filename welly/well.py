@@ -15,7 +15,7 @@ import lasio
 import numpy as np
 
 from . import utils
-from .fields import las_fields
+from .fields import las_fields as LAS_FIELDS
 from .curve import Curve
 from .header import Header
 from .location import Location
@@ -112,7 +112,7 @@ class Well(object):
         """
         # Build a dict of curves.
         curve_params = {}
-        for field, (sect, code) in las_fields['data'].items():
+        for field, (sect, code) in LAS_FIELDS['data'].items():
             curve_params[field] = utils.lasio_get(l,
                                                   sect,
                                                   code,
@@ -138,7 +138,7 @@ class Well(object):
                   'location': Location.from_lasio(l, remap=remap, funcs=funcs),
                   'data': curves}
 
-        for field, (sect, code) in las_fields['well'].items():
+        for field, (sect, code) in LAS_FIELDS['well'].items():
             params[field] = utils.lasio_get(l,
                                             sect,
                                             code,
@@ -187,7 +187,7 @@ class Well(object):
         l.well.DATE = str(datetime.datetime.today())
 
         # Deal with header.
-        for obj, dic in las_fields.items():
+        for obj, dic in LAS_FIELDS.items():
             if obj == 'data':
                 continue
             for attr, (sect, item) in dic.items():
@@ -197,6 +197,9 @@ class Well(object):
                 except:
                     h = lasio.HeaderItem(item, "", value, "")
                     getattr(l, sect)[item] = h
+
+        # Clear curves from header portion.
+        l.header['Curves'] = []
 
         # Add a depth basis.
         if basis is None:
@@ -304,7 +307,7 @@ class Well(object):
             None. Works in place.
         """
         params = {}
-        for field, (sect, code) in las_fields['data'].items():
+        for field, (sect, code) in LAS_FIELDS['data'].items():
             params[field] = utils.lasio_get(l,
                                             sect,
                                             code,
@@ -632,10 +635,17 @@ class Well(object):
     def count_curves(self, keys=None, alias=None):
         """
         Counts the number of curves in the well that will be selected with the
-        given key list and the given alias dict. Use by Project's curve table.
+        given key list and the given alias dict. Used by Project's curve table.
         """
         keys = keys or list(self.data.keys())
         return len(list(filter(None, [self.get_mnemonic(k, alias=alias) for k in keys])))
+
+    def is_complete(self, keys=None, alias=None):
+        """
+        Returns False if the well does not have one or more of the keys in its
+        data dictionary. Used by project.data_to_matrix().
+        """
+        return any(k not in self.data.keys() for k in keys)
 
     def alias_has_multiple(self, mnemonic, alias):
         return 1 < len([a for a in alias[mnemonic] if a in self.data])
@@ -778,7 +788,7 @@ class Well(object):
         html = '<table>{}</table>'.format(rows)
         return html
 
-    def to_canstrat(self, key, log, filename=None, as_text=False):
+    def to_canstrat(self, key, log, lith_field, filename=None, as_text=False):
         """
         Make a Canstrat DAT (aka ASCII) file.
 
@@ -790,6 +800,9 @@ class Well(object):
            filename (str)
            key (str)
            log (str): the log name, should be 6 characters.
+           lith_field (str) the name of the lithology field in the striplog's
+               Primary component. Must match the Canstrat definitions.
+           filename (str)
            as_text (bool): if you don't want to write a file.
         """
         if (filename is None):
@@ -802,7 +815,7 @@ class Well(object):
         record = {1: [well_to_card_1(self)],
                   2: [well_to_card_2(self, key)],
                   8: [],
-                  7: [interval_to_card_7(iv) for iv in strip]
+                  7: [interval_to_card_7(iv, lith_field) for iv in strip]
                   }
 
         result = ''

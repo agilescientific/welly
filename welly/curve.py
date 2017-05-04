@@ -687,6 +687,10 @@ class Curve(np.ndarray):
 
         Returns:
             Curve.
+
+        TODO:
+            Does not handle NaNs well. Gives "Runtime warning: invalid value
+            encountered in greater"
         """
         z *= np.nanstd(self)  # Transform to curve's units
         curve_sm = self._rolling_window(window_length, np.median)

@@ -100,12 +100,13 @@ class Project(object):
         Jupyter Notebook magic repr function.
         """
         # Make header.
-        r = '</th><th>'.join(['UWI', 'Data', 'Curves'])
+        r = '</th><th>'.join(['Index', 'UWI', 'Data', 'Curves'])
         rows = '<tr><th>{}</th></tr>'.format(r)
 
         # Make rows.
-        for w in self.__list:
-            rows += '<tr><td>{}</td>'.format(w.uwi)
+        for i, w in enumerate(self.__list):
+            rows += '<tr><td>{}</td>'.format(i)
+            rows += '<td><strong>{}</strong></td>'.format(w.uwi)
             rows += '<td>{}&nbsp;curves</td>'.format(len(w.data))
             rows += '<td>{}</td></tr>'.format(', '.join(w.data.keys()))
         html = '<table>{}</table>'.format(rows)
@@ -122,15 +123,15 @@ class Project(object):
         return [w.uwi for w in self.__list]
 
     @classmethod
-    def from_las(cls, path, remap=None, funcs=None):
+    def from_las(cls, path=None, remap=None, funcs=None):
         """
         Constructor. Essentially just wraps ``Well.from_las()``, but is more
         convenient for most purposes.
 
         Args:
-            path (str): The path of the LAS files, e.g. 'data/*.las'. It will
-                attempt to load everything it finds, so make sure it only leads
-                to LAS files.
+            path (str): The path of the LAS files, e.g. './*.las' (the
+                default). It will attempt to load everything it finds, so
+                make sure it only leads to LAS files.
             remap (dict): Optional. A dict of 'old': 'new' LAS field names.
             funcs (dict): Optional. A dict of 'las field': function() for
                 implementing a transform before loading. Can be a lambda.
@@ -138,12 +139,16 @@ class Project(object):
         Returns:
             project. The project object.
         """
-        list_of_Wells = [Well.from_las(f) for f in tqdm(glob.iglob(path))]
+        if path is None:
+            path = './*.las'
+        list_of_Wells = [Well.from_las(f, remap=remap, funcs=funcs)
+                         for f in tqdm(glob.iglob(path))]
         return cls(list_of_Wells)
 
-    def add_canstrat_striplogs(self, path, uwi_transform=None, name='canstrat'):
+    def add_canstrat_striplogs(self,
+                               path, uwi_transform=None, name='canstrat'):
         """
-        This may be to specific a method... just move it to the workflow.
+        This may be too specific a method... just move it to the workflow.
 
         Requires striplog.
         """
@@ -152,7 +157,11 @@ class Project(object):
         uwi_transform = uwi_transform or utils.null
 
         for w in self.__list:
-            dat_file = utils.find_file(uwi_transform(w.uwi), path)
+            try:
+                dat_file = utils.find_file(str(uwi_transform(w.uwi)), path)
+            except:
+                print("- Skipping {}: something went wrong".format(w.uwi))
+                continue
 
             if dat_file is None:
                 print("- Omitting {}: no data".format(w.uwi))
@@ -385,6 +394,7 @@ class Project(object):
                        include_basis=False,
                        include_index=False,
                        include=None,
+                       complete_only=False,
                        ):
 
         test = test or []
@@ -410,7 +420,8 @@ class Project(object):
                                                 uwis=train_,
                                                 include_basis=include_basis,
                                                 include_index=include_index,
-                                                include=include
+                                                include=include,
+                                                complete_only=False,
                                                 )
 
         if remove_zeros:
@@ -435,7 +446,8 @@ class Project(object):
                                               uwis=test_,
                                               include_basis=include_basis,
                                               include_index=include_index,
-                                              include=include
+                                              include=include,
+                                              complete_only=False,
                                               )
 
         if remove_zeros:
@@ -459,7 +471,8 @@ class Project(object):
                         uwis=None,
                         include_basis=False,
                         include_index=False,
-                        include=None
+                        include=None,
+                        complete_only=False,
                         ):
         """
         Make X.
@@ -493,6 +506,9 @@ class Project(object):
         for i, w in enumerate(self.get_wells(uwis)):
 
             print(w.uwi, end=' ')
+
+            if not w.is_complete(X_keys, alias):
+                continue
 
             _X, z = w.data_as_matrix(X_keys,
                                      basis=basis,

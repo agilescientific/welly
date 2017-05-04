@@ -124,13 +124,16 @@ columns = {
 
 def well_to_card_1(well):
     dictionary = {}
-    dictionary['elev'] = well.location.kb
+    try:
+        dictionary['elev'] = well.location.kb
+    except:
+        dictionary['elev'] = 0.0
     dictionary['kb'] = 'KB'
     dictionary['location'] = ''
     dictionary['loctype'] = ''
     dictionary['metric'] = 'M'
     dictionary['name'] = well.header.name
-    dictionary['td'] = well.location.td
+    dictionary['td'] = well.location.td or 0.0
     dictionary['units'] = 'M'
     return dictionary
 
@@ -154,7 +157,7 @@ def well_to_card_2(well, key):
     return dictionary
 
 
-def interval_to_card_7(iv):
+def interval_to_card_7(iv, lith_field):
     dictionary = {}
     dictionary['top'] = getattr(getattr(iv, 'top'), 'z')
     dictionary['base'] = getattr(getattr(iv, 'base'), 'z')
@@ -162,7 +165,7 @@ def interval_to_card_7(iv):
         # Then this interval is empty
         dictionary['skip'] = 'X'
         return dictionary
-    dictionary['rtc_id'] = getattr(getattr(iv, 'primary'), 'component')
+    dictionary['rtc_id'] = getattr(getattr(iv, 'primary'), lith_field)
     dictionary['rtc_idperc'] = 100
     dictionary['porgrade'] = 0
     return dictionary
