@@ -1,6 +1,6 @@
 numpy>=1.10.0
-matplotlib>=1.5.0
+matplotlib
 scipy
 tqdm
-striplog>=0.7.2
-git+https://github.com/kwinkunks/lasio.git
+striplog
+lasio

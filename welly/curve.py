@@ -702,22 +702,25 @@ class Curve(np.ndarray):
         out[spukes] = curve_sm[spukes] - z
         return Curve(out, params=params)
 
-    def apply(self, window_length, func1d=None):
+    def apply(self, window_length, samples=True, func1d=None):
         """
         Runs any kind of function over a window.
 
         Args:
             window_length (int): the window length. Required.
+            samples (bool): window length is in samples. Use False for a window
+                length given in metres.
             func1d (function): a function that takes a 1D array and returns a
                 scalar. Default: ``np.mean()``.
 
         Returns:
             Curve.
         """
+        window_length /= 1 if samples else self.step
         if func1d is None:
             func1d = np.mean
         params = self.__dict__.copy()
-        out = self._rolling_window(window_length, func1d)
+        out = self._rolling_window(int(window_length), func1d)
         return Curve(out, params=params)
 
     smooth = apply

@@ -166,6 +166,12 @@ class Well(object):
         # Pass to other constructor.
         return cls.from_lasio(l, remap=remap, funcs=funcs)
 
+    def df(self):
+        """
+        Just use lasio's df().
+        """
+        return self.las.df()
+
     def to_lasio(self, basis=None, keys=None):
         """
         Makes a lasio object from the current well.
@@ -833,6 +839,8 @@ class Well(object):
     def data_as_matrix(self, keys=None,
                        return_basis=False,
                        basis=None,
+                       start=None,
+                       stop=None,
                        step=None,
                        window_length=None,
                        window_step=1,
@@ -852,7 +860,12 @@ class Well(object):
             keys (list): List of the logs to export from the data dictionary.
             return_basis (bool): Whether or not to return the basis that was
                 used.
-            basis (ndarray): The basis to use.
+            basis (ndarray): The basis to use. Default is to survey all curves
+                to find a common basis.
+            start (float): Optionally override the start of whatever basis
+                you find or (more likely) is surveyed.
+            stop (float): Optionally override the stop of whatever basis
+                you find or (more likely) is surveyed.
             window (int): The number of samples to return around each sample.
             step (float): Override the step in the basis from survey_basis.
 
@@ -891,6 +904,9 @@ class Well(object):
         for i, d in enumerate(data):
             if d is not None:
                 data[i] = d.to_basis(basis=basis)
+            # Allow user to override the start and stop from the basis survey.
+            if (start is not None) or (stop is not None) or (step is not None):
+                data[i] = d.to_basis(start=start, stop=stop, step=step)
             else:
                 # Empty_like gives unpredictable results
                 data[i] = Curve(np.full(basis.shape, np.nan), basis=basis)

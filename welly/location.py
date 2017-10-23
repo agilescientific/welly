@@ -84,12 +84,14 @@ class Location(object):
             Location. An instance of this class.
         """
         params = {}
+        funcs = funcs or {}
+        funcs['location'] = str
         for field, (sect, code) in las_fields['location'].items():
             params[field] = utils.lasio_get(l,
                                             sect,
                                             code,
                                             remap=remap,
-                                            funcs={'location':str})
+                                            funcs=funcs)
         return cls(params)
 
     def add_deviation(self, dev, td=None):
