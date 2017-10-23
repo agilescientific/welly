@@ -7,7 +7,6 @@ Defines wells.
 """
 import re
 import datetime
-from io import StringIO
 
 import matplotlib.pyplot as plt
 import matplotlib as mpl
@@ -59,7 +58,8 @@ class Well(object):
 
     def __eq__(self, other):
         if (not self.uwi) or (not other.uwi):
-            raise WellError("One or both UWIs is blank, cannot determine equality.")
+            m = "One or both UWIs is blank, cannot determine equality."
+            raise WellError(m)
         if self.uwi == other.uwi:
             return True
         return False
@@ -68,7 +68,8 @@ class Well(object):
         """
         Jupyter Notebook magic repr function.
         """
-        row1 = '<tr><th style="text-align:center;" colspan="2">{}<br><small>{{}}</small></th></tr>'
+        row1 = '<tr><th style="text-align:center;" '
+        row1 += 'colspan="2">{}<br><small>{{}}</small></th></tr>'
         rows = row1.format(getattr(self.header, 'name', ''))
         rows = rows.format(getattr(self.header, 'uwi', ''))
         s = '<tr><td><strong>{k}</strong></td><td>{v}</td></tr>'
@@ -82,7 +83,8 @@ class Well(object):
                 rows += s.format(k=k, v=v)
 
         if getattr(self, 'data', None) is not None:
-            rows += s.format(k="data", v=', '.join(sorted(list(self.data.keys()))))
+            v = ', '.join(sorted(list(self.data.keys())))
+            rows += s.format(k="data", v=v)
 
         html = '<table>{}</table>'.format(rows)
         return html
@@ -121,10 +123,8 @@ class Well(object):
 
         # This is annoying, but I need the whole depth array to
         # deal with edge cases, eg non-uniform sampling.
-        # Take the first matching depth-like curve.
-        #depth = [c.data for c in l.curves if c.mnemonic[:4] in depth_curves][0]
 
-        # Ignore that and try using lasio's idea of depth in metres:
+        # Using lasio's idea of depth in metres:
         curve_params['depth'] = l.depth_m
 
         # Make the curve dictionary.
@@ -451,7 +451,7 @@ class Well(object):
         gs = mpl.gridspec.GridSpec(1, ntracks, width_ratios=widths)
 
         # Plot first axis.
-        #kwargs = {}
+        # kwargs = {}
         ax0 = fig.add_subplot(gs[0, 0])
         ax0.depth_track = False
         track = tracks[0]
@@ -476,7 +476,7 @@ class Well(object):
 
         # Plot remaining axes.
         for i, track in enumerate(tracks[1:]):
-            #kwargs = {}
+            # kwargs = {}
             ax = fig.add_subplot(gs[0, i+1])
             ax.depth_track = False
             if track in depth_tracks:
@@ -503,7 +503,6 @@ class Well(object):
             tx = ax.get_xticks()
             ax.set_xticks(tx[1:-1])
             ax.set_title(track_titles[i+1])
-            # ax.title.set_visible(False)  # turn off "Title" because we're using text
 
         # Set sharing.
         axes = fig.get_axes()
@@ -813,7 +812,8 @@ class Well(object):
         """
         if (filename is None):
             if (not as_text):
-                raise WellError("You must provide a filename or set as_text to True.")
+                m = "You must provide a filename or set as_text to True."
+                raise WellError(m)
 
         strip = self.data[key]
         strip = strip.fill()  # Default is to fill with 'null' intervals.

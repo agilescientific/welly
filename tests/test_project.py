@@ -21,7 +21,9 @@ def test_project():
 
     assert project.uwis[0] == 1
 
-    s = "<table><tr><th>UWI</th><th>Data</th><th>Curves</th></tr><tr><td>1</td>"
+    s = "<table>"
+    s += "<tr><th>Index</th><th>UWI</th><th>Data</th><th>Curves</th></tr>"
+    s += "<tr><td>0</td><td><strong>1</strong></td>"
     assert s in project._repr_html_()
 
     # Check __getitem__.
@@ -35,8 +37,9 @@ def test_project():
     html = project.curve_table_html()
     assert '<table><tr><th>Idx</th><th>UWI</th><th>Data</th><th>Quality</th>' in html
     assert "<th>DPHI_SAN</th>" in html
-    s =  """<td style="background-color:#CCEECC; line-height:80%; padding:5px 4px 2px 4px;">DTS"""
+    s = """<td style="background-color:#CCEECC; line-height:80%; padding:5px 4px 2px 4px;">DTS"""
     assert s in html
+
 
 def test_data_as_matrix():
     alias = {'Sonic': ['DT', 'foo']}

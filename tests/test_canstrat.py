@@ -15,7 +15,11 @@ def test_canstrat():
     w = Well.from_las('tests/P-129_out.LAS')
     s = Striplog.from_csv('tests/K90_strip_pred.csv')
     w.data['test'] = s
-    dat = w.to_canstrat(key='test', log='K   90', as_text=True)
+    dat = w.to_canstrat(key='test',
+                        log='K   90',
+                        lith_field="component",
+                        as_text=True
+                        )
 
     s7 = "K   907   3960 3966L0                                                           "
     assert s7 in dat
