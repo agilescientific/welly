@@ -904,9 +904,10 @@ class Well(object):
         for i, d in enumerate(data):
             if d is not None:
                 data[i] = d.to_basis(basis=basis)
-            # Allow user to override the start and stop from the basis survey.
-            if (start is not None) or (stop is not None) or (step is not None):
-                data[i] = d.to_basis(start=start, stop=stop, step=step)
+                # Allow user to override the start and stop from the survey.
+                if (start is not None) or (stop is not None):
+                    data[i] = data[i].to_basis(start=start, stop=stop, step=step)
+                    basis = data[i].basis
             else:
                 # Empty_like gives unpredictable results
                 data[i] = Curve(np.full(basis.shape, np.nan), basis=basis)
