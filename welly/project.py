@@ -123,7 +123,7 @@ class Project(object):
         return [w.uwi for w in self.__list]
 
     @classmethod
-    def from_las(cls, path=None, remap=None, funcs=None):
+    def from_las(cls, path=None, remap=None, funcs=None, data=True):
         """
         Constructor. Essentially just wraps ``Well.from_las()``, but is more
         convenient for most purposes.
@@ -141,7 +141,7 @@ class Project(object):
         """
         if path is None:
             path = './*.las'
-        list_of_Wells = [Well.from_las(f, remap=remap, funcs=funcs)
+        list_of_Wells = [Well.from_las(f, remap=remap, funcs=funcs, data=data)
                          for f in tqdm(glob.iglob(path))]
         return cls(list_of_Wells)
 
