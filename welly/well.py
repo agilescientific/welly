@@ -98,7 +98,7 @@ class Well(object):
         return getattr(self.header, 'uwi', None) or ''
 
     @classmethod
-    def from_lasio(cls, l, remap=None, funcs=None):
+    def from_lasio(cls, l, remap=None, funcs=None, data=True):
         """
         Constructor. If you already have the lasio object, then this makes a
         well object from it.
@@ -129,8 +129,12 @@ class Well(object):
 
         # Make the curve dictionary.
         depth_curves = ['DEPT', 'TIME']
-        curves = {c.mnemonic: Curve.from_lasio_curve(c, **curve_params)
-                  for c in l.curves if c.mnemonic[:4] not in depth_curves}
+        if data:
+            curves = {c.mnemonic: Curve.from_lasio_curve(c, **curve_params)
+                      for c in l.curves if c.mnemonic[:4] not in depth_curves}
+        else:
+            curves = {c.mnemonic: True
+                      for c in l.curves if c.mnemonic[:4] not in depth_curves}
 
         # Build a dict of the other well data.
         params = {'las': l,
@@ -147,7 +151,7 @@ class Well(object):
         return cls(params)
 
     @classmethod
-    def from_las(cls, fname, remap=None, funcs=None):
+    def from_las(cls, fname, remap=None, funcs=None, data=True):
         """
         Constructor. Essentially just wraps ``from_lasio()``, but is more
         convenient for most purposes.
@@ -164,7 +168,7 @@ class Well(object):
         l = lasio.read(fname)
 
         # Pass to other constructor.
-        return cls.from_lasio(l, remap=remap, funcs=funcs)
+        return cls.from_lasio(l, remap=remap, funcs=funcs, data=data)
 
     def df(self):
         """
