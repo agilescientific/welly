@@ -123,7 +123,7 @@ class Project(object):
         return [w.uwi for w in self.__list]
 
     @classmethod
-    def from_las(cls, path=None, remap=None, funcs=None, data=True):
+    def from_las(cls, path=None, remap=None, funcs=None, data=True, req=None, max=None):
         """
         Constructor. Essentially just wraps ``Well.from_las()``, but is more
         convenient for most purposes.
@@ -135,15 +135,18 @@ class Project(object):
             remap (dict): Optional. A dict of 'old': 'new' LAS field names.
             funcs (dict): Optional. A dict of 'las field': function() for
                 implementing a transform before loading. Can be a lambda.
+            data (bool): Whether to load curves or not.
+            req (dict): An alias list, giving all required curves. If not
+                all of the aliases are present, the well is not loaded.
 
         Returns:
             project. The project object.
         """
         if path is None:
             path = './*.las'
-        list_of_Wells = [Well.from_las(f, remap=remap, funcs=funcs, data=data)
-                         for f in tqdm(glob.iglob(path))]
-        return cls(list_of_Wells)
+        list_of_Wells = [Well.from_las(f, remap=remap, funcs=funcs, data=data, req=req)
+                         for i, f in tqdm(enumerate(glob.iglob(path))) if i < max or np.inf]
+        return cls(filter(None, list_of_Wells))
 
     def add_canstrat_striplogs(self,
                                path, uwi_transform=None, name='canstrat'):

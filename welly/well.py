@@ -64,6 +64,14 @@ class Well(object):
             return True
         return False
 
+    def __nonzero__(self):
+        """
+        Truthiness.
+        """
+        if self.header or self.data or self.uwi:
+            return True
+        return False
+
     def _repr_html_(self):
         """
         Jupyter Notebook magic repr function.
@@ -98,7 +106,7 @@ class Well(object):
         return getattr(self.header, 'uwi', None) or ''
 
     @classmethod
-    def from_lasio(cls, l, remap=None, funcs=None, data=True):
+    def from_lasio(cls, l, remap=None, funcs=None, data=True, req=None):
         """
         Constructor. If you already have the lasio object, then this makes a
         well object from it.
@@ -108,10 +116,16 @@ class Well(object):
             remap (dict): Optional. A dict of 'old': 'new' LAS field names.
             funcs (dict): Optional. A dict of 'las field': function() for
                 implementing a transform before loading. Can be a lambda.
+            data (bool): Whether to load curves or not.
+            req (dict): An alias list, giving all required curves. If not
+                all of the aliases are present, the well is empty.
 
         Returns:
             well. The well object.
         """
+        if req is None:
+            req = {}
+
         # Build a dict of curves.
         curve_params = {}
         for field, (sect, code) in LAS_FIELDS['data'].items():
@@ -124,17 +138,39 @@ class Well(object):
         # This is annoying, but I need the whole depth array to
         # deal with edge cases, eg non-uniform sampling.
 
+        # Add all required curves together
+        reqs = utils.flatten_list([v for k, v in req.items()])
+
         # Using lasio's idea of depth in metres:
         curve_params['depth'] = l.depth_m
 
         # Make the curve dictionary.
         depth_curves = ['DEPT', 'TIME']
-        if data:
+        if data and req:
             curves = {c.mnemonic: Curve.from_lasio_curve(c, **curve_params)
-                      for c in l.curves if c.mnemonic[:4] not in depth_curves}
+                      for c in l.curves
+                      if (c.mnemonic[:4] not in depth_curves)
+                      and (c.mnemonic in reqs)}
+        elif data and not req:
+            curves = {c.mnemonic: Curve.from_lasio_curve(c, **curve_params)
+                      for c in l.curves
+                      if (c.mnemonic[:4] not in depth_curves)}
+        elif (not data) and req:
+            curves = {c.mnemonic: True
+                      for c in l.curves
+                      if (c.mnemonic[:4] not in depth_curves)
+                      and (c.mnemonic in reqs)}
         else:
             curves = {c.mnemonic: True
-                      for c in l.curves if c.mnemonic[:4] not in depth_curves}
+                      for c in l.curves
+                      if (c.mnemonic[:4] not in depth_curves)}
+        if req:
+            aliases = utils.flatten_list([c.get_alias(req)
+                                          for m, c
+                                          in curves.items()]
+                                          )
+            if len(set(aliases)) < len(req):
+                return cls(params={})
 
         # Build a dict of the other well data.
         params = {'las': l,
@@ -151,7 +187,7 @@ class Well(object):
         return cls(params)
 
     @classmethod
-    def from_las(cls, fname, remap=None, funcs=None, data=True):
+    def from_las(cls, fname, remap=None, funcs=None, data=True, req=None):
         """
         Constructor. Essentially just wraps ``from_lasio()``, but is more
         convenient for most purposes.
@@ -168,7 +204,7 @@ class Well(object):
         l = lasio.read(fname)
 
         # Pass to other constructor.
-        return cls.from_lasio(l, remap=remap, funcs=funcs, data=data)
+        return cls.from_lasio(l, remap=remap, funcs=funcs, data=data, req=req)
 
     def df(self):
         """
