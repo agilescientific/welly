@@ -14,6 +14,7 @@ las_fields = {
         'field': ('well', 'FLD'),
         'license': ('well', 'LIC'),
         'uwi': ('well', 'UWI'),
+        'api': ('well', 'API'),
         'company': ('well', 'COMP'),
     },
     'location': {
@@ -28,6 +29,7 @@ las_fields = {
         'section': ('well', 'SECT'),
         'range': ('well', 'RANG'),
         'township': ('well', 'TOWN'),
+        'api': ('well', 'API'),
         'kb': ('params', 'EKB'),
         'gl': ('params', 'EGL'),
         'td': ('params', 'TDD'),

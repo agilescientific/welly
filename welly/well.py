@@ -186,7 +186,7 @@ class Well(object):
         return cls(params)
 
     @classmethod
-    def from_las(cls, fname, remap=None, funcs=None, data=True, req=None, alias=None, encoding=None):
+    def from_las(cls, fname, remap=None, funcs=None, data=True, req=None, alias=None, encoding=None, printfname=False):
         """
         Constructor. Essentially just wraps ``from_lasio()``, but is more
         convenient for most purposes.
@@ -196,10 +196,14 @@ class Well(object):
             remap (dict): Optional. A dict of 'old': 'new' LAS field names.
             funcs (dict): Optional. A dict of 'las field': function() for
                 implementing a transform before loading. Can be a lambda.
+            printfname (bool): prints filename before trying to load it, for 
+                debugging
 
         Returns:
             well. The well object.
         """
+        if printfname:
+            print(fname)
         l = lasio.read(fname, encoding=encoding)
 
         # Pass to other constructor.
