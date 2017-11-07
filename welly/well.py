@@ -106,7 +106,7 @@ class Well(object):
         return getattr(self.header, 'uwi', None) or ''
 
     @classmethod
-    def from_lasio(cls, l, remap=None, funcs=None, data=True, req=None):
+    def from_lasio(cls, l, remap=None, funcs=None, data=True, req=None, alias=None):
         """
         Constructor. If you already have the lasio object, then this makes a
         well object from it.
@@ -123,9 +123,6 @@ class Well(object):
         Returns:
             well. The well object.
         """
-        if req is None:
-            req = {}
-
         # Build a dict of curves.
         curve_params = {}
         for field, (sect, code) in LAS_FIELDS['data'].items():
@@ -139,7 +136,8 @@ class Well(object):
         # deal with edge cases, eg non-uniform sampling.
 
         # Add all required curves together
-        reqs = utils.flatten_list([v for k, v in req.items()])
+        if req:
+            reqs = utils.flatten_list([v for k, v in alias.items() if k in req])
 
         # Using lasio's idea of depth in metres:
         curve_params['depth'] = l.depth_m
@@ -164,11 +162,12 @@ class Well(object):
             curves = {c.mnemonic: True
                       for c in l.curves
                       if (c.mnemonic[:4] not in depth_curves)}
+
         if req:
-            aliases = utils.flatten_list([c.get_alias(req)
+            aliases = utils.flatten_list([c.get_alias(alias)
                                           for m, c
                                           in curves.items()]
-                                          )
+                                         )
             if len(set(aliases)) < len(req):
                 return cls(params={})
 
@@ -187,7 +186,7 @@ class Well(object):
         return cls(params)
 
     @classmethod
-    def from_las(cls, fname, remap=None, funcs=None, data=True, req=None):
+    def from_las(cls, fname, remap=None, funcs=None, data=True, req=None, alias=None):
         """
         Constructor. Essentially just wraps ``from_lasio()``, but is more
         convenient for most purposes.
@@ -204,7 +203,7 @@ class Well(object):
         l = lasio.read(fname)
 
         # Pass to other constructor.
-        return cls.from_lasio(l, remap=remap, funcs=funcs, data=data, req=req)
+        return cls.from_lasio(l, remap=remap, funcs=funcs, data=data, req=req, alias=alias)
 
     def df(self):
         """
