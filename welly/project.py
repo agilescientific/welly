@@ -123,7 +123,7 @@ class Project(object):
         return [w.uwi for w in self.__list]
 
     @classmethod
-    def from_las(cls, path=None, remap=None, funcs=None, data=True, req=None, alias=None, max=None):
+    def from_las(cls, path=None, remap=None, funcs=None, data=True, req=None, alias=None, max=None, encoding=None):
         """
         Constructor. Essentially just wraps ``Well.from_las()``, but is more
         convenient for most purposes.
@@ -142,11 +142,13 @@ class Project(object):
         Returns:
             project. The project object.
         """
+        if max is None:
+            max = np.inf
         if path is None:
             path = './*.las'
-        list_of_Wells = [Well.from_las(f, remap=remap, funcs=funcs, data=data, req=req, alias=alias)
-                         for i, f in tqdm(enumerate(glob.iglob(path))) if i < max or np.inf]
-        return cls(filter(None, list_of_Wells))
+        list_of_Wells = [Well.from_las(f, remap=remap, funcs=funcs, data=data, req=req, alias=alias, encoding=encoding)
+                         for i, f in tqdm(enumerate(glob.iglob(path))) if i < max]
+        return cls(list(filter(None, list_of_Wells)))
 
     def add_canstrat_striplogs(self,
                                path, uwi_transform=None, name='canstrat'):

@@ -186,7 +186,7 @@ class Well(object):
         return cls(params)
 
     @classmethod
-    def from_las(cls, fname, remap=None, funcs=None, data=True, req=None, alias=None):
+    def from_las(cls, fname, remap=None, funcs=None, data=True, req=None, alias=None, encoding=None):
         """
         Constructor. Essentially just wraps ``from_lasio()``, but is more
         convenient for most purposes.
@@ -200,7 +200,7 @@ class Well(object):
         Returns:
             well. The well object.
         """
-        l = lasio.read(fname)
+        l = lasio.read(fname, encoding=encoding)
 
         # Pass to other constructor.
         return cls.from_lasio(l, remap=remap, funcs=funcs, data=data, req=req, alias=alias)
