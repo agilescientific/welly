@@ -106,7 +106,7 @@ class Well(object):
         return getattr(self.header, 'uwi', None) or ''
 
     @classmethod
-    def from_lasio(cls, l, remap=None, funcs=None, data=True, req=None, alias=None):
+    def from_lasio(cls, l, remap=None, funcs=None, data=True, req=None, alias=None, fname=None):
         """
         Constructor. If you already have the lasio object, then this makes a
         well object from it.
@@ -175,7 +175,8 @@ class Well(object):
         params = {'las': l,
                   'header': Header.from_lasio(l, remap=remap, funcs=funcs),
                   'location': Location.from_lasio(l, remap=remap, funcs=funcs),
-                  'data': curves}
+                  'data': curves,
+                  'fname': fname}
 
         for field, (sect, code) in LAS_FIELDS['well'].items():
             params[field] = utils.lasio_get(l,
@@ -203,7 +204,7 @@ class Well(object):
         l = lasio.read(fname, encoding=encoding)
 
         # Pass to other constructor.
-        return cls.from_lasio(l, remap=remap, funcs=funcs, data=data, req=req, alias=alias)
+        return cls.from_lasio(l, remap=remap, funcs=funcs, data=data, req=req, alias=alias, fname=fname)
 
     def df(self):
         """

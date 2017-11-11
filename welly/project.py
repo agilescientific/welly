@@ -136,14 +136,17 @@ class Project(object):
             funcs (dict): Optional. A dict of 'las field': function() for
                 implementing a transform before loading. Can be a lambda.
             data (bool): Whether to load curves or not.
-            req (dict): An alias list, giving all required curves. If not
-                all of the aliases are present, the well is not loaded.
+            req (list): A list of alias names, giving all required curves. If
+                not all of the aliases are present, the well is not loaded.
+            alias (dict): The alias dict, e.g. alias = {'gamma': ['GR', 'GR1'], 'density': ['RHOZ', 'RHOB'], 'pants': ['PANTS']}
 
         Returns:
             project. The project object.
         """
         if max is None:
             max = np.inf
+        if (req is not None) and (alias is None):
+            raise WellError("You need to provide an alias dict as well as requirement list.")
         if path is None:
             path = './*.las'
         list_of_Wells = [Well.from_las(f, remap=remap, funcs=funcs, data=data, req=req, alias=alias, encoding=encoding)
