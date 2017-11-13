@@ -307,7 +307,7 @@ class Project(object):
                             if results:
                                 q = sum(results) / len(results)
                     q_colour = q_colours.get(q, '#FFCC33')
-                    c_mean = '{:.2f}'.format(float(np.nanmean(c)))
+                    c_mean = '{:.2f}'.format(float(np.nanmean(c))) if np.any(c[~np.isnan(c)]) else np.nan
                     curves.append(('#CCEECC', c.mnemonic, str(q), q_colour, c_mean, c.units))
                 q_total += q
                 q_count += 1

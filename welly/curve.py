@@ -667,35 +667,36 @@ class Curve(np.ndarray):
 
         shape = self.shape[:-1] + (self.shape[-1], window_length)
         strides = self.strides + (step*self.strides[-1],)
-        data = np.pad(self, step*(window_length//2), mode='edge')
+        data = np.nan_to_num(self)
+        data = np.pad(data, int(step*window_length//2), mode='edge')
         rolled = np.lib.stride_tricks.as_strided(data,
                                                  shape=shape,
                                                  strides=strides)
         result = np.apply_along_axis(func1d, -1, rolled)
+        result[np.isnan(self)] = np.nan
 
         if return_rolled:
             return result, rolled
         else:
             return result
 
-    def despike(self, window_length=33, z=2):
+    def despike(self, window_length=33, samples=True, z=2):
         """
         Args:
             window (int): window length in samples. Default 33 (or 5 m for
                 most curves sampled at 0.1524 m intervals).
+            samples (bool): window length is in samples. Use False for a window
+                length given in metres.
             z (float): Z score
 
         Returns:
             Curve.
-
-        TODO:
-            Does not handle NaNs well. Gives "Runtime warning: invalid value
-            encountered in greater"
         """
+        window_length //= 1 if samples else self.step
         z *= np.nanstd(self)  # Transform to curve's units
         curve_sm = self._rolling_window(window_length, np.median)
-        spikes = np.where(self - curve_sm > z)[0]
-        spukes = np.where(curve_sm - self > z)[0]
+        spikes = np.where(np.nan_to_num(self - curve_sm) > z)[0]
+        spukes = np.where(np.nan_to_num(curve_sm - self) > z)[0]
         out = np.copy(self)
         params = self.__dict__.copy()
         out[spikes] = curve_sm[spikes] + z
