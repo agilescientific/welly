@@ -607,6 +607,7 @@ class Well(object):
     def unify_basis(self, keys=None):
         """
         Give everything, or everything in the list of keys, the same basis.
+
         Args:
             keys (list): List of strings: the keys of the data items to
                 unify, if not all of them.
