@@ -14,7 +14,6 @@ def test_well():
     # Check some basics.
     assert well.header.license == 'P-129'
     assert well.location.country == 'CA'
-    assert well.location.gl == 90.3
     assert len(well.data) == 24
     assert well.data['GR'][0] - 46.69865036 < 0.001
     assert len(well.survey_basis()) == 12718

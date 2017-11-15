@@ -33,7 +33,6 @@ PEF .                     : Photoelectric Factor
 DT .us/ft                 : DT
 DTS .us/ft                : DTS
 DPHI_SAN .m3/m3           : Density Porosity (matrix Sandstone)
-~Parameter
 #==================================================================
 ~Ascii
  1.0668000000 2.4438154697 4.3912849426 3.5864000320  -999.250000  -999.250000 0.1574800014

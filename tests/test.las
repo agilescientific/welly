@@ -16,9 +16,9 @@ CNTY.                        None : COUNTY
 STAT.                        None : STATE
 CTRY.                          CA : COUNTRY
 SRVC.                             : SERVICE COMPANY
-DATE.  2017-11-13 12:23:25.135852 : DATE
+DATE.  2017-11-15 15:15:45.066831 : DATE
 UWI .     Long = 63* 45'24.460  W : UNIQUE WELL ID
-API .                             : API NUMBER
+API .                        None : API NUMBER
 LIC .                       P-129 : 
 LATI.                        None : 
 LONG.                        None : 
