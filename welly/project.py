@@ -129,7 +129,7 @@ class Project(object):
         convenient for most purposes.
 
         Args:
-            path (str): The path of the LAS files, e.g. './*.las' (the
+            path (str): The path of the LAS files, e.g. ``./*.las`` (the
                 default). It will attempt to load everything it finds, so
                 make sure it only leads to LAS files.
             remap (dict): Optional. A dict of 'old': 'new' LAS field names.
@@ -138,7 +138,7 @@ class Project(object):
             data (bool): Whether to load curves or not.
             req (list): A list of alias names, giving all required curves. If
                 not all of the aliases are present, the well is not loaded.
-            alias (dict): The alias dict, e.g. alias = {'gamma': ['GR', 'GR1'], 'density': ['RHOZ', 'RHOB'], 'pants': ['PANTS']}
+            alias (dict): The alias dict, e.g. ``alias = {'gamma': ['GR', 'GR1'], 'density': ['RHOZ', 'RHOB'], 'pants': ['PANTS']}``
 
         Returns:
             project. The project object.
@@ -236,6 +236,7 @@ class Project(object):
                          limit=0):
         """
         Another version of the curve table.
+
         Args:
             uwis (list): Only these UWIs. List of ``str``.
             keys (list): Only these names. List of ``str``.
@@ -245,6 +246,9 @@ class Project(object):
             exclude (list): Except these names. List of ``str``. Ignored if
                 you pass ``keys``.
             limit (int): Curve must be present in at least this many wells.
+
+        Returns:
+            str. HTML representation of the table.
         """
         uwis = uwis or self.uwis
         wells = [w for w in self.__list if w.uwi in uwis]

@@ -1,7 +1,4 @@
-.. welly documentation master file, created by
-   sphinx-quickstart on Mon Mar 28 15:23:23 2016.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+.. welly documentation master file
 
 Welcome to welly's documentation!
 =================================
@@ -26,28 +23,13 @@ The code
    :maxdepth: 2
    :caption: Contents:
 
-.. automodule:: welly
-
-.. autoclass:: Well
-    :members:
-
-.. autoclass:: Project
-    :members:
-
-.. autoclass:: Curve
-    :members:
-
-.. autoclass:: Header
-    :members:
-
-.. autoclass:: Location
-    :members:
-
-.. autoclass:: CRS
-    :members:
-
-.. autoclass:: Synthetic
-    :members:
+   well.rst
+   project.rst
+   curve.rst
+   header.rst
+   location.rst
+   crs.rst
+   synthetic.rst
 
 
 Indices and tables
