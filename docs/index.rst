@@ -24,13 +24,30 @@ The code
 
 .. toctree::
    :maxdepth: 2
+   :caption: Contents:
 
-   location
-   crs
-   header
-   well
-   synthetic
-   curve
+.. automodule:: welly
+
+.. autoclass:: Well
+    :members:
+
+.. autoclass:: Project
+    :members:
+
+.. autoclass:: Curve
+    :members:
+
+.. autoclass:: Header
+    :members:
+
+.. autoclass:: Location
+    :members:
+
+.. autoclass:: CRS
+    :members:
+
+.. autoclass:: Synthetic
+    :members:
 
 
 Indices and tables
