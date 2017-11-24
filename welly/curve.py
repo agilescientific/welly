@@ -8,9 +8,10 @@ Defines log curves.
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib as mpl
+from scipy.interpolate import interp1d
+
 
 from . import utils
-from copy import deepcopy
 
 
 class CurveError(Exception):
@@ -37,6 +38,8 @@ class Curve(np.ndarray):
             setattr(obj, k, v)
 
         if basis is not None:
+            if basis[0] > basis[1]:
+                basis = np.flipud(basis)
             setattr(obj, 'start', basis[0])
             setattr(obj, 'step', basis[1]-basis[0])
 
@@ -374,6 +377,13 @@ class Curve(np.ndarray):
             return None
 
     def extrapolate(self):
+        """
+        From ``bruges``
+
+        Extrapolate up and down an array from the first and last non-NaN samples.
+
+        E.g. Continue the first and last non-NaN values of a log up and down.
+        """
         return utils.extrapolate(self)
 
     def to_basis_like(self, basis):
@@ -421,7 +431,10 @@ class Curve(np.ndarray):
             Curve. The current instance in the new basis.
         """
         if basis is None:
-            new_start = start or self.start
+            if start is None:
+                new_start = self.start
+            else:
+                new_start = start
             new_step = step or self.step
             new_stop = stop or self.stop
             new_adj_stop = new_stop + new_step/100  # To guarantee inclusion.
@@ -430,9 +443,16 @@ class Curve(np.ndarray):
             new_start = basis[0]
             new_step = basis[1] - basis[0]
 
-        undefined = {'left': undefined or np.nan, 'right': undefined or np.nan}
+        if undefined is None:
+            undefined = np.nan
+        else:
+            undefined = undefined
 
-        data = np.interp(basis, self.basis, self, **undefined)
+        interp = interp1d(self.basis, self,
+                          bounds_error=False,
+                          fill_value=undefined)
+
+        data = interp(basis)
 
         params = self.__dict__.copy()
         params['step'] = float(new_step)

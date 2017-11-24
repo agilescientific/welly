@@ -24,7 +24,6 @@ class Project(object):
 
     One day it might want its own CRS, but then we'd have to cast the CRSs of
     the contained data.
-
     """
     def __init__(self, list_of_Wells, source=''):
         self.alias = {}

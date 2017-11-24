@@ -140,7 +140,10 @@ class Well(object):
             reqs = utils.flatten_list([v for k, v in alias.items() if k in req])
 
         # Using lasio's idea of depth in metres:
-        curve_params['depth'] = l.depth_m
+        if l.depth_m[0] < l.depth_m[1]:
+            curve_params['depth'] = l.depth_m
+        else:
+            curve_params['depth'] = np.flipud(l.depth_m)
 
         # Make the curve dictionary.
         depth_curves = ['DEPT', 'TIME']
