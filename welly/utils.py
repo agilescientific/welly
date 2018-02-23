@@ -397,6 +397,25 @@ def top_and_tail(*arrays):
     return ret_arrays
 
 
+def nan_idx(y):
+    """Helper to handle indices and logical indices of NaNs.
+
+    From https://stackoverflow.com/questions/6518811/interpolate-nan-values-in-a-numpy-array
+
+    Args:
+        y (ndarray): 1D array with possible NaNs
+    Returns:
+        nans, logical indices of NaNs
+        index, a function, with signature indices= index(logical_indices),
+          to convert logical indices of NaNs to 'equivalent' indices
+    Example:
+        >>> # linear interpolation of NaNs
+        >>> nans, x= nan_helper(y)
+        >>> y[nans]= np.interp(x(nans), x(~nans), y[~nans])
+    """
+    return np.isnan(y), lambda z: z.nonzero()[0]
+
+
 def extrapolate(a):
     """
     From ``bruges``

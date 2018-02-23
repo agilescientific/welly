@@ -194,7 +194,7 @@ class Curve(np.ndarray):
             else:
                 step = (stop - start) / (curve.data.shape[0] - 1)
 
-        # Interpolate into this 
+        # Interpolate into this.
 
         params = {}
         params['mnemonic'] = curve.mnemonic
@@ -385,6 +385,14 @@ class Curve(np.ndarray):
         E.g. Continue the first and last non-NaN values of a log up and down.
         """
         return utils.extrapolate(self)
+
+    def interpolate(self):
+        """
+        Interpolate across any missing zones.
+        """
+        nans, x = utils.nan_idx(self)
+        self[nans] = np.interp(x(nans), x(~nans), self[~nans])
+        return self
 
     def to_basis_like(self, basis):
         """

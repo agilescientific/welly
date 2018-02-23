@@ -64,13 +64,24 @@ class Well(object):
             return True
         return False
 
-    def __nonzero__(self):
+    def __bool__(self):
         """
         Truthiness.
         """
         if self.header or self.data or self.uwi:
             return True
         return False
+
+    __nonzero__ = __bool__  # Python 2.7.
+
+    def __repr__(self):
+        """
+        Non-rich representation.
+        """
+        return "Well(uwi: '{}', {} curves: {})".format(self.uwi,
+                                                       len(self.data),
+                                                       list(self.data.keys())
+                                                       )
 
     def _repr_html_(self):
         """
@@ -607,20 +618,26 @@ class Well(object):
         else:
             return None
 
-    def unify_basis(self, keys=None):
+    def unify_basis(self, keys=None, basis=None):
         """
         Give everything, or everything in the list of keys, the same basis.
+        If you don't provide a basis, welly will try to get one using
+        `survey_basis()`.
 
         Args:
+            basis (ndarray): A basis: the regularly sampled depths at which
+                you want the samples.
             keys (list): List of strings: the keys of the data items to
                 unify, if not all of them.
 
         Returns:
             None. Works in place.
         """
-        basis = self.survey_basis(keys=keys)
         if basis is None:
-            raise WellError("Could not retrieve common basis.")
+            basis = self.survey_basis(keys=keys)
+        if basis is None:
+            m = "No basis was provided and welly could not retrieve common basis."
+            raise WellError(m)
 
         for k in self.data:
             if (keys is not None) and (k not in keys):

@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf 8 -*-
 """
 Custom scales for matplotlib.
@@ -101,6 +100,7 @@ class BoundedScale(mscale.LinearScale):
             return vmax, vmin
         else:
             return vmin, vmax
+
 
 mscale.register_scale(PiecewiseLinearScale)
 mscale.register_scale(BoundedScale)
