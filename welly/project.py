@@ -5,6 +5,8 @@ Defines a multi-well 'project'.
 :copyright: 2016 Agile Geoscience
 :license: Apache 2.0
 """
+from __future__ import print_function
+
 import glob
 from collections import Counter
 import re
