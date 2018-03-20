@@ -85,13 +85,13 @@ def all_between(lower, upper):
 
 def mean_above(value):
     def mean_above(curve):
-        return np.nanmean(curve) > value
+        return bool(np.nanmean(curve) > value)
     return mean_above
 
 
 def mean_below(value):
     def mean_below(curve):
-        return np.nanmean(curve) < value
+        return bool(np.nanmean(curve) < value)
     return mean_below
 
 

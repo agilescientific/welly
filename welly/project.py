@@ -33,8 +33,8 @@ class Project(object):
         self._iter = iter(self.__list)  # Set up iterable.
 
     def __repr__(self):
-        s = [w.uwi for w in self.__list]
-        return "Project({0})".format('\n'.join(s))
+        s = [str(w.uwi) for w in self.__list]
+        return "Project({} wells: {})".format(len(self), ', '.join(s))
 
     def __str__(self):
         s = [str(w.uwi) for w in self.__list]
@@ -438,6 +438,9 @@ class Project(object):
                                                 complete_only=False,
                                                 )
 
+        if y_train is None:
+        	return
+
         if remove_zeros:
             X_train = X_train[np.nonzero(y_train)]
             y_train = y_train[np.nonzero(y_train)]
@@ -563,6 +566,9 @@ class Project(object):
                 continue
 
             y_key = w.get_mnemonic(y_key, alias=alias)
+
+            if y_key is None:
+                continue
 
             try:
                 _y = w.data[y_key].to_basis(basis=z)

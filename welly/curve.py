@@ -172,12 +172,12 @@ class Curve(np.ndarray):
             d = np.diff(depth)
             if not np.allclose(d - np.mean(d), np.zeros_like(d)):
                 # Sampling is uneven.
-                step = np.median(d)
+                step = np.nanmedian(d)
                 start, stop = depth[0], depth[-1]+0.00001  # adjustment
                 basis = np.arange(start, stop, step)
                 data = np.interp(basis, depth, data)
             else:
-                step = np.median(d)
+                step = np.nanmedian(d)
                 start = depth[0]
 
         # Carry on with easier situations.
