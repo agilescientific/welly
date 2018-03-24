@@ -291,7 +291,7 @@ class Well(object):
                 # Basis shift failed; is probably not a curve
                 pass
             try:
-                descr = d.description
+                descr = getattr(d, 'description', '')
                 l.add_curve(k.upper(), new_data, unit=d.units, descr=descr)
             except:
                 try:
