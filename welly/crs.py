@@ -38,7 +38,7 @@ POSSIBILITY OF SUCH DAMAGE.
 import collections
 
 
-class CRS(collections.abc.MutableMapping):
+class CRS(collections.MutableMapping):
 
     def __init__(self, *args, **kwargs):
         '''

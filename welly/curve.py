@@ -5,6 +5,8 @@ Defines log curves.
 :copyright: 2016 Agile Geoscience
 :license: Apache 2.0
 """
+from __future__ import division
+
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib as mpl

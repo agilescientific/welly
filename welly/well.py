@@ -5,6 +5,8 @@ Defines wells.
 :copyright: 2016 Agile Geoscience
 :license: Apache 2.0
 """
+from __future__ import division
+
 import re
 import datetime
 
