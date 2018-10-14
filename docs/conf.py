@@ -40,7 +40,7 @@ extensions = [
 ]
 
 # Apidoc stuff
-apidoc_module_dir = '../bruges'
+apidoc_module_dir = '../welly'
 apidoc_excluded_paths = ['tests']
 apidoc_toc_file = 'api_toc'
 apidoc_separate_modules = True
