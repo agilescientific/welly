@@ -3,39 +3,25 @@
 Welcome to welly's documentation!
 =================================
 
-Welly is a family of classes to facilitate the loading, processing, and analysis of subsurface wells and well data, such as striplogs, well log curves, and synthetic seismograms. 
+.. include:: source/intro.rst
 
+.. include:: source/req.rst
 
-Requirements
-------------
-
-* `NumPy`, which handles the numerics.
-* `matplotlib`, a plotting library.
-* `SciPy`, which handles curve interpolation.
-* `lasio`, for reading and writing LAS files.
-* `striplog`, highly recommended for helping control plotting.
-
-
-The code
---------
+Content
+-------
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+   :caption: Table of Contents
+   :name: mastertoc
 
-   well.rst
-   project.rst
-   curve.rst
-   header.rst
-   location.rst
-   crs.rst
-   synthetic.rst
+   Home <source/intro>
+   Requirements <source/req>    
+   API <api/api_toc>
+   Contributors <../contributors>
+   Index <source/indices>
 
 
-Indices and tables
-------------------
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+.. include:: source/indices.rst
+
 
