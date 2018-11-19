@@ -388,6 +388,11 @@ class Project(object):
             return Project(self.__list)
         return Project([w for w in self if w.uwi in uwis])
 
+    def df(self):
+        import pandas as pd
+        data = [w.df(uwi=True) for w in self]
+        return pd.concat(data, axis=1)
+
     def data_as_matrix(self, X_keys,
                        y_key=None,
                        alias=None,
