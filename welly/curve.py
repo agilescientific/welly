@@ -65,6 +65,15 @@ class Curve(np.ndarray):
         self.date = getattr(obj, 'date', None)
         self.code = getattr(obj, 'code', None)
 
+    # def __array_wrap__(self, obj):
+    #     """
+    #     Return scalars not subclass, eg from np.mean().
+    #     """
+    #     if obj.shape == ():
+    #         return obj[()]
+    #     else:
+    #         return np.ndarray.__array_wrap__(self, obj)
+
     def __copy__(self):
         cls = self.__class__
         result = cls.__new__(cls)
@@ -521,6 +530,7 @@ class Curve(np.ndarray):
 
         Args:
             tests (list): a list of functions.
+            alias (dict): a dictionary mapping mnemonics to lists of mnemonics.
 
         Returns:
             list. The results. Stick to booleans (True = pass) or ints.
@@ -550,6 +560,7 @@ class Curve(np.ndarray):
 
         Args:
             tests (list): a list of functions.
+            alias (dict): a dictionary mapping mnemonics to lists of mnemonics.
 
         Returns:
             list. The results. Stick to booleans (True = pass) or ints.
@@ -573,6 +584,7 @@ class Curve(np.ndarray):
 
         Args:
             tests (list): a list of functions.
+            alias (dict): a dictionary mapping mnemonics to lists of mnemonics.
 
         Returns:
             list. The results. Stick to booleans (True = pass) or ints.
@@ -600,6 +612,7 @@ class Curve(np.ndarray):
 
         Args:
             tests (list): a list of functions.
+            alias (dict): a dictionary mapping mnemonics to lists of mnemonics.
 
         Returns:
             float. The fraction of tests passed, or -1 for 'took no tests'.

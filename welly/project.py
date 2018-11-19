@@ -372,8 +372,6 @@ class Project(object):
             else:
                 continue
 
-        plt.show()
-
         if return_fig:
             return fig
         else:
