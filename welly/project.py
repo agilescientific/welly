@@ -391,6 +391,11 @@ class Project(object):
         return Project([w for w in self if w.uwi in uwis])
 
     def df(self):
+        """
+        Makes a pandas DataFrame containing Curve data for all the wells
+        in the Project. The DataFrame has a dual index of well UWI and
+        curve Depths.
+        """
         import pandas as pd
         data = [w.df(uwi=True) for w in self]
         return pd.concat(data, axis=1)
