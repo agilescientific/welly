@@ -474,7 +474,7 @@ def ricker(f, length, dt):
     Returns:
         tuple. time basis, amplitude values.
     """
-    t = np.linspace(-length/2, (length-dt)/2, length/dt)
+    t = np.linspace(-int(length/2), int((length-dt)/2), int(length/dt))
     y = (1. - 2.*(np.pi**2)*(f**2)*(t**2))*np.exp(-(np.pi**2)*(f**2)*(t**2))
     return t, y
 

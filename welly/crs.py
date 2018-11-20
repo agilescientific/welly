@@ -35,10 +35,15 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 """
-import collections
+try:
+    # Accessing collections abstact classes from collections
+    # has been deprecated since Python 3.3
+    import collections.abc as collections_abc
+except ImportError:
+    import collections as collections_abc
 
 
-class CRS(collections.MutableMapping):
+class CRS(collections_abc.MutableMapping):
 
     def __init__(self, *args, **kwargs):
         '''
