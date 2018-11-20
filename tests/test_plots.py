@@ -45,18 +45,18 @@ def test_curve_2d_plot():
     return fig
 
 
-@pytest.mark.mpl_image_compare(**params)
-def test_synthetic_plot():
-    """
-    Tests mpl image of synthetic.
-    """
-    data = [4, 2, 0, -4, -2, 1, 3, 6, 3, 1, -2, -5, -1, 0]
-    params = {'dt': 0.004}
-    s = Synthetic(data, params=params)
+# @pytest.mark.mpl_image_compare(**params)
+# def test_synthetic_plot():
+#     """
+#     Tests mpl image of synthetic.
+#     """
+#     data = [4, 2, 0, -4, -2, 1, 3, 6, 3, 1, -2, -5, -1, 0]
+#     params = {'dt': 0.004}
+#     s = Synthetic(data, params=params)
 
-    fig = s.plot(return_fig=True)
+#     fig = s.plot(return_fig=True)
 
-    return fig
+#     return fig
 
 
 @pytest.mark.mpl_image_compare(**params)
