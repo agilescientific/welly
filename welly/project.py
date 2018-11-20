@@ -32,7 +32,6 @@ class Project(object):
         self.source = source
         self.__list = list_of_Wells
         self.__index = 0
-        self._iter = iter(self.__list)  # Set up iterable.
 
     def __repr__(self):
         s = [str(w.uwi) for w in self.__list]
@@ -59,22 +58,8 @@ class Project(object):
         self.__list[key] = value
 
     def __iter__(self):
-        return self
-
-    def __next__(self):
-        try:
-            result = self.__list[self.__index]
-        except IndexError:
-            self.__index = 0
-            raise StopIteration
-        self.__index += 1
-        return result
-
-    def next(self):
-        """
-        Retains Python 2 compatibility.
-        """
-        return self.__next__()
+        for w in self.__list:
+            yield w
 
     def __len__(self):
         return len(self.__list)
