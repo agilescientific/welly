@@ -334,6 +334,16 @@ class Project(object):
     def plot_kdes(self, mnemonic, alias=None, uwi_regex=None, return_fig=False):
         """
         Plot KDEs for all curves with the given name.
+
+        Args:
+            menmonic (str): the name of the curve to look for.
+            alias (dict): a welly alias dictionary.
+            uwi_regex (str): a regex pattern. Only this part of the UWI will be displayed
+                on the plot of KDEs.
+            return_fig (bool): whether to return the matplotlib figure object.
+
+        Returns:
+            None or figure.
         """
         wells = self.find_wells_with_curve(mnemonic, alias=alias)
         fig, axs = plt.subplots(len(self), 1, figsize=(10, 1.5*len(self)))
@@ -367,10 +377,26 @@ class Project(object):
     def find_wells_with_curve(self, mnemonic, alias=None):
         """
         Returns a new Project with only the wells which have the named curve.
+
+        Args:
+            menmonic (str): the name of the curve to look for.
+            alias (dict): a welly alias dictionary.
+        
+        Returns:
+            project.
         """
         return Project(w for w in self if w.get_curve(mnemonic, alias=alias) is not None)
 
     def get_wells(self, uwis=None):
+        """
+        Returns a new Project with only the wells named by UWI.
+
+        Args:
+            uwis (list): list or tuple of UWI strings.
+        
+        Returns:
+            project.
+        """
         if uwis is None:
             return Project(self.__list)
         return Project([w for w in self if w.uwi in uwis])
@@ -379,11 +405,16 @@ class Project(object):
         """
         Makes a pandas DataFrame containing Curve data for all the wells
         in the Project. The DataFrame has a dual index of well UWI and
-        curve Depths.
+        curve Depths. Requires `pandas`.
+
+        Args:
+            No arguments.
+
+        Returns:
+            `pandas.DataFrame`.
         """
         import pandas as pd
-        data = [w.df(uwi=True) for w in self]
-        return pd.concat(data, axis=0)
+        return pd.concat([w.df(uwi=True) for w in self])
 
     def data_as_matrix(self, X_keys,
                        y_key=None,

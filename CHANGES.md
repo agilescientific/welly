@@ -1,5 +1,8 @@
 # CHANGES.md
 
+## 0.4.1, 24 November 2018
+- Fixed a bug in `project.df()` that was building the DataFrame incorrectly.
+
 ## 0.4.0, 20 November 2018
 - There are breaking changes in this release.
 - Export the curves in the current `well.data` to Pandas DataFrame with `well.df()`. Previously, this function returned the DataFrame of the associated LAS file, which is still available in `well.las.df()`. 
