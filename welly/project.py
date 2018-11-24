@@ -383,7 +383,7 @@ class Project(object):
         """
         import pandas as pd
         data = [w.df(uwi=True) for w in self]
-        return pd.concat(data, axis=1)
+        return pd.concat(data, axis=0)
 
     def data_as_matrix(self, X_keys,
                        y_key=None,
