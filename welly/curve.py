@@ -67,14 +67,26 @@ class Curve(np.ndarray):
         self.date = getattr(obj, 'date', None)
         self.code = getattr(obj, 'code', None)
 
-    # def __array_wrap__(self, obj):
-    #     """
-    #     Return scalars not subclass, eg from np.mean().
-    #     """
-    #     if obj.shape == ():
-    #         return obj[()]
-    #     else:
-    #         return np.ndarray.__array_wrap__(self, obj)
+    def __getitem__(self, items):
+        """
+        Update the basis when a Curve is sliced.
+        """
+        if isinstance(items, slice):
+            if items.start is None:
+                start = self.start
+            else:
+                start = self.basis[items.start]
+            if items.stop is None:
+                stop = self.stop
+            else:
+                stop = self.basis[items.stop]
+            if items.step is not None:
+                step = items.step * self.step
+            else:
+                step = None
+            return self.to_basis(start=start, stop=stop, step=step)
+
+        return np.ndarray.__getitem__(self, items)
 
     def __copy__(self):
         cls = self.__class__
