@@ -42,11 +42,11 @@ class Project(object):
         return '\n'.join(s)
 
     def __getitem__(self, key):
-        if type(key) is slice:
+        if isinstance(key, slice):
             i = key.indices(len(self.__list))
             result = [self.__list[n] for n in range(*i)]
             return Project(result)
-        elif type(key) is list:
+        elif isinstance(key, list):
             result = []
             for j in key:
                 result.append(self.__list[j])

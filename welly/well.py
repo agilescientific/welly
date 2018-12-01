@@ -254,7 +254,12 @@ class Well(object):
             pandas.DataFrame.
 
         """
-        import pandas as pd
+        try:
+            import pandas as pd
+        except:
+            m = "You must install pandas to use dataframes."
+            raise WellError(m)
+
         from pandas.api.types import is_object_dtype
 
         if keys is None:
