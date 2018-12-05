@@ -8,9 +8,10 @@ Defines log curves.
 from __future__ import division
 
 import numpy as np
+from scipy.interpolate import interp1d
 import matplotlib.pyplot as plt
 import matplotlib as mpl
-from scipy.interpolate import interp1d
+from matplotlib.patches import PathPatch
 
 
 from . import utils
@@ -245,8 +246,11 @@ class Curve(np.ndarray):
                 width=None,
                 aspect=60,
                 cmap=None,
+                curve=False,
                 ticks=(1, 10),
-                return_fig=False):
+                return_fig=False,
+                **kwargs,
+                ):
         """
         Plot a 2D curve.
 
@@ -255,6 +259,7 @@ class Curve(np.ndarray):
             width (int): The width of the image.
             aspect (int): The aspect ratio (not quantitative at all).
             cmap (str): The colourmap to use.
+            curve (bool): Whether to plot the curve as well.
             ticks (tuple): The tick interval on the y-axis.
             return_fig (bool): whether to return the matplotlib figure.
                 Default False.
@@ -262,6 +267,7 @@ class Curve(np.ndarray):
         Returns:
             ax. If you passed in an ax, otherwise None.
         """
+        # Set up the figure.
         if ax is None:
             fig = plt.figure(figsize=(2, 10))
             ax = fig.add_subplot(111)
@@ -269,13 +275,14 @@ class Curve(np.ndarray):
         else:
             return_ax = True
 
+        # Set up the data.
         cmap = cmap or 'viridis'
         default = int(self.shape[0] / aspect)
         if self.ndim == 1:
             a = np.expand_dims(self, axis=1)
             a = np.repeat(a, width or default, axis=1)
         elif self.ndim == 2:
-            a = self[:, :width]
+            a = self[:, :w] if width < self.shape[1] else self
         elif self.ndim == 3:
             if 2 < self.shape[-1] < 5:
                 # Interpret as RGB or RGBA.
@@ -283,13 +290,27 @@ class Curve(np.ndarray):
                 cmap = None  # Actually doesn't matter.
             else:
                 # Take first slice.
-                a = self[:, :width, 0]
+                a = self[:, :width, 0] if width < self.shape[1] else self[..., 0]
         else:
             raise NotImplementedError("Can only handle up to 3 dimensions.")
 
         # At this point, a is either a 2D array, or a 2D (rgb) array.
         extent = [0, width or default, self.stop, self.start]
-        _ = ax.imshow(a, cmap=cmap, extent=extent)
+        im = ax.imshow(a, cmap=cmap, extent=extent)
+
+        if curve:
+            # Draw the path.
+            # TODO: add default kwargs?
+            paths = ax.fill_betweenx(self.basis, self, self.min(),
+                                     facecolor='none',
+                                     **kwargs,
+                                     )
+
+            # Make the 'fill' mask and clip the background image with it.
+            patch = PathPatch(paths._paths[0], visible=False)
+            ax.add_artist(patch)
+            im.set_clip_path(patch)
+
         ax.set_xticks([])
 
         # Rely on interval order.
