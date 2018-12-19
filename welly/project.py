@@ -387,6 +387,19 @@ class Project(object):
         """
         return Project([w for w in self if w.get_curve(mnemonic, alias=alias) is not None])
 
+    def find_wells_without_curve(self, mnemonic, alias=None):
+        """
+        Returns a new Project with only the wells which DO NOT have the named curve.
+
+        Args:
+            menmonic (str): the name of the curve to look for.
+            alias (dict): a welly alias dictionary.
+        
+        Returns:
+            project.
+        """
+        return Project([w for w in self if w.get_curve(mnemonic, alias=alias) is None])
+
     def get_wells(self, uwis=None):
         """
         Returns a new Project with only the wells named by UWI.
