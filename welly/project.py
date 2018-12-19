@@ -62,7 +62,7 @@ class Project(object):
             yield w
 
     def __len__(self):
-        return len(self.__list)
+        return len(list(self.__list))
 
     def __contains__(self, item):
         if isinstance(item, Well):
@@ -385,7 +385,7 @@ class Project(object):
         Returns:
             project.
         """
-        return Project(w for w in self if w.get_curve(mnemonic, alias=alias) is not None)
+        return Project([w for w in self if w.get_curve(mnemonic, alias=alias) is not None])
 
     def get_wells(self, uwis=None):
         """
@@ -400,6 +400,48 @@ class Project(object):
         if uwis is None:
             return Project(self.__list)
         return Project([w for w in self if w.uwi in uwis])
+
+    def get_well(self, uwi):
+        """
+        Returns a Well object identified by UWI
+
+        Args:
+            uwi (string): the UWI string for the well.
+        
+        Returns:
+            well
+        """
+        if uwi is None:
+            raise ValueError('a UWI must be provided')
+        matching_wells = [w for w in self if w.uwi == uwi]
+        return matching_wells[0] if len(matching_wells) >= 1 else None
+
+    def merge_wells(self, right, keys=None):
+        """
+        Returns a new Project object containing wells from self where
+        curves from the wells on the right have been added. Matching between
+        wells in self and right is based on uwi match and ony wells in self
+        are considered
+
+        Args:
+            uwi (string): the UWI string for the well.
+        
+        Returns:
+            project
+        """
+        wells = []
+        for w in self:
+            rw = right.get_well(w.uwi)
+            if rw is not None:
+                if keys is None:
+                    keys = list(rw.data.keys())
+                for k in keys:
+                    try:
+                        w.data[k] = rw.data[k]
+                    except:
+                        pass
+            wells.append(w)
+        return Project(wells)
 
     def df(self):
         """
