@@ -1035,6 +1035,8 @@ class Well(object):
 
         Returns:
             ndarray.
+            or
+            ndarray, ndarray if return_basis=True
         """
         if keys is None:
             keys = [k for k, v in self.data.items() if isinstance(v, Curve)]
