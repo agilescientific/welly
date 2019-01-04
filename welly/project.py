@@ -414,6 +414,20 @@ class Project(object):
             return Project(self.__list)
         return Project([w for w in self if w.uwi in uwis])
 
+    def omit_wells(self, uwis=None):
+        """
+        Returns a new project where wells with specified uwis have been omitted
+
+        Args: 
+            uwis (list): list or tuple of UWI strings.
+
+        Returns: 
+            project
+        """
+        if uwis is None:
+            raise ValueError('Must specify at least one uwi')
+        return Project([w for w in self if w.uwi not in uwis])
+
     def get_well(self, uwi):
         """
         Returns a Well object identified by UWI
