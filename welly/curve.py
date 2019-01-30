@@ -282,7 +282,7 @@ class Curve(np.ndarray):
             a = np.expand_dims(self, axis=1)
             a = np.repeat(a, width or default, axis=1)
         elif self.ndim == 2:
-            a = self[:, :w] if width < self.shape[1] else self
+            a = self[:, :width] if width < self.shape[1] else self
         elif self.ndim == 3:
             if 2 < self.shape[-1] < 5:
                 # Interpret as RGB or RGBA.
@@ -397,10 +397,7 @@ class Curve(np.ndarray):
 
             ax.set(**axkwargs)
 
-        lw = getattr(d, 'lineweight', None) or getattr(d, 'lw', 1)
-        ls = getattr(d, 'linestyle', None) or getattr(d, 'ls', '-')
-
-        ax.plot(self, self.basis, c=c, lw=lw, ls=ls)
+        ax.plot(self, self.basis, **kwargs)
         ax.set_title(self.mnemonic)  # no longer needed
         ax.set_xlabel(self.units)
 
@@ -435,10 +432,21 @@ class Curve(np.ndarray):
     def interpolate(self):
         """
         Interpolate across any missing zones.
+
+        TODO
+        Allow spline interpolation.
         """
         nans, x = utils.nan_idx(self)
         self[nans] = np.interp(x(nans), x(~nans), self[~nans])
         return self
+
+    def interpolate_where(self, condition):
+        """
+        Remove then interpolate across
+        """
+        raise NotImplementedError()
+        self[self < 0] = np.nan
+        return self.interpolate() 
 
     def to_basis_like(self, basis):
         """
