@@ -142,12 +142,22 @@ class Curve(np.ndarray):
 
     @property
     def stop(self):
-        return self.start + self.shape[0] * self.step
+        """
+        The stop depth. Computed on the fly from the start,
+        the step, and the length of the curve.
+        """
+        return self.start + (self.shape[0] - 1) * self.step
 
     @property
     def basis(self):
-        precision_adj = self.step / 100
-        return np.arange(self.start, self.stop - precision_adj, self.step)
+        """
+        The depth or time basis of the curve's points. Computed
+        on the fly from the start, stop and step.
+
+        Returns
+            ndarray. The array, the same length as the curve.
+        """
+        return np.linspace(self.start, self.stop, self.shape[0], endpoint=True)
 
     def get_stats(self):
         stats = {}
