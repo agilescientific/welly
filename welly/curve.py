@@ -372,18 +372,20 @@ class Curve(np.ndarray):
         else:
             return_ax = True
 
-        c = None
         d = None
         if legend is not None:
             try:
                 d = legend.get_decor(self)
-                c = d.colour
             except:
                 pass
 
         if d is not None:
-            # Then attempt to get parameters from decor.
-            axkwargs = kwargs
+            kwargs['color'] = d.colour
+            kwargs['lw'] = getattr(d, 'lineweight', None) or getattr(d, 'lw', 1)
+            kwargs['ls'] = getattr(d, 'linestyle', None) or getattr(d, 'ls', '-')
+
+            # Attempt to get axis parameters from decor.
+            axkwargs = kwargs.copy()
 
             xticks = getattr(d, 'xticks', None)
             if xticks is not None:
