@@ -77,15 +77,23 @@ class Curve(np.ndarray):
                 start = self.start
             else:
                 start = self.basis[items.start]
+
             if items.stop is None:
                 stop = self.stop
             else:
                 stop = self.basis[items.stop]
+
             if items.step is not None:
                 step = items.step * self.step
             else:
                 step = None
-            return self.to_basis(start=start, stop=stop, step=step)
+
+            if (step is not None) and (step != self.step):
+                # If step has changed, have to interpolate.
+                return self.to_basis(start=start, stop=stop, step=step)
+
+            # Adjust start
+            self.start = start
 
         return np.ndarray.__getitem__(self, items)
 
@@ -141,6 +149,10 @@ class Curve(np.ndarray):
         return html
 
     @property
+    def values(self):
+        return np.array(self)
+
+    @property
     def stop(self):
         """
         The stop depth. Computed on the fly from the start,
@@ -163,9 +175,9 @@ class Curve(np.ndarray):
         stats = {}
         stats['samples'] = self.shape[0]
         stats['nulls'] = self[np.isnan(self)].shape[0]
-        stats['mean'] = float(np.nanmean(self))
-        stats['min'] = float(np.nanmin(self))
-        stats['max'] = float(np.nanmax(self))
+        stats['mean'] = float(np.nanmean(self.real))
+        stats['min'] = float(np.nanmin(self.real))
+        stats['max'] = float(np.nanmax(self.real))
         return stats
 
     @classmethod
@@ -439,6 +451,9 @@ class Curve(np.ndarray):
         """
         return utils.extrapolate(self)
 
+    def top_and_tail(self):
+        pass
+
     def interpolate(self):
         """
         Interpolate across any missing zones.
@@ -509,8 +524,10 @@ class Curve(np.ndarray):
                 new_start = start
             new_step = step or self.step
             new_stop = stop or self.stop
-            new_adj_stop = new_stop + new_step/100  # To guarantee inclusion.
-            basis = np.arange(new_start, new_adj_stop, new_step)
+            # new_adj_stop = new_stop + new_step/100  # To guarantee inclusion.
+            # basis = np.arange(new_start, new_adj_stop, new_step)
+            steps = 1 + (new_stop - new_start) / new_step
+            basis = np.linspace(new_start, new_stop, int(steps), endpoint=True)
         else:
             new_start = basis[0]
             new_step = basis[1] - basis[0]

@@ -423,9 +423,11 @@ def top_and_tail(a):
     Returns:
         ndarray: The top and tailed array.
     """
+    if np.all(np.isnan(a)):
+        return np.array([])
     nans = np.where(~np.isnan(a))[0]
-    first, last = nans[0], min(nans[-1], a.size-2)
-    return a[first:last+1]
+    last = None if nans[-1]+1 == a.size else nans[-1]+1
+    return a[nans[0]:last]
 
 
 def dms2dd(dms):
