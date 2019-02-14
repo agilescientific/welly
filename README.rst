@@ -34,7 +34,7 @@ welly
 
 
 
-philosophy
+Philosophy
 ==========
 
 The `lasio <https://github.com/kinverarity1/lasio>`_ project provides a very nice way to read and 
@@ -48,9 +48,11 @@ engineering data, striplogs, synthetics, and so on. This is where ``welly`` come
 ``welly`` uses ``lasio`` for data I/O, but hides much of it from the user. We recommend you look at 
 both projects before deciding if you need the 'well-level' functionality that ``welly`` provides.
 
+Links
+==========
+`Documentation <https://welly.readthedocs.io/en/latest/>`_ 
 
-
-contributing
+Contributing
 ============
 
 We welcome contributions! Please fork the project and submit pull requests, or get in touch with us
