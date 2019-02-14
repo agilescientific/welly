@@ -260,7 +260,7 @@ class Project(object):
 
         # Make header.
         keys_ = [k+'*' if k in alias else k for k in keys]
-        r = '</th><th>'.join(['Idx', 'UWI', 'Data', 'Quality'] + keys_)
+        r = '</th><th>'.join(['Idx', 'UWI', 'Data', 'Passing'] + keys_)
         rows = '<tr><th>{}</th></tr>'.format(r)
 
         # Make summary row.
@@ -273,8 +273,8 @@ class Project(object):
 
         q_colours = {
             0: '#FF3333',
-            1: '#33FF33',
-            -1: '#CCCCCC'
+            1: '#33EE33',
+            -1: '#AACCAA'
             # default: '#FFFFCC'  # Done with get when we use this dict.
         }
 
@@ -287,9 +287,11 @@ class Project(object):
             q_well = w.qc_data(tests, alias)
 
             curves = []
-            q, q_total, q_count = 0, 0, 0
+            q_total, q_count = 0, 0
 
             for c in this_well:
+                q = -1
+                num_tests, num_passes = 0, 0
                 if c is None:
                     curves.append(('#CCCCCC', '', '', '#CCCCCC', '', ''))
                 else:
@@ -298,12 +300,14 @@ class Project(object):
                         if q_this:
                             results = q_this.values()
                             if results:
-                                q = sum(results) / len(results)
+                                num_tests = len(results)
+                                num_passes = sum(results)
+                                q = num_passes / num_tests
                     q_colour = q_colours.get(q, '#FFCC33')
                     c_mean = '{:.2f}'.format(float(np.nanmean(c))) if np.any(c[~np.isnan(c)]) else np.nan
-                    curves.append(('#CCEECC', c.mnemonic, str(q), q_colour, c_mean, c.units))
-                q_total += q
-                q_count += 1
+                    curves.append(('#CCEECC', c.mnemonic, f"{num_passes}/{num_tests}", q_colour, c_mean, c.units))
+                q_total += num_passes
+                q_count += num_tests
 
             # Make general columns.
             count = w.count_curves(keys, alias)
