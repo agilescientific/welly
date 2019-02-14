@@ -314,7 +314,7 @@ class Project(object):
             if count == 0:
                 score = '–'
             else:
-                score = '{:.0f}'.format(100*(q_total/q_count)) if q_total >= 0 else '–'
+                score = '{:.0f}'.format(100*(q_total/q_count)) if (q_total >= 0) and (q_count > 0) else '–'
             s = '<td>{}</td><td><span style="font-weight:bold;">{}</span></td><td>{}/{}&nbsp;curves</td><td>{}</td>'
             rows += s.format(i, w.uwi, count, len(w.data), score)
 
