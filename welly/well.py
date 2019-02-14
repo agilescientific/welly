@@ -928,8 +928,8 @@ class Well(object):
         rows = '<tr><th>{}</th></tr>'.format(r)
 
         styles = {
-            True: "#CCEECC",
-            False: "#FFCCCC",
+            True: "#CCEECC",   # Green
+            False: "#FFCCCC",  # Red
         }
 
         # Quality results.
