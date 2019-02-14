@@ -49,11 +49,6 @@ engineering data, striplogs, synthetics, and so on. This is where ``welly`` come
 both projects before deciding if you need the 'well-level' functionality that ``welly`` provides.
 
 
-alpha code
-==========
-
-*This project will change continuously until April 2016.*
-
 
 contributing
 ============
