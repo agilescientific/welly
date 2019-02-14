@@ -72,30 +72,14 @@ class Curve(np.ndarray):
         """
         Update the basis when a Curve is sliced.
         """
+        newarr = self.copy()
         if isinstance(items, slice):
-            if items.start is None:
-                start = self.start
-            else:
-                start = self.basis[items.start]
-
-            if items.stop is None:
-                stop = self.stop
-            else:
-                stop = self.basis[items.stop]
-
+            if (items.start is not None) and (items.start > 0):
+                newarr.start = newarr.basis.copy()[items.start]
             if items.step is not None:
-                step = items.step * self.step
-            else:
-                step = None
+                newarr.step = newarr.step * items.step
 
-            if (step is not None) and (step != self.step):
-                # If step has changed, have to interpolate.
-                return self.to_basis(start=start, stop=stop, step=step)
-
-            # Adjust start
-            self.start = start
-
-        return np.ndarray.__getitem__(self, items)
+        return np.ndarray.__getitem__(newarr, items)
 
     def __copy__(self):
         cls = self.__class__
@@ -171,7 +155,10 @@ class Curve(np.ndarray):
         """
         return np.linspace(self.start, self.stop, self.shape[0], endpoint=True)
 
-    def get_stats(self):
+    def describe(self):
+        """
+        Return basic statistics about the curve.
+        """
         stats = {}
         stats['samples'] = self.shape[0]
         stats['nulls'] = self[np.isnan(self)].shape[0]
@@ -179,6 +166,9 @@ class Curve(np.ndarray):
         stats['min'] = float(np.nanmin(self.real))
         stats['max'] = float(np.nanmax(self.real))
         return stats
+
+    get_stats = describe
+
 
     @classmethod
     def from_lasio_curve(cls, curve,
