@@ -135,7 +135,7 @@ class Project(object):
         if (req is not None) and (alias is None):
             raise WellError("You need to provide an alias dict as well as requirement list.")
         if path is None:
-            path = './*.las'
+            path = './*.[LlAaSs]'
         list_of_Wells = [Well.from_las(f, remap=remap, funcs=funcs, 
                                         data=data, req=req, alias=alias, encoding=encoding,
                                         printfname=printfname)
