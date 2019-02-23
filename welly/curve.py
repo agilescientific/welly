@@ -7,6 +7,7 @@ Defines log curves.
 """
 from __future__ import division
 
+import pandas as pd
 import numpy as np
 from scipy.interpolate import interp1d
 import matplotlib.pyplot as plt
@@ -24,62 +25,41 @@ class CurveError(Exception):
     pass
 
 
-class Curve(np.ndarray):
-    """
-    A fancy ndarray. Gives some utility functions, plotting, etc, for curve
-    data.
-    """
-    def __new__(cls, data, basis=None, params=None):
-        """
-        I am just following the numpy guide for subclassing ndarray...
-        """
-        obj = np.asarray(data).view(cls).copy()
+class Curve(pd.Series):
 
-        params = params or {}
+    def __init__(self, data, basis=None, params=None):
 
-        for k, v in params.items():
-            setattr(obj, k, v)
+        if basis is None:
+            start = params.get('start', 0)
+            step = params.get('step', 1)
+            basis = [start + i*step for i in range(data.shape[-1])]
 
-        if basis is not None:
-            if basis[0] > basis[1]:
-                basis = np.flipud(basis)
-            setattr(obj, 'start', basis[0])
-            setattr(obj, 'step', basis[1]-basis[0])
+        super(Curve, self).__init__(data, index=basis)
 
-        return obj
+        if params is None:
+            params = {}
+        self.mnemonic = params.get('mnemonic', None)
+        self.units = params.get('units', None)
+        self.run = params.get('run', 0)
+        self.null = params.get('null', -999.25)
+        self.service_company = params.get('service_company', None)
+        self.date = params.get('date', None)
+        self.code = params.get('code', None)
 
-    def __array_finalize__(self, obj):
-        """
-        I am just following the numpy guide for subclassing ndarray...
-        """
-        if obj is None:
-            return
+        return
 
-        if obj.size == 1:
-            return float(obj)
+    # def __getitem__(self, items):
+    #     """
+    #     Update the basis when a Curve is sliced.
+    #     """
+    #     newarr = self.copy()
+    #     if isinstance(items, slice):
+    #         if (items.start is not None) and (items.start > 0):
+    #             newarr.start = newarr.basis.copy()[items.start]
+    #         if items.step is not None:
+    #             newarr.step = newarr.step * items.step
 
-        self.start = getattr(obj, 'start', 0)
-        self.step = getattr(obj, 'step', 1)
-        self.mnemonic = getattr(obj, 'mnemonic', None)
-        self.units = getattr(obj, 'units', None)
-        self.run = getattr(obj, 'run', 0)
-        self.null = getattr(obj, 'null', -999.25)
-        self.service_company = getattr(obj, 'service_company', None)
-        self.date = getattr(obj, 'date', None)
-        self.code = getattr(obj, 'code', None)
-
-    def __getitem__(self, items):
-        """
-        Update the basis when a Curve is sliced.
-        """
-        newarr = self.copy()
-        if isinstance(items, slice):
-            if (items.start is not None) and (items.start > 0):
-                newarr.start = newarr.basis.copy()[items.start]
-            if items.step is not None:
-                newarr.step = newarr.step * items.step
-
-        return np.ndarray.__getitem__(newarr, items)
+    #     return np.ndarray.__getitem__(newarr, items)
 
     def __copy__(self):
         cls = self.__class__
@@ -94,15 +74,16 @@ class Curve(np.ndarray):
         if self.size < 10:
             return np.ndarray.__repr__(self)
         attribs = self.__dict__.copy()
+        attribs = {k: v for k, v in attribs.items() if not k.startswith('_')}
 
         # Header.
         row1 = '<tr><th style="text-align:center;" colspan="2">{} [{{}}]</th></tr>'
         rows = row1.format(attribs.pop('mnemonic'))
         rows = rows.format(attribs.pop('units', '&ndash;'))
         row2 = '<tr><td style="text-align:center;" colspan="2">{:.4f} : {:.4f} : {:.4f}</td></tr>'
-        rows += row2.format(attribs.pop('start'), self.stop, attribs.pop('step'))
+        rows += row2.format(self.start, self.stop, self.step)
 
-        # Curve attributes.
+        # Remaining curve attributes.
         s = '<tr><td><strong>{k}</strong></td><td>{v}</td></tr>'
         for k, v in attribs.items():
             rows += s.format(k=k, v=v)
@@ -117,12 +98,12 @@ class Curve(np.ndarray):
 
         # Curve preview.
         s = '<tr><th style="border-top: 2px solid #000;">Depth</th><th style="border-top: 2px solid #000;">Value</th></tr>'
-        rows += s.format(self.start, self[0])
+        rows += s.format(self.start, self.iloc[0])
         s = '<tr><td>{:.4f}</td><td>{:.4f}</td></tr>'
-        for depth, value in zip(self.basis[:3], self[:3]):
+        for depth, value in zip(self.index[:3], self.iloc[:3]):
             rows += s.format(depth, value)
         rows += '<tr><td>⋮</td><td>⋮</td></tr>'
-        for depth, value in zip(self.basis[-3:], self[-3:]):
+        for depth, value in zip(self.basis[-3:], self.iloc[-3:]):
             rows += s.format(depth, value)
 
         # Footer.
@@ -133,42 +114,20 @@ class Curve(np.ndarray):
         return html
 
     @property
-    def values(self):
-        return np.array(self)
+    def stop(self):
+        return self.index[-1]
 
     @property
-    def stop(self):
-        """
-        The stop depth. Computed on the fly from the start,
-        the step, and the length of the curve.
-        """
-        return self.start + (self.shape[0] - 1) * self.step
+    def start(self):
+        return self.index[0]
+
+    @property
+    def step(self):
+        return self.index[1] - self.index[0]
 
     @property
     def basis(self):
-        """
-        The depth or time basis of the curve's points. Computed
-        on the fly from the start, stop and step.
-
-        Returns
-            ndarray. The array, the same length as the curve.
-        """
-        return np.linspace(self.start, self.stop, self.shape[0], endpoint=True)
-
-    def describe(self):
-        """
-        Return basic statistics about the curve.
-        """
-        stats = {}
-        stats['samples'] = self.shape[0]
-        stats['nulls'] = self[np.isnan(self)].shape[0]
-        stats['mean'] = float(np.nanmean(self.real))
-        stats['min'] = float(np.nanmin(self.real))
-        stats['max'] = float(np.nanmax(self.real))
-        return stats
-
-    get_stats = describe
-
+        return np.array(self.index)
 
     @classmethod
     def from_lasio_curve(cls, curve,
@@ -245,6 +204,18 @@ class Curve(np.ndarray):
         params['code'] = curve.API_code
 
         return cls(data, params=params)
+
+    def get_stats(self):
+        """
+        Return basic statistics about the curve.
+        """
+        stats = {}
+        stats['samples'] = self.shape[0]
+        stats['nulls'] = self[np.isnan(self)].shape[0]
+        stats['mean'] = float(np.nanmean(self.real))
+        stats['min'] = float(np.nanmin(self.real))
+        stats['max'] = float(np.nanmax(self.real))
+        return stats
 
     def get_alias(self, alias):
         """
@@ -566,7 +537,7 @@ class Curve(np.ndarray):
         if index:
             return i
         else:
-            return method[interpolation](self[i], self[i+1], d)
+            return method[interpolation](self.iloc[i], self.iloc[i+1], d)
 
     def read_at(self, d, **kwargs):
         """
@@ -741,8 +712,8 @@ class Curve(np.ndarray):
         if values is None:
             # Transform each segment in turn, then deal with the last segment.
             for top, base in zip(tops[:-1], tops[1:]):
-                data[top:base] = f(np.copy(self[top:base]))
-            data[base:] = f(np.copy(self[base:]))  # See above
+                data[top:base] = f(np.copy(self.iloc[top:base]))
+            data[base:] = f(np.copy(self.iloc[base:]))  # See above
         else:
             for top, base, val in zip(tops[:-1], tops[1:], vals[:-1]):
                 data[top:base] = values[int(val)]
