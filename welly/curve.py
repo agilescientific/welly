@@ -26,7 +26,7 @@ class CurveError(Exception):
 
 
 class Curve(pd.Series):
-
+    """New implementation with Series instead of arrays."""
     def __init__(self, data, basis=None, params=None):
 
         if basis is None:
