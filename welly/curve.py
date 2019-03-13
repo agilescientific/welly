@@ -12,6 +12,7 @@ from scipy.interpolate import interp1d
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 from matplotlib.patches import PathPatch
+import warnings
 
 
 from . import utils
@@ -208,6 +209,9 @@ class Curve(np.ndarray):
             d = np.diff(depth)
             if not np.allclose(d - np.mean(d), np.zeros_like(d)):
                 # Sampling is uneven.
+                m = "Irregular sampling in depth is not supported. "
+                m += "Interpolating to regular basis."
+                warnings.warn(m)
                 step = np.nanmedian(d)
                 start, stop = depth[0], depth[-1]+0.00001  # adjustment
                 basis = np.arange(start, stop, step)
