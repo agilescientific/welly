@@ -1,5 +1,9 @@
 # CHANGES.md
 
+## 0.4.2, winter 2018
+- Implemented basis updating when slicing. In general, you probably want to 'slice' (get a subcurve) using `curve.to_basis()` because you can use depth to get at the section you want. But if you want to use indexing, like `curve[100:110]`, this operation now updates `curve.start` so that `curve.basis` is therefore updated.
+- Breaking change: `utils.top_and_tail` now only works on single arrays, and returns a single array.
+
 ## 0.4.1, 24 November 2018
 - Fixed a bug in `project.df()` that was building the DataFrame incorrectly.
 

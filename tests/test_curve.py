@@ -24,7 +24,7 @@ def test_curve():
 
     # Check HTML repr.
     html = gr._repr_html_()
-    base = """<table><tr><th style="text-align:center;" colspan="2">GR [gAPI]</th></tr><tr><td style="text-align:center;" colspan="2">1.0668 : 1939.2900 : 0.1524</td></tr><tr><td><strong>"""
+    base = """<table><tr><th style="text-align:center;" colspan="2">GR [gAPI]</th></tr><tr><td style="text-align:center;" colspan="2">1.0668 : 1939.1376 : 0.1524</td></tr><tr><td><strong>"""
     co = """<tr><td><strong>service_company</strong></td><td>Schlumberger</td></tr>"""
     null = """<tr><td><strong>null</strong></td><td>-999.25</td></tr>"""
     data = """<tr><th style="border-top: 2px solid #000;">Depth</th><th style="border-top: 2px solid #000;">Value</th></tr><tr><td>1.0668</td><td>46.6987</td></tr><tr><td>1.2192</td><td>46.6987</td></tr><tr><td>1.3716</td><td>46.6987</td></tr><tr><td>⋮</td><td>⋮</td></tr><tr><td>1938.8328</td><td>92.2462</td></tr><tr><td>1938.9852</td><td>92.2462</td></tr><tr><td>1939.1376</td><td>92.2462</td></tr></table>"""

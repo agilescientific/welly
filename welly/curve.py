@@ -8,9 +8,11 @@ Defines log curves.
 from __future__ import division
 
 import numpy as np
+from scipy.interpolate import interp1d
 import matplotlib.pyplot as plt
 import matplotlib as mpl
-from scipy.interpolate import interp1d
+from matplotlib.patches import PathPatch
+import warnings
 
 
 from . import utils
@@ -67,14 +69,18 @@ class Curve(np.ndarray):
         self.date = getattr(obj, 'date', None)
         self.code = getattr(obj, 'code', None)
 
-    # def __array_wrap__(self, obj):
-    #     """
-    #     Return scalars not subclass, eg from np.mean().
-    #     """
-    #     if obj.shape == ():
-    #         return obj[()]
-    #     else:
-    #         return np.ndarray.__array_wrap__(self, obj)
+    def __getitem__(self, items):
+        """
+        Update the basis when a Curve is sliced.
+        """
+        newarr = self.copy()
+        if isinstance(items, slice):
+            if (items.start is not None) and (items.start > 0):
+                newarr.start = newarr.basis.copy()[items.start]
+            if items.step is not None:
+                newarr.step = newarr.step * items.step
+
+        return np.ndarray.__getitem__(newarr, items)
 
     def __copy__(self):
         cls = self.__class__
@@ -128,22 +134,42 @@ class Curve(np.ndarray):
         return html
 
     @property
+    def values(self):
+        return np.array(self)
+
+    @property
     def stop(self):
-        return self.start + self.shape[0] * self.step
+        """
+        The stop depth. Computed on the fly from the start,
+        the step, and the length of the curve.
+        """
+        return self.start + (self.shape[0] - 1) * self.step
 
     @property
     def basis(self):
-        precision_adj = self.step / 100
-        return np.arange(self.start, self.stop - precision_adj, self.step)
+        """
+        The depth or time basis of the curve's points. Computed
+        on the fly from the start, stop and step.
 
-    def get_stats(self):
+        Returns
+            ndarray. The array, the same length as the curve.
+        """
+        return np.linspace(self.start, self.stop, self.shape[0], endpoint=True)
+
+    def describe(self):
+        """
+        Return basic statistics about the curve.
+        """
         stats = {}
         stats['samples'] = self.shape[0]
         stats['nulls'] = self[np.isnan(self)].shape[0]
-        stats['mean'] = float(np.nanmean(self))
-        stats['min'] = float(np.nanmin(self))
-        stats['max'] = float(np.nanmax(self))
+        stats['mean'] = float(np.nanmean(self.real))
+        stats['min'] = float(np.nanmin(self.real))
+        stats['max'] = float(np.nanmax(self.real))
         return stats
+
+    get_stats = describe
+
 
     @classmethod
     def from_lasio_curve(cls, curve,
@@ -183,6 +209,9 @@ class Curve(np.ndarray):
             d = np.diff(depth)
             if not np.allclose(d - np.mean(d), np.zeros_like(d)):
                 # Sampling is uneven.
+                m = "Irregular sampling in depth is not supported. "
+                m += "Interpolating to regular basis."
+                warnings.warn(m)
                 step = np.nanmedian(d)
                 start, stop = depth[0], depth[-1]+0.00001  # adjustment
                 basis = np.arange(start, stop, step)
@@ -233,8 +262,11 @@ class Curve(np.ndarray):
                 width=None,
                 aspect=60,
                 cmap=None,
+                curve=False,
                 ticks=(1, 10),
-                return_fig=False):
+                return_fig=False,
+                **kwargs,
+                ):
         """
         Plot a 2D curve.
 
@@ -243,6 +275,7 @@ class Curve(np.ndarray):
             width (int): The width of the image.
             aspect (int): The aspect ratio (not quantitative at all).
             cmap (str): The colourmap to use.
+            curve (bool): Whether to plot the curve as well.
             ticks (tuple): The tick interval on the y-axis.
             return_fig (bool): whether to return the matplotlib figure.
                 Default False.
@@ -250,6 +283,7 @@ class Curve(np.ndarray):
         Returns:
             ax. If you passed in an ax, otherwise None.
         """
+        # Set up the figure.
         if ax is None:
             fig = plt.figure(figsize=(2, 10))
             ax = fig.add_subplot(111)
@@ -257,13 +291,14 @@ class Curve(np.ndarray):
         else:
             return_ax = True
 
+        # Set up the data.
         cmap = cmap or 'viridis'
         default = int(self.shape[0] / aspect)
         if self.ndim == 1:
             a = np.expand_dims(self, axis=1)
             a = np.repeat(a, width or default, axis=1)
         elif self.ndim == 2:
-            a = self[:, :width]
+            a = self[:, :width] if width < self.shape[1] else self
         elif self.ndim == 3:
             if 2 < self.shape[-1] < 5:
                 # Interpret as RGB or RGBA.
@@ -271,13 +306,27 @@ class Curve(np.ndarray):
                 cmap = None  # Actually doesn't matter.
             else:
                 # Take first slice.
-                a = self[:, :width, 0]
+                a = self[:, :width, 0] if width < self.shape[1] else self[..., 0]
         else:
             raise NotImplementedError("Can only handle up to 3 dimensions.")
 
         # At this point, a is either a 2D array, or a 2D (rgb) array.
         extent = [0, width or default, self.stop, self.start]
-        _ = ax.imshow(a, cmap=cmap, extent=extent)
+        im = ax.imshow(a, cmap=cmap, extent=extent)
+
+        if curve:
+            # Draw the path.
+            # TODO: add default kwargs?
+            paths = ax.fill_betweenx(self.basis, self, self.min(),
+                                     facecolor='none',
+                                     **kwargs,
+                                     )
+
+            # Make the 'fill' mask and clip the background image with it.
+            patch = PathPatch(paths._paths[0], visible=False)
+            ax.add_artist(patch)
+            im.set_clip_path(patch)
+
         ax.set_xticks([])
 
         # Rely on interval order.
@@ -339,18 +388,20 @@ class Curve(np.ndarray):
         else:
             return_ax = True
 
-        c = None
         d = None
         if legend is not None:
             try:
                 d = legend.get_decor(self)
-                c = d.colour
             except:
                 pass
 
         if d is not None:
-            # Then attempt to get parameters from decor.
-            axkwargs = kwargs
+            kwargs['color'] = d.colour
+            kwargs['lw'] = getattr(d, 'lineweight', None) or getattr(d, 'lw', 1)
+            kwargs['ls'] = getattr(d, 'linestyle', None) or getattr(d, 'ls', '-')
+
+            # Attempt to get axis parameters from decor.
+            axkwargs = kwargs.copy()
 
             xticks = getattr(d, 'xticks', None)
             if xticks is not None:
@@ -362,10 +413,7 @@ class Curve(np.ndarray):
 
             ax.set(**axkwargs)
 
-        lw = getattr(d, 'lineweight', None) or getattr(d, 'lw', 1)
-        ls = getattr(d, 'linestyle', None) or getattr(d, 'ls', '-')
-
-        ax.plot(self, self.basis, c=c, lw=lw, ls=ls)
+        ax.plot(self, self.basis, **kwargs)
         ax.set_title(self.mnemonic)  # no longer needed
         ax.set_xlabel(self.units)
 
@@ -397,13 +445,27 @@ class Curve(np.ndarray):
         """
         return utils.extrapolate(self)
 
+    def top_and_tail(self):
+        pass
+
     def interpolate(self):
         """
         Interpolate across any missing zones.
+
+        TODO
+        Allow spline interpolation.
         """
         nans, x = utils.nan_idx(self)
         self[nans] = np.interp(x(nans), x(~nans), self[~nans])
         return self
+
+    def interpolate_where(self, condition):
+        """
+        Remove then interpolate across
+        """
+        raise NotImplementedError()
+        self[self < 0] = np.nan
+        return self.interpolate() 
 
     def to_basis_like(self, basis):
         """
@@ -456,8 +518,10 @@ class Curve(np.ndarray):
                 new_start = start
             new_step = step or self.step
             new_stop = stop or self.stop
-            new_adj_stop = new_stop + new_step/100  # To guarantee inclusion.
-            basis = np.arange(new_start, new_adj_stop, new_step)
+            # new_adj_stop = new_stop + new_step/100  # To guarantee inclusion.
+            # basis = np.arange(new_start, new_adj_stop, new_step)
+            steps = 1 + (new_stop - new_start) / new_step
+            basis = np.linspace(new_start, new_stop, int(steps), endpoint=True)
         else:
             new_start = basis[0]
             new_step = basis[1] - basis[0]

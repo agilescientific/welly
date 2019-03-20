@@ -44,7 +44,7 @@ def no_gaps(curve):
     """
     Check for gaps, after ignoring any NaNs at the top and bottom.
     """
-    tnt = utils.top_and_tail(curve)[0]  # top_and_tail returns a list
+    tnt = utils.top_and_tail(curve)
     return not any(np.isnan(tnt))
 
 

@@ -16,12 +16,14 @@ CNTY.                        None : COUNTY
 STAT.                        None : STATE
 CTRY.                          CA : COUNTRY
 SRVC.                             : SERVICE COMPANY
-DATE.  2018-11-20 23:26:46.300050 : DATE
+DATE.  2019-02-14 17:34:50.060752 : DATE
 UWI .     Long = 63* 45'24.460  W : UNIQUE WELL ID
 API .                        None : API NUMBER
 LIC .                       P-129 : 
 LATI.                        None : 
 LONG.                        None : 
+NS  .                        None : 
+EW  .                        None : 
 GDAT.                        None : 
 SECT.                 45.20 Deg N : 
 RANG.                      PD 176 : 
@@ -55,6 +57,7 @@ SP      .mV     : SP
 ~Params ----------------------------------------------------
 EKB.   94.8 : 
 EGL.   90.3 : 
+TD .   None : 
 TDD. 1935.0 : 
 TDL. 1935.0 : 
 ~Other -----------------------------------------------------

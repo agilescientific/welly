@@ -19,14 +19,14 @@ class Header(object):
     """
     def __init__(self, params):
         """
-        Generic initializer for now.
+        Generic initializer.
         """
+        setattr(self, 'name', '')  # Prevent error when plotting.
+        setattr(self, 'uwi', '')
         for k, v in params.items():
             if k and v:
                 setattr(self, k, v)
 
-        # if getattr(self, 'uwi', None) is None:
-        #     self.uwi = ''
 
     def __repr__(self):
         return self.__dict__.__repr__()
