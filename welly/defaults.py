@@ -8,7 +8,7 @@ Defines some default values.
 
 # From E Ross Crain's website:
 # https://www.spec2000.net/05-logaliastable.htm
-# Some additions by Thomas Martin
+# Some additions by Thomas Martin & Ross Meyer
 
 ALIAS = {'CAL': [ 'HHCA',
                   'SA',
@@ -362,7 +362,15 @@ ALIAS = {'CAL': [ 'HHCA',
                   'TNPH',
                   'ENPH',
                   'SPLE'],
-                 'PHIS': ['ACPD', 'ACPL', 'ACPS', 'PORA', 'RPHI', 'SPHI', 'SPSS', 'TPHI'],
+                 'PHIS': ['PHIS', 
+                  'ACPD', 
+                  'ACPL', 
+                  'ACPS', 
+                  'PORA', 
+                  'RPHI', 
+                  'SPHI', 
+                  'SPSS', 
+                  'TPHI'],
                  'POTA': ['KCPS', 'HPOT', 'POTA', 'K'],
                  'RESD': ['RESD',
                   'RT_H',
