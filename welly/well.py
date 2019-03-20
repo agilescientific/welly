@@ -254,7 +254,12 @@ class Well(object):
             pandas.DataFrame.
 
         """
-        import pandas as pd
+        try:
+            import pandas as pd
+        except:
+            m = "You must install pandas to use dataframes."
+            raise WellError(m)
+
         from pandas.api.types import is_object_dtype
 
         if keys is None:
@@ -923,8 +928,8 @@ class Well(object):
         rows = '<tr><th>{}</th></tr>'.format(r)
 
         styles = {
-            True: "#CCEECC",
-            False: "#FFCCCC",
+            True: "#CCEECC",   # Green
+            False: "#FFCCCC",  # Red
         }
 
         # Quality results.
@@ -1030,6 +1035,8 @@ class Well(object):
 
         Returns:
             ndarray.
+            or
+            ndarray, ndarray if return_basis=True
         """
         if keys is None:
             keys = [k for k, v in self.data.items() if isinstance(v, Curve)]

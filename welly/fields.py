@@ -25,6 +25,8 @@ las_fields = {
         'county': ('well', 'CNTY'),
         'latitude': ('well', 'LATI'),
         'longitude': ('well', 'LONG'),
+        'northing': ('well', 'NS'),
+        'easting': ('well', 'EW'),
         'datum': ('well', 'GDAT'),
         'section': ('well', 'SECT'),
         'range': ('well', 'RANG'),
@@ -32,7 +34,7 @@ las_fields = {
         'api': ('well', 'API'),
         'kb': ('params', 'EKB'),
         'gl': ('params', 'EGL'),
-        'td': ('params', 'TDD'),
+        'td': ('params', 'TD'),
         'tdd': ('params', 'TDD'),
         'tdl': ('params', 'TDL'),
     },
@@ -43,6 +45,6 @@ las_fields = {
         'null': ('well', 'NULL'),
         'run': ('params', 'RUN'),
         'service_company': ('well', 'SRVC'),
-        'date': ('well', 'DATE'),
+        'date': ('well', 'DATE')
     }
 }

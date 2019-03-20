@@ -38,7 +38,7 @@ def test_top_and_tail():
     Test basic stuff.
     """
     a = np.array([np.nan, np.nan, 9, 9, 9, 9, 9, 2, 3, 9, 2, 1, 1, 3, 4, 9, 9, 9, np.nan, np.nan])
-    m = top_and_tail(a)[0]
+    m = top_and_tail(a)
     t = np.array([9, 9, 9, 9, 9, 2, 3, 9, 2, 1, 1, 3, 4, 9, 9, 9])
     assert len(a) - 4 == len(m)
     assert np.allclose(m, t)

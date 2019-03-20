@@ -380,25 +380,6 @@ def moving_avg_conv(a, length):
     return np.convolve(a, boxcar, mode="same")
 
 
-def top_and_tail(*arrays):
-    """
-    From ``bruges``
-
-    Top and tail all arrays to the non-NaN extent of the first array.
-
-    E.g. crop the NaNs from the top and tail of a well log.
-    """
-    if len(arrays) > 1:
-        for arr in arrays[1:]:
-            assert len(arr) == len(arrays[0])
-    nans = np.where(~np.isnan(arrays[0]))[0]
-    first, last = nans[0], nans[-1]
-    ret_arrays = []
-    for array in arrays:
-        ret_arrays.append(array[first:last+1])
-    return ret_arrays
-
-
 def nan_idx(y):
     """Helper to handle indices and logical indices of NaNs.
 
@@ -431,6 +412,22 @@ def extrapolate(a):
     a[:first] = a[first]
     a[last + 1:] = a[last]
     return a
+
+
+def top_and_tail(a):
+    """
+    Remove the NaNs from the top and tail (only) of a well log.
+
+    Args:
+        a (ndarray): An array.
+    Returns:
+        ndarray: The top and tailed array.
+    """
+    if np.all(np.isnan(a)):
+        return np.array([])
+    nans = np.where(~np.isnan(a))[0]
+    last = None if nans[-1]+1 == a.size else nans[-1]+1
+    return a[nans[0]:last]
 
 
 def dms2dd(dms):
