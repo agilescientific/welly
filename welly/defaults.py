@@ -10,7 +10,7 @@ Defines some default values.
 # https://www.spec2000.net/05-logaliastable.htm
 # Some additions by Thomas Martin & Ross Meyer
 
-ALIAS = {'CAL': [ 'CALI',
+ALIAS = {'CAL': [ 'CAL',
                   'HHCA',
                   'SA',
                   'HCALX',
@@ -22,7 +22,7 @@ ALIAS = {'CAL': [ 'CALI',
                   'CALZ',
                   'CALX',
                   'CAL1',
-                  'CAL',
+                  'CALI',
                   'CADF',
                   'CADE',
                   'CA2',
