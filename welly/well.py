@@ -14,6 +14,8 @@ import matplotlib.pyplot as plt
 import matplotlib as mpl
 import lasio
 import numpy as np
+from io import StringIO
+import urllib
 
 from . import utils
 from .fields import las_fields as LAS_FIELDS
@@ -218,7 +220,7 @@ class Well(object):
         convenient for most purposes.
 
         Args:
-            fname (str): The path of the LAS file.
+            fname (str): The path of the LAS file, or a URL to one.
             remap (dict): Optional. A dict of 'old': 'new' LAS field names.
             funcs (dict): Optional. A dict of 'las field': function() for
                 implementing a transform before loading. Can be a lambda.
@@ -230,10 +232,24 @@ class Well(object):
         """
         if printfname:
             print(fname)
-        l = lasio.read(fname, encoding=encoding)
+            
+        if re.match(r'https?://.+\..+/.+?', fname) is not None:
+            try:
+                data = urllib.request.urlopen(fname).read().decode()
+            except urllib.HTTPError as e:
+                raise WellError('Could not retrieve url: ', e)
+            fname = (StringIO(data))
+
+        las = lasio.read(fname, encoding=encoding)
 
         # Pass to other constructor.
-        return cls.from_lasio(l, remap=remap, funcs=funcs, data=data, req=req, alias=alias, fname=fname)
+        return cls.from_lasio(las,
+                              remap=remap,
+                              funcs=funcs,
+                              data=data,
+                              req=req,
+                              alias=alias,
+                              fname=fname)
 
     def df(self, keys=None, basis=None, uwi=False):
         """
