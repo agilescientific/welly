@@ -390,7 +390,7 @@ class Well(object):
 
         return l
 
-    def to_las(self, fname, keys=None, basis=None):
+    def to_las(self, fname, keys=None, basis=None, **kwargs):
         """
         Writes the current well instance as a LAS file. Essentially just wraps
         ``to_lasio()``, but is more convenient for most purposes.
@@ -404,11 +404,13 @@ class Well(object):
                 include, if not all of them. You can have nested lists, such
                 as you might use for ``tracks`` in ``well.plot()``.
 
+        Other keyword args are passed to lasio.LASFile.write.
+
         Returns:
             None. Writes the file as a side-effect.
         """
         with open(fname, 'w') as f:
-            self.to_lasio(keys=keys, basis=basis).write(f)
+            self.to_lasio(keys=keys, basis=basis).write(f, **kwargs)
 
         return
 
