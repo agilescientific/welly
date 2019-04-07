@@ -23,8 +23,8 @@ welly
     :target: https://coveralls.io/github/agile-geoscience/welly?branch=master
     :alt: Coveralls
 
-.. image:: https://img.shields.io/codacy/cd6dc74cd86142b4b47f6206bdaf3d8b.svg 
-    :target: https://www.codacy.com/app/matt/welly/dashboard
+.. image:: https://api.codacy.com/project/badge/Grade/cd6dc74cd86142b4b47f6206bdaf3d8b 
+    :target: https://www.codacy.com/app/matt/welly
     :alt: Codacy code review
 
 .. image:: https://img.shields.io/pypi/l/welly.svg
