@@ -401,7 +401,11 @@ class Curve(np.ndarray):
             kwargs['ls'] = getattr(d, 'linestyle', None) or getattr(d, 'ls', '-')
 
             # Attempt to get axis parameters from decor.
-            axkwargs = kwargs.copy()
+            axkwargs = {}
+
+            xlim = getattr(d, 'xlim', None)
+            if xlim is not None:
+                axkwargs['xlim'] = list(map(float, xlim.split(',')))
 
             xticks = getattr(d, 'xticks', None)
             if xticks is not None:
@@ -426,7 +430,7 @@ class Curve(np.ndarray):
                 label.set_rotation(90)
 
         ax.set_ylim([self.stop, self.start])
-        ax.grid('on', color='k', alpha=0.2, lw=0.25, linestyle='-')
+        ax.grid('on', color='k', alpha=0.33, lw=0.33, linestyle='-')
 
         if return_ax:
             return ax
