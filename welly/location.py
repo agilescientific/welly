@@ -224,12 +224,14 @@ class Location(object):
         else:
             raise Exception("Method must be one of 'aa', 'bt', 'mc'")
 
+        _x = np.sin(Ib) * (1 - np.cos(Ab - Aa))
+        self.dogleg = np.arccos(np.cos(Ib - Ia) - np.sin(Ia) * _x)
+        self.dogleg[self.dogleg == 0] = 1e-9
+
+        rf = 2 / self.dogleg * np.tan(self.dogleg / 2)  # ratio factor
+        rf[np.isnan(rf)] = 1  # Adjust for NaN.
+
         if method == 'mc':
-            _x = np.sin(Ib) * (1 - np.cos(Ab - Aa))
-            dogleg = np.arccos(np.cos(Ib - Ia) - np.sin(Ia) * _x)
-            dogleg[dogleg == 0] = 1e-9
-            rf = 2 / dogleg * np.tan(dogleg / 2)  # ratio factor
-            rf[np.isnan(rf)] = 1  # Adjust for NaN.
             delta_N *= rf
             delta_E *= rf
             delta_V *= rf
@@ -248,3 +250,10 @@ class Location(object):
         self.position = result
 
         return
+
+
+    def get_position(self, tvd=None):
+        """
+        Get position log at any TVDs.
+        """
+        pass
