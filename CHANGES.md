@@ -1,7 +1,12 @@
 # CHANGES.md
 
-## 0.4.2, winter 2018
-- Implemented basis updating when slicing. In general, you probably want to 'slice' (get a subcurve) using `curve.to_basis()` because you can use depth to get at the section you want. But if you want to use indexing, like `curve[100:110]`, this operation now updates `curve.start` so that `curve.basis` is therefore updated.
+## 0.4.2, spring 2019
+- `location.md2tvd()` and `location.tvd2md` now use cubic interpolation by default. If you need speed, consider switching back to linear interpolation.
+- A new function, `location.trajectory()`, generates an evenly sampled trajectory, given a sample spacing in metres.
+- Added `location.plot_plan()` and `location.plot_3d()` for plotting well trajectories.
+- Added a new tutorial notebook, `Location.ipynb` to demonstrate the well path capabilities of `Well.location()`. The notebook does not cover geographic CRS's. There's still a very short example in `Well.ipynb`. 
+- Implemented basis updating when slicing. In general, you probably want to 'slice' (get a subcurve) using `curve.to_basis()` because you can use depth to get the section you want. But if you want to use indexing, like `curve[100:110]`, this operation now updates `curve.start` so that `curve.basis` is therefore updated.
+- Fixed some buggy behaviour when creating 'empty' wells, and added example to top of `tutorials/Well.ipynb`. 
 - Breaking change: `utils.top_and_tail` now only works on single arrays, and returns a single array.
 - You can now pass a URL directly to `Well.from_las()` and it will try to read it.
 
