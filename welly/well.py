@@ -46,19 +46,20 @@ class Well(object):
     """
     Well contains everything about the well.
     """
-    def __init__(self, params):
+    def __init__(self, params=None):
         """
         Generic initializer for now.
         """
-        for k, v in params.items():
-            if k and v:
-                setattr(self, k, v)
-
         if getattr(self, 'data', None) is None:
             self.data = {}
 
         if getattr(self, 'header', None) is None:
             self.header = Header({})
+
+        if params is not None:
+            for k, v in params.items():
+                if k and (v is not None):
+                    setattr(self, k, v)
 
     def __eq__(self, other):
         if (not self.uwi) or (not other.uwi):
@@ -118,7 +119,15 @@ class Well(object):
         Property. Simply a shortcut to the UWI from the header, or the
         empty string if there isn't one.
         """
-        return getattr(self.header, 'uwi', None) or ''
+        return self.header['uwi']
+
+    @property
+    def name(self):
+        """
+        Property. Simply a shortcut to the well name from the header, or the
+        empty string if there isn't one.
+        """
+        return self.header['name']
 
     @classmethod
     def from_lasio(cls, l, remap=None, funcs=None, data=True, req=None, alias=None, fname=None):
