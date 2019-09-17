@@ -6,7 +6,7 @@ import re
 
 import numpy as np
 
-from welly import Well
+from welly import Well, Location
 from welly import utils
 
 # Some globals.
