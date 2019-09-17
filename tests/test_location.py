@@ -12,7 +12,7 @@ from welly import utils
 # Some globals.
 FNAME = 'tests/P-129_out.LAS'
 DNAME = 'tests/P-129_deviation_survey.csv'
-DNAME2 = 'test/Well_1515_directional.csv'
+DNAME2 = 'tests/Well_1515_directional.csv'
 
 def test_deviation():
     """
