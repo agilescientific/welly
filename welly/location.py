@@ -238,7 +238,7 @@ class Location(object):
         result = np.zeros_like(deviation, dtype=np.float)
 
         # Stack the results, add the surface.
-        _offsets = np.squeeze(np.dstack([delta_N, delta_E, delta_V]))
+        _offsets = np.squeeze(np.dstack([delta_E, delta_N, delta_V]))
         _offsets = np.vstack([np.array([0, 0, 0]), _offsets])
         result += _offsets.cumsum(axis=0)
 
