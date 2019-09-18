@@ -1,7 +1,6 @@
 # CHANGES.md
 
 ## 0.4.2, spring 2019
-- `location.md2tvd()` and `location.tvd2md` now use cubic interpolation by default. If you need speed, consider switching back to linear interpolation.
 - A new function, `location.trajectory()`, generates an evenly sampled trajectory, given a sample spacing in metres.
 - Added `location.plot_plan()` and `location.plot_3d()` for plotting well trajectories.
 - Added a new tutorial notebook, `Location.ipynb` to demonstrate the well path capabilities of `Well.location()`. The notebook does not cover geographic CRS's. There's still a very short example in `Well.ipynb`. 
