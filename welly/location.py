@@ -11,6 +11,7 @@ from scipy.interpolate import splprep
 from scipy.interpolate import splev
 import warnings
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D 
 
 from . import utils
 from .fields import las_fields
