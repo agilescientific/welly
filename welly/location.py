@@ -7,6 +7,11 @@ Defines well location.
 """
 import numpy as np
 from scipy.interpolate import interp1d
+from scipy.interpolate import splprep
+from scipy.interpolate import splev
+import warnings
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D 
 
 from . import utils
 from .fields import las_fields
@@ -238,7 +243,7 @@ class Location(object):
         result = np.zeros_like(deviation, dtype=np.float)
 
         # Stack the results, add the surface.
-        _offsets = np.squeeze(np.dstack([delta_N, delta_E, delta_V]))
+        _offsets = np.squeeze(np.dstack([delta_E, delta_N, delta_V]))
         _offsets = np.vstack([np.array([0, 0, 0]), _offsets])
         result += _offsets.cumsum(axis=0)
 

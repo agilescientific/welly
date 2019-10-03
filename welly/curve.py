@@ -9,6 +9,7 @@ from __future__ import division
 
 import numpy as np
 from scipy.interpolate import interp1d
+
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 from matplotlib.patches import PathPatch
@@ -169,7 +170,6 @@ class Curve(np.ndarray):
         return stats
 
     get_stats = describe
-
 
     @classmethod
     def from_lasio_curve(cls, curve,

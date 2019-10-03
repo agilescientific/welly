@@ -474,20 +474,37 @@ class Project(object):
             wells.append(w)
         return Project(wells)
 
-    def df(self):
+    def df(self, keys=None, basis=None, alias=None, rename_aliased=True):
         """
         Makes a pandas DataFrame containing Curve data for all the wells
         in the Project. The DataFrame has a dual index of well UWI and
         curve Depths. Requires `pandas`.
 
         Args:
-            No arguments.
+            keys (list): List of strings: the keys of the data items to
+                survey, if not all of them.
+            basis (array): A basis, if you want to enforce one, otherwise
+                you'll get the result of ``survey_basis()``.
+            alias (dict): Alias dictionary.
+            rename_aliased (bool): Whether to name the columns after the alias,
+                i.e. the alias dictionary key, or after the curve mnemonic.
+                Default is False, do not rename: use the mnemonic.
 
         Returns:
-            `pandas.DataFrame`.
+            ``pandas.DataFrame``.
         """
         import pandas as pd
-        return pd.concat([w.df(uwi=True) for w in self])
+
+        dfs = []
+        for w in self:
+            try:
+                df = w.df(uwi=True, keys=keys, basis=basis, alias=alias, rename_aliased=rename_aliased)
+            except WellError:
+                # Probably there's no data for this well.
+                df = None
+            dfs.append(df)
+
+        return pd.concat(dfs)
 
     def data_as_matrix(self, X_keys,
                        y_key=None,

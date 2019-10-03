@@ -46,19 +46,20 @@ class Well(object):
     """
     Well contains everything about the well.
     """
-    def __init__(self, params):
+    def __init__(self, params=None):
         """
         Generic initializer for now.
         """
-        for k, v in params.items():
-            if k and v:
-                setattr(self, k, v)
-
         if getattr(self, 'data', None) is None:
             self.data = {}
 
         if getattr(self, 'header', None) is None:
             self.header = Header({})
+
+        if params is not None:
+            for k, v in params.items():
+                if k and (v is not None):
+                    setattr(self, k, v)
 
     def __eq__(self, other):
         if (not self.uwi) or (not other.uwi):
@@ -118,7 +119,15 @@ class Well(object):
         Property. Simply a shortcut to the UWI from the header, or the
         empty string if there isn't one.
         """
-        return getattr(self.header, 'uwi', None) or ''
+        return self.header['uwi']
+
+    @property
+    def name(self):
+        """
+        Property. Simply a shortcut to the well name from the header, or the
+        empty string if there isn't one.
+        """
+        return self.header['name']
 
     @classmethod
     def from_lasio(cls, l, remap=None, funcs=None, data=True, req=None, alias=None, fname=None):
@@ -251,10 +260,12 @@ class Well(object):
                               alias=alias,
                               fname=fname)
 
-    def df(self, keys=None, basis=None, uwi=False):
+    def df(self, keys=None, basis=None, uwi=False, alias=None, rename_aliased=True):
         """
         Return current curve data as a ``pandas.DataFrame`` object.
-        
+
+        Requires `pandas`.
+
         Everything has to have the same basis, because the depth
         is going to become the index of the DataFrame. If you don't
         provide one, ``welly`` will make one using ``survey_basis()``.
@@ -265,7 +276,11 @@ class Well(object):
             basis (array): A basis, if you want to enforce one, otherwise
                 you'll get the result of ``survey_basis()``.
             uwi (bool): Whether to add a 'UWI' column.
-    
+            alias (dict): Alias dictionary.
+            rename_aliased (bool): Whether to name the columns after the alias,
+                i.e. the alias dictionary key, or after the curve mnemonic.
+                Default is True, use the alias names.
+
         Returns:
             pandas.DataFrame.
 
@@ -280,20 +295,22 @@ class Well(object):
 
         if keys is None:
             keys = [k for k, v in self.data.items() if isinstance(v, Curve)]
-        else:
-            keys = utils.flatten_list(keys)
+
+        data = {k: self.get_curve(k, alias=alias) for k in keys}
 
         if basis is None:
-            basis = self.survey_basis(keys=keys)
+            basis = self.survey_basis(keys=keys, alias=alias)
         if basis is None:
             m = "No basis was provided and welly could not retrieve common basis."
             raise WellError(m)
 
-        data = {k: v.to_basis(basis) for k, v in self.data.items() if isinstance(v, Curve)}
-
-        df = pd.DataFrame(data, columns=list(self.data.keys()))
+        df = pd.DataFrame(data, index=None)
         df['Depth'] = basis
         df = df.set_index('Depth')
+
+        if not rename_aliased:
+            mapper = {k: self.get_mnemonic(k, alias=alias) for k in keys}
+            df = df.rename(columns=mapper)
 
         if uwi:
             df['UWI'] = [self.uwi for _ in basis]
@@ -306,7 +323,7 @@ class Well(object):
                     df[column] = df[column].astype(np.float64)
                 except ValueError:
                     pass
-    
+
         return df
 
     def to_lasio(self, keys=None, basis=None):
