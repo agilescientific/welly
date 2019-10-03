@@ -20,11 +20,11 @@ DATE.  2019-10-03 13:38:17.039336 : DATE
 UWI .     Long = 63* 45'24.460  W : UNIQUE WELL ID
 API .                        None : API NUMBER
 LIC .                       P-129 : 
-LATI.                             : 
-LONG.                             : 
+LATI.                        None : 
+LONG.                        None : 
 NS  .                        None : 
 EW  .                        None : 
-GDAT.                             : 
+GDAT.                        None : 
 SECT.                 45.20 Deg N : 
 RANG.                      PD 176 : 
 TOWN.                 63.75 Deg W : 

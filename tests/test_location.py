@@ -6,13 +6,13 @@ import re
 
 import numpy as np
 
-from welly import Well
+from welly import Well, Location
 from welly import utils
 
 # Some globals.
 FNAME = 'tests/P-129_out.LAS'
 DNAME = 'tests/P-129_deviation_survey.csv'
-
+DNAME2 = 'tests/Well_1515_directional.csv'
 
 def test_deviation():
     """
@@ -76,3 +76,26 @@ def test_well_remap():
 
     well.location.crs_from_string('+init=epsg:4267')
     assert well.location.crs.init == 'epsg:4267'
+
+
+def test_deviation_to_position_conversion():
+    """
+    Test that we can convert a deviation survey – a N x 3 array with columns MD, INC, and AZI 
+    and compute position (a.k.a path) – a N x 3 arry with columns X, Y, Z relative 
+    to the KB location. Tests the minimum curvature method only.
+    """
+    tolerance = 0.1 # absolute distance in metres we'll allow to be off.
+    location = {'x': 382769.09, 'y': 4994021.65, 'kb': 94.8 } # arbitrary location to instantiate well
+    well = Well({'location': Location(params=location)})
+    
+    survey = np.loadtxt(DNAME2, skiprows=2, delimiter=',')
+    dev_surv = survey[:,2:5]  # MD, Incl, Azim columns in test file
+    posx, posy, posz = survey[:,8], survey[:,7], survey[:,5] # E/W, N/S, Z
+    well.location.deviation = dev_surv
+    well.location.compute_position_log()
+    pos_log_computed = well.location.position
+    
+    assert well.location.position.shape == (83, 3)
+    assert pos_log_computed.shape == (83,3)
+    assert(np.allclose(posx, pos_log_computed[:,0], atol=0.1))
+    assert(np.allclose(posy, pos_log_computed[:,1], atol=0.1))
