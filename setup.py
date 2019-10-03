@@ -32,7 +32,7 @@ TEST_REQUIREMENTS = ['pytest',
                      ]
 
 # Test command is:
-# python py.test
+# python run_tests.py
 
 CLASSIFIERS = ['Development Status :: 3 - Alpha',
                'Intended Audience :: Science/Research',
@@ -40,8 +40,6 @@ CLASSIFIERS = ['Development Status :: 3 - Alpha',
                'License :: OSI Approved :: Apache Software License',
                'Operating System :: OS Independent',
                'Programming Language :: Python',
-               'Programming Language :: Python :: 2.7',
-               'Programming Language :: Python :: 3.4',
                'Programming Language :: Python :: 3.5',
                'Programming Language :: Python :: 3.6',
                'Programming Language :: Python :: 3.7',

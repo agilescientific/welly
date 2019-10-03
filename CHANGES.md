@@ -1,5 +1,8 @@
 # CHANGES.md
 
+## 0.4.4, winter 2019/2020
+- Dropped support for Python 2.7 and Python 3.4, and added support for Python 3.7 and 3.8.
+
 ## 0.4.3, October 2019
 - You can now pass an `alias` dictionary to `Well.df()`, along with the list of `keys`. You can pass `keys` and `alias` to `Project.df()` as well.
 - A new function, `location.trajectory()`, generates an evenly sampled trajectory, given a sample spacing in metres.
