@@ -42,7 +42,7 @@ class Location(object):
             self.position = None
         else:
             td = self.td or getattr(self, 'TDD', getattr(self, 'TDL', None))
-            self.compute_position_log(td=td)
+            self._compute_position_log(td=td)
 
     def __repr__(self):
         return 'Location({})'.format(self.__dict__)
@@ -312,7 +312,7 @@ class Location(object):
         """
         return_ax = True
         if ax is None:
-            fig, ax = plt.subplots(figsize=(15,7), subplot_kw={'projection': '3d'})
+            fig, ax = plt.subplots(figsize=(15, 7), subplot_kw={'projection': '3d'})
             return_ax = False
 
         ax.plot(*self.trajectory().T, lw=3, alpha=0.75)
