@@ -1,7 +1,8 @@
 # CHANGES.md
 
-## 0.4.4, winter 2019/2020
+## 0.4.4, 22 October 2019
 - Dropped support for Python 2.7 and Python 3.4, and added support for Python 3.7 and 3.8.
+- Fixed `location`, whose changes were inadvertently rolled back.
 
 ## 0.4.3, October 2019
 - You can now pass an `alias` dictionary to `Well.df()`, along with the list of `keys`. You can pass `keys` and `alias` to `Project.df()` as well.
