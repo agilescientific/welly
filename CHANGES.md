@@ -1,5 +1,8 @@
 # CHANGES.md
 
+## 0.4.5, winter 2019-20
+- No changes yet.
+
 ## 0.4.4, 22 October 2019
 - Dropped support for Python 2.7 and Python 3.4, and added support for Python 3.7 and 3.8.
 - Fixed `location`, whose changes were inadvertently rolled back.

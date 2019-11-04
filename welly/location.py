@@ -22,9 +22,12 @@ class Location(object):
     """
     Contains all location and spatial information.
     """
-    def __init__(self, params):
+    def __init__(self, params=None):
         self.td = None
         self.crs = CRS(params.pop('crs', dict()))
+
+        if params is None:
+            params = {}
 
         for k, v in params.items():
             if k and (v is not None):
@@ -190,7 +193,6 @@ class Location(object):
                         bounds_error=False)
 
     def _compute_position_log(self,
-                              deviation,
                               td=None,
                               method='mc',
                               azimuth_datum=0):
@@ -212,7 +214,7 @@ class Location(object):
         Returns:
             ndarray. A position log with rows like X-offset, Y-offset, Z-offset
         """
-        deviation = np.array(deviation)
+        deviation = np.array(self.deviation)
 
         # Adjust to TD.
         if td is not None:

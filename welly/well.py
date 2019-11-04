@@ -56,10 +56,12 @@ class Well(object):
         if getattr(self, 'header', None) is None:
             self.header = Header({})
 
-        if params is not None:
-            for k, v in params.items():
-                if k and (v is not None):
-                    setattr(self, k, v)
+        if params is None:
+            params = {}
+
+        for k, v in params.items():
+            if k and (v is not None):
+                setattr(self, k, v)
 
     def __eq__(self, other):
         if (not self.uwi) or (not other.uwi):
