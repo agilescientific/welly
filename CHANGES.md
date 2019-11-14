@@ -1,7 +1,9 @@
 # CHANGES.md
 
-## 0.4.5, winter 2019-20
-- No changes yet.
+## 0.4.6, winter 2019-2020
+
+## 0.4.5, 14 November 2019
+- Allowed adding the NULL value when writing an LAS file with `w.to_las()`.
 
 ## 0.4.4, 22 October 2019
 - Dropped support for Python 2.7 and Python 3.4, and added support for Python 3.7 and 3.8.

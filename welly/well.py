@@ -328,7 +328,7 @@ class Well(object):
 
         return df
 
-    def to_lasio(self, keys=None, basis=None):
+    def to_lasio(self, keys=None, basis=None, null_value=-999.25):
         """
         Makes a lasio object from the current well.
 
@@ -347,6 +347,7 @@ class Well(object):
         # Create an empty lasio object.
         l = lasio.LASFile()
         l.well.DATE = str(datetime.datetime.today())
+        l.well["NULL"].value = null_value
 
         # Deal with header.
         for obj, dic in LAS_FIELDS.items():
@@ -386,8 +387,8 @@ class Well(object):
 
         for k in keys:
             d = self.data[k]
-            if getattr(d, 'null', None) is not None:
-                d[np.isnan(d)] = d.null
+            # if getattr(d, 'null', None) is not None:
+            #     d[np.isnan(d)] = d.null
             try:
                 new_data = np.copy(d.to_basis_like(basis))
             except:
@@ -409,7 +410,7 @@ class Well(object):
 
         return l
 
-    def to_las(self, fname, keys=None, basis=None, **kwargs):
+    def to_las(self, fname, keys=None, basis=None, null_value=-999.25, **kwargs):
         """
         Writes the current well instance as a LAS file. Essentially just wraps
         ``to_lasio()``, but is more convenient for most purposes.
@@ -429,7 +430,9 @@ class Well(object):
             None. Writes the file as a side-effect.
         """
         with open(fname, 'w') as f:
-            self.to_lasio(keys=keys, basis=basis).write(f, **kwargs)
+            self.to_lasio(keys=keys,
+                          basis=basis,
+                          null_value=null_value).write(f, **kwargs)
 
         return
 
