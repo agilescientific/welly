@@ -102,7 +102,8 @@ class Location(object):
                                             funcs=funcs)
         return cls(params)
 
-    def add_deviation(self, deviation,
+    def add_deviation(self,
+                      deviation,
                       td=None,
                       method='mc',
                       update_deviation=True,
@@ -111,15 +112,15 @@ class Location(object):
         Add a deviation survey to this instance, and try to compute a position
         log from it.
         """
-        try:
-            dev_new, pos, dog = self._compute_position_log(deviation,
-                                                           td=td,
-                                                           method=method,
-                                                           azimuth_datum=azimuth_datum,
-                                                           )
-        except:
-            warnings.warn("The position log could not be computed.")
-            dev_new, pos, dog = deviation, None, None
+        # try:
+        dev_new, pos, dog = self._compute_position_log(deviation,
+                                                       td,
+                                                       method,
+                                                       azimuth_datum,
+                                                       )
+        # except:
+        #     warnings.warn("The position log could not be computed.")
+        #     dev_new, pos, dog = deviation, None, None
 
         if update_deviation:
             self.deviation = dev_new
@@ -193,6 +194,7 @@ class Location(object):
                         bounds_error=False)
 
     def _compute_position_log(self,
+                              deviation,
                               td=None,
                               method='mc',
                               azimuth_datum=0):
@@ -214,7 +216,7 @@ class Location(object):
         Returns:
             ndarray. A position log with rows like X-offset, Y-offset, Z-offset
         """
-        deviation = np.array(self.deviation)
+        deviation = np.array(deviation)
 
         # Adjust to TD.
         if td is not None:
