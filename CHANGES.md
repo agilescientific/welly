@@ -1,5 +1,10 @@
 # CHANGES.md
 
+## 0.4.7, summer 2020 (in development)
+- Next release.
+
+----
+
 ## 0.4.6, 7 May 2020
 - Big fix in `Location`.
 
