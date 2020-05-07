@@ -1,6 +1,7 @@
 # CHANGES.md
 
-## 0.4.6, winter 2019-2020
+## 0.4.6, 7 May 2020
+- Big fix in `Location`.
 
 ## 0.4.5, 14 November 2019
 - Allowed adding the NULL value when writing an LAS file with `w.to_las()`.
