@@ -112,15 +112,15 @@ class Location(object):
         Add a deviation survey to this instance, and try to compute a position
         log from it.
         """
-        # try:
-        dev_new, pos, dog = self._compute_position_log(deviation,
-                                                       td,
-                                                       method,
-                                                       azimuth_datum,
-                                                       )
-        # except:
-        #     warnings.warn("The position log could not be computed.")
-        #     dev_new, pos, dog = deviation, None, None
+        try:
+            dev_new, pos, dog = self._compute_position_log(deviation,
+                                                        td,
+                                                        method,
+                                                        azimuth_datum,
+                                                        )
+        except:
+            warnings.warn("The position log could not be computed.")
+            dev_new, pos, dog = deviation, None, None
 
         if update_deviation:
             self.deviation = dev_new
