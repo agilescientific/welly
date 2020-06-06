@@ -9,6 +9,7 @@ from __future__ import division
 
 import re
 import datetime
+import warnings
 
 import matplotlib.pyplot as plt
 import matplotlib as mpl
@@ -165,14 +166,25 @@ class Well(object):
         # (1) assume the LAS file is indexed against depth AND
         # (2) assume that lasio is able to recognise the depth unit
         if index is None:
+            m = "From v0.5 the default will be 'original',"
+            m += " keeping whatever is used in the LAS file. "
+            m += "If you want to force conversion to metres, change your code"
+            m += " to use `index='m'`."
+            warnings.warn(m, FutureWarning)
             index = "m"  # Force welly to use metres
 
-        if index == "existing":
+        if index.lower() in ["existing", "original"]:
             index_attr = "index" # Use the index as it is in the LAS file
+            try:
+                index_unit = l.curves.DEPT.unit
+            except AttributeError:
+                index_unit = ''
         elif "m" in index.lower():
             index_attr = "depth_m" # Use lasio's conversion of the index to metres
+            index_unit = 'M'
         elif "f" in index.lower():
             index_attr = "depth_ft" # Use lasio's conversion of the index to feet
+            index_unit = 'F'
         else:
             raise KeyError("index must be 'existing', 'm', or 'ft'")
 
@@ -199,6 +211,8 @@ class Well(object):
             curve_params['depth'] = l_index
         else:
             curve_params['depth'] = np.flipud(l_index)
+
+        curve_params['basis_units'] = index_unit
 
         # Make the curve dictionary.
         depth_curves = ['DEPT', 'TIME']

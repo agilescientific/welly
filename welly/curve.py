@@ -69,6 +69,7 @@ class Curve(np.ndarray):
         self.service_company = getattr(obj, 'service_company', None)
         self.date = getattr(obj, 'date', None)
         self.code = getattr(obj, 'code', None)
+        self.basis_units = getattr(obj, 'basis_units', None)
 
     def __getitem__(self, items):
         """
@@ -181,7 +182,8 @@ class Curve(np.ndarray):
                          run=-1,
                          null=-999.25,
                          service_company=None,
-                         date=None):
+                         date=None,
+                         basis_units=None):
         """
         Makes a curve object from a lasio curve object and either a depth
         basis or start and step information.
@@ -196,7 +198,8 @@ class Curve(np.ndarray):
             run (int): default: -1
             null (float): default: -999.25
             service_company (str): Optional.
-            data (str): Optional.
+            date (str): Optional.
+            basis_units (str): the units of the basis.
 
         Returns:
             Curve. An instance of the class.
@@ -247,6 +250,7 @@ class Curve(np.ndarray):
         params['service_company'] = service_company
         params['date'] = date
         params['code'] = curve.API_code
+        params['basis_units'] = basis_units
 
         return cls(data, params=params)
 
