@@ -9,6 +9,7 @@ from __future__ import division
 
 import re
 import datetime
+import warnings
 
 import matplotlib.pyplot as plt
 import matplotlib as mpl
@@ -132,7 +133,16 @@ class Well(object):
         return self.header['name']
 
     @classmethod
-    def from_lasio(cls, l, remap=None, funcs=None, data=True, req=None, alias=None, fname=None):
+    def from_lasio(cls,
+                   l,
+                   remap=None,
+                   funcs=None,
+                   data=True,
+                   req=None,
+                   alias=None,
+                   fname=None,
+                   index=None
+                   ):
         """
         Constructor. If you already have the lasio object, then this makes a
         well object from it.
@@ -145,10 +155,42 @@ class Well(object):
             data (bool): Whether to load curves or not.
             req (dict): An alias list, giving all required curves. If not
                 all of the aliases are present, the well is empty.
+            index (str): Optional. Either "existing" (use the index as found in
+                the LAS file) or "m", "ft" to use lasio's conversion of the
+                relevant index unit.
 
         Returns:
             well. The well object.
         """
+        # The default behaviour is to keep welly's current behaviour, which is to
+        # (1) assume the LAS file is indexed against depth AND
+        # (2) assume that lasio is able to recognise the depth unit
+        if index is None:
+            m = "From v0.5 the default will be 'original',"
+            m += " keeping whatever is used in the LAS file. "
+            m += "If you want to force conversion to metres, change your code"
+            m += " to use `index='m'`."
+            warnings.warn(m, FutureWarning)
+            index = "m"  # Force welly to use metres
+
+        if index.lower() in ["existing", "original"]:
+            index_attr = "index" # Use the index as it is in the LAS file
+            try:
+                index_unit = l.curves.DEPT.unit
+            except AttributeError:
+                index_unit = ''
+        elif "m" in index.lower():
+            index_attr = "depth_m" # Use lasio's conversion of the index to metres
+            index_unit = 'M'
+        elif "f" in index.lower():
+            index_attr = "depth_ft" # Use lasio's conversion of the index to feet
+            index_unit = 'F'
+        else:
+            raise KeyError("index must be 'existing', 'm', or 'ft'")
+
+        # Select the relevant index from the lasio object.
+        l_index = getattr(l, index_attr)
+
         # Build a dict of curves.
         curve_params = {}
         for field, (sect, code) in LAS_FIELDS['data'].items():
@@ -165,11 +207,12 @@ class Well(object):
         if req:
             reqs = utils.flatten_list([v for k, v in alias.items() if k in req])
 
-        # Using lasio's idea of depth in metres:
-        if l.depth_m[0] < l.depth_m[1]:
-            curve_params['depth'] = l.depth_m
+        if l_index[0] < l_index[1]:
+            curve_params['depth'] = l_index
         else:
-            curve_params['depth'] = np.flipud(l.depth_m)
+            curve_params['depth'] = np.flipud(l_index)
+
+        curve_params['basis_units'] = index_unit
 
         # Make the curve dictionary.
         depth_curves = ['DEPT', 'TIME']
@@ -224,7 +267,8 @@ class Well(object):
                  req=None,
                  alias=None,
                  encoding=None,
-                 printfname=False
+                 printfname=False,
+                 index=None
                  ):
         """
         Constructor. Essentially just wraps ``from_lasio()``, but is more
@@ -235,15 +279,18 @@ class Well(object):
             remap (dict): Optional. A dict of 'old': 'new' LAS field names.
             funcs (dict): Optional. A dict of 'las field': function() for
                 implementing a transform before loading. Can be a lambda.
-            printfname (bool): prints filename before trying to load it, for 
+            printfname (bool): prints filename before trying to load it, for
                 debugging
+            index (str): Optional. Either "existing" (use the index as found in
+                the LAS file) or "m", "ft" to use lasio's conversion of the
+                relevant index unit.
 
         Returns:
             well. The well object.
         """
         if printfname:
             print(fname)
-            
+
         if re.match(r'https?://.+\..+/.+?', fname) is not None:
             try:
                 data = urllib.request.urlopen(fname).read().decode()
@@ -260,7 +307,8 @@ class Well(object):
                               data=data,
                               req=req,
                               alias=alias,
-                              fname=fname)
+                              fname=fname,
+                              index=index)
 
     def df(self, keys=None, basis=None, uwi=False, alias=None, rename_aliased=True):
         """
@@ -706,7 +754,7 @@ class Well(object):
             keys (list): List of strings: the keys of the data items to
                 survey, if not all of them.
             alias (dict): a dictionary mapping mnemonics to lists of mnemonics.
-            step (float): a new step, if you want to change it.            
+            step (float): a new step, if you want to change it.
 
         Returns:
             ndarray. The most complete common basis.
