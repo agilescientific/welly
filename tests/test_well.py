@@ -38,6 +38,12 @@ def test_well():
     assert len(well.data['HCAL']) == len(well.data['RHOB'])
 
 
+def test_well_pathlib():
+    from pathlib import Path
+
+    well = Well.from_las(Path(FNAME))
+
+
 def test_html_repr():
     well = Well.from_las(FNAME)
     html = well._repr_html_()
