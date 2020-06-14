@@ -305,8 +305,13 @@ class Location(object):
         if datum is not None:
             pos += datum
 
+        if pos.shape[0] < 3:
+            k = pos.shape[0] - 1
+        else:
+            k = 3
+
         # Compute the spline and return as an array instead of as vectors.
-        knees, _ = splprep(pos.T, k=3, **kwargs)
+        knees, _ = splprep(pos.T, k=k, **kwargs)
         spline = splev(np.linspace(0, 1, points), knees)
         return np.array(spline).T
 
