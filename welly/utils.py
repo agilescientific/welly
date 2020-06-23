@@ -573,3 +573,24 @@ def find_file(pattern, path):
             if re.search(pattern, f.read()):
                 return fname
     return
+
+
+def to_filename(path):
+    """
+    Convert string/pathlib.Path to string.
+
+    Args:
+        path (str/pathlib.Path): filename
+
+    Returns:
+        str: filename
+    """
+    try:
+        from pathlib import Path
+    except ImportError:
+        return file_ref
+
+    if isinstance(path, Path):
+        return path.absolute().__str__()
+    else:
+        return path

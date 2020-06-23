@@ -309,6 +309,9 @@ class Well(object):
         Returns:
             well. The well object.
         """
+
+        fname = utils.to_filename(fname)
+
         if printfname:
             print(fname)
 
