@@ -1,7 +1,8 @@
 # CHANGES.md
 
 ## 0.4.8, summer 2020 [not yet released]
-- The test functions now accept a `keys` argument to limit the number of items the tests will be applied to. For example, if you pass `keys=['GR']` then tests will only be run on `w.data['GR']`, regardless of what's in the `tests` dictionary. This was [issue #104](https://github.com/agile-geoscience/welly/issues/104).
+- The test functions now accept a `keys` argument to limit the number of items the tests will be applied to, or to order the appearance of curves in `qc_table_html`. For example, if you pass `keys=['GR']` then tests will only be run on `w.data['GR']`, regardless of what's in the `tests` dictionary. This was [issue #104](https://github.com/agile-geoscience/welly/issues/104).
+- You can now pass a `pathlib.Path` object. Thank you to Kent Inverarity for implementing this feature.
 
 ---
 

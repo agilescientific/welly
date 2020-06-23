@@ -284,7 +284,7 @@ class Project(object):
             this_well = [w.get_curve(m, alias=alias)
                          for m in keys]
 
-            q_well = w.qc_data(tests, alias)
+            q_well = w.qc_data(tests, keys=keys, alias=alias)
 
             curves = []
             q_total, q_count = 0, 0
