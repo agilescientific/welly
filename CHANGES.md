@@ -1,5 +1,10 @@
 # CHANGES.md
 
+## 0.4.8, summer 2020 [not yet released]
+- The test functions now accept a `keys` argument to limit the number of items the tests will be applied to. For example, if you pass `keys=['GR']` then tests will only be run on `w.data['GR']`, regardless of what's in the `tests` dictionary. This was [issue #104](https://github.com/agile-geoscience/welly/issues/104).
+
+---
+
 ## 0.4.7, 6 June 2020
 - Load your well in feet! The number one most hated 'feature' has been 'fixed'... you can now pass the `index` argument to `Well.from_las()` or `Well.from_lasio()` to control how the index is interpreted. Use `'existing'` or `'original'` to keep whatever is specified in the LAS file (probably what you want).  To convert to metres, use `'m'`; to convert to feet use `'ft'`.
 - In the next point release, v0.5, we will change the default behaviour to `'original'`, so if you want to keep forcing to metres, you'll have to change your code to `Well.from_las(fname, index='m')`. There is a `FutureWarning` about this.

@@ -132,6 +132,27 @@ class Well(object):
         """
         return self.header['name']
 
+    def _get_curve_mnemonics(self, keys=None, curves_only=True):
+        """
+        Get mnemonics for entries in `data`. By default, only gets curves.
+        If `keys` is a list-like of mnemonics, or list of lists (such as might
+        be used to plot tracks), then only get those (ignores anything that is
+        not a Curve).
+        """
+        if keys is None:
+            keys_ = self.data.keys()
+        elif not keys:
+            keys_ = []
+        else:
+            keys_ = utils.flatten_list(keys)
+        
+        if curves_only:
+            keys = [k for k in keys_ if isinstance(self.data.get(k), Curve)]
+        else:
+            keys = [k for k in keys_ if k in self.data]
+
+        return keys
+
     @classmethod
     def from_lasio(cls,
                    l,
@@ -294,7 +315,7 @@ class Well(object):
         if re.match(r'https?://.+\..+/.+?', fname) is not None:
             try:
                 data = urllib.request.urlopen(fname).read().decode()
-            except urllib.HTTPError as e:
+            except urllib.error.HTTPError as e:
                 raise WellError('Could not retrieve url: ', e)
             fname = (StringIO(data))
 
@@ -343,8 +364,7 @@ class Well(object):
 
         from pandas.api.types import is_object_dtype
 
-        if keys is None:
-            keys = [k for k, v in self.data.items() if isinstance(v, Curve)]
+        keys = self._get_curve_mnemonics(keys)
 
         data = {k: self.get_curve(k, alias=alias) for k in keys}
 
@@ -428,10 +448,7 @@ class Well(object):
         # Add data entities.
         other = ''
 
-        if keys is None:
-            keys = [k for k, v in self.data.items() if isinstance(v, Curve)]
-        else:
-            keys = utils.flatten_list(keys)
+        keys = self._get_curve_mnemonics(keys)
 
         for k in keys:
             d = self.data[k]
@@ -661,7 +678,7 @@ class Well(object):
         # Set up the figure.
         ntracks = len(tracks)
         fig = plt.figure(figsize=(2*ntracks, 12), facecolor='w')
-        fig.suptitle(self.header.name, size=16, zorder=100,
+        fig.suptitle(self.name, size=16, zorder=100,
                      bbox=dict(facecolor='w', alpha=1.0, ec='none'))
         gs = mpl.gridspec.GridSpec(1, ntracks, width_ratios=widths)
 
@@ -759,10 +776,7 @@ class Well(object):
         Returns:
             ndarray. The most complete common basis.
         """
-        if keys is None:
-            keys = [k for k, v in self.data.items() if isinstance(v, Curve)]
-        else:
-            keys = utils.flatten_list(keys)
+        keys = self._get_curve_mnemonics(keys)
 
         starts, stops, steps = [], [], []
         for k in keys:
@@ -796,10 +810,7 @@ class Well(object):
         Returns:
             None. Works in place.
         """
-        if keys is None:
-            keys = [k for k, v in self.data.items() if isinstance(v, Curve)]
-        else:
-            keys = utils.flatten_list(keys)
+        keys = self._get_curve_mnemonics(keys)
 
         if basis is None:
             basis = self.survey_basis(keys=keys)
@@ -877,10 +888,7 @@ class Well(object):
         Counts the number of curves in the well that will be selected with the
         given key list and the given alias dict. Used by Project's curve table.
         """
-        if keys is None:
-            keys = [k for k, v in self.data.items() if isinstance(v, Curve)]
-        else:
-            keys = utils.flatten_list(keys)
+        keys = self._get_curve_mnemonics(keys)
 
         return len(list(filter(None, [self.get_mnemonic(k, alias=alias) for k in keys])))
 
@@ -910,9 +918,6 @@ class Well(object):
         There is no handling yet for TVD.
 
         The datum handling is probably sketchy.
-
-        TODO:
-            A lot.
         """
         kb = getattr(self.location, 'kb', None) or 0
         data0 = self.data['DT'].start
@@ -952,18 +957,25 @@ class Well(object):
 
         return None
 
-    def qc_curve_group(self, tests, alias=None):
+    def qc_curve_group(self, tests, keys=None, alias=None):
         """
         Run tests on a cohort of curves.
 
         Args:
+            tests (dict): a dictionary of tests, mapping mnemonics to lists of
+                tests. Two special keys, `all` and `each` map tests to the set
+                of all curves, and to each curve in the well, respectively.
+                You only need `all` if the test involves multiple inputs, e.g.
+                comparing one curve to another.
+            keys (list): a list of the mnemonics to run the tests against.
             alias (dict): an alias dictionary, mapping mnemonics to lists of
                 mnemonics.
 
         Returns:
             dict.
         """
-        keys = [k for k, v in self.data.items() if isinstance(v, Curve)]
+        keys = self._get_curve_mnemonics(keys)
+
         if not keys:
             return {}
 
@@ -978,36 +990,40 @@ class Well(object):
             results[key] = this
         return results
 
-    def qc_data(self, tests, alias=None):
+    def qc_data(self, tests, keys=None, alias=None):
         """
         Run a series of tests against the data and return the corresponding
         results.
 
         Args:
-            tests (list): a list of functions.
+            tests (dict): a dictionary of tests, mapping mnemonics to lists of
+                tests. Two special keys, `all` and `each` map tests to the set
+                of all curves, and to each curve in the well, respectively.
+                You only need `all` if the test involves multiple inputs, e.g.
+                comparing one curve to another.
+            keys (list): a list of the mnemonics to run the tests against.
+            alias (dict): an alias dictionary, mapping mnemonics to lists of
+                mnemonics.
 
         Returns:
             list. The results. Stick to booleans (True = pass) or ints.
         """
-        # We'll get a result for each curve here.
-        r = {m: c.quality(tests, alias) for m, c in self.data.items()}
-
-        s = self.qc_curve_group(tests, alias=alias)
-
+        keys = self._get_curve_mnemonics(keys, curves_only=False)
+        r = {k: self.data.get(k).quality(tests, alias) for k in keys}
+        s = self.qc_curve_group(tests, keys, alias=alias)
         for m, results in r.items():
             if m in s:
                 results.update(s[m])
-
         return r
 
-    def qc_table_html(self, tests, alias=None):
+    def qc_table_html(self, tests, keys=None, alias=None):
         """
         Makes a nice table out of ``qc_data()``
 
         Returns:
             str. An HTML string.
         """
-        data = self.qc_data(tests, alias=alias)
+        data = self.qc_data(tests, keys=keys, alias=alias)
         all_tests = [list(d.keys()) for d in data.values()]
         tests = list(set(utils.flatten_list(all_tests)))
 
