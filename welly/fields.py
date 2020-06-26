@@ -27,6 +27,8 @@ las_fields = {
         'longitude': ('well', 'LONG'),
         'northing': ('well', 'NS'),
         'easting': ('well', 'EW'),
+        'x': ('well', 'XCOORD'),
+        'y': ('well', 'YCOORD'),
         'datum': ('well', 'GDAT'),
         'section': ('well', 'SECT'),
         'range': ('well', 'RANG'),
