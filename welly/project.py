@@ -10,6 +10,7 @@ from __future__ import print_function
 import glob
 from collections import Counter
 import re
+import warnings
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -17,6 +18,7 @@ from tqdm import tqdm
 
 from .well import Well, WellError
 from . import utils
+from .utils import deprecated
 from .defaults import ALIAS  # For access by user.
 
 
@@ -109,8 +111,18 @@ class Project(object):
         return [w.uwi for w in self.__list]
 
     @classmethod
-    def from_las(cls, path=None, remap=None, funcs=None, data=True, req=None, alias=None, max=None, encoding=None, 
-                 printfname=None):
+    def from_las(cls,
+                 path=None,
+                 remap=None,
+                 funcs=None,
+                 data=True,
+                 req=None,
+                 alias=None,
+                 max=None,
+                 encoding=None, 
+                 printfname=None,
+                 index=None,
+                ):
         """
         Constructor. Essentially just wraps ``Well.from_las()``, but is more
         convenient for most purposes.
@@ -126,19 +138,33 @@ class Project(object):
             req (list): A list of alias names, giving all required curves. If
                 not all of the aliases are present, the well is not loaded.
             alias (dict): The alias dict, e.g. ``alias = {'gamma': ['GR', 'GR1'], 'density': ['RHOZ', 'RHOB'], 'pants': ['PANTS']}``
+            max (int): The max number of wells to load.
+            encoding (str): File encoding; passed to lasio.
+            printfname (bool): prints filename before trying to load it, for
+                debugging
+            index (str): Optional. Either "existing" (use the index as found in
+                the LAS file) or "m", "ft" to use lasio's conversion of the
+                relevant index unit.
 
         Returns:
             project. The project object.
         """
         if max is None:
-            max = np.inf
+            max = 1e12
         if (req is not None) and (alias is None):
             raise WellError("You need to provide an alias dict as well as requirement list.")
         if path is None:
             path = './*.[LlAaSs]'
-        list_of_Wells = [Well.from_las(f, remap=remap, funcs=funcs, 
-                                        data=data, req=req, alias=alias, encoding=encoding,
-                                        printfname=printfname)
+        list_of_Wells = [Well.from_las(f,
+                                       remap=remap,
+                                       funcs=funcs, 
+                                       data=data,
+                                       req=req,
+                                       alias=alias,
+                                       encoding=encoding,
+                                       printfname=printfname,
+                                       index=index,
+                                      )
                          for i, f in tqdm(enumerate(glob.iglob(path))) if i < max]
         return cls(list(filter(None, list_of_Wells)))
 
@@ -335,6 +361,47 @@ class Project(object):
         html = '<table>{}</table>'.format(rows)
         return html
 
+    def plot_map(self, fields=('x', 'y'), ax=None, label=None, width=6):
+        """
+        Plot a map of the wells in the project.
+
+        Args:
+            fields (list): The two fields of the `location` object to use
+                as the x and y coordinates. Default: `('x', 'y')`
+            ax (matplotlib.axes.Axes): An axes object to plot into. Will be
+                returned. If you don't pass one, we'll create one and give
+                back the `fig` that it's in.
+            label (str): The field of the `Well.header` object to use as the label.
+                Default: `Well.header.name`.
+            width (float): The width, in inches, of the plot. Default: 6 in.
+
+        Returns:
+            matplotlib.figure.Figure, or matplotlib.axes.Axes if you passed in
+                an axes object as `ax`.
+        """
+        xattr, yattr = fields
+        xys = np.array([[getattr(w.location, xattr), getattr(w.location, yattr)] for w in self])
+
+        if ax is None:
+            fig, ax = plt.subplots(figsize=(1+width, width/utils.aspect(xys)))
+            return_ax = True
+        else:
+            return_ax = False
+
+        ax.scatter(*xys.T, s=60)
+        ax.axis('equal')
+        ax.grid(which='both', axis='both', color='k', alpha=0.2)
+        
+        if label:
+            labels = [getattr(w.header, label) for w in self]
+            for xy, label in zip(xys, labels):
+                ax.annotate(label, xy+1000, color='gray')
+
+        if return_ax:
+            return ax
+        else:
+            return fig
+
     def plot_kdes(self, mnemonic, alias=None, uwi_regex=None, return_fig=False):
         """
         Plot KDEs for all curves with the given name.
@@ -378,19 +445,21 @@ class Project(object):
         else:
             return
 
+    @deprecated('Project.find_wells_with_curve() is deprecated; use Project.filter_wells_by_data().')
     def find_wells_with_curve(self, mnemonic, alias=None):
         """
         Returns a new Project with only the wells which have the named curve.
 
         Args:
-            menmonic (str): the name of the curve to look for.
+            mnemonic (str): the name of the curve to look for.
             alias (dict): a welly alias dictionary.
         
         Returns:
             project.
         """
-        return Project([w for w in self if w.get_curve(mnemonic, alias=alias) is not None])
+        return self.filter_wells_by_data([mnemonic], alias=alias)
 
+    @deprecated('Project.find_wells_without_curve() is deprecated; use Project.filter_wells_by_data().')
     def find_wells_without_curve(self, mnemonic, alias=None):
         """
         Returns a new Project with only the wells which DO NOT have the named curve.
@@ -402,7 +471,43 @@ class Project(object):
         Returns:
             project.
         """
-        return Project([w for w in self if w.get_curve(mnemonic, alias=alias) is None])
+        return self.filter_wells_by_data([mnemonic], func='nany', alias=alias)
+
+    def filter_wells_by_data(self, keys, alias=None, func='all'):
+        """
+        Returns a new Project with only the wells which have the named data.
+
+        Args:
+            keys (list): the names of the data or curves to look for.
+            alias (dict): a welly alias dictionary.
+            func (str or function): a string from ['any', 'all', 'nany', 'nall']
+                or a runnable function returning a boolean. Return True for
+                wells you want to select. 'any' means you want wells which have
+                any of the data keys specified in `keys`; 'all' means you need
+                the well to have all of the keys. Conversely, 'nany' means you
+                need the well to not have any of the named keys; 'nall' means
+                you need the well to not have all of them (so a well with 4 of
+                5 named keys would be selected).
+        
+        Returns:
+            project.
+        """
+        if isinstance(keys, str):
+            with warnings.catch_warnings():
+                warnings.simplefilter("always")
+                w = "The `keys` argument should be an iterable of keys in a "
+                w += "well's `data` dictionary. Try passing a list of strings."
+                warnings.warn(w, DeprecationWarning, stacklevel=2)
+
+        funcs = {
+            'any': any,
+            'all': all,
+            'nany': lambda x: not any(x),
+            'nall': lambda x: not all(x),
+        }
+        f = funcs.get(func, func)
+
+        return Project([w for w in self if f(w.get_mnemonic(k, alias=alias) for k in keys)])
 
     def get_wells(self, uwis=None):
         """
