@@ -9,6 +9,9 @@ from __future__ import division
 
 import re
 import glob
+import warnings
+import inspect
+import functools
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -45,6 +48,21 @@ def deprecated(instructions):
         return wrapper
 
     return decorator
+
+
+def bbox(points):
+    x, y = zip(*points)
+    return [(min(x), min(y)), (max(x), max(y))]
+
+
+def aspect(points):
+    """
+    Aspect like 2:1 is shape like |___ (twice as wide as high).
+    
+    This function returns the WIDTH per unit height.
+    """
+    (minx, miny), (maxx, maxy) = bbox(points)
+    return (maxx - minx) / (maxy - miny)
 
 
 def round_to_n(x, n):
@@ -588,7 +606,7 @@ def to_filename(path):
     try:
         from pathlib import Path
     except ImportError:
-        return file_ref
+        return path
 
     if isinstance(path, Path):
         return path.absolute().__str__()
