@@ -19,7 +19,7 @@ def test_project():
 
     project += project
 
-    assert project.uwis[0] == 1
+    assert project.uwis[0] == '1'
 
     s = "<table>"
     s += "<tr><th>Index</th><th>UWI</th><th>Data</th><th>Curves</th></tr>"
