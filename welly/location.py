@@ -11,7 +11,7 @@ from scipy.interpolate import splprep
 from scipy.interpolate import splev
 import warnings
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D 
+from mpl_toolkits.mplot3d import Axes3D
 
 from . import utils
 from .fields import las_fields
@@ -91,9 +91,17 @@ class Location(object):
         Returns:
             Location. An instance of this class.
         """
+        def str_to_none(value):
+            if isinstance(value, str):
+                return None
+            else:
+                return value
+
         params = {}
         funcs = funcs or {}
         funcs['location'] = str
+        # well.location.td must be either None or a number
+        funcs['TD'] = str_to_none
         for field, (sect, code) in las_fields['location'].items():
             params[field] = utils.lasio_get(l,
                                             sect,
