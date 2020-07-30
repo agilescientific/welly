@@ -98,10 +98,18 @@ class Location(object):
                 return value
 
         params = {}
+        default_funcs = {
+            'location': str,
+            # well.location.td must be either None or a number"
+            'TD':  str_to_none,
+        }
         funcs = funcs or {}
-        funcs['location'] = str
-        # well.location.td must be either None or a number
-        funcs['TD'] = str_to_none
+        for key, value in default_funcs.items():
+            if key not in funcs:
+                funcs[key] = value
+            else:
+                print("- Overriding default_func for {}".format(key))
+
         for field, (sect, code) in las_fields['location'].items():
             params[field] = utils.lasio_get(l,
                                             sect,

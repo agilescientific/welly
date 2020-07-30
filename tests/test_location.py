@@ -114,3 +114,13 @@ def test_numerical_location_td():
     well = Well.from_las(FNAME)
     assert well.location.td == 1935.0
 
+def test_override_default_func_location_td():
+    FNAME = 'tests/P-129_out-with-string-td.LAS'
+    def td_is_str(value):
+        return str(value).swapcase()
+    funcs = {
+        'TD': td_is_str,
+    }
+    well = Well.from_las(FNAME, funcs=funcs)
+    assert well.location.td == 'nONE'
+
