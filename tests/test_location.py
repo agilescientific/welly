@@ -2,6 +2,7 @@
 """
 Define a suite a tests for the Location module.
 """
+import os
 import re
 
 import numpy as np
@@ -102,18 +103,45 @@ def test_deviation_to_position_conversion():
 
 def test_empty_location_td():
     well = Well.from_las(FNAME)
+    well.to_las("temporary.las")
     assert well.location.td == None
+
+    new_well = Well.from_las("temporary.las")
+    assert new_well.location.td == 'None'
+
+    new_well.plot()
+    # assert new_well.las.params.td.value == 'None'
+    assert new_well.location.td == None
+
+    os.remove("temporary.las")
 
 
 def test_string_location_td():
     FNAME = 'tests/P-129_out-with-string-td.LAS'
     well = Well.from_las(FNAME)
+    well.to_las("temporary.las")
     assert well.location.td == 'None'
-    well.plot()
-    assert well.location.td == None
+
+    new_well = Well.from_las("temporary.las")
+    assert new_well.location.td == 'None'
+
+    new_well.plot()
+    # assert new_well.las.params.td.value == 'None'
+    assert new_well.location.td == None
+
+    os.remove("temporary.las")
 
 
 def test_numerical_location_td():
     FNAME = 'tests/P-129_out-with-numeric-td.LAS'
     well = Well.from_las(FNAME)
+    well.to_las("temporary.las")
     assert well.location.td == 1935.0
+
+    new_well = Well.from_las("temporary.las")
+    assert new_well.location.td == 1935.0
+
+    new_well.plot()
+    assert new_well.location.td == 1935.0
+
+    os.remove("temporary.las")
