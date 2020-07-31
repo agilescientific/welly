@@ -661,6 +661,9 @@ class Well(object):
             upper, lower = basis[0], basis[-1]
         elif extents == 'td':
             try:
+                # td should be either a number or a python NoneType
+                if isinstance(self.location.td, str):
+                    self.location.td = None
                 upper, lower = 0, self.location.td
             except:
                 m = "Could not read self.location.td, try extents='curves'"

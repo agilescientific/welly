@@ -98,3 +98,22 @@ def test_deviation_to_position_conversion():
     assert well.location.position.shape == (83,3)
     assert(np.allclose(posx, well.location.position[:,0], atol=0.1))
     assert(np.allclose(posy, well.location.position[:,1], atol=0.1))
+
+
+def test_empty_location_td():
+    well = Well.from_las(FNAME)
+    assert well.location.td == None
+
+
+def test_string_location_td():
+    FNAME = 'tests/P-129_out-with-string-td.LAS'
+    well = Well.from_las(FNAME)
+    assert well.location.td == 'None'
+    well.plot()
+    assert well.location.td == None
+
+
+def test_numerical_location_td():
+    FNAME = 'tests/P-129_out-with-numeric-td.LAS'
+    well = Well.from_las(FNAME)
+    assert well.location.td == 1935.0
