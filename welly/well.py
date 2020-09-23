@@ -17,6 +17,7 @@ import lasio
 import numpy as np
 from io import StringIO
 import urllib
+import json
 
 from . import utils
 from .fields import las_fields as LAS_FIELDS
@@ -215,7 +216,7 @@ class Well(object):
         curve_params['basis_units'] = index_unit
 
         # Make the curve dictionary.
-        depth_curves = ['DEPT', 'TIME']
+        depth_curves = ['DEPT', 'TIME', 'DEPTH']
         if data and req:
             curves = {c.mnemonic: Curve.from_lasio_curve(c, **curve_params)
                       for c in l.curves
@@ -302,6 +303,95 @@ class Well(object):
 
         # Pass to other constructor.
         return cls.from_lasio(las,
+                              remap=remap,
+                              funcs=funcs,
+                              data=data,
+                              req=req,
+                              alias=alias,
+                              fname=fname,
+                              index=index)
+    @classmethod
+    def from_JSON(cls,
+                  fname,
+                  remap=None,
+                  funcs=None,
+                  data=True,
+                  req=None,
+                  alias=None,
+                  encoding=None,
+                  printfname=False,
+                  index=None
+                  ):
+        """
+        Constructor. Essentially just wraps ``from_lasio()``, but is more
+        convenient for most purposes.
+
+        Args:
+            fname (str): The path of the LAS file, or a URL to one.
+            remap (dict): Optional. A dict of 'old': 'new' LAS field names.
+            funcs (dict): Optional. A dict of 'las field': function() for
+                implementing a transform before loading. Can be a lambda.
+            printfname (bool): prints filename before trying to load it, for
+                debugging
+            index (str): Optional. Either "existing" (use the index as found in
+                the LAS file) or "m", "ft" to use lasio's conversion of the
+                relevant index unit.
+
+        Returns:
+            well. The well object.
+        """
+        if printfname:
+            print(fname)
+
+        if re.match(r'https?://.+\..+/.+?', fname) is not None:
+            try:
+                data = urllib.request.urlopen(fname).read().decode()
+            except urllib.HTTPError as e:
+                raise WellError('Could not retrieve url: ', e)
+            fname = (StringIO(data))
+
+        
+        remap = {'STRT':'startIndex', 'STOP': 'endIndex', 'STEP':'step', 'NULL':'null', 'COMP': 'operator',
+                  'WELL':'well', 'FLD':'field', 'LOC': 'location', 'PROV': 'province',
+                  'CNTY':'county', 'STATE': 'state', 'CTRY': 'country', 'DATE':'date',
+                  'SRVC':'serviceCompany', 'UWI':'uwi', 'API':'api', 'LATI':'latitude',
+                  'LONG':'longitude', 'RUN':'runNumber',  'PD':'permanent datum', 
+                  'ELZ':'elevation log zero', }
+        
+        with open(fname, "r") as file:
+            log = json.load(file)[0]
+        
+        l = lasio.LASFile()
+        
+        for key, value in l.well.items():
+            item_to_fetch = remap.get(key)
+            if item_to_fetch is None:
+                continue
+            try:
+                setattr(l.well, key, log['header'][item_to_fetch])
+            except:
+                continue
+        
+        l.well.NULL = -999.25
+       
+        
+        for count, item in enumerate(log['curves']):
+            d = list(map(lambda row: row[count], log['data']))
+            d = [-999.25 if v is None else v for v in d]
+            l.insert_curve(ix = count, mnemonic = item['name'], data  = d , unit = item['unit'], descr = item['description'], value = None)
+        
+        
+        fn = "temp.las"
+        with open(fn, mode="w") as f: # Write LAS file to disk
+            l.write(f)
+    
+        las = lasio.read(fn, encoding=encoding, null_policy='none')
+        
+        import os
+        os.remove(r'temp.LAS')
+        
+        # Pass to other constructor.
+        return cls.from_lasio (las,
                               remap=remap,
                               funcs=funcs,
                               data=data,
