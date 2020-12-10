@@ -25,6 +25,8 @@ class Header(dict):
         for k, v in params.items():
             if k and v:
                 setattr(self, k, v)
+        setattr(self, 'uwi', str(self.uwi if self.uwi else None))
+
 
     def __repr__(self):
         return self.__dict__.__repr__()

@@ -173,8 +173,9 @@ class Well(object):
             funcs (dict): Optional. A dict of 'las field': function() for
                 implementing a transform before loading. Can be a lambda.
             data (bool): Whether to load curves or not.
-            req (dict): An alias list, giving all required curves. If not
-                all of the aliases are present, the well is empty.
+            req (list): An alias list, giving all required curves.
+            alias (dict): An alias dictionary.
+            fname (str): The filename, if you want to keep it.
             index (str): Optional. Either "existing" (use the index as found in
                 the LAS file) or "m", "ft" to use lasio's conversion of the
                 relevant index unit.
@@ -299,6 +300,9 @@ class Well(object):
             remap (dict): Optional. A dict of 'old': 'new' LAS field names.
             funcs (dict): Optional. A dict of 'las field': function() for
                 implementing a transform before loading. Can be a lambda.
+            data (bool): Whether to load the data or only the header.
+            req (list): An alias list, giving all required curves.
+            alias (dict): An alias dictionary.
             printfname (bool): prints filename before trying to load it, for
                 debugging
             index (str): Optional. Either "existing" (use the index as found in
