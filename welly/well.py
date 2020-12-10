@@ -50,6 +50,7 @@ class Well(object):
         """
         Generic initializer for now.
         """
+
         if getattr(self, 'data', None) is None:
             self.data = {}
 
@@ -62,6 +63,8 @@ class Well(object):
         for k, v in params.items():
             if k and (v is not None):
                 setattr(self, k, v)
+
+        self.location = None
 
     def __eq__(self, other):
         if (not self.uwi) or (not other.uwi):
