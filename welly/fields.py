@@ -4,7 +4,7 @@ Field mapping from welly to LAS.
 :copyright: 2021 Agile Geoscience
 :license: Apache 2.0
 """
-from crs import CRS
+from .crs import CRS
 
 
 las_fields = {
@@ -53,6 +53,7 @@ las_fields = {
         'date': ('well', 'DATE')
     }
 }
+
 
 dev_fields = {
     'x': (r"X-COORDINATE: ([.0-9]+).+?", float),

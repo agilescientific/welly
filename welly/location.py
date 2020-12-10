@@ -10,11 +10,15 @@ from scipy.interpolate import splprep
 from scipy.interpolate import splev
 import warnings
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D 
+from mpl_toolkits.mplot3d import Axes3D
+import re
+import io
 
 from . import utils
 from .fields import las_fields
+from .fields import dev_fields
 from .crs import CRS
+from .tools import compute_position_log
 
 
 class Location(object):
@@ -23,6 +27,7 @@ class Location(object):
     """
     def __init__(self, params=None):
         self.td = None
+        self.position = None
         self.crs = CRS(params.pop('crs', dict()))
 
         if params is None:
@@ -41,10 +46,20 @@ class Location(object):
 
         if getattr(self, 'deviation', None) is None:
             self.deviation = None
-            self.position = None
         else:
             td = self.td or getattr(self, 'TDD', getattr(self, 'TDL', None))
-            self._compute_position_log(td=td)
+            try:
+                dev_new, pos, dog = compute_position_log(self.deviation, td=td)
+            except:
+                m = "The position log could not be computed. Consider "
+                m += "trying another setting for the 'method' argument."
+                warnings.warn(m)
+                dev_new, pos, dog = deviation, None, None
+
+            self.position = pos
+            self.dogleg = dog
+
+        return
 
     def __repr__(self):
         return 'Location({})'.format(self.__dict__)
@@ -102,7 +117,7 @@ class Location(object):
         return cls(params)
 
     @classmethod
-    def from_petrel(fname, recalc=False, north='grid'):
+    def from_petrel(cls, fname, recalc=False, north='grid', columns=None, update=True, **kwargs):
         """
         Add a location object from a Petrel `dev` file. Should contain the
         (x, y), the CRS, the KB, and the position log.
@@ -114,10 +129,73 @@ class Location(object):
             north (str): Can be 'grid' or 'true'. This is only a preference;
                 if only one `AZIM` column is present, you're getting whatever
                 it is.
+            columns (array): The columns of the dev file holding the data. If
+                recalc is False (default), then this will be the indices of
+                (x, y, TVDSS), in that order and zero-indexed. Default in that
+                case: `[1, 2, 3]`. However, if `recalc` is True then this will
+                be the indices of the dev file columns holding (MD, INCL, AZIM),
+                in that order. In this case the default is `[0, 8, 10]` for
+                'grid' north, or `[0, 8, 7]` for 'true' north.
+            update: This function makes some adjustments to the position or
+                deviation data, to account for the surface and TD. If you do not
+                want to change the data from the file, set to False. (The Petrel
+                file probably has absolute position, whereas `welly` computes
+                relative position, so the first row is always (0, 0, 0). Also,
+                `welly` always adds points for the 3D position of TD and KB.)
+            **kwargs: passed to `welly.tools.compute_position_log`.
 
         Returns:
             Location. An instance of this class.
         """
+        with open(fname, 'rt') as f:
+            text = f.read()
+
+        # Get data from header.
+        params = {}
+        for field, (pattern, func) in dev_fields.items():
+            try:
+                value = re.search(pattern, text).groups()[0]
+            except:
+                value = np.nan
+            params[field] = func(value)
+
+        # Find end of header, which ends in row of '=' signs.
+        data = io.StringIO(text[text.rfind('=')+2:])
+
+        if recalc:
+            if columns is None:
+                columns = [0, 8, 10] if north=='grid' else [0, 8, 7]
+            deviation = np.genfromtxt(data)[:, columns]
+            try:
+                dev_new, pos, dog = compute_position_log(deviation, **kwargs)
+            except Exception:
+                m = "The position log could not be computed. Consider "
+                m += "trying another setting for the 'method' argument."
+                warnings.warn(m)
+                dev_new, pos, dog = deviation, None, None
+
+            if update:
+                params['deviation'] = dev_new
+            else:
+                params['deviation'] = deviation
+            params['position'] = pos
+            params['dogleg'] = dog
+
+        else:
+            if columns is None:
+                columns = [1, 2, 3]
+            position = np.genfromtxt(data)[:, columns]
+            try:
+                pos_new = position - np.array([params['x'], params['y'], params['kb']])
+            except KeyError:
+                m = "The position log could not be adjusted to relative "
+                m += "position; leaving it as-is. Take care to check it."
+                warnings.warn(m)
+                pos_new = position
+            if update:
+                params['position'] = pos_new
+            else:
+                params['position'] = position
 
         return cls(params)
 
@@ -129,7 +207,7 @@ class Location(object):
                       azimuth_datum=0):
         """
         Add a deviation survey to this instance, and try to compute a position
-        log from it.
+        log from it. Acts in place, modifying the Location instance directly.
 
         Args:
             deviation (array): The columns should be: MD, INCL, AZI.
@@ -149,11 +227,11 @@ class Location(object):
             None. Adds the position log to `well.location` in place.
         """
         try:
-            dev_new, pos, dog = self._compute_position_log(deviation,
-                                                        td,
-                                                        method,
-                                                        azimuth_datum,
-                                                        )
+            dev_new, pos, dog = compute_position_log(deviation,
+                                                     td,
+                                                     method,
+                                                     azimuth_datum,
+                                                    )
         except:
             warnings.warn("The position log could not be computed.")
             dev_new, pos, dog = deviation, None, None
@@ -228,88 +306,6 @@ class Location(object):
                         assume_sorted=True,
                         fill_value="extrapolate",
                         bounds_error=False)
-
-    def _compute_position_log(self,
-                              deviation,
-                              td=None,
-                              method='mc',
-                              azimuth_datum=0):
-        """
-        Args:
-            deviation (ndarray): A deviation survey with rows like MD, INC, AZI
-            td (Number): The TD of the well, if not the end of the deviation
-                survey you're passing.
-            method (str):
-                'aa': average angle
-                'bt': balanced tangential
-                'mc': minimum curvature
-            update_deviation: This function makes some adjustments to the dev-
-                iation survey, to account for the surface and TD. If you do not
-                want to change the stored deviation survey, set to False.
-            azimuth_datum (Number): The orientation of the azimuth datum,
-                relative to the y-axis.
-
-        Returns:
-            ndarray. A position log with rows like X-offset, Y-offset, Z-offset
-        """
-        deviation = np.array(deviation)
-
-        # Adjust to TD.
-        if td is not None:
-            last_row = np.copy(deviation[-1, :])
-            last_row[0] = td
-            deviation = np.vstack([deviation, last_row])
-
-        # Adjust to surface if necessary.
-        if deviation[0, 0] > 0:
-            deviation = np.vstack([np.array([0, 0, 0]), deviation])
-
-        last = deviation[:-1] + [0, 0, azimuth_datum]
-        this = deviation[1:] + [0, 0, azimuth_datum]
-
-        diff = this[:, 0] - last[:, 0]
-
-        Ia, Aa = np.radians(last[:, 1]), np.radians(last[:, 2])
-        Ib, Ab = np.radians(this[:, 1]), np.radians(this[:, 2])
-
-        if method == 'aa':
-            Iavg = (Ia + Ib) / 2
-            Aavg = (Aa + Ab) / 2
-            delta_E = diff * np.sin(Iavg) * np.cos(Aavg)
-            delta_N = diff * np.sin(Iavg) * np.sin(Aavg)
-            delta_V = diff * np.cos(Iavg)
-        elif method in ('bt', 'mc'):
-            delta_E = 0.5 * diff * np.sin(Ia) * np.cos(Aa)
-            delta_E += 0.5 * diff * np.sin(Ib) * np.cos(Ab)
-            delta_N = 0.5 * diff * np.sin(Ia) * np.sin(Aa)
-            delta_N += 0.5 * diff * np.sin(Ib) * np.sin(Ab)
-            delta_V = 0.5 * diff * np.cos(Ia)
-            delta_V += 0.5 * diff * np.cos(Ib)
-        else:
-            raise Exception("Method must be one of 'aa', 'bt', 'mc'")
-
-        # Compute dogleg severity and ratio factor.
-        _x = np.sin(Ib) * (1 - np.cos(Ab - Aa))
-        dogleg = np.arccos(np.cos(Ib - Ia) - np.sin(Ia) * _x)
-        dogleg[dogleg == 0] = 1e-9
-
-        rf = 2 / dogleg * np.tan(dogleg / 2)
-        rf[np.isnan(rf)] = 1
-
-        if method == 'mc':
-            delta_N *= rf
-            delta_E *= rf
-            delta_V *= rf
-
-        # Prepare the output array.
-        position = np.zeros_like(deviation, dtype=np.float)
-
-        # Stack the results, add the surface.
-        _offsets = np.squeeze(np.dstack([delta_N, delta_E, delta_V]))
-        _offsets = np.vstack([np.array([0, 0, 0]), _offsets])
-        position += _offsets.cumsum(axis=0)
-
-        return deviation, position, dogleg
 
     def trajectory(self, datum=None, elev=True, points=1000, **kwargs):
         """
