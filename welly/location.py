@@ -1,8 +1,7 @@
-# -*- coding: utf-8 -*-
 """
 Defines well location.
 
-:copyright: 2016 Agile Geoscience
+:copyright: 2021 Agile Geoscience
 :license: Apache 2.0
 """
 import numpy as np
@@ -102,6 +101,26 @@ class Location(object):
                                             funcs=funcs)
         return cls(params)
 
+    @classmethod
+    def from_petrel(fname, recalc=False, north='grid'):
+        """
+        Add a location object from a Petrel `dev` file. Should contain the
+        (x, y), the CRS, the KB, and the position log.
+
+        Args:
+            fname (str): The dev filename.
+            recalc (bool): Whether to recalculate the position log from the
+                deviation survey (if possible). Default: `False`.
+            north (str): Can be 'grid' or 'true'. This is only a preference;
+                if only one `AZIM` column is present, you're getting whatever
+                it is.
+
+        Returns:
+            Location. An instance of this class.
+        """
+
+        return cls(params)
+
     def add_deviation(self,
                       deviation,
                       td=None,
@@ -111,6 +130,23 @@ class Location(object):
         """
         Add a deviation survey to this instance, and try to compute a position
         log from it.
+
+        Args:
+            deviation (array): The columns should be: MD, INCL, AZI.
+            td (Number): The TD of the well, if not the end of the deviation
+                survey you're passing.
+            method (str):
+                'aa': average angle
+                'bt': balanced tangential
+                'mc': minimum curvature
+            update_deviation: This function makes some adjustments to the dev-
+                iation survey, to account for the surface and TD. If you do not
+                want to change the stored deviation survey, set to False.
+            azimuth_datum (Number): The orientation of the azimuth datum,
+                relative to the y-axis.
+
+        Returns:
+            None. Adds the position log to `well.location` in place.
         """
         try:
             dev_new, pos, dog = self._compute_position_log(deviation,

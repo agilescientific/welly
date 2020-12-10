@@ -1,6 +1,8 @@
-# -*- coding: utf-8 -*-
 """
 Python installation file for welly project.
+
+:copyright: 2021 Agile Scientific
+:license: Apache 2.0
 """
 from setuptools import setup
 import re
@@ -43,6 +45,7 @@ CLASSIFIERS = ['Development Status :: 3 - Alpha',
                'Programming Language :: Python :: 3.5',
                'Programming Language :: Python :: 3.6',
                'Programming Language :: Python :: 3.7',
+               'Programming Language :: Python :: 3.8',
                ]
 
 setup(name='welly',

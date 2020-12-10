@@ -7,6 +7,7 @@
 - Added `Project.plot_map()` to make a quick (ugly) scatter plot from x and y location (whatever two field you provide from the `location` object).
 - Added the `filter_wells_by_data()` method to `Project`, and deprecated `find_wells_with_curve()` and `find_wells_without_curve()`. You can make complex selections with this function, such as "give me all the wells that have at least two of RHOB, DTC or DTS".
 - Added the recently added `index` argument (to preserve depth units) to `Project`.
+- The LAS header items EKB and EGL are now captured as `ekb` and `egl` in the `w.location` object. KB and GL are captured as `kb` and `gl`.
 
 ---
 

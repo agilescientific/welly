@@ -1,8 +1,7 @@
-# -*- coding: utf-8 -*-
 """
 Defines log curves.
 
-:copyright: 2016 Agile Geoscience
+:copyright: 2021 Agile Scientific
 :license: Apache 2.0
 """
 from __future__ import division
@@ -469,11 +468,10 @@ class Curve(np.ndarray):
 
     def interpolate_where(self, condition):
         """
-        Remove then interpolate across
+        Remove values according to some condition, then interpolate across
+        the gap(s) created.
         """
         raise NotImplementedError()
-        self[self < 0] = np.nan
-        return self.interpolate() 
 
     def to_basis_like(self, basis):
         """
@@ -706,11 +704,17 @@ class Curve(np.ndarray):
         Block a log based on number of bins, or on cutoffs.
 
         Args:
-            cutoffs (array)
+            cutoffs (array): the values at which to create the blocks. Pass
+                a single number, or an array-like of multiple values. If you
+                don't pass `cutoffs`, you should pass `n_bins` (below).
             values (array): the values to map to. Defaults to [0, 1, 2,...]
-            n_bins (int)
-            right (bool)
-            function (function): transform the log if you want.
+            n_bins (int): The number of discrete values to use in the blocked
+                log. Only used if you don't pass `cutoffs`.
+            right (bool): Indicating whether the intervals include the right
+                or the left bin edge. Default behavior is `right==False`
+                indicating that the interval does not include the right edge. 
+            function (function): transform the log with a reducing function,
+                such as np.mean.
 
         Returns:
             Curve.

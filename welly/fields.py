@@ -1,10 +1,11 @@
-# -*- coding: utf-8 -*-
 """
 Field mapping from welly to LAS.
 
-:copyright: 2016 Agile Geoscience
+:copyright: 2021 Agile Geoscience
 :license: Apache 2.0
 """
+from crs import CRS
+
 
 las_fields = {
     'well': {
@@ -34,8 +35,10 @@ las_fields = {
         'range': ('well', 'RANG'),
         'township': ('well', 'TOWN'),
         'api': ('well', 'API'),
-        'kb': ('params', 'EKB'),
-        'gl': ('params', 'EGL'),
+        'ekb': ('params', 'EKB'),
+        'egl': ('params', 'EGL'),
+        'kb': ('params', 'KB'),
+        'gl': ('params', 'GL'),
         'td': ('params', 'TD'),
         'tdd': ('params', 'TDD'),
         'tdl': ('params', 'TDL'),
@@ -49,4 +52,11 @@ las_fields = {
         'service_company': ('well', 'SRVC'),
         'date': ('well', 'DATE')
     }
+}
+
+dev_fields = {
+    'x': (r"X-COORDINATE: ([.0-9]+).+?", float),
+    'y': (r"Y-COORDINATE: ([.0-9]+).+?", float),
+    'kb': (r"# WELL DATUM .+?: ([.0-9]+).+?", float),
+    'crs': (r"XYZ TRACE .+? \[\d+_(\d+)\] .+?", CRS.from_epsg),
 }

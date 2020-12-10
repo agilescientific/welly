@@ -1,8 +1,7 @@
-# -*- coding: utf 8 -*-
 """
 Functions for importing Canstrat ASCII files.
 
-:copyright: 2016 Agile Geoscience
+:copyright: 2021 Agile Geoscience
 :license: Apache 2.0
 """
 import datetime as dt

@@ -1,8 +1,7 @@
-# -*- coding: utf 8 -*-
 """
 Codes for Canstrat ASCII files; only used by canstrat.py.
 
-:copyright: 2016 Agile Geoscience
+:copyright: 2021 Agile Scientific
 :license: Apache 2.0
 """
 

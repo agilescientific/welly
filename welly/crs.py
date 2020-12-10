@@ -1,10 +1,9 @@
-# -*- coding: utf-8 -*-
 """
 CRS functions. Modeled on fiona by Sean Gillies.
 https://github.com/Toblerity/Fiona
 
 This version...
-:copyright: 2016 Agile Geoscience
+:copyright: 2021 Agile Scientific
 :license: Apache 2.0
 
 Original code...
