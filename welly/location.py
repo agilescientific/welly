@@ -305,7 +305,7 @@ class Location(object):
         if datum is not None:
             pos += datum
 
-        if pos.shape[0] < 3:
+        if pos.shape[0] <= 3:
             k = pos.shape[0] - 1
         else:
             k = 3
