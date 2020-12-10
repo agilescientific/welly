@@ -323,6 +323,10 @@ class Well(object):
 
         las = lasio.read(fname, encoding=encoding)
 
+        for key, value in las.params.items():
+            if las.params[key].unit == "" and las.params[key].value in ["", "None"]:
+                las.params[key].value = None
+
         # Pass to other constructor.
         return cls.from_lasio(las,
                               remap=remap,
@@ -622,7 +626,6 @@ class Well(object):
              **kwargs):
         """
         Plot multiple tracks.
-
         Args:
             legend (striplog.legend): A legend instance.
             tracks (list): A list of strings and/or lists of strings. The

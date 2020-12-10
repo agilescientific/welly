@@ -2,6 +2,7 @@
 """
 Define a suite a tests for the Location module.
 """
+import os
 import re
 
 import numpy as np
@@ -98,3 +99,40 @@ def test_deviation_to_position_conversion():
     assert well.location.position.shape == (83,3)
     assert(np.allclose(posx, well.location.position[:,0], atol=0.1))
     assert(np.allclose(posy, well.location.position[:,1], atol=0.1))
+
+
+def test_empty_location_td():
+    well = Well.from_las(FNAME)
+    well.to_las("temporary.las")
+
+    new_well = Well.from_las("temporary.las")
+    new_well.plot()
+
+    assert new_well.las.params.td.value == None
+    assert new_well.location.td == None
+    os.remove("temporary.las")
+
+
+def test_string_location_td():
+    FNAME = 'tests/P-129_out-with-string-td.LAS'
+    well = Well.from_las(FNAME)
+    well.to_las("temporary.las")
+
+    new_well = Well.from_las("temporary.las")
+    new_well.plot()
+
+    assert new_well.las.params.td.value == None
+    assert new_well.location.td == None
+    os.remove("temporary.las")
+
+
+def test_numerical_location_td():
+    FNAME = 'tests/P-129_out-with-numeric-td.LAS'
+    well = Well.from_las(FNAME)
+    well.to_las("temporary.las")
+
+    new_well = Well.from_las("temporary.las")
+    new_well.plot()
+
+    assert well.location.td == 1935.0
+    os.remove("temporary.las")
