@@ -26,15 +26,17 @@ class Location(object):
     Contains all location and spatial information.
     """
     def __init__(self, params=None):
-        self.td = None
         self.position = None
-        self.crs = CRS(params.pop('crs', dict()))
+        self.crs = CRS()
 
         if params is None:
             params = {}
 
         for k, v in params.items():
             if k and (v is not None):
+                if k.lower() == 'crs':
+                    setattr(self, 'crs', CRS(v))
+                    continue
                 try:
                     v_ = float(v.replace(',', ''))
                     if not np.isinf(v_):
@@ -42,12 +44,21 @@ class Location(object):
                     else:
                         setattr(self, k, v)
                 except:
+                    if v in ['None', 'none', 'NONE']:
+                        v = None
                     setattr(self, k, v)
+
+        td = getattr(self, 'td', getattr(self, 'TDD', getattr(self, 'TDL', None)))
+        if isinstance(td, str):
+            try:
+                td = float(td)
+            except ValueError:
+                td = None
+        self.td = td
 
         if getattr(self, 'deviation', None) is None:
             self.deviation = None
         else:
-            td = self.td or getattr(self, 'TDD', getattr(self, 'TDL', None))
             try:
                 dev_new, pos, dog = compute_position_log(self.deviation, td=td)
             except:
