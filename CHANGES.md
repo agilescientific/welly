@@ -1,6 +1,10 @@
 # CHANGES.md
 
-## 0.4.8, December 2020 [not yet released]
+## 0.4.9 [work in progress]
+
+- New things!
+
+## 0.4.8, 11 December 2020
 
 - Reorganized the `tutorials` a bit and made sure they all run as-is.
 - A new `Location.from_petrel()` function accepts a Petrel `.dev` deviation file. It will extract the x and y location, and the KB, as well as the position log and/or deviation survey.
