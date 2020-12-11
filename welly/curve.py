@@ -318,9 +318,7 @@ class Curve(np.ndarray):
         im = ax.imshow(a, cmap=cmap, extent=extent)
 
         if curve:
-            # Draw the path.
-            # TODO: add default kwargs?
-            paths = ax.fill_betweenx(self.basis, self, self.min(),
+            paths = ax.fill_betweenx(self.basis, self, np.nanmin(self),
                                      facecolor='none',
                                      **kwargs,
                                      )
@@ -707,7 +705,9 @@ class Curve(np.ndarray):
             cutoffs (array): the values at which to create the blocks. Pass
                 a single number, or an array-like of multiple values. If you
                 don't pass `cutoffs`, you should pass `n_bins` (below).
-            values (array): the values to map to. Defaults to [0, 1, 2,...]
+            values (array): the values to map to. Defaults to [0, 1, 2,...].
+                There must be one more value than you have `cutoffs` (e.g.
+                2 cutoffs will create 3 zones, each of which needs a value).
             n_bins (int): The number of discrete values to use in the blocked
                 log. Only used if you don't pass `cutoffs`.
             right (bool): Indicating whether the intervals include the right
