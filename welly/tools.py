@@ -80,7 +80,7 @@ def compute_position_log(deviation,
     # Compute dogleg severity and ratio factor.
     _x = np.sin(Ib) * (1 - np.cos(Ab - Aa))
     dogleg = np.arccos(np.cos(Ib - Ia) - np.sin(Ia) * _x)
-    dogleg[dogleg == 0] = 1e-9
+    dogleg[dogleg == 0] = 1e-12
 
     rf = 2 / dogleg * np.tan(dogleg / 2)
     rf[np.isnan(rf)] = 1
@@ -94,6 +94,7 @@ def compute_position_log(deviation,
     position = np.zeros_like(deviation, dtype=np.float)
 
     # Stack the results, add the surface.
+    dogleg = np.hstack([[0], dogleg])
     _offsets = np.squeeze(np.dstack([delta_N, delta_E, delta_V]))
     _offsets = np.vstack([np.array([0, 0, 0]), _offsets])
     position += _offsets.cumsum(axis=0)
