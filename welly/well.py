@@ -48,15 +48,8 @@ class Well(object):
     """
     def __init__(self, params=None):
         """
-        Generic initializer for now.
+        Generic initializer.
         """
-
-        if getattr(self, 'data', None) is None:
-            self.data = {}
-
-        if getattr(self, 'header', None) is None:
-            self.header = Header({})
-
         if params is None:
             params = {}
 
@@ -64,7 +57,9 @@ class Well(object):
             if k and (v is not None):
                 setattr(self, k, v)
 
-        self.location = None
+        self.data = getattr(self, 'data', {})
+        self.header = getattr(self, 'header', Header())
+        self.location = getattr(self, 'location', Location())
 
     def __eq__(self, other):
         if (not self.uwi) or (not other.uwi):
@@ -329,10 +324,6 @@ class Well(object):
             fname = (StringIO(data))
 
         las = lasio.read(fname, encoding=encoding)
-
-        for key, value in las.params.items():
-            if las.params[key].unit == "" and las.params[key].value in ["", "None"]:
-                las.params[key].value = None
 
         # Pass to other constructor.
         return cls.from_lasio(las,
