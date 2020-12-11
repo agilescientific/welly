@@ -16,17 +16,18 @@ class Header(dict):
 
     Not the same as an LAS header, but we might get info from there.
     """
-    def __init__(self, params):
+    def __init__(self, params=None):
         """
         Generic initializer.
         """
-        setattr(self, 'name', '')  # Prevent error when plotting.
+        if params is None:
+            params = {}
+        setattr(self, 'name', '')
         setattr(self, 'uwi', '')
         for k, v in params.items():
             if k and v:
                 setattr(self, k, v)
-        setattr(self, 'uwi', str(self.uwi if self.uwi else None))
-
+        setattr(self, 'uwi', str(self.uwi if self.uwi else ''))
 
     def __repr__(self):
         return self.__dict__.__repr__()
