@@ -1,6 +1,10 @@
 # CHANGES.md
 
-## 0.4.8, summer 2020 [not yet released]
+## 0.4.8, December 2020 [not yet released]
+
+- Reorganized the `tutorials` a bit and made sure they all run as-is.
+- A new `Location.from_petrel()` function accepts a Petrel `.dev` deviation file. It will extract the x and y location, and the KB, as well as the position log and/or deviation survey.
+- `Curve.plot_2d()` now handles NaNs in the curve. 
 - The test functions now accept a `keys` argument to limit the number of items the tests will be applied to, or to order the appearance of curves in `qc_table_html`. For example, if you pass `keys=['GR']` then tests will only be run on `w.data['GR']`, regardless of what's in the `tests` dictionary. This was [issue #104](https://github.com/agile-geoscience/welly/issues/104).
 - You can now pass a `pathlib.Path` object to `from_las`. Thank you to Kent Inverarity for implementing this feature.
 - Added `XCOORD` and `YCOORD` as standard fields; these are read in as `location.x` and `location.y` repsectively.
@@ -8,6 +12,8 @@
 - Added the `filter_wells_by_data()` method to `Project`, and deprecated `find_wells_with_curve()` and `find_wells_without_curve()`. You can make complex selections with this function, such as "give me all the wells that have at least two of RHOB, DTC or DTS".
 - Added the recently added `index` argument (to preserve depth units) to `Project`.
 - The LAS header items EKB and EGL are now captured as `ekb` and `egl` in the `w.location` object. KB and GL are captured as `kb` and `gl`.
+- Thank you Miguel de la Varga for an update that allows a trajectory to have fewer than 3 points.
+- Thank you DC Slagel for an update that ensures all well header fields are populated with valid types.
 
 ---
 

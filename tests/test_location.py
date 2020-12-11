@@ -108,8 +108,7 @@ def test_empty_location_td():
     new_well = Well.from_las("temporary.las")
     new_well.plot()
 
-    assert new_well.las.params.td.value == None
-    assert new_well.location.td == None
+    assert new_well.location.td is None
     os.remove("temporary.las")
 
 
@@ -121,8 +120,7 @@ def test_string_location_td():
     new_well = Well.from_las("temporary.las")
     new_well.plot()
 
-    assert new_well.las.params.td.value == None
-    assert new_well.location.td == None
+    assert new_well.location.td is None
     os.remove("temporary.las")
 
 
