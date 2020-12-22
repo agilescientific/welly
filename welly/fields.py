@@ -71,13 +71,13 @@ dev_fields = {
 def parse_fields(l, remap=None, funcs=None, initial_params=None,
                  field_alias=None, hdr_sect='header'):
     params = {}
-    print("parse_fields:", hdr_sect)
+    # print("parse_fields:", hdr_sect)
     if initial_params is not None:
         params = initial_params
     fields = field_alias
     if fields is None:
-        fields = las_fields[hdr_sect].items()
-
+        fields = las_fields[hdr_sect]
+    # print("____", fields)
     for field, values in fields.items():
         for val in values:
             params[field] = lasio_get(l,
@@ -87,7 +87,7 @@ def parse_fields(l, remap=None, funcs=None, initial_params=None,
                                     #   check=check,
                                       remap=remap,
                                       funcs=funcs)
-            print("_______", val, field, params[field])
+            # print("_______", val, field, params[field])
             if params[field] is not None:
                 break
 

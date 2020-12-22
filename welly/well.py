@@ -421,13 +421,14 @@ class Well(object):
         for obj, dic in LAS_FIELDS.items():
             if obj == 'data':
                 continue
-            for attr, (sect, item) in dic.items():
-                value = getattr(getattr(self, obj), attr, None)
-                try:
-                    getattr(l, sect)[item].value = value
-                except:
-                    h = lasio.HeaderItem(item, "", value, "")
-                    getattr(l, sect)[item] = h
+            for attr, values in dic.items():
+                for val in values:
+                    value = getattr(getattr(self, obj), attr, None)
+                    try:
+                        getattr(l, val['section'])[val['code']].value = value
+                    except:
+                        h = lasio.HeaderItem(val['code'], "", value, "")
+                        getattr(l, val['section'])[val['code']] = h
 
         # Clear curves from header portion.
         l.header['Curves'] = []

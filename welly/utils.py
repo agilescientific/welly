@@ -241,13 +241,12 @@ def lasio_get(l,
         if 'secondary_code' in item:
             result = default
             for val in item['secondary_desc']:
-                print('   ', val, val== getattr(obj, item['secondary_code'])[attrib])
-
+                # print('   ', val, val== getattr(obj, item['secondary_code'])[attrib])
                 if val == getattr(obj, item['secondary_code'])[attrib]:
-                    print("sdjnvkfjvbafkjvnafjlsvn lsajfv asfvasfv", item_to_fetch)
-                    print(getattr(obj, item_to_fetch)[attrib])
+                    # print("sdjnvkfjvbafkjvnafjlsvn lsajfv asfvasfv", item_to_fetch)
+                    # print(getattr(obj, item_to_fetch)[attrib])
                     result = getattr(obj, item_to_fetch)[attrib]
-                    print("___******", result)
+                    # print("___******", result)
                     break
         else:
             result = getattr(obj, item_to_fetch)[attrib]

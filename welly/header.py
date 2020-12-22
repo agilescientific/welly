@@ -6,7 +6,7 @@ Defines well headers.
 """
 import csv
 
-from .fields import las_fields, parse_fields, parse_fields
+from .fields import las_fields, parse_fields
 from . import utils
 
 
