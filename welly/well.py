@@ -19,6 +19,7 @@ import urllib
 
 from . import utils
 from .fields import las_fields as LAS_FIELDS
+from .fields import parse_fields
 from .curve import Curve
 from .header import Header
 from .location import Location
@@ -142,7 +143,7 @@ class Well(object):
             keys_ = []
         else:
             keys_ = utils.flatten_list(keys)
-        
+
         if curves_only:
             keys = [k for k in keys_ if isinstance(self.data.get(k), Curve)]
         else:
@@ -155,6 +156,7 @@ class Well(object):
                    l,
                    remap=None,
                    funcs=None,
+                   field_alias=None,
                    data=True,
                    req=None,
                    alias=None,
@@ -170,6 +172,7 @@ class Well(object):
             remap (dict): Optional. A dict of 'old': 'new' LAS field names.
             funcs (dict): Optional. A dict of 'las field': function() for
                 implementing a transform before loading. Can be a lambda.
+            field_alias (dict): Optional. A dict of LAS param header mappings.
             data (bool): Whether to load curves or not.
             req (list): An alias list, giving all required curves.
             alias (dict): An alias dictionary.
@@ -211,13 +214,7 @@ class Well(object):
         l_index = getattr(l, index_attr)
 
         # Build a dict of curves.
-        curve_params = {}
-        for field, (sect, code) in LAS_FIELDS['data'].items():
-            curve_params[field] = utils.lasio_get(l,
-                                                  sect,
-                                                  code,
-                                                  remap=remap,
-                                                  funcs=funcs)
+        curve_params = parse_fields(l, remap, funcs, hdr_sect='data')
 
         # This is annoying, but I need the whole depth array to
         # deal with edge cases, eg non-uniform sampling.
@@ -265,16 +262,12 @@ class Well(object):
         # Build a dict of the other well data.
         params = {'las': l,
                   'header': Header.from_lasio(l, remap=remap, funcs=funcs),
-                  'location': Location.from_lasio(l, remap=remap, funcs=funcs),
+                  'location': Location.from_lasio(l, field_alias=field_alias, remap=remap, funcs=funcs),
                   'data': curves,
                   'fname': fname}
 
-        for field, (sect, code) in LAS_FIELDS['well'].items():
-            params[field] = utils.lasio_get(l,
-                                            sect,
-                                            code,
-                                            remap=remap,
-                                            funcs=funcs)
+        params = parse_fields(l, remap, funcs, initial_params=params,
+                              hdr_sect='well')
         return cls(params)
 
     @classmethod
@@ -282,6 +275,7 @@ class Well(object):
                  fname,
                  remap=None,
                  funcs=None,
+                 field_alias=None,
                  data=True,
                  req=None,
                  alias=None,
@@ -298,6 +292,7 @@ class Well(object):
             remap (dict): Optional. A dict of 'old': 'new' LAS field names.
             funcs (dict): Optional. A dict of 'las field': function() for
                 implementing a transform before loading. Can be a lambda.
+            field_alias (dict): Optional. A dict of LAS param header mappings.
             data (bool): Whether to load the data or only the header.
             req (list): An alias list, giving all required curves.
             alias (dict): An alias dictionary.
@@ -329,6 +324,7 @@ class Well(object):
         return cls.from_lasio(las,
                               remap=remap,
                               funcs=funcs,
+                              field_alias=field_alias,
                               data=data,
                               req=req,
                               alias=alias,
@@ -547,13 +543,7 @@ class Well(object):
         Returns:
             None. Works in place.
         """
-        params = {}
-        for field, (sect, code) in LAS_FIELDS['data'].items():
-            params[field] = utils.lasio_get(l,
-                                            sect,
-                                            code,
-                                            remap=remap,
-                                            funcs=funcs)
+        params = parse_fields(l, remap, funcs, hdr_sect='data')
 
         curves = {c.mnemonic: Curve.from_lasio_curve(c, **params)
                   for c in l.curves}

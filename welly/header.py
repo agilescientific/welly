@@ -6,7 +6,7 @@ Defines well headers.
 """
 import csv
 
-from .fields import las_fields
+from .fields import las_fields, parse_fields, parse_fields
 from . import utils
 
 
@@ -51,13 +51,7 @@ class Header(dict):
                 implementing a transform before loading. Can be a lambda.
 
         """
-        params = {}
-        for field, (sect, code) in las_fields['header'].items():
-            params[field] = utils.lasio_get(l,
-                                            sect,
-                                            code,
-                                            remap=remap,
-                                            funcs=funcs)
+        params = parse_fields(l, remap, funcs)
         return cls(params)
 
     @classmethod

@@ -15,7 +15,7 @@ import re
 import io
 
 from . import utils
-from .fields import las_fields
+from .fields import las_fields, parse_fields, parse_fields
 from .fields import dev_fields
 from .crs import CRS
 from .tools import compute_position_log
@@ -65,7 +65,7 @@ class Location(object):
                 m = "The position log could not be computed. Consider "
                 m += "trying another setting for the 'method' argument."
                 warnings.warn(m)
-                dev_new, pos, dog = deviation, None, None
+                dev_new, pos, dog = self.deviation, None, None
 
             self.position = pos
             self.dogleg = dog
@@ -102,7 +102,7 @@ class Location(object):
         return
 
     @classmethod
-    def from_lasio(cls, l, remap=None, funcs=None):
+    def from_lasio(cls, l, remap=None, funcs=None, field_alias=None):
         """
         Make a Location object from a lasio object. Assumes we're starting
         with a lasio object, l.
@@ -112,19 +112,16 @@ class Location(object):
             remap (dict): Optional. A dict of 'old': 'new' LAS field names.
             funcs (dict): Optional. A dict of 'las field': function() for
                 implementing a transform before loading. Can be a lambda.
+            field_alias ?????
 
         Returns:
             Location. An instance of this class.
         """
-        params = {}
         funcs = funcs or {}
         funcs['location'] = str
-        for field, (sect, code) in las_fields['location'].items():
-            params[field] = utils.lasio_get(l,
-                                            sect,
-                                            code,
-                                            remap=remap,
-                                            funcs=funcs)
+
+        params = parse_fields(l, remap, funcs, field_alias=field_alias,
+                              hdr_sect='location')
         return cls(params)
 
     @classmethod
@@ -336,7 +333,7 @@ class Location(object):
 
         Returns:
             ndarray. An array with shape (`points` x 3) representing the well
-                trajectory. Columns are (x, y, z). 
+                trajectory. Columns are (x, y, z).
         """
         pos = self.position.copy()
 
