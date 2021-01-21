@@ -129,7 +129,7 @@ class Well(object):
         """
         return self.header['name']
 
-    def _get_curve_mnemonics(self, keys=None, curves_only=True):
+    def _get_curve_mnemonics(self, keys=None, alias=None, curves_only=True):
         """
         Get mnemonics for entries in `data`. By default, only gets curves.
         If `keys` is a list-like of mnemonics, or list of lists (such as might
@@ -142,9 +142,10 @@ class Well(object):
             keys_ = []
         else:
             keys_ = utils.flatten_list(keys)
-        
+
         if curves_only:
-            keys = [k for k in keys_ if isinstance(self.data.get(k), Curve)]
+            keys = [k for k in keys_
+                    if isinstance(self.get_curve(k, alias=alias), Curve)]
         else:
             keys = [k for k in keys_ if k in self.data]
 
@@ -368,7 +369,7 @@ class Well(object):
 
         from pandas.api.types import is_object_dtype
 
-        keys = self._get_curve_mnemonics(keys)
+        keys = self._get_curve_mnemonics(keys, alias=alias)
 
         data = {k: self.get_curve(k, alias=alias) for k in keys}
 
