@@ -2,7 +2,8 @@
 
 ## 0.4.9 [work in progress]
 
-- New things!
+- Fixed a bug that was preventing Alias names from appearing in the DataFrame view, `project.df()` and `well.df`. Updated the `Project` tutorial to reflect this.
+
 
 ## 0.4.8, 11 December 2020
 

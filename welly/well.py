@@ -401,7 +401,7 @@ class Well(object):
 
         return df
 
-    def to_lasio(self, keys=None, basis=None, null_value=-999.25):
+    def to_lasio(self, keys=None, alias=None, basis=None, null_value=-999.25):
         """
         Makes a lasio object from the current well.
 
@@ -453,7 +453,7 @@ class Well(object):
         # Add data entities.
         other = ''
 
-        keys = self._get_curve_mnemonics(keys)
+        keys = self._get_curve_mnemonics(keys, alias=alias)
 
         for k in keys:
             d = self.data[k]
@@ -780,7 +780,7 @@ class Well(object):
         Returns:
             ndarray. The most complete common basis.
         """
-        keys = self._get_curve_mnemonics(keys)
+        keys = self._get_curve_mnemonics(keys, alias=alias)
 
         starts, stops, steps = [], [], []
         for k in keys:
@@ -799,7 +799,7 @@ class Well(object):
         else:
             return None
 
-    def unify_basis(self, keys=None, basis=None):
+    def unify_basis(self, keys=None, alias=None, basis=None):
         """
         Give everything, or everything in the list of keys, the same basis.
         If you don't provide a basis, welly will try to get one using
@@ -814,7 +814,7 @@ class Well(object):
         Returns:
             None. Works in place.
         """
-        keys = self._get_curve_mnemonics(keys)
+        keys = self._get_curve_mnemonics(keys, alias=alias)
 
         if basis is None:
             basis = self.survey_basis(keys=keys)
@@ -892,7 +892,7 @@ class Well(object):
         Counts the number of curves in the well that will be selected with the
         given key list and the given alias dict. Used by Project's curve table.
         """
-        keys = self._get_curve_mnemonics(keys)
+        keys = self._get_curve_mnemonics(keys, alias=alias)
 
         return len(list(filter(None, [self.get_mnemonic(k, alias=alias) for k in keys])))
 
@@ -978,7 +978,7 @@ class Well(object):
         Returns:
             dict.
         """
-        keys = self._get_curve_mnemonics(keys)
+        keys = self._get_curve_mnemonics(keys, alias=alias)
 
         if not keys:
             return {}
@@ -1012,7 +1012,7 @@ class Well(object):
         Returns:
             list. The results. Stick to booleans (True = pass) or ints.
         """
-        keys = self._get_curve_mnemonics(keys, curves_only=False)
+        keys = self._get_curve_mnemonics(keys, alias=alias, curves_only=False)
         r = {k: self.data.get(k).quality(tests, alias) for k in keys}
         s = self.qc_curve_group(tests, keys, alias=alias)
         for m, results in r.items():
