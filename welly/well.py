@@ -439,7 +439,7 @@ class Well(object):
 
         # Add a depth basis.
         if basis is None:
-            basis = self.survey_basis(keys=keys)
+            basis = self.survey_basis(keys=keys, alias=alias)
         try:
             l.add_curve('DEPT', basis)
         except:
@@ -656,7 +656,7 @@ class Well(object):
 
         # Figure out limits
         if basis is None:
-            basis = self.survey_basis(keys=tracks)
+            basis = self.survey_basis(keys=tracks, alias=alias)
 
         if extents == 'curves':
             upper, lower = basis[0], basis[-1]
@@ -817,7 +817,7 @@ class Well(object):
         keys = self._get_curve_mnemonics(keys, alias=alias)
 
         if basis is None:
-            basis = self.survey_basis(keys=keys)
+            basis = self.survey_basis(keys=keys, alias=alias)
         if basis is None:
             m = "No basis was provided and welly could not retrieve common basis."
             raise WellError(m)
