@@ -1,8 +1,10 @@
 # CHANGES.md
 
-## 0.4.9 [work in progress]
+## 0.4.9, 29 January 2021
 
 - Fixed a bug that was preventing Alias names from appearing in the DataFrame view, `project.df()` and `well.df`. Updated the `Project` tutorial to reflect this.
+- Fixed a bug that was preventing Aliases from applying properly to well plots.
+- Improved the error you get fro `w.plot(tracks=[...])` if there are no curves to plot (e.g. if none of the names exist).
 
 
 ## 0.4.8, 11 December 2020
