@@ -654,6 +654,15 @@ class Well(object):
         tracks = tracks or list(self.data.keys())
         track_titles = track_titles or tracks
 
+        # Check that there is at least one curve.
+        if self.count_curves(tracks, alias=alias) == 0:
+            if alias:
+                a = " with alias dict applied "
+            else:
+                a = " "
+            m = "Track list{}returned no curves.".format(a)
+            raise WellError(m)
+
         # Figure out limits
         if basis is None:
             basis = self.survey_basis(keys=tracks, alias=alias)
