@@ -808,17 +808,31 @@ class Well(object):
         else:
             return None
 
-    def unify_basis(self, keys=None, alias=None, basis=None):
+    def unify_basis(self,
+                    keys=None,
+                    alias=None,
+                    basis=None,
+                    start=None,
+                    stop=None,
+                    step=None
+                    ):
         """
-        Give everything, or everything in the list of keys, the same basis.
-        If you don't provide a basis, welly will try to get one using
-        ``survey_basis()``.
+        Give every Curve in the well, or everything in the list of keys, the
+        same basis. If you don't provide a basis, welly will try to get one
+        using ``survey_basis()``.
 
         Args:
-            basis (ndarray): A basis: the regularly sampled depths at which
-                you want the samples.
             keys (list): List of strings: the keys of the data items to
                 unify, if not all of them.
+            alias (dict): an alias dictionary, mapping mnemonics to lists of
+                mnemonics.
+            basis (ndarray): A basis: the regularly sampled depths at which
+                you want the samples.
+            start (float): Optionally override the start of whatever basis
+                you provide or is surveyed.
+            stop (float): Optionally override the stop of whatever basis
+                you provide or is surveyed.
+            step (float): Optionally override the step in the basis.
 
         Returns:
             None. Works in place.
@@ -835,7 +849,11 @@ class Well(object):
             if keys and (k not in keys):
                 continue
             try:  # To treat as a curve.
-                self.data[k] = self.data[k].to_basis(basis)
+                self.data[k] = self.data[k].to_basis(basis,
+                                                     start=start,
+                                                     stop=stop,
+                                                     step=step
+                                                     )
             except:  # It's probably a striplog.
                 continue
 

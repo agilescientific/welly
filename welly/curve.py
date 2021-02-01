@@ -516,19 +516,16 @@ class Curve(np.ndarray):
             Curve. The current instance in the new basis.
         """
         if basis is None:
-            if start is None:
-                new_start = self.start
-            else:
-                new_start = start
-            new_step = step or self.step
-            new_stop = stop or self.stop
-            # new_adj_stop = new_stop + new_step/100  # To guarantee inclusion.
-            # basis = np.arange(new_start, new_adj_stop, new_step)
-            steps = 1 + (new_stop - new_start) / new_step
-            basis = np.linspace(new_start, new_stop, int(steps), endpoint=True)
+            new_start = self.start if start is None else start
+            new_stop = self.stop if stop is None else stop
+            new_step = self.step if step is None else step
         else:
-            new_start = basis[0]
-            new_step = basis[1] - basis[0]
+            new_start = basis[0] if start is None else start
+            new_stop = basis[-1] if stop is None else stop
+            new_step = (basis[1] - basis[0]) if step is None else step
+
+        steps = 1 + (new_stop - new_start) / new_step
+        basis = np.linspace(new_start, new_stop, int(steps), endpoint=True)
 
         if undefined is None:
             undefined = np.nan
