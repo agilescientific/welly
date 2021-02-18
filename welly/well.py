@@ -17,7 +17,7 @@ import numpy as np
 from io import StringIO
 import urllib
 
-from . import utils
+from . import utils, log_utils
 from .fields import las_fields as LAS_FIELDS
 from .curve import Curve
 from .header import Header
@@ -1228,3 +1228,173 @@ class Well(object):
             return np.vstack(data).T, basis
         else:
             return np.vstack(data).T
+
+
+    def comp_log(w, tracklist=[], depth_range=None, curve_kwargs={}, figsize=(9, 6)):
+        """Make a composite log plot for a given well, in a given depth range.
+        Args
+        ----
+            w: welly.well.Well object
+            
+        Kwargs
+        ------
+            tracklist: `list` of `list` in the form `[['log1'],['log2', 'log3'],['log4']]`
+                    If `curve_kwargs` are given, the log names are only placeholders for
+                    creating the Axes
+            depth_range: tuple, top and base of the interval to be plotted. If None, the whole
+                    well is plotted.
+            curve_kwargs: dict, a detailed curve properties dictionary in the form:
+                    ```
+                    {'GR': {'data': 'GRD',
+                        'label': 'GR',
+                        'units': 'GAPI',
+                        'color': 'g',
+                        'xlims': (0, 120),
+                        'xticks': np.arange(0, 140, 20),
+                        'xscale': 'linear',
+                        'fill': {'fct': fill_curve_vals_to_curve, 'kwargs': {'side': 'right', 'cmap': 'YlOrBr'}}
+                        },
+                        'CALI': {'data': 'CALD',
+                            'label': 'CALI',
+                            'units': 'in',
+                            'color': 'k',
+                            'xlims': (4, 14),
+                            'xticks': np.arange(4, 18, 2),
+                            'xscale': 'linear',
+                            },
+                        'ILD': {'data': 'ILD',
+                            'label': 'ResD',
+                            'units': 'Ω.m',
+                            'color': 'r',
+                            'xlims': (0.2, 2000),
+                            'xticks': np.logspace(-1, 3, 5)*2,
+                            'xscale': 'log',
+                            'fill': {'fct': fill_const_to_curve, 'kwargs': {'const': 2, 'color': 'r'}}
+                        },
+                        'ILM': {'data': 'ILM',
+                            'label': 'ResM',
+                            'units': 'Ω.m',
+                            'color': 'b',
+                            'xlims': (0.2, 2000),
+                            'xticks': np.logspace(-1, 3, 5)*2,
+                            'xscale': 'log',
+                        },
+                        'LL8': {'data': 'LL8',
+                            'label': 'ResS',
+                            'units': 'Ω.m',
+                            'color': 'g',
+                            'xlims': (0.2, 2000),
+                            'xticks': np.logspace(-1, 3, 5)*2,
+                            'xscale': 'log',
+                        },
+                        'NPHISS': {'data': 'NPHISS',
+                            'label': 'Neutron',
+                            'units': 'V/V',
+                            'color': 'b',
+                            'xlims': (0.6, 0),
+                            'xticks': np.linspace(0.6, 0, 7),
+                            'xscale': 'linear',
+                            'fill': {'fct': fill_between_curves, 'args': ('NPHISS', 'RHOB'),
+                                        'kwargs': {'color1': 'grey', 'color2': 'yellow'},}
+                            },
+                        'RHOB': {'data': 'RHOB',
+                            'label': 'Density',
+                            'units': '$gm/cm^3$',
+                            'color': 'r',
+                            'xlims': (1.65, 2.65),
+                            'xticks': np.linspace(1.65, 2.65, 6),
+                            'xscale': 'linear',},
+                            }
+                    ```
+                    if curve_kwargs is empty, a simple plot is made but this is not recommended.
+            figsize: tuple, (float, float), matplotlib figure size.
+            
+        Return
+        ------
+            fig, axs
+            
+        Example
+        -------
+        ```
+        tracklist = [['GR', 'CALI'], ['ILD', 'ILM', 'LL8'], ['NPHISS', 'RHOB']]
+        _ = comp_log(w, tracklist=tracklist, depth_range=(8500, 8550), curve_kwargs=curve_kwargs, figsize=(12, 6))
+        ```
+        """
+        wellname = w.header.name
+        top, base = depth_range if depth_range else (w.survey_basis().min(), w.survey_basis().max())
+        fig, axs = log_utils.make_axes(tracklist, figsize=figsize)
+        if curve_kwargs:
+            for ax, (curve_label, values) in zip(axs, curve_kwargs.items()):
+                log    = values['data']
+                units  = values['units']
+                color  = values['color']
+                xlims  = values['xlims']
+                xticks = values['xticks']
+                xscale = values['xscale']
+                try:
+                    fill = values['fill']
+                    if str(fill['fct']).split()[1] == str(log_utils.fill_curve_vals_to_curve).split()[1]:
+                        fill['fct'](ax, w, log, top, base, xticks_max=xticks.max(), **fill['kwargs'])
+                    elif str(fill['fct']).split()[1] == str(log_utils.fill_const_to_curve).split()[1]:
+                        fill['fct'](ax, w, log, top, base, **fill['kwargs'])
+                    elif str(fill['fct']).split()[1] == str(log_utils.fill_between_curves).split()[1]:
+                        curve1, curve2 = fill['args']
+                        fill['fct'](ax, w, curve1, curve2,
+                                    curve_kwargs[curve1]['xlims'], curve_kwargs[curve2]['xlims'], 
+                                    top, base, **fill['kwargs'])
+                    else:
+                        raise ValueError('Invalid function name: function must be one of `{fill_curve_vals_to_curve, fill_const_to_curve, fill_between_curves}`')
+                except KeyError:
+                    pass
+                ax.plot(w.data[log].values, w.survey_basis(), c=color, lw=0.6)
+                ax.set_xlabel('{} [{}]'.format(curve_label, units))
+                ax.xaxis.label.set_color(color)
+                ax.tick_params(axis='x', colors=color)
+                ax.spines['top'].set_edgecolor(color)
+                for edge in ['left', 'right', 'bottom']:
+                    ax.spines[edge].set_edgecolor('lightgrey')
+                    ax.spines[edge].set_linewidth(0.5)
+                ax.title.set_color(color)            
+                ax.set_xlim(xlims)
+                if xscale == 'log':
+                    ax.set_xticks(xticks)
+                    ax.set_xscale(xscale)
+                else:
+                    ax.set_xscale(xscale)
+                    ax.set_xticks(xticks)
+        else:
+            print("""Plotting with no curve `kwargs`.
+    `tracklist` *must* include correct log names.
+    `w.plot()` will give better results for quick plots.""")
+            curvenames = [curve for track in tracklist for curve in track]
+            for ax, curve in zip(axs, curvenames):
+                ax.plot(w.data[curve].values, w.survey_basis())
+                ax.set_xlabel(curve)    
+        
+        # Add Figure decorations and clean up
+        axs[0].set_ylabel('Depth [unit]')
+        axs[0].yaxis.tick_right()
+        axs[0].yaxis.set_minor_locator(log_utils.AutoMinorLocator())
+        twin_spine_y_pos = 1.02
+        istwin = [0 if log_utils.is_first_track(curve, track) else 1 for track in tracklist 
+                                                        for curve in track]
+        for ax, twin in zip(axs, istwin):
+            ax.set_ylim(base, top) 
+            ax.xaxis.set_ticks_position('top')
+            ax.xaxis.set_label_position('top')
+            ax.yaxis.set_ticks_position('both')
+            if twin:
+                twin_spine_y_pos += 0.12
+                ax.spines['top'].set_position(('axes', twin_spine_y_pos))
+                ax.spines['top'].set_visible(True) 
+            else:
+                twin_spine_y_pos = 1.02
+                ax.spines["top"].set_position(("axes", twin_spine_y_pos))
+                ax.grid(which='both', c='lightgrey', ls='-', alpha=0.5)
+        
+        for ax in axs[1:]:
+            plt.setp(ax.get_yticklabels(), visible=False)
+        
+        plt.suptitle(t=wellname, y=1.1, fontsize=16)
+        
+        return fig, axs
