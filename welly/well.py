@@ -1230,11 +1230,8 @@ class Well(object):
             return np.vstack(data).T
 
 
-    def comp_log(w, tracklist=[], depth_range=None, curve_kwargs={}, figsize=(9, 6)):
+    def comp_log(self, tracklist=[], depth_range=None, curve_kwargs={}, figsize=(9, 6)):
         """Make a composite log plot for a given well, in a given depth range.
-        Args
-        ----
-            w: welly.well.Well object
             
         Kwargs
         ------
@@ -1317,11 +1314,11 @@ class Well(object):
         -------
         ```
         tracklist = [['GR', 'CALI'], ['ILD', 'ILM', 'LL8'], ['NPHISS', 'RHOB']]
-        _ = comp_log(w, tracklist=tracklist, depth_range=(8500, 8550), curve_kwargs=curve_kwargs, figsize=(12, 6))
+        _ = w.comp_log(tracklist=tracklist, depth_range=(8500, 8550), curve_kwargs=curve_kwargs, figsize=(12, 6))
         ```
         """
-        wellname = w.header.name
-        top, base = depth_range if depth_range else (w.survey_basis().min(), w.survey_basis().max())
+        wellname = self.header.name
+        top, base = depth_range if depth_range else (self.survey_basis().min(), self.survey_basis().max())
         fig, axs = log_utils.make_axes(tracklist, figsize=figsize)
         if curve_kwargs:
             for ax, (curve_label, values) in zip(axs, curve_kwargs.items()):
@@ -1334,19 +1331,19 @@ class Well(object):
                 try:
                     fill = values['fill']
                     if str(fill['fct']).split()[1] == str(log_utils.fill_curve_vals_to_curve).split()[1]:
-                        fill['fct'](ax, w, log, top, base, xticks_max=xticks.max(), **fill['kwargs'])
+                        fill['fct'](ax, self, log, top, base, xticks_max=xticks.max(), **fill['kwargs'])
                     elif str(fill['fct']).split()[1] == str(log_utils.fill_const_to_curve).split()[1]:
-                        fill['fct'](ax, w, log, top, base, **fill['kwargs'])
+                        fill['fct'](ax, self, log, top, base, **fill['kwargs'])
                     elif str(fill['fct']).split()[1] == str(log_utils.fill_between_curves).split()[1]:
                         curve1, curve2 = fill['args']
-                        fill['fct'](ax, w, curve1, curve2,
+                        fill['fct'](ax, self, curve1, curve2,
                                     curve_kwargs[curve1]['xlims'], curve_kwargs[curve2]['xlims'], 
                                     top, base, **fill['kwargs'])
                     else:
                         raise ValueError('Invalid function name: function must be one of `{fill_curve_vals_to_curve, fill_const_to_curve, fill_between_curves}`')
                 except KeyError:
                     pass
-                ax.plot(w.data[log].values, w.survey_basis(), c=color, lw=0.6)
+                ax.plot(self.data[log].values, self.survey_basis(), c=color, lw=0.6)
                 ax.set_xlabel('{} [{}]'.format(curve_label, units))
                 ax.xaxis.label.set_color(color)
                 ax.tick_params(axis='x', colors=color)
@@ -1368,8 +1365,8 @@ class Well(object):
     `w.plot()` will give better results for quick plots.""")
             curvenames = [curve for track in tracklist for curve in track]
             for ax, curve in zip(axs, curvenames):
-                ax.plot(w.data[curve].values, w.survey_basis())
-                ax.set_xlabel(curve)    
+                ax.plot(self.data[curve].values, self.survey_basis())
+                ax.set_xlabel(curve)
         
         # Add Figure decorations and clean up
         axs[0].set_ylabel('Depth [unit]')
@@ -1377,7 +1374,7 @@ class Well(object):
         axs[0].yaxis.set_minor_locator(log_utils.AutoMinorLocator())
         twin_spine_y_pos = 1.02
         istwin = [0 if log_utils.is_first_track(curve, track) else 1 for track in tracklist 
-                                                        for curve in track]
+                                                                     for curve in track]
         for ax, twin in zip(axs, istwin):
             ax.set_ylim(base, top) 
             ax.xaxis.set_ticks_position('top')
