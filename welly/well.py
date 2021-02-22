@@ -1328,21 +1328,22 @@ class Well(object):
                 xlims  = values['xlims']
                 xticks = values['xticks']
                 xscale = values['xscale']
-                try:
+                if values.get('fill') == None:
+                    pass
+                else:
                     fill = values['fill']
-                    if str(fill['fct']).split()[1] == str(log_utils.fill_curve_vals_to_curve).split()[1]:
+                    if fill['fct'].__name__ == log_utils.fill_curve_vals_to_curve.__name__:
                         fill['fct'](ax, self, log, top, base, xticks_max=xticks.max(), **fill['kwargs'])
-                    elif str(fill['fct']).split()[1] == str(log_utils.fill_const_to_curve).split()[1]:
+                    elif fill['fct'].__name__ == log_utils.fill_const_to_curve.__name__:
                         fill['fct'](ax, self, log, top, base, **fill['kwargs'])
-                    elif str(fill['fct']).split()[1] == str(log_utils.fill_between_curves).split()[1]:
+                    elif fill['fct'].__name__ == log_utils.fill_between_curves.__name__:
                         curve1, curve2 = fill['args']
                         fill['fct'](ax, self, curve1, curve2,
                                     curve_kwargs[curve1]['xlims'], curve_kwargs[curve2]['xlims'], 
                                     top, base, **fill['kwargs'])
                     else:
                         raise ValueError('Invalid function name: function must be one of `{fill_curve_vals_to_curve, fill_const_to_curve, fill_between_curves}`')
-                except KeyError:
-                    pass
+
                 ax.plot(self.data[log].values, self.survey_basis(), c=color, lw=0.6)
                 ax.set_xlabel('{} [{}]'.format(curve_label, units))
                 ax.xaxis.label.set_color(color)
