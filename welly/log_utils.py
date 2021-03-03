@@ -52,7 +52,7 @@ def make_axes(tracklist, figsize=(9, 6)):
     Args
     ----
         tracklist: `list` of `list` in the form `[['log1'],['log2', 'log3'],['log4']]`
-        
+
     Return
     ------
         axs: `list` of Axes of type 'matplotlib.axes._subplots.AxesSubplot'

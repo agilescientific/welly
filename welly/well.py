@@ -1306,7 +1306,7 @@ class Well(object):
                     ```
                     if curve_kwargs is empty, a simple plot is made but this is not recommended.
             figsize: tuple, (float, float), matplotlib figure size.
-            
+        
         Return
         ------
             fig, axs
