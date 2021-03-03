@@ -12,6 +12,7 @@ import warnings
 
 import matplotlib.pyplot as plt
 import matplotlib as mpl
+from matplotlib.ticker import AutoMinorLocator
 import lasio
 import numpy as np
 from io import StringIO
@@ -1230,9 +1231,9 @@ class Well(object):
             return np.vstack(data).T
 
 
-    def comp_log(self, tracklist=[], depth_range=None, curve_kwargs={}, figsize=(9, 6)):
+    def comp_log(self, tracklist=None, depth_range=None, curve_kwargs=None, figsize=(9, 6)):
         """Make a composite log plot for a given well, in a given depth range.
-            
+        
         Kwargs
         ------
             tracklist: `list` of `list` in the form `[['log1'],['log2', 'log3'],['log4']]`
@@ -1339,7 +1340,7 @@ class Well(object):
                     elif fill['fct'].__name__ == log_utils.fill_between_curves.__name__:
                         curve1, curve2 = fill['args']
                         fill['fct'](ax, self, curve1, curve2,
-                                    curve_kwargs[curve1]['xlims'], curve_kwargs[curve2]['xlims'], 
+                                    curve_kwargs[curve1]['xlims'], curve_kwargs[curve2]['xlims'],
                                     top, base, **fill['kwargs'])
                     else:
                         raise ValueError('Invalid function name: function must be one of `{fill_curve_vals_to_curve, fill_const_to_curve, fill_between_curves}`')
@@ -1352,7 +1353,7 @@ class Well(object):
                 for edge in ['left', 'right', 'bottom']:
                     ax.spines[edge].set_edgecolor('lightgrey')
                     ax.spines[edge].set_linewidth(0.5)
-                ax.title.set_color(color)            
+                ax.title.set_color(color)
                 ax.set_xlim(xlims)
                 if xscale == 'log':
                     ax.set_xticks(xticks)
@@ -1372,19 +1373,19 @@ class Well(object):
         # Add Figure decorations and clean up
         axs[0].set_ylabel('Depth [unit]')
         axs[0].yaxis.tick_right()
-        axs[0].yaxis.set_minor_locator(log_utils.AutoMinorLocator())
+        axs[0].yaxis.set_minor_locator(AutoMinorLocator())
         twin_spine_y_pos = 1.02
-        istwin = [0 if log_utils.is_first_track(curve, track) else 1 for track in tracklist 
+        istwin = [0 if log_utils.is_first_track(curve, track) else 1 for track in tracklist
                                                                      for curve in track]
         for ax, twin in zip(axs, istwin):
-            ax.set_ylim(base, top) 
+            ax.set_ylim(base, top)
             ax.xaxis.set_ticks_position('top')
             ax.xaxis.set_label_position('top')
             ax.yaxis.set_ticks_position('both')
             if twin:
                 twin_spine_y_pos += 0.12
                 ax.spines['top'].set_position(('axes', twin_spine_y_pos))
-                ax.spines['top'].set_visible(True) 
+                ax.spines['top'].set_visible(True)
             else:
                 twin_spine_y_pos = 1.02
                 ax.spines["top"].set_position(("axes", twin_spine_y_pos))
