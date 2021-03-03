@@ -1,9 +1,9 @@
+"""
+Log Utility functions for welly.
+"""
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
-from matplotlib.patches import PathPatch
-from matplotlib.ticker import AutoMinorLocator
-
 
 def curve_info(w, verbose=True, return_dict=False):
     """For a Welly well, print curve name, units and descriptions
@@ -13,7 +13,7 @@ def curve_info(w, verbose=True, return_dict=False):
     Kwargs
     ------
         verbose: bool, prints out CURVE NAME, UNIT, DESCRIPTION for each curve in w if True
-        
+    
     Return
     ------
         curve_info: dict{CURVE_NAME: {CURVE:UNITS, CURVE:DESCRIPTION}}
@@ -57,6 +57,9 @@ def make_axes(tracklist, figsize=(9, 6)):
     ------
         axs: `list` of Axes of type 'matplotlib.axes._subplots.AxesSubplot'
     """
+    if not tracklist:
+        raise ValueError ('`tracklist` `list` object must be provided')
+
     fig = plt.figure(constrained_layout=True, figsize=figsize)
     spec = gridspec.GridSpec(ncols=len(tracklist), nrows=1, figure=fig)
     axs, col_id = [], 0
@@ -124,14 +127,14 @@ def fill_curve_vals_to_curve(ax, w, curve, top, base, xticks_max, side='right', 
         None
     """
     arr = np.tile(w.data[curve].to_basis(start=top, stop=base).values, (xticks_max, 1)).T
-    im = ax.imshow(arr, extent=[0, xticks_max, base, top], cmap=cmap, aspect='auto', origin='upper')
+    _ = ax.imshow(arr, extent=[0, xticks_max, base, top], cmap=cmap, aspect='auto', origin='upper')
     curve_values = w.data[curve].to_basis(start=top, stop=base).values
     if side == 'right':
-        paths = ax.fill_betweenx(y=w.survey_basis()[(top <= w.survey_basis()) 
+        _ = ax.fill_betweenx(y=w.survey_basis()[(top <= w.survey_basis())
                                                     & (w.survey_basis() <= base)],
                                  x1=0, x2=curve_values, color='w', **kwargs)
     else:
-        paths = ax.fill_betweenx(y=w.survey_basis()[(top <= w.survey_basis()) 
+        _ = ax.fill_betweenx(y=w.survey_basis()[(top <= w.survey_basis())
                                                     & (w.survey_basis() <= base)],
                                  x1=curve_values, x2=xticks_max, color='w', **kwargs)
     return None
@@ -144,8 +147,8 @@ def fill_between_curves(ax, w, curve1, curve2, curve1_xlims, curve2_xlims,
     ----
         ax: matplotlib.axes._subplots.AxesSubplot object to plot into
         w: welly.well.Well object
-        curve1: str, name of welly.curve.Curve object, for example 'RHOB' 
-        curve2: str, name of welly.curve.Curve object, for example 'NPHI' 
+        curve1: str, name of welly.curve.Curve object, for example 'RHOB'
+        curve2: str, name of welly.curve.Curve object, for example 'NPHI'
         curve1_xlims: xlims tuple
         curve2_xlims: xlims tuple
         top: float-like, top interval to fill to
