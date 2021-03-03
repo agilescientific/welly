@@ -26,6 +26,30 @@ welly
 Welly is a family of classes to facilitate the loading, processing, and analysis of subsurface wells and well data, such as striplogs, formation tops, well log curves, and synthetic seismograms.
 
 
+Installation
+============
+
+.. code-block:: shell
+
+    pip install welly
+
+
+Quick start
+===========
+
+.. code-block:: python
+
+    from welly import Well, Project
+
+    w = Well.from_las('my_wells/my_well.las')  # Load a single well.
+    p = Project.from_las('my_wells/*.las')     # Load lots of wells.
+
+    gr = w.data['GR']  # One log; this is a subclassed NumPy array...
+    gr.plot()          # ...with some superpowers!
+
+Next, check out the `tutorial </tutorial>`_ notebooks.
+
+
 Philosophy
 ==========
 
@@ -40,9 +64,11 @@ engineering data, striplogs, synthetics, and so on. This is where ``welly`` come
 ``welly`` uses ``lasio`` for data I/O, but hides much of it from the user. We recommend you look at 
 both projects before deciding if you need the 'well-level' functionality that ``welly`` provides.
 
+
 Links
 ==========
 `Documentation <https://welly.readthedocs.io/en/latest/>`_ 
+
 
 Contributing
 ============

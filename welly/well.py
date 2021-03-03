@@ -12,6 +12,7 @@ import warnings
 
 import matplotlib.pyplot as plt
 import matplotlib as mpl
+import matplotlib.ticker as ticker
 import lasio
 import numpy as np
 from io import StringIO
@@ -160,7 +161,7 @@ class Well(object):
                    req=None,
                    alias=None,
                    fname=None,
-                   index=None
+                   index=None,
                    ):
         """
         Constructor. If you already have the lasio object, then this makes a
@@ -564,7 +565,7 @@ class Well(object):
 
         return None
 
-    def _plot_depth_track(self, ax, md, kind='MD'):
+    def _plot_depth_track(self, ax, md, kind='MD', tick_spacing=100):
         """
         Private function. Depth track plotting.
 
@@ -578,13 +579,13 @@ class Well(object):
         """
         if kind == 'MD':
             ax.set_yscale('bounded', vmin=md.min(), vmax=md.max())
-            # ax.set_ylim([md.max(), md.min()])
         elif kind == 'TVD':
             tvd = self.location.md2tvd(md)
             ax.set_yscale('piecewise', x=tvd, y=md)
-            # ax.set_ylim([tvd.max(), tvd.min()])
         else:
             raise Exception("Kind must be MD or TVD")
+
+        ax.xaxis.set_major_locator(ticker.MultipleLocator(tick_spacing))
 
         for sp in ax.spines.values():
             sp.set_color('gray')
@@ -695,6 +696,10 @@ class Well(object):
                      bbox=dict(facecolor='w', alpha=1.0, ec='none'))
         gs = mpl.gridspec.GridSpec(1, ntracks, width_ratios=widths)
 
+        # Tick spacing
+        order_of_mag = np.round(np.log10(lower - upper))
+        ts = 10**order_of_mag / 100
+
         # Plot first axis.
         # kwargs = {}
         ax0 = fig.add_subplot(gs[0, 0])
@@ -703,7 +708,7 @@ class Well(object):
         if '.' in track:
             track, kwargs['field'] = track.split('.')
         if track in depth_tracks:
-            ax0 = self._plot_depth_track(ax=ax0, md=basis, kind=track)
+            ax0 = self._plot_depth_track(ax=ax0, md=basis, kind=track, tick_spacing=ts)
         else:
             try:  # ...treating as a plottable object.
                 ax0 = self.get_curve(track, alias=alias).plot(ax=ax0, legend=legend, **kwargs)
@@ -725,13 +730,15 @@ class Well(object):
             ax = fig.add_subplot(gs[0, i+1])
             ax.depth_track = False
             if track in depth_tracks:
-                ax = self._plot_depth_track(ax=ax, md=basis, kind=track)
+                ax = self._plot_depth_track(ax=ax, md=basis, kind=track, tick_spacing=ts)
                 continue
             if '.' in track:
                 track, kwargs['field'] = track.split('.')
             plt.setp(ax.get_yticklabels(), visible=False)
             try:  # ...treating as a plottable object.
-                ax = self.get_curve(track, alias=alias).plot(ax=ax, legend=legend, **kwargs)
+                curve = self.get_curve(track, alias=alias)
+                curve._alias = track  # So that can retreive alias from legend too.
+                ax = curve.plot(ax=ax, legend=legend, **kwargs)
             except AttributeError:  # ...it's not there.
                 continue
             except TypeError:  # ...it's a list.
@@ -739,7 +746,9 @@ class Well(object):
                     if '.' in t:
                         track, kwargs['field'] = track.split('.')
                     try:
-                        ax = self.get_curve(t, alias=alias).plot(ax=ax, legend=legend, **kwargs)
+                        curve = self.get_curve(t, alias=alias)
+                        curve._alias = t
+                        ax = curve.plot(ax=ax, legend=legend, **kwargs)
                     except AttributeError:
                         continue
                     except KeyError:
@@ -759,8 +768,6 @@ class Well(object):
 
         # Adjust spines and ticks for non-depth tracks.
         for ax in axes:
-            if ax.depth_track:
-                pass
             if not ax.depth_track:
                 ax.set(yticks=[])
                 ax.autoscale(False)
@@ -774,6 +781,13 @@ class Well(object):
             return fig
         else:
             return None
+
+    def coverage(self, keys=None, alias=None):
+        """
+        Plot the coverage of the curves in a well.
+        """
+        raise NotImplementedError("Coverage is not implemented yet.")
+        return
 
     def survey_basis(self, keys=None, alias=None, step=None):
         """
@@ -871,6 +885,19 @@ class Well(object):
         keys = list(self.data.keys())
         return [m.group(0) for k in keys for m in [regex.search(k)] if m]
 
+    def get_alias(self, mnemonic, alias=None):
+        """
+        Get the alias key that this mnemonic belongs to.
+
+        Returns: str.
+        """
+        if alias is None:
+            return mnemonic
+        for k, v in alias.items():
+            if mnemonic in v:
+                return k
+        return None
+
     def get_mnemonic(self, mnemonic, alias=None):
         """
         Instead of picking curves by name directly from the data dict, you
@@ -885,7 +912,7 @@ class Well(object):
                 mnemonics.
 
         Returns:
-            Curve.
+            str.
         """
         alias = alias or {}
         aliases = alias.get(mnemonic, [mnemonic])

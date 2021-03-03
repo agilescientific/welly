@@ -9,7 +9,7 @@ import re
 
 verstr = 'unknown'
 VERSIONFILE = "welly/_version.py"
-with open(VERSIONFILE, "r")as f:
+with open(VERSIONFILE, "r") as f:
     verstrline = f.read().strip()
     pattern = re.compile(r"__version__ = ['\"](.*)['\"]")
     mo = pattern.search(verstrline)
@@ -36,7 +36,7 @@ TEST_REQUIREMENTS = ['pytest',
 # Test command is:
 # python run_tests.py
 
-CLASSIFIERS = ['Development Status :: 3 - Alpha',
+CLASSIFIERS = ['Development Status :: 4 - Beta',
                'Intended Audience :: Science/Research',
                'Natural Language :: English',
                'License :: OSI Approved :: Apache Software License',
@@ -45,6 +45,7 @@ CLASSIFIERS = ['Development Status :: 3 - Alpha',
                'Programming Language :: Python :: 3.6',
                'Programming Language :: Python :: 3.7',
                'Programming Language :: Python :: 3.8',
+               'Programming Language :: Python :: 3.9',
                ]
 
 setup(name='welly',

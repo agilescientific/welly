@@ -315,7 +315,7 @@ class Curve(np.ndarray):
 
         # At this point, a is either a 2D array, or a 2D (rgb) array.
         extent = [0, width or default, self.stop, self.start]
-        im = ax.imshow(a, cmap=cmap, extent=extent)
+        im = ax.imshow(a, cmap=cmap, extent=extent, aspect='auto')
 
         if curve:
             paths = ax.fill_betweenx(self.basis, self, np.nanmin(self),
@@ -368,16 +368,16 @@ class Curve(np.ndarray):
         else:
             return None
 
-    def plot(self, ax=None, legend=None, return_fig=False, **kwargs):
+    def plot(self, ax=None, legend=None, return_fig=False, alias=None, **kwargs):
         """
         Plot a curve.
 
         Args:
             ax (ax): A matplotlib axis.
-            legend (striplog.legend): A legend. Optional.
+            legend (striplog.legend): A legend. Optional. Should contain kwargs for ax.set().
             return_fig (bool): whether to return the matplotlib figure.
                 Default False.
-            kwargs: Arguments for ``ax.set()``
+            kwargs: Arguments for ``ax.plot()``
 
         Returns:
             ax. If you passed in an ax, otherwise None.
@@ -390,6 +390,7 @@ class Curve(np.ndarray):
             return_ax = True
 
         d = None
+
         if legend is not None:
             try:
                 d = legend.get_decor(self)
@@ -401,6 +402,9 @@ class Curve(np.ndarray):
             kwargs['lw'] = getattr(d, 'lineweight', None) or getattr(d, 'lw', 1)
             kwargs['ls'] = getattr(d, 'linestyle', None) or getattr(d, 'ls', '-')
 
+        ax.plot(self, self.basis, **kwargs)
+
+        if d is not None:
             # Attempt to get axis parameters from decor.
             axkwargs = {}
 
@@ -418,7 +422,6 @@ class Curve(np.ndarray):
 
             ax.set(**axkwargs)
 
-        ax.plot(self, self.basis, **kwargs)
         ax.set_title(self.mnemonic)  # no longer needed
         ax.set_xlabel(self.units)
 
@@ -451,7 +454,7 @@ class Curve(np.ndarray):
         return utils.extrapolate(self)
 
     def top_and_tail(self):
-        pass
+        return utils.top_and_tail(self)
 
     def interpolate(self):
         """

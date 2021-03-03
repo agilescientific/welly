@@ -2,6 +2,7 @@
 
 ## 0.4.10 [work in progress]
 
+- No longer supporting versions of Python before 3.6 (because I like f-strings).
 - You can now optionally pass any of `start`, `stop` and `step` to `Well.unify_basis()`. These settings will override the basis you provide, or the basis that `welly` discovers using `Well.survey_basis()`. I added an example of using this to the `tutorial/02_Curves.iynb` tutorial notebook.
 - Relatedly, if you pass any of `start`, `stop` and `step` to `Curve.to_basis()` if will _override_ the basis you give it, if you give it one.
 
