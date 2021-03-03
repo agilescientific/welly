@@ -13,7 +13,7 @@ def curve_info(w, verbose=True, return_dict=False):
     Kwargs
     ------
         verbose: bool, prints out CURVE NAME, UNIT, DESCRIPTION for each curve in w if True
-    
+
     Return
     ------
         curve_info: dict{CURVE_NAME: {CURVE:UNITS, CURVE:DESCRIPTION}}
@@ -140,7 +140,7 @@ def fill_curve_vals_to_curve(ax, w, curve, top, base, xticks_max, side='right', 
     return None
 
 
-def fill_between_curves(ax, w, curve1, curve2, curve1_xlims, curve2_xlims, 
+def fill_between_curves(ax, w, curve1, curve2, curve1_xlims, curve2_xlims,
                         top, base, color1='grey', color2='yellow', **kwargs):
     """Fill a track from one curve to another based on crossover.
     Args

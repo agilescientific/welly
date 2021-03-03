@@ -1233,7 +1233,7 @@ class Well(object):
 
     def comp_log(self, tracklist=None, depth_range=None, curve_kwargs=None, figsize=(9, 6)):
         """Make a composite log plot for a given well, in a given depth range.
-        
+
         Kwargs
         ------
             tracklist: `list` of `list` in the form `[['log1'],['log2', 'log3'],['log4']]`
