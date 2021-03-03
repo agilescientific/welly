@@ -1318,25 +1318,18 @@ class Well(object):
         _ = w.comp_log(tracklist=tracklist, depth_range=(8500, 8550), curve_kwargs=curve_kwargs, figsize=(12, 6))
         ```
         """
-        wellname = self.header.name
         top, base = depth_range if depth_range else (self.survey_basis().min(), self.survey_basis().max())
         fig, axs = log_utils.make_axes(tracklist, figsize=figsize)
         if curve_kwargs:
             for ax, (curve_label, values) in zip(axs, curve_kwargs.items()):
-                log    = values['data']
-                units  = values['units']
-                color  = values['color']
-                xlims  = values['xlims']
-                xticks = values['xticks']
-                xscale = values['xscale']
                 if values.get('fill') == None:
                     pass
                 else:
                     fill = values['fill']
                     if fill['fct'].__name__ == log_utils.fill_curve_vals_to_curve.__name__:
-                        fill['fct'](ax, self, log, top, base, xticks_max=xticks.max(), **fill['kwargs'])
+                        fill['fct'](ax, self, values['data'], top, base, xticks_max=values['xticks'].max(), **fill['kwargs'])
                     elif fill['fct'].__name__ == log_utils.fill_const_to_curve.__name__:
-                        fill['fct'](ax, self, log, top, base, **fill['kwargs'])
+                        fill['fct'](ax, self, values['data'], top, base, **fill['kwargs'])
                     elif fill['fct'].__name__ == log_utils.fill_between_curves.__name__:
                         curve1, curve2 = fill['args']
                         fill['fct'](ax, self, curve1, curve2,
@@ -1345,28 +1338,27 @@ class Well(object):
                     else:
                         raise ValueError('Invalid function name: function must be one of `{fill_curve_vals_to_curve, fill_const_to_curve, fill_between_curves}`')
 
-                ax.plot(self.data[log].values, self.survey_basis(), c=color, lw=0.6)
-                ax.set_xlabel('{} [{}]'.format(curve_label, units))
-                ax.xaxis.label.set_color(color)
-                ax.tick_params(axis='x', colors=color)
-                ax.spines['top'].set_edgecolor(color)
+                ax.plot(self.data[values['data']].values, self.survey_basis(), c=values['color'], lw=0.6)
+                ax.set_xlabel('{} [{}]'.format(curve_label, values['units']))
+                ax.xaxis.label.set_color(values['color'])
+                ax.tick_params(axis='x', colors=values['color'])
+                ax.spines['top'].set_edgecolor(values['color'])
                 for edge in ['left', 'right', 'bottom']:
                     ax.spines[edge].set_edgecolor('lightgrey')
                     ax.spines[edge].set_linewidth(0.5)
-                ax.title.set_color(color)
-                ax.set_xlim(xlims)
-                if xscale == 'log':
-                    ax.set_xticks(xticks)
-                    ax.set_xscale(xscale)
+                ax.title.set_color(values['color'])
+                ax.set_xlim(values['xlims'])
+                if values['xscale'] == 'log':
+                    ax.set_xticks(values['xticks'])
+                    ax.set_xscale(values['xscale'])
                 else:
-                    ax.set_xscale(xscale)
-                    ax.set_xticks(xticks)
+                    ax.set_xscale(values['xscale'])
+                    ax.set_xticks(values['xticks'])
         else:
             print("""Plotting with no curve `kwargs`.
     `tracklist` *must* include correct log names.
     `w.plot()` will give better results for quick plots.""")
-            curvenames = [curve for track in tracklist for curve in track]
-            for ax, curve in zip(axs, curvenames):
+            for ax, curve in zip(axs, [curve for track in tracklist for curve in track]):
                 ax.plot(self.data[curve].values, self.survey_basis())
                 ax.set_xlabel(curve)
         
@@ -1394,6 +1386,6 @@ class Well(object):
         for ax in axs[1:]:
             plt.setp(ax.get_yticklabels(), visible=False)
         
-        plt.suptitle(t=wellname, y=1.1, fontsize=16)
+        plt.suptitle(t=self.header.name, y=1.1, fontsize=16)
         
         return fig, axs
