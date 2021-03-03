@@ -1306,11 +1306,11 @@ class Well(object):
                     ```
                     if curve_kwargs is empty, a simple plot is made but this is not recommended.
             figsize: tuple, (float, float), matplotlib figure size.
-        
+
         Return
         ------
             fig, axs
-            
+
         Example
         -------
         ```
@@ -1361,7 +1361,7 @@ class Well(object):
             for ax, curve in zip(axs, [curve for track in tracklist for curve in track]):
                 ax.plot(self.data[curve].values, self.survey_basis())
                 ax.set_xlabel(curve)
-        
+
         # Add Figure decorations and clean up
         axs[0].set_ylabel('Depth [unit]')
         axs[0].yaxis.tick_right()
@@ -1382,10 +1382,10 @@ class Well(object):
                 twin_spine_y_pos = 1.02
                 ax.spines["top"].set_position(("axes", twin_spine_y_pos))
                 ax.grid(which='both', c='lightgrey', ls='-', alpha=0.5)
-        
+
         for ax in axs[1:]:
             plt.setp(ax.get_yticklabels(), visible=False)
-        
+
         plt.suptitle(t=self.header.name, y=1.1, fontsize=16)
-        
+
         return fig, axs
