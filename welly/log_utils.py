@@ -63,7 +63,7 @@ def make_axes(tracklist, figsize=(9, 6)):
     fig = plt.figure(constrained_layout=True, figsize=figsize)
     spec = gridspec.GridSpec(ncols=len(tracklist), nrows=1, figure=fig)
     axs, col_id = [], 0
-    
+
     for track in tracklist:
         for curve in track:
             if col_id == 0 and is_first_track(curve, track):
@@ -74,7 +74,7 @@ def make_axes(tracklist, figsize=(9, 6)):
                 col_id += 1
             else:
                 axs.append(axs[-1].twiny())
-            
+
     return fig, axs
 
 
@@ -87,7 +87,7 @@ def fill_const_to_curve(ax, w, curve, top, base, const=0, color='k', **kwargs):
         curve: welly.curve.Curve object, curve up to which to fill
         top: float-like, top of the interval
         base: float-like, base of the interval
-        
+
     Kwargs
     ------
         const: float-like, value from which to fill
@@ -115,13 +115,13 @@ def fill_curve_vals_to_curve(ax, w, curve, top, base, xticks_max, side='right', 
         top: float-like, top interval to fill to
         base: float-like, base interval to fill to
         xticks_max: float-like, max value of xticks
-        
+
     Kwargs
     ------
         side: one of {`left`, `right`}, side of the track to fill relative to the curve
         cmap: a valid matplotlib color
         **kwargs: All other keyword arguments are passed on to `.PolyCollection`.
-        
+
     Return
     ------
         None
@@ -153,17 +153,17 @@ def fill_between_curves(ax, w, curve1, curve2, curve1_xlims, curve2_xlims,
         curve2_xlims: xlims tuple
         top: float-like, top interval to fill to
         base: float-like, base interval to fill to
-    
+
     Kwargs
     ------
         color1: matplotlib color for the first fill
         color2: matplotlib color for the second fill
         **kwargs: All other keyword arguments are passed on to `.PolyCollection`.
-    
+
     Return
     ------
         None
-    
+
     Reference
     ---------
     https://towardsdatascience.com/enhancing-visualization-of-well-logs-with-plot-fills-72d9dcd10c1b
@@ -178,5 +178,5 @@ def fill_between_curves(ax, w, curve1, curve2, curve1_xlims, curve2_xlims,
 
     ax.fill_betweenx(depth, curve1, nz, where=curve1>=nz, interpolate=True, color=color1, **kwargs)
     ax.fill_betweenx(depth, curve1, nz, where=curve1<=nz, interpolate=True, color=color2, **kwargs)
-    
+
     return None
