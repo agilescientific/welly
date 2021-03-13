@@ -336,7 +336,7 @@ class Location(object):
 
         Returns:
             ndarray. An array with shape (`points` x 3) representing the well
-                trajectory. Columns are (x, y, z). 
+                trajectory. Columns are (x, y, z).
         """
         pos = self.position.copy()
 

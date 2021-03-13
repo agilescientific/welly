@@ -142,7 +142,7 @@ class Well(object):
             keys_ = []
         else:
             keys_ = utils.flatten_list(keys)
-        
+
         if curves_only:
             keys = [k for k in keys_ if isinstance(self.data.get(k), Curve)]
         else:

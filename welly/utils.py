@@ -57,7 +57,7 @@ def bbox(points):
 def aspect(points):
     """
     Aspect like 2:1 is shape like |___ (twice as wide as high).
-    
+
     This function returns the WIDTH per unit height.
     """
     (minx, miny), (maxx, maxy) = bbox(points)
