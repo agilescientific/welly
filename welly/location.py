@@ -61,9 +61,10 @@ class Location(object):
         else:
             try:
                 dev_new, pos, dog = compute_position_log(self.deviation, td=td)
-            except:
+            except Exception as e:
                 m = "The position log could not be computed. Consider "
-                m += "trying another setting for the 'method' argument."
+                m += "trying another setting for the 'method' argument. "
+                m += "{}".format(e)
                 warnings.warn(m)
                 dev_new, pos, dog = deviation, None, None
 
@@ -179,9 +180,10 @@ class Location(object):
             deviation = np.genfromtxt(data)[:, columns]
             try:
                 dev_new, pos, dog = compute_position_log(deviation, **kwargs)
-            except Exception:
+            except Exception as e:
                 m = "The position log could not be computed. Consider "
-                m += "trying another setting for the 'method' argument."
+                m += "trying another setting for the 'method' argument. "
+                m += "{}".format(e)
                 warnings.warn(m)
                 dev_new, pos, dog = deviation, None, None
 
@@ -243,8 +245,8 @@ class Location(object):
                                                      method,
                                                      azimuth_datum,
                                                     )
-        except:
-            warnings.warn("The position log could not be computed.")
+        except Exception as e:
+            warnings.warn("The position log could not be computed. {}".format(e))
             dev_new, pos, dog = deviation, None, None
 
         if update_deviation:
@@ -336,7 +338,7 @@ class Location(object):
 
         Returns:
             ndarray. An array with shape (`points` x 3) representing the well
-                trajectory. Columns are (x, y, z). 
+                trajectory. Columns are (x, y, z).
         """
         pos = self.position.copy()
 
