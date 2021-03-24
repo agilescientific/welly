@@ -24,8 +24,8 @@ def test_deviation():
     dev = np.loadtxt(DNAME, delimiter=',', skiprows=1)
     well.location.add_deviation(dev)
     assert well.location.position.shape == (46, 3)
-    assert well.location.md2tvd(1000) - 987.03517 < 0.001
-    assert well.location.tvd2md(987.03517) - 1000 < 0.001
+    assert well.location.md2tvd(1000) - 998.45378 < 0.001
+    assert well.location.tvd2md(998.45378) - 1000 < 0.001
 
 
 def test_well_remap():
