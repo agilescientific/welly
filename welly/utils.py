@@ -57,7 +57,7 @@ def bbox(points):
 def aspect(points):
     """
     Aspect like 2:1 is shape like |___ (twice as wide as high).
-    
+
     This function returns the WIDTH per unit height.
     """
     (minx, miny), (maxx, maxy) = bbox(points)
@@ -208,9 +208,10 @@ def list_and_add(a, b):
 
 
 def lasio_get(l,
-              section,
+            #   section,
               item,
               attrib='value',
+            #   check=None,
               default=None,
               remap=None,
               funcs=None):
@@ -231,18 +232,30 @@ def lasio_get(l,
         The transformed item.
     """
     remap = remap or {}
-    item_to_fetch = remap.get(item, item)
+    item_to_fetch = remap.get(item['code'], item['code'])
     if item_to_fetch is None:
         return None
 
     try:
-        obj = getattr(l, section)
-        result = getattr(obj, item_to_fetch)[attrib]
+        obj = getattr(l, item['section'])
+        if 'secondary_code' in item:
+            result = default
+            for val in item['secondary_desc']:
+                # print('   ', val, val== getattr(obj, item['secondary_code'])[attrib])
+                if val == getattr(obj, item['secondary_code'])[attrib]:
+                    # print("sdjnvkfjvbafkjvnafjlsvn lsajfv asfvasfv", item_to_fetch)
+                    # print(getattr(obj, item_to_fetch)[attrib])
+                    result = getattr(obj, item_to_fetch)[attrib]
+                    # print("___******", result)
+                    break
+        else:
+            result = getattr(obj, item_to_fetch)[attrib]
+
     except:
         return default
 
     if funcs is not None:
-        f = funcs.get(item, null)
+        f = funcs.get(item['code'], null)
         result = f(result)
 
     return result
