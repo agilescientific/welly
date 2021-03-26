@@ -81,6 +81,6 @@ def compute_position_log(deviation, td=None, method='mc', azimuth_datum=0):
     # Convert to welly formats
     deviation = np.hstack((dev.md, dev.inc, dev.azi))
     position = np.hstack((pos.easting.reshape(-1, 1), pos.northing.reshape(-1, 1), pos.depth.reshape(-1, 1)))
-    dogleg = dev.minimum_curvature().dls.reshape(-1, 1)
+    dogleg = np.deg2rad(dev.minimum_curvature().dls.reshape(-1, 1))
 
     return deviation, position, dogleg
