@@ -26,6 +26,7 @@ def test_deviation():
     assert well.location.position.shape == (46, 3)
     assert well.location.md2tvd(1000) - 998.45378 < 0.001
     assert well.location.tvd2md(998.45378) - 1000 < 0.001
+    assert (well.location.dogleg < 0.02).all()
 
 
 def test_well_remap():
@@ -82,8 +83,8 @@ def test_well_remap():
 
 def test_deviation_to_position_conversion():
     """
-    Test that we can convert a deviation survey – a N x 3 array with columns MD, INC, and AZI 
-    and compute position (a.k.a path) – a N x 3 arry with columns X, Y, Z relative 
+    Test that we can convert a deviation survey – a N x 3 array with columns MD, INC, and AZI
+    and compute position (a.k.a path) – a N x 3 arry with columns X, Y, Z relative
     to the KB location. Tests the minimum curvature method only.
     """
     tolerance = 0.1 # absolute distance in metres we'll allow to be off.
