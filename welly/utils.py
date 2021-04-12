@@ -14,6 +14,7 @@ import functools
 
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.cbook as cbook
 
 
 def deprecated(instructions):
@@ -172,21 +173,12 @@ def fix_ticks(ax):
 
 def flatten_list(l):
     """
-    Unpacks lists in a list:
+    Flattens a list. For example:
 
-        [1, 2, [3, 4], [5, [6, 7]]]
-
-    becomes
-
+        >>> flatten_list([1, 2, [3, 4], [5, [6, 7]]])
         [1, 2, 3, 4, 5, 6, 7]
-
-    http://stackoverflow.com/a/12472564/3381305
     """
-    if (l == []) or (l is None):
-        return l
-    if isinstance(l[0], list):
-        return flatten_list(l[0]) + flatten_list(l[1:])
-    return l[:1] + flatten_list(l[1:])
+    return list(cbook.flatten(l))
 
 
 def list_and_add(a, b):
@@ -433,18 +425,18 @@ def moving_avg_conv(a, length):
 def nan_idx(y):
     """Helper to handle indices and logical indices of NaNs.
 
-    From https://stackoverflow.com/questions/6518811/interpolate-nan-values-in-a-numpy-array
-
     Args:
         y (ndarray): 1D array with possible NaNs
+
     Returns:
         nans, logical indices of NaNs
         index, a function, with signature indices= index(logical_indices),
           to convert logical indices of NaNs to 'equivalent' indices
+
     Example:
         >>> # linear interpolation of NaNs
-        >>> nans, x= nan_helper(y)
-        >>> y[nans]= np.interp(x(nans), x(~nans), y[~nans])
+        >>> nans, x = nan_helper(y)
+        >>> y[nans] = np.interp(x(nans), x(~nans), y[~nans])
     """
     return np.isnan(y), lambda z: z.nonzero()[0]
 
