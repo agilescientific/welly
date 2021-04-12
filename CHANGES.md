@@ -5,6 +5,7 @@
 - No longer supporting versions of Python before 3.6 (because I like f-strings).
 - You can now optionally pass any of `start`, `stop` and `step` to `Well.unify_basis()`. These settings will override the basis you provide, or the basis that `welly` discovers using `Well.survey_basis()`. I added an example of using this to the `tutorial/02_Curves.iynb` tutorial notebook.
 - Relatedly, if you pass any of `start`, `stop` and `step` to `Curve.to_basis()` if will _override_ the basis you give it, if you give it one.
+- Welly has now learned to use wellpathpy to handle deviation data and generate position logs. The API has not changed in `location.py` and the underlying function `compute_position_log` now provides exactly the same interface and same options as previously, but in addition position logs can be calculated with the high and low tangential methods as well as with the radius of curvature method.
 
 
 ## 0.4.9, 29 January 2021
@@ -18,7 +19,7 @@
 
 - Reorganized the `tutorials` a bit and made sure they all run as-is.
 - A new `Location.from_petrel()` function accepts a Petrel `.dev` deviation file. It will extract the x and y location, and the KB, as well as the position log and/or deviation survey.
-- `Curve.plot_2d()` now handles NaNs in the curve. 
+- `Curve.plot_2d()` now handles NaNs in the curve.
 - The test functions now accept a `keys` argument to limit the number of items the tests will be applied to, or to order the appearance of curves in `qc_table_html`. For example, if you pass `keys=['GR']` then tests will only be run on `w.data['GR']`, regardless of what's in the `tests` dictionary. This was [issue #104](https://github.com/agile-geoscience/welly/issues/104).
 - You can now pass a `pathlib.Path` object to `from_las`. Thank you to Kent Inverarity for implementing this feature.
 - Added `XCOORD` and `YCOORD` as standard fields; these are read in as `location.x` and `location.y` repsectively.
@@ -52,8 +53,8 @@
 - You can now pass an `alias` dictionary to `Well.df()`, along with the list of `keys`. You can pass `keys` and `alias` to `Project.df()` as well.
 - A new function, `location.trajectory()`, generates an evenly sampled trajectory, given a sample spacing in metres.
 - Added `location.plot_plan()` and `location.plot_3d()` for plotting well trajectories.
-- Added a new tutorial notebook, `tutorials/Location.ipynb` to demonstrate the well path capabilities of `Well.location()`. The notebook does not cover geographic CRS's. There's still a short example in `Well.ipynb`. 
-- Fixed some buggy behaviour when creating 'empty' wells, and added example to top of `tutorials/Well.ipynb`. 
+- Added a new tutorial notebook, `tutorials/Location.ipynb` to demonstrate the well path capabilities of `Well.location()`. The notebook does not cover geographic CRS's. There's still a short example in `Well.ipynb`.
+- Fixed some buggy behaviour when creating 'empty' wells, and added example to top of `tutorials/Well.ipynb`.
 - You can now pass a URL directly to `Well.from_las()` and it will try to read it.
 
 ## 0.4.2, April 2019
@@ -65,7 +66,7 @@
 
 ## 0.4.0, 20 November 2018
 - There are breaking changes in this release.
-- Export the curves in the current `well.data` to Pandas DataFrame with `well.df()`. Previously, this function returned the DataFrame of the associated LAS file, which is still available in `well.las.df()`. 
+- Export the curves in the current `well.data` to Pandas DataFrame with `well.df()`. Previously, this function returned the DataFrame of the associated LAS file, which is still available in `well.las.df()`.
 - Export the curves in the current Project as a Pandas DataFrame with a dual index: UWI and depth.
 - Made the APIs of various functions more consistent, e.g. with `keys` always being before `basis`. This regularization will continue.
 - Made the way to retrieve `keys` more consistent, using the flattened list of keys, if provided, or getting all those keys corresponding to curves, if not. Some of the well methods used to break if there were striplogs in `well.data`, but they should behave a bit better now.
