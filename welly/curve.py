@@ -364,6 +364,7 @@ class Curve(np.ndarray):
         if return_ax:
             return ax
         elif return_fig:
+            plt.tight_layout()
             return fig
         else:
             return None

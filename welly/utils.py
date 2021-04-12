@@ -4,8 +4,6 @@ Utility functions for welly.
 :copyright: 2021 Agile Scientific
 :license: Apache 2.0
 """
-from __future__ import division
-
 import re
 import glob
 import warnings
@@ -171,14 +169,14 @@ def fix_ticks(ax):
             label.set(visible=True)
 
 
-def flatten_list(l):
+def flatten_list(L):
     """
     Flattens a list. For example:
 
         >>> flatten_list([1, 2, [3, 4], [5, [6, 7]]])
         [1, 2, 3, 4, 5, 6, 7]
     """
-    return list(cbook.flatten(l))
+    return list(cbook.flatten(L)) if L else L
 
 
 def list_and_add(a, b):

@@ -4,8 +4,9 @@
 
 - No longer supporting versions of Python before 3.6 (because I like f-strings).
 - You can now optionally pass any of `start`, `stop` and `step` to `Well.unify_basis()`. These settings will override the basis you provide, or the basis that `welly` discovers using `Well.survey_basis()`. I added an example of using this to the `tutorial/02_Curves.iynb` tutorial notebook.
-- Relatedly, if you pass any of `start`, `stop` and `step` to `Curve.to_basis()` if will _override_ the basis you give it, if you give it one.
-- Welly has now learned to use wellpathpy to handle deviation data and generate position logs. The API has not changed in `location.py` and the underlying function `compute_position_log` now provides exactly the same interface and same options as previously, but in addition position logs can be calculated with the high and low tangential methods as well as with the radius of curvature method.
+- Relatedly, if you pass any of `start`, `stop` and `step` to `Curve.to_basis()` it will _override_ the basis you give it, if you give it one.
+- Welly now uses [`wellpathpy`](https://github.com/Zabamund/wellpathpy) to convert deviation data into a position log. The API has not changed, but position logs can now be calculated with the high and low tangential methods as well.
+- Dogleg severity is still given in radians, but can be normalized per 'course length', where course length is a parameter you can pass. **Future warning:** from v0.5.0, dogleg severity will be passed in degrees and course length will be 30 by default. 
 
 
 ## 0.4.9, 29 January 2021
