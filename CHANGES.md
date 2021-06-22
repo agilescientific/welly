@@ -1,8 +1,9 @@
 # CHANGES.md
 
-## 0.4.10 [work in progress]
+## 0.4.10, 22 June 2021
 
-- No longer supporting versions of Python before 3.6 (because I like f-strings).
+- No longer supporting versions of Python before 3.6.
+- `Curve.top_and_tail()` has been implemented. It removes NaNs from the start and end — but not the middle — of a log.
 - You can now optionally pass any of `start`, `stop` and `step` to `Well.unify_basis()`. These settings will override the basis you provide, or the basis that `welly` discovers using `Well.survey_basis()`. I added an example of using this to the `tutorial/02_Curves.iynb` tutorial notebook.
 - Relatedly, if you pass any of `start`, `stop` and `step` to `Curve.to_basis()` it will _override_ the basis you give it, if you give it one.
 - Welly now uses [`wellpathpy`](https://github.com/Zabamund/wellpathpy) to convert deviation data into a position log. The API has not changed, but position logs can now be calculated with the high and low tangential methods as well.

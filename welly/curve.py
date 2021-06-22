@@ -502,7 +502,9 @@ class Curve(np.ndarray):
                  start=None,
                  stop=None,
                  step=None,
-                 undefined=None):
+                 undefined=None,
+                 interp_kind='linear',
+                 ):
         """
         Make a new curve in a new basis, given a basis, or a new start, step,
         and/or stop. You only need to set the parameters you want to change.
@@ -510,11 +512,20 @@ class Curve(np.ndarray):
         with the ``undefined`` parameter.
 
         Args:
-            basis (ndarray)
-            start (float)
-            stop (float)
-            step (float)
-            undefined (float)
+            basis (ndarray): The basis to compute values for. You can provide
+                a basis, or start, stop, step, or a combination of the two.
+            start (float): The start position to use. Overrides the start of
+                the basis, if one is provided.
+            stop (float): The end position to use. Overrides the end of
+                the basis, if one is provided.
+            step (float): The step to use. Overrides the step in the basis, if
+                one is provided.
+            undefined (float): The value to use outside the curve's range. By
+                default, np.nan is used.
+            interp_kind (str): The kind of interpolation to use to compute the
+                new positions, default is 'linear'. Options are ‘linear’,
+                ‘nearest’, ‘nearest-up’, ‘zero’, ‘slinear’, ‘quadratic’,
+                ‘cubic’, ‘previous’, or ‘next’. See scipy.interpolate.interp1d.
 
         Returns:
             Curve. The current instance in the new basis.
@@ -528,8 +539,8 @@ class Curve(np.ndarray):
             new_stop = basis[-1] if stop is None else stop
             new_step = (basis[1] - basis[0]) if step is None else step
 
-        steps = 1 + (new_stop - new_start) / new_step
-        basis = np.linspace(new_start, new_stop, int(steps), endpoint=True)
+        steps = np.ceil((new_stop - new_start) / new_step)
+        basis = np.linspace(new_start, new_stop, int(steps) + 1, endpoint=True)
 
         if undefined is None:
             undefined = np.nan
@@ -537,6 +548,7 @@ class Curve(np.ndarray):
             undefined = undefined
 
         interp = interp1d(self.basis, self,
+                          kind=interp_kind,
                           bounds_error=False,
                           fill_value=undefined)
 
@@ -551,7 +563,7 @@ class Curve(np.ndarray):
     def _read_at(self, d,
                  interpolation='linear',
                  index=False,
-                 return_basis=False):
+                 ):
         """
         Private function. Implements read_at() for a single depth.
 
