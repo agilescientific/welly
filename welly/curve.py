@@ -296,7 +296,7 @@ class Curve(np.ndarray):
                              return_fig=return_fig,
                              **kwargs)
 
-    def plot(self, ax=None, legend=None, return_fig=False, alias=None, **kwargs):
+    def plot(self, ax=None, legend=None, return_fig=False, **kwargs):
         """
         Plot a curve. Wrapping plot function from plot.py.
         By default only show the plot, not return the figure object.
@@ -315,7 +315,6 @@ class Curve(np.ndarray):
                           ax=ax,
                           legend=legend,
                           return_fig=return_fig,
-                          alias=alias,
                           **kwargs)
 
     def extrapolate(self):
