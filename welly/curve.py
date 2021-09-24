@@ -9,13 +9,12 @@ from __future__ import division
 import numpy as np
 from scipy.interpolate import interp1d
 
-import matplotlib.pyplot as plt
-import matplotlib as mpl
-from matplotlib.patches import PathPatch
 import warnings
 
-
 from . import utils
+from .plot import plot_kde_curve
+from .plot import plot_2d_curve
+from .plot import plot_curve
 
 
 class CurveError(Exception):
@@ -268,10 +267,11 @@ class Curve(np.ndarray):
                 curve=False,
                 ticks=(1, 10),
                 return_fig=False,
-                **kwargs,
+                **kwargs
                 ):
         """
-        Plot a 2D curve.
+        Plot a 2D curve. Wrapping plot function from plot.py.
+        By default only show the plot, not return the figure object.
 
         Args:
             ax (ax): A matplotlib axis.
@@ -286,92 +286,20 @@ class Curve(np.ndarray):
         Returns:
             ax. If you passed in an ax, otherwise None.
         """
-        # Set up the figure.
-        if ax is None:
-            fig = plt.figure(figsize=(2, 10))
-            ax = fig.add_subplot(111)
-            return_ax = False
-        else:
-            return_ax = True
-
-        # Set up the data.
-        cmap = cmap or 'viridis'
-        default = int(self.shape[0] / aspect)
-        if self.ndim == 1:
-            a = np.expand_dims(self, axis=1)
-            a = np.repeat(a, width or default, axis=1)
-        elif self.ndim == 2:
-            a = self[:, :width] if width < self.shape[1] else self
-        elif self.ndim == 3:
-            if 2 < self.shape[-1] < 5:
-                # Interpret as RGB or RGBA.
-                a = utils.normalize(np.copy(self))
-                cmap = None  # Actually doesn't matter.
-            else:
-                # Take first slice.
-                a = self[:, :width, 0] if width < self.shape[1] else self[..., 0]
-        else:
-            raise NotImplementedError("Can only handle up to 3 dimensions.")
-
-        # At this point, a is either a 2D array, or a 2D (rgb) array.
-        extent = [0, width or default, self.stop, self.start]
-        im = ax.imshow(a, cmap=cmap, extent=extent, aspect='auto')
-
-        if curve:
-            paths = ax.fill_betweenx(self.basis, self, np.nanmin(self),
-                                     facecolor='none',
-                                     **kwargs,
-                                     )
-
-            # Make the 'fill' mask and clip the background image with it.
-            patch = PathPatch(paths._paths[0], visible=False)
-            ax.add_artist(patch)
-            im.set_clip_path(patch)
-
-        ax.set_xticks([])
-
-        # Rely on interval order.
-        lower, upper = self.stop, self.start
-        rng = abs(upper - lower)
-
-        ax.set_ylim([lower, upper])
-
-        # Make sure ticks is a tuple.
-        try:
-            ticks = tuple(ticks)
-        except TypeError:
-            ticks = (1, ticks)
-
-        # Avoid MAXTICKS error.
-        while rng/ticks[0] > 250:
-            mi, ma = 10*ticks[0], ticks[1]
-            if ma <= mi:
-                ma = 10 * mi
-            ticks = (mi, ma)
-
-        # Carry on plotting...
-        minorLocator = mpl.ticker.MultipleLocator(ticks[0])
-        ax.yaxis.set_minor_locator(minorLocator)
-
-        majorLocator = mpl.ticker.MultipleLocator(ticks[1])
-        majorFormatter = mpl.ticker.FormatStrFormatter('%d')
-        ax.yaxis.set_major_locator(majorLocator)
-        ax.yaxis.set_major_formatter(majorFormatter)
-
-        ax.yaxis.set_ticks_position('left')
-        ax.get_yaxis().set_tick_params(which='both', direction='out')
-
-        if return_ax:
-            return ax
-        elif return_fig:
-            plt.tight_layout()
-            return fig
-        else:
-            return None
+        return plot_2d_curve(curve=self,
+                             ax=ax,
+                             width=width,
+                             aspect=aspect,
+                             cmap=cmap,
+                             plot_curve=curve,
+                             ticks=ticks,
+                             return_fig=return_fig,
+                             **kwargs)
 
     def plot(self, ax=None, legend=None, return_fig=False, alias=None, **kwargs):
         """
-        Plot a curve.
+        Plot a curve. Wrapping plot function from plot.py.
+        By default only show the plot, not return the figure object.
 
         Args:
             ax (ax): A matplotlib axis.
@@ -383,66 +311,12 @@ class Curve(np.ndarray):
         Returns:
             ax. If you passed in an ax, otherwise None.
         """
-        if ax is None:
-            fig = plt.figure(figsize=(2, 10))
-            ax = fig.add_subplot(111)
-            return_ax = False
-        else:
-            return_ax = True
-
-        d = None
-
-        if legend is not None:
-            try:
-                d = legend.get_decor(self)
-            except:
-                pass
-
-        if d is not None:
-            kwargs['color'] = d.colour
-            kwargs['lw'] = getattr(d, 'lineweight', None) or getattr(d, 'lw', 1)
-            kwargs['ls'] = getattr(d, 'linestyle', None) or getattr(d, 'ls', '-')
-
-        ax.plot(self, self.basis, **kwargs)
-
-        if d is not None:
-            # Attempt to get axis parameters from decor.
-            axkwargs = {}
-
-            xlim = getattr(d, 'xlim', None)
-            if xlim is not None:
-                axkwargs['xlim'] = list(map(float, xlim.split(',')))
-
-            xticks = getattr(d, 'xticks', None)
-            if xticks is not None:
-                axkwargs['xticks'] = list(map(float, xticks.split(',')))
-
-            xscale = getattr(d, 'xscale', None)
-            if xscale is not None:
-                axkwargs['xscale'] = xscale
-
-            ax.set(**axkwargs)
-
-        ax.set_title(self.mnemonic)  # no longer needed
-        ax.set_xlabel(self.units)
-
-        if False:  # labeltop of axes?
-            ax.xaxis.tick_top()
-
-        if True:  # rotate x-tick labels
-            labels = ax.get_xticklabels()
-            for label in labels:
-                label.set_rotation(90)
-
-        ax.set_ylim([self.stop, self.start])
-        ax.grid('on', color='k', alpha=0.33, lw=0.33, linestyle='-')
-
-        if return_ax:
-            return ax
-        elif return_fig:
-            return fig
-        else:
-            return None
+        return plot_curve(curve=self,
+                          ax=ax,
+                          legend=legend,
+                          return_fig=return_fig,
+                          alias=alias,
+                          **kwargs)
 
     def extrapolate(self):
         """
@@ -867,6 +741,8 @@ class Curve(np.ndarray):
         """
         Plot a KDE for the curve. Very nice summary of KDEs:
         https://jakevdp.github.io/blog/2013/12/01/kernel-density-estimation/
+        Wrapping plot function from plot.py.
+        By default only show the plot, not return the figure object.
 
         Args:
             ax (axis): Optional matplotlib (MPL) axis to plot into. Returned.
@@ -878,38 +754,9 @@ class Curve(np.ndarray):
         Returns:
             None, axis, figure: depending on what you ask for.
         """
-        from scipy.stats import gaussian_kde
-
-        if ax is None:
-            fig = plt.figure()
-            ax = fig.add_subplot(111)
-            return_ax = False
-        else:
-            return_ax = True
-
-        a = self[~np.isnan(self)]
-
-        # Find values for common axis to exclude outliers.
-        if amax is None:
-            amax = np.percentile(a, 99)
-        if amin is None:
-            amin = np.percentile(a,  1)
-
-        x = a[np.abs(a - 0.5 * (amax + amin)) < 0.5 * (amax - amin)]
-        x_grid = np.linspace(amin, amax, 100)
-
-        kde = gaussian_kde(x)
-        std_a = kde.evaluate(x_grid)
-
-        img = np.array([std_a]) / np.max([std_a])
-        extent = [amin, amax, 0, 1]
-        ax.imshow(img, aspect='auto', cmap='viridis', extent=extent)
-        ax.set_yticklabels([])
-        ax.set_ylabel(label or self.mnemonic)
-
-        if return_ax:
-            return ax
-        elif return_fig:
-            return fig
-        else:
-            return None
+        return plot_kde_curve(curve=self,
+                              ax=ax,
+                              amax=amax,
+                              amin=amin,
+                              label=label,
+                              return_fig=return_fig)
