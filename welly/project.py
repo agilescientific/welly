@@ -8,7 +8,6 @@ from __future__ import print_function
 
 import glob
 from collections import Counter
-import re
 import warnings
 
 import numpy as np
@@ -18,7 +17,8 @@ from tqdm import tqdm
 from .well import Well, WellError
 from . import utils
 from .utils import deprecated
-from .defaults import ALIAS  # For access by user.
+from .plot import plot_kdes_project
+from .plot import plot_map_project
 
 
 class Project(object):
@@ -378,35 +378,18 @@ class Project(object):
             matplotlib.figure.Figure, or matplotlib.axes.Axes if you passed in
                 an axes object as `ax`.
         """
-        xattr, yattr = fields
-        xys = np.array([[getattr(w.location, xattr), getattr(w.location, yattr)] for w in self])
-
-        if ax is None:
-            fig, ax = plt.subplots(figsize=(1+width, width/utils.aspect(xys)))
-            return_ax = True
-        else:
-            return_ax = False
-
-        ax.scatter(*xys.T, s=60)
-        ax.axis('equal')
-        ax.grid(which='both', axis='both', color='k', alpha=0.2)
-        
-        if label:
-            labels = [getattr(w.header, label) for w in self]
-            for xy, label in zip(xys, labels):
-                ax.annotate(label, xy+1000, color='gray')
-
-        if return_ax:
-            return ax
-        else:
-            return fig
+        return plot_map_project(project=self,
+                                fields=fields,
+                                ax=ax,
+                                label=label,
+                                width=width)
 
     def plot_kdes(self, mnemonic, alias=None, uwi_regex=None, return_fig=False):
         """
         Plot KDEs for all curves with the given name.
 
         Args:
-            menmonic (str): the name of the curve to look for.
+            mnemonic (str): the name of the curve to look for.
             alias (dict): a welly alias dictionary.
             uwi_regex (str): a regex pattern. Only this part of the UWI will be displayed
                 on the plot of KDEs.
@@ -415,34 +398,11 @@ class Project(object):
         Returns:
             None or figure.
         """
-        wells = self.find_wells_with_curve(mnemonic, alias=alias)
-        fig, axs = plt.subplots(len(self), 1, figsize=(10, 1.5*len(self)))
-
-        curves = [w.get_curve(mnemonic, alias=alias) for w in wells]
-        all_data = np.hstack(curves)
-        all_data = all_data[~np.isnan(all_data)]
-
-        # Find values for common axis to exclude outliers.
-        amax = np.percentile(all_data, 99)
-        amin = np.percentile(all_data,  1)
-
-        for i, w in enumerate(self):
-            c = w.get_curve(mnemonic, alias=alias)
-
-            if uwi_regex is not None:
-                label = re.sub(uwi_regex, r'\1', w.uwi)
-            else:
-                label = w.uwi
-
-            if c is not None:
-                axs[i] = c.plot_kde(ax=axs[i], amax=amax, amin=amin, label=label+'-'+str(c.mnemonic))
-            else:
-                continue
-
-        if return_fig:
-            return fig
-        else:
-            return
+        return plot_kdes_project(project=self,
+                                 mnemonic=mnemonic,
+                                 alias=alias,
+                                 uwi_regex=uwi_regex,
+                                 return_fig=return_fig)
 
     @deprecated('Project.find_wells_with_curve() is deprecated; use Project.filter_wells_by_data().')
     def find_wells_with_curve(self, mnemonic, alias=None):
