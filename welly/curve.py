@@ -15,6 +15,10 @@ from . import utils
 from .plot import plot_kde_curve
 from .plot import plot_2d_curve
 from .plot import plot_curve
+from .quality import quality_curve
+from .quality import quality_score_curve
+from .quality import qflag_curve
+from.quality import qflags_curve
 
 
 class CurveError(Exception):
@@ -483,6 +487,7 @@ class Curve(np.ndarray):
     def quality(self, tests, alias=None):
         """
         Run a series of tests and return the corresponding results.
+        Wrapping function from quality.py
 
         Args:
             tests (list): a list of functions.
@@ -496,23 +501,14 @@ class Curve(np.ndarray):
         # Second, anything with the name of the curve we're in now.
         # Third, anything that the alias list has for this curve.
         # (This requires a reverse look-up so it's a bit messy.)
-        this_tests =\
-            tests.get('each', [])+tests.get('Each', [])+tests.get('EACH', [])\
-            + tests.get(self.mnemonic, [])\
-            + utils.flatten_list([tests.get(a) for a in self.get_alias(alias=alias)])
-        this_tests = filter(None, this_tests)
-
-        # If we explicitly set zero tests for a particular key, then this
-        # overrides the 'all' and 'alias' tests.
-        if not tests.get(self.mnemonic, 1):
-            this_tests = []
-
-        return {test.__name__: test(self) for test in this_tests}
+        return quality_curve(curve=self,
+                             tests=tests,
+                             alias=alias)
 
     def qflag(self, tests, alias=None):
         """
         Run a test and return the corresponding results on a sample-by-sample
-        basis.
+        basis. Wrapping function from quality.py
 
         Args:
             tests (list): a list of functions.
@@ -526,17 +522,14 @@ class Curve(np.ndarray):
         # Second, anything with the name of the curve we're in now.
         # Third, anything that the alias list has for this curve.
         # (This requires a reverse look-up so it's a bit messy.)
-        this_tests =\
-            tests.get('each', [])+tests.get('Each', [])+tests.get('EACH', [])\
-            + tests.get(self.mnemonic, [])\
-            + utils.flatten_list([tests.get(a) for a in self.get_alias(alias=alias)])
-        this_tests = filter(None, this_tests)
-
-        return {test.__name__: test(self) for test in this_tests}
+        return qflag_curve(curve=self,
+                           tests=tests,
+                           alias=alias)
 
     def qflags(self, tests, alias=None):
         """
         Run a series of tests and return the corresponding results.
+        Wrapping function from quality.py
 
         Args:
             tests (list): a list of functions.
@@ -550,16 +543,13 @@ class Curve(np.ndarray):
         # Second, anything with the name of the curve we're in now.
         # Third, anything that the alias list has for this curve.
         # (This requires a reverse look-up so it's a bit messy.)
-        this_tests =\
-            tests.get('each', [])+tests.get('Each', [])+tests.get('EACH', [])\
-            + tests.get(self.mnemonic, [])\
-            + utils.flatten_list([tests.get(a) for a in self.get_alias(alias=alias)])
-        this_tests = filter(None, this_tests)
-
-        return {test.__name__: test(self) for test in this_tests}
+        return qflags_curve(curve=self,
+                            tests=tests,
+                            alias=alias)
 
     def quality_score(self, tests, alias=None):
         """
+        Wrapping function from quality.py
         Run a series of tests and return the normalized score.
             1.0:   Passed all tests.
             (0-1): Passed a fraction of tests.
@@ -573,10 +563,9 @@ class Curve(np.ndarray):
         Returns:
             float. The fraction of tests passed, or -1 for 'took no tests'.
         """
-        results = self.quality(tests, alias=alias).values()
-        if results:
-            return sum(results) / len(results)
-        return -1
+        return quality_score_curve(curve=self,
+                                   tests=tests,
+                                   alias=alias)
 
     def block(self,
               cutoffs=None,

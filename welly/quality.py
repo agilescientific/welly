@@ -48,11 +48,10 @@ def no_gaps(curve):
 
 
 def no_flat(curve):
-
     def consecutive(data, stepsize=1):
-        return np.split(data, np.where(np.diff(data) != stepsize)[0]+1)
+        return np.split(data, np.where(np.diff(data) != stepsize)[0] + 1)
 
-    tolerance = max(3, curve.size//100)
+    tolerance = max(3, curve.size // 100)
     zeros = np.where(np.diff(curve) == 0)[0]
     tolerated = [a.size < tolerance for a in consecutive(zeros)]
     return np.all(tolerated)
@@ -65,12 +64,14 @@ def no_monotonic(curve):
 def all_above(value):
     def all_above(curve):
         return all(curve[~np.isnan(curve)] > value)
+
     return all_above
 
 
 def all_below(value):
     def all_below(curve):
         return all(curve[~np.isnan(curve)] < value)
+
     return all_below
 
 
@@ -79,18 +80,21 @@ def all_between(lower, upper):
         l = all(lower < curve[~np.isnan(curve)])
         u = all(upper > curve[~np.isnan(curve)])
         return l and u
+
     return all_between
 
 
 def mean_above(value):
     def mean_above(curve):
         return bool(np.nanmean(curve) > value)
+
     return mean_above
 
 
 def mean_below(value):
     def mean_below(curve):
         return bool(np.nanmean(curve) < value)
+
     return mean_below
 
 
@@ -99,12 +103,14 @@ def mean_between(lower, upper):
         l = lower < np.nanmean(curve)
         u = upper > np.nanmean(curve)
         return bool(l and u)
+
     return mean_between
 
 
 def check_units(list_of_units):
     def check_units(curve):
         return curve.units in list_of_units
+
     return check_units
 
 
@@ -112,9 +118,11 @@ def no_spikes(tolerance):
     """
     Arg ``tolerance`` is the number of spiky samples allowed.
     """
+
     def no_spikes(curve):
         diff = np.abs(curve - curve.despike())
         return np.count_nonzero(diff) < tolerance
+
     return no_spikes
 
 
@@ -139,6 +147,7 @@ def fraction_within_range(xmin, xmax):
         greaterthan_max = len(np.extract(finite > xmax, finite))
         lessthan_min = len(np.extract(finite < xmin, finite))
         return 1 - ((greaterthan_max + lessthan_min) / nsamps)
+
     return fraction_within_range
 
 
@@ -256,3 +265,106 @@ def qc_table_html_well(well, tests, keys=None, alias=None):
 
     html = '<table>{}</table>'.format(rows)
     return html
+
+
+def quality_curve(curve, tests, alias=None):
+    """
+    Run a series of tests and return the corresponding results.
+
+    Args:
+        tests (list): a list of functions.
+        alias (dict): a dictionary mapping mnemonics to lists of mnemonics.
+
+    Returns:
+        list. The results. Stick to booleans (True = pass) or ints.
+    """
+    # Gather the test s.
+    # First, anything called 'all', 'All', or 'ALL'.
+    # Second, anything with the name of the curve we're in now.
+    # Third, anything that the alias list has for this curve.
+    # (This requires a reverse look-up so it's a bit messy.)
+    this_tests = \
+        tests.get('each', []) + tests.get('Each', []) + tests.get('EACH', []) \
+        + tests.get(curve.mnemonic, []) \
+        + utils.flatten_list([tests.get(a) for a in curve.get_alias(alias=alias)])
+    this_tests = filter(None, this_tests)
+
+    # If we explicitly set zero tests for a particular key, then this
+    # overrides the 'all' and 'alias' tests.
+    if not tests.get(curve.mnemonic, 1):
+        this_tests = []
+
+    return {test.__name__: test(curve) for test in this_tests}
+
+
+def quality_score_curve(curve, tests, alias=None):
+    """
+    Run a series of tests and return the normalized score.
+        1.0:   Passed all tests.
+        (0-1): Passed a fraction of tests.
+        0.0:   Passed no tests.
+        -1.0:  Took no tests.
+
+    Args:
+        tests (list): a list of functions.
+        alias (dict): a dictionary mapping mnemonics to lists of mnemonics.
+
+    Returns:
+        float. The fraction of tests passed, or -1 for 'took no tests'.
+    """
+    results = curve.quality(tests, alias=alias).values()
+    if results:
+        return sum(results) / len(results)
+    return -1
+
+
+def qflag_curve(curve, tests, alias=None):
+    """
+    Run a test and return the corresponding results on a sample-by-sample
+    basis.
+
+    Args:
+        tests (list): a list of functions.
+        alias (dict): a dictionary mapping mnemonics to lists of mnemonics.
+
+    Returns:
+        list. The results. Stick to booleans (True = pass) or ints.
+    """
+    # Gather the tests.
+    # First, anything called 'all', 'All', or 'ALL'.
+    # Second, anything with the name of the curve we're in now.
+    # Third, anything that the alias list has for this curve.
+    # (This requires a reverse look-up so it's a bit messy.)
+    this_tests = \
+        tests.get('each', []) + tests.get('Each', []) + tests.get('EACH', []) \
+        + tests.get(curve.mnemonic, []) \
+        + utils.flatten_list([tests.get(a) for a in curve.get_alias(alias=alias)])
+    this_tests = filter(None, this_tests)
+
+    return {test.__name__: test(curve) for test in this_tests}
+
+
+def qflags_curve(curve, tests, alias=None):
+    """
+    Run a series of tests and return the corresponding results.
+
+    Args:
+        tests (list): a list of functions.
+        alias (dict): a dictionary mapping mnemonics to lists of mnemonics.
+
+    Returns:
+        list. The results. Stick to booleans (True = pass) or ints.
+    """
+    # Gather the tests.
+    # First, anything called 'all', 'All', or 'ALL'.
+    # Second, anything with the name of the curve we're in now.
+    # Third, anything that the alias list has for this curve.
+    # (This requires a reverse look-up so it's a bit messy.)
+    this_tests = \
+        tests.get('each', []) + tests.get('Each', []) + tests.get('EACH', []) \
+        + tests.get(curve.mnemonic, []) \
+        + utils.flatten_list([tests.get(a) for a in curve.get_alias(alias=alias)])
+    this_tests = filter(None, this_tests)
+
+    return {test.__name__: test(curve) for test in this_tests}
+
