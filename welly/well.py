@@ -27,6 +27,9 @@ from .canstrat import interval_to_card_7
 from .canstrat import write_row
 from .plot import plot_well
 from .plot import plot_depth_track_well
+from .quality import qc_data_well
+from .quality import qc_curve_group_well
+from .quality import qc_table_html_well
 
 ###############################################
 # This module is not used directly, but must
@@ -863,7 +866,7 @@ class Well(object):
 
     def qc_curve_group(self, tests, keys=None, alias=None):
         """
-        Run tests on a cohort of curves.
+        Run tests on a cohort of curves. Wrapping functions from quality.py
 
         Args:
             tests (dict): a dictionary of tests, mapping mnemonics to lists of
@@ -878,26 +881,15 @@ class Well(object):
         Returns:
             dict.
         """
-        keys = self._get_curve_mnemonics(keys, alias=alias)
-
-        if not keys:
-            return {}
-
-        all_tests = tests.get('all', tests.get('All', tests.get('ALL', [])))
-        data = {test.__name__: test(self, keys, alias) for test in all_tests}
-
-        results = {}
-        for i, key in enumerate(keys):
-            this = {}
-            for test, result in data.items():
-                this[test] = result[i]
-            results[key] = this
-        return results
+        return qc_curve_group_well(well=self,
+                                   tests=tests,
+                                   keys=keys,
+                                   alias=alias)
 
     def qc_data(self, tests, keys=None, alias=None):
         """
         Run a series of tests against the data and return the corresponding
-        results.
+        results. Wrapping frunction from quality.py.
 
         Args:
             tests (dict): a dictionary of tests, mapping mnemonics to lists of
@@ -912,55 +904,22 @@ class Well(object):
         Returns:
             list. The results. Stick to booleans (True = pass) or ints.
         """
-        keys = self._get_curve_mnemonics(keys, alias=alias, curves_only=False)
-        r = {k: self.data.get(k).quality(tests, alias) for k in keys}
-        s = self.qc_curve_group(tests, keys, alias=alias)
-        for m, results in r.items():
-            if m in s:
-                results.update(s[m])
-        return r
+        return qc_data_well(well=self,
+                            tests=tests,
+                            keys=keys,
+                            alias=alias)
 
     def qc_table_html(self, tests, keys=None, alias=None):
         """
-        Makes a nice table out of ``qc_data()``
+        Makes a nice table out of ``qc_data()`` Wrapping function from quality.py.
 
         Returns:
             str. An HTML string.
         """
-        data = self.qc_data(tests, keys=keys, alias=alias)
-        all_tests = [list(d.keys()) for d in data.values()]
-        tests = list(set(utils.flatten_list(all_tests)))
-
-        # Header row.
-        r = '</th><th>'.join(['Curve', 'Passed', 'Score'] + tests)
-        rows = '<tr><th>{}</th></tr>'.format(r)
-
-        styles = {
-            True: "#CCEECC",   # Green
-            False: "#FFCCCC",  # Red
-        }
-
-        # Quality results.
-        for curve, results in data.items():
-
-            if results:
-                norm_score = sum(results.values()) / len(results)
-            else:
-                norm_score = -1
-
-            rows += '<tr><th>{}</th>'.format(curve)
-            rows += '<td>{} / {}</td>'.format(sum(results.values()), len(results))
-            rows += '<td>{:.3f}</td>'.format(norm_score)
-
-            for test in tests:
-                result = results.get(test, '')
-                style = styles.get(result, "#EEEEEE")
-                rows += '<td style="background-color:{};">'.format(style)
-                rows += '{}</td>'.format(result)
-            rows += '</tr>'
-
-        html = '<table>{}</table>'.format(rows)
-        return html
+        return qc_table_html_well(well=self,
+                                  tests=tests,
+                                  keys=keys,
+                                  alias=alias)
 
     def to_canstrat(self, key, log, lith_field, filename=None, as_text=False):
         """

@@ -152,3 +152,107 @@ def spike_locations(curve):
     Return the indicies of the spikes.
     """
     return
+
+
+def qc_curve_group_well(well, tests, keys=None, alias=None):
+    """
+    Run tests on a cohort of curves.
+
+    Args:
+        tests (dict): a dictionary of tests, mapping mnemonics to lists of
+            tests. Two special keys, `all` and `each` map tests to the set
+            of all curves, and to each curve in the well, respectively.
+            You only need `all` if the test involves multiple inputs, e.g.
+            comparing one curve to another.
+        keys (list): a list of the mnemonics to run the tests against.
+        alias (dict): an alias dictionary, mapping mnemonics to lists of
+            mnemonics.
+
+    Returns:
+        dict.
+    """
+    keys = well._get_curve_mnemonics(keys, alias=alias)
+
+    if not keys:
+        return {}
+
+    all_tests = tests.get('all', tests.get('All', tests.get('ALL', [])))
+    data = {test.__name__: test(well, keys, alias) for test in all_tests}
+
+    results = {}
+    for i, key in enumerate(keys):
+        this = {}
+        for test, result in data.items():
+            this[test] = result[i]
+        results[key] = this
+    return results
+
+
+def qc_data_well(well, tests, keys=None, alias=None):
+    """
+    Run a series of tests against the data and return the corresponding
+    results.
+
+    Args:
+        tests (dict): a dictionary of tests, mapping mnemonics to lists of
+            tests. Two special keys, `all` and `each` map tests to the set
+            of all curves, and to each curve in the well, respectively.
+            You only need `all` if the test involves multiple inputs, e.g.
+            comparing one curve to another.
+        keys (list): a list of the mnemonics to run the tests against.
+        alias (dict): an alias dictionary, mapping mnemonics to lists of
+            mnemonics.
+
+    Returns:
+        list. The results. Stick to booleans (True = pass) or ints.
+    """
+    keys = well._get_curve_mnemonics(keys, alias=alias, curves_only=False)
+    r = {k: well.data.get(k).quality(tests, alias) for k in keys}
+    s = well.qc_curve_group(tests, keys, alias=alias)
+    for m, results in r.items():
+        if m in s:
+            results.update(s[m])
+    return r
+
+
+def qc_table_html_well(well, tests, keys=None, alias=None):
+    """
+    Makes a nice table out of ``qc_data()``
+
+    Returns:
+        str. An HTML string.
+    """
+    data = well.qc_data(tests, keys=keys, alias=alias)
+    all_tests = [list(d.keys()) for d in data.values()]
+    tests = list(set(utils.flatten_list(all_tests)))
+
+    # Header row.
+    r = '</th><th>'.join(['Curve', 'Passed', 'Score'] + tests)
+    rows = '<tr><th>{}</th></tr>'.format(r)
+
+    styles = {
+        True: "#CCEECC",  # Green
+        False: "#FFCCCC",  # Red
+    }
+
+    # Quality results.
+    for curve, results in data.items():
+
+        if results:
+            norm_score = sum(results.values()) / len(results)
+        else:
+            norm_score = -1
+
+        rows += '<tr><th>{}</th>'.format(curve)
+        rows += '<td>{} / {}</td>'.format(sum(results.values()), len(results))
+        rows += '<td>{:.3f}</td>'.format(norm_score)
+
+        for test in tests:
+            result = results.get(test, '')
+            style = styles.get(result, "#EEEEEE")
+            rows += '<td style="background-color:{};">'.format(style)
+            rows += '{}</td>'.format(result)
+        rows += '</tr>'
+
+    html = '<table>{}</table>'.format(rows)
+    return html
