@@ -64,5 +64,13 @@ def test_quality_curve():
     assert type(tests_curve) == dict
     assert len(tests_curve) == 3
 
+    tests_curve_qflag = c.qflag(tests=tests, alias=alias)
+    assert type(tests_curve_qflag) == dict
+    assert len(tests_curve_qflag) == 3
+
+    tests_curve_qflags = c.qflag(tests=tests, alias=alias)
+    assert type(tests_curve_qflags) == dict
+    assert len(tests_curve_qflags) == 3
+
     test_score = c.quality_score(tests=tests_curve)
     assert test_score == -1
