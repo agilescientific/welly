@@ -4,17 +4,11 @@ Define a suite a tests for the Curve module.
 """
 import numpy as np
 
-from welly import Well
-from welly import Curve
 
-FNAME = 'tests/P-129_out.LAS'
-
-
-def test_curve():
+def test_curve(well):
     """
     Test basic stuff.
     """
-    well = Well.from_las(FNAME)
     gr = well.data['GR']
 
     # Basics
@@ -34,11 +28,10 @@ def test_curve():
     assert data in html
 
 
-def test_basis():
+def test_basis(well):
     """
     Test basis change.
     """
-    well = Well.from_las(FNAME)
     gr = well.data['GR']
 
     x = gr.to_basis(start=100, stop=200, step=1)
@@ -50,11 +43,10 @@ def test_basis():
     assert y[0] - 66.6059 < 0.001
 
 
-def test_read():
+def test_read(well):
     """
     Test reading for single number and array.
     """
-    well = Well.from_las(FNAME)
     gr = well.data['GR']
 
     assert gr.read_at(1000) - 109.414177 < 0.001
@@ -64,11 +56,10 @@ def test_read():
     np.testing.assert_allclose(actual, desired)
 
 
-def test_block():
+def test_block(well):
     """
     Test log blocking.
     """
-    well = Well.from_las(FNAME)
     gr = well.data['GR']
 
     b = gr.block(cutoffs=[50, 100])
@@ -84,10 +75,9 @@ def test_block():
     assert b.mean() - 25.077528 < 0.001
 
 
-def test_despike():
+def test_despike(well):
     """
     Test despiker with even window and z != 2.
     """
-    well = Well.from_las(FNAME)
     gr = well.data['GR']
     assert gr.max() - gr.despike(50, z=1).max() - 91.83918 < 0.001

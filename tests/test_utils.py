@@ -4,13 +4,8 @@ Define a suite a tests for the utils.
 """
 import numpy as np
 
-from welly.utils import moving_average, moving_avg_conv
-from welly.utils import top_and_tail, extrapolate
-from welly.utils import normalize
-from welly.utils import find_nearest
-from welly.utils import list_and_add
-from welly.utils import dd2dms
-from welly.utils import hex_to_rgb, text_colour_for_hex
+from welly.utils import dd2dms, find_nearest, list_and_add, moving_average, moving_avg_conv, normalize, \
+    text_colour_for_hex, top_and_tail, extrapolate, get_number_of_decimal_points, get_columns_decimal_formatter
 
 
 def test_moving_avg():
@@ -19,16 +14,16 @@ def test_moving_avg():
     """
     a = np.array([1, 9, 9, 9, 9, 9, 9, 2, 3, 9, 2, 2, 3, 1, 1, 1, 1, 3, 4, 9, 9, 9, 8, 3])
     m = moving_average(a, 5, mode='same')
-    t = [4.2,  5.8,  7.4,  9.0,  9.0,  7.6,  6.4,  6.4,  5.0,  3.6,  3.8,
-         3.4,  1.8,  1.6,  1.4,  1.4,  2.0,  3.6,  5.2,  6.8,  7.8,  7.6,
-         6.4,  5.2]
+    t = [4.2, 5.8, 7.4, 9.0, 9.0, 7.6, 6.4, 6.4, 5.0, 3.6, 3.8,
+         3.4, 1.8, 1.6, 1.4, 1.4, 2.0, 3.6, 5.2, 6.8, 7.8, 7.6,
+         6.4, 5.2]
     assert len(m) == len(a)
     assert np.allclose(m, t)
 
     # Heads up, these should not be different.
-    t = [3.8,  5.6,  7.4,  9.0,  9.0,  7.6,  6.4,  6.4,  5.0,  3.6,  3.8,
-         3.4,  1.8,  1.6,  1.4,  1.4,  2.0,  3.6,  5.2,  6.8,  7.8,  7.6,
-         5.8,  4.0]
+    t = [3.8, 5.6, 7.4, 9.0, 9.0, 7.6, 6.4, 6.4, 5.0, 3.6, 3.8,
+         3.4, 1.8, 1.6, 1.4, 1.4, 2.0, 3.6, 5.2, 6.8, 7.8, 7.6,
+         5.8, 4.0]
     c = moving_avg_conv(a, 5)
     assert np.allclose(c, t)
 
@@ -57,8 +52,8 @@ def test_extraplate():
 
 def test_other():
     a = np.array([1, 9, 9, 9, 9, 9, 9, 2, 3, 9, 2, 2, 3, 1, 1, 1, 1, 3, 4, 9, 9, 9, 8, 3])
-    t = [0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.125, 0.25, 1.0, 0.125,  0.125,
-         0.25, 0.0, 0.0, 0.0,  0.0, 0.25, 0.375, 1.0, 1.0, 1.0, 0.875, 0.25]
+    t = [0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.125, 0.25, 1.0, 0.125, 0.125,
+         0.25, 0.0, 0.0, 0.0, 0.0, 0.25, 0.375, 1.0, 1.0, 1.0, 0.875, 0.25]
     assert np.allclose(normalize(a), t)
     assert find_nearest(a, 10) == 9
     assert find_nearest(a, 10, index=True) == 1
@@ -79,3 +74,22 @@ def test_dd2dms():
 
 def test_colour():
     assert text_colour_for_hex('#101010') == '#ffffff'
+
+
+def test_get_columns_decimal_formatter():
+    """
+    Test if the columns decimal formatter getter is returning the correct dictionary
+    """
+    # mode of 1st column is 1, mode of 2nd column is 2
+    numeric_twodim_arr = np.array([[1.1, 1.1], [1.1, 1.12], [1.11, 1.12]])
+    assert get_columns_decimal_formatter(numeric_twodim_arr) == {0: '%.1f', 1: '%.2f'}
+    mixed_twodim_arr = np.array([['str'], [np.nan], [1.001]], dtype='object')
+    assert get_columns_decimal_formatter(mixed_twodim_arr) == {0: '%.3f'}
+
+
+def test_get_number_of_decimal_points():
+    assert get_number_of_decimal_points('string') is None
+    assert get_number_of_decimal_points([1.12]) is None
+    assert get_number_of_decimal_points(np.nan) is None
+    assert get_number_of_decimal_points(1.12) == 2
+    assert get_number_of_decimal_points(1) == 0
