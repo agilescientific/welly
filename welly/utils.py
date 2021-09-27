@@ -31,8 +31,8 @@ def deprecated(instructions):
     Returns:
         The decorated function.
     """
-    def decorator(func):
 
+    def decorator(func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
             message = 'Call to deprecated function {}. {}'.format(
@@ -88,6 +88,7 @@ def null_default(x):
     Null function. Used for default in functions that can apply a user-
     supplied function to data before returning.
     """
+
     def null(y):
         return x
 
@@ -133,6 +134,7 @@ class Linker(object):
 
     By Joe Kington
     """
+
     def __init__(self, axes):
         self.axes = axes
         self._cids = {}
@@ -178,7 +180,7 @@ def flatten_list(L):
     """
     Flattens a list. For example:
 
-        >>> flatten_list([1, 2, [3, 4], [5, [6, 7]]])
+        >> flatten_list([1, 2, [3, 4], [5, [6, 7]]])
         [1, 2, 3, 4, 5, 6, 7]
     """
     return list(cbook.flatten(L)) if L else L
@@ -227,6 +229,7 @@ def lasio_get(header,
     """
     remap = remap or {}
     item_to_fetch = remap.get(item, item)
+
     if item_to_fetch is None:
         return None
 
@@ -247,8 +250,8 @@ def parabolic(f, x):
     """
     Interpolation. From ageobot, from somewhere else.
     """
-    xv = 1/2. * (f[x-1] - f[x+1]) / (f[x-1] - 2 * f[x] + f[x+1]) + x
-    yv = f[x] - 1/4. * (f[x-1] - f[x+1]) * (xv - x)
+    xv = 1 / 2. * (f[x - 1] - f[x + 1]) / (f[x - 1] - 2 * f[x] + f[x + 1]) + x
+    yv = f[x] - 1 / 4. * (f[x - 1] - f[x + 1]) * (xv - x)
     return (xv, yv)
 
 
@@ -263,7 +266,7 @@ def linear(u, v, d):
     Returns:
         float. The interpolated value.
     """
-    return u + d*(v-u)
+    return u + d * (v - u)
 
 
 def find_nearest(a, value, index=False):
@@ -307,7 +310,7 @@ def find_previous(a, value, index=False, return_distance=False):
     """
     b = a - value
     i = np.where(b > 0)[0][0]
-    d = (value - a[i-1]) / (a[i] - a[i-1])
+    d = (value - a[i - 1]) / (a[i] - a[i - 1])
     if index:
         if return_distance:
             return i - 1, d
@@ -346,7 +349,7 @@ def rms(a):
     :returns: The RMS of the array.
     """
 
-    return np.sqrt(np.sum(a**2.0)/a.size)
+    return np.sqrt(np.sum(a ** 2.0) / a.size)
 
 
 def normalize(a, new_min=0.0, new_max=1.0):
@@ -375,8 +378,8 @@ def moving_average(a, length, mode='valid'):
     Computes the mean in a moving window. Naive implementation.
 
     Example:
-        >>> test = np.array([1,9,9,9,9,9,9,2,3,9,2,2,3,1,1,1,1,3,4,9,9,9,8,3])
-        >>> moving_average(test, 7, mode='same')
+        >> test = np.array([1,9,9,9,9,9,9,2,3,9,2,2,3,1,1,1,1,3,4,9,9,9,8,3])
+        >> moving_average(test, 7, mode='same')
         [ 4.42857143,  5.57142857,  6.71428571,  7.85714286,  8.        ,
         7.14285714,  7.14285714,  6.14285714,  5.14285714,  4.28571429,
         3.14285714,  3.        ,  2.71428571,  1.57142857,  1.71428571,
@@ -386,14 +389,14 @@ def moving_average(a, length, mode='valid'):
     TODO:
         Other types of average.
     """
-    pad = np.floor(length/2)
+    pad = np.floor(length / 2)
 
     if mode == 'full':
         pad *= 2
     pad = int(pad)
 
     # Make a padded version, paddding with first and last values
-    r = np.zeros(a.shape[0] + 2*pad)
+    r = np.zeros(a.shape[0] + 2 * pad)
     r[:pad] = a[0]
     r[pad:-pad] = a
     r[-pad:] = a[-1]
@@ -401,7 +404,7 @@ def moving_average(a, length, mode='valid'):
     # Cumsum with shifting trick
     s = np.cumsum(r, dtype=float)
     s[length:] = s[length:] - s[:-length]
-    out = s[length-1:]/length
+    out = s[length - 1:] / length
 
     # Decide what to return
     if mode == 'same':
@@ -421,7 +424,7 @@ def moving_avg_conv(a, length):
 
     Moving average via convolution. Seems slower than naive.
     """
-    boxcar = np.ones(length)/length
+    boxcar = np.ones(length) / length
     return np.convolve(a, boxcar, mode="same")
 
 
@@ -437,9 +440,9 @@ def nan_idx(y):
           to convert logical indices of NaNs to 'equivalent' indices
 
     Example:
-        >>> # linear interpolation of NaNs
-        >>> nans, x = nan_helper(y)
-        >>> y[nans] = np.interp(x(nans), x(~nans), y[~nans])
+        >> # linear interpolation of NaNs
+        >> nans, x = nan_helper(y)
+        >> y[nans] = np.interp(x(nans), x(~nans), y[~nans])
     """
     return np.isnan(y), lambda z: z.nonzero()[0]
 
@@ -471,7 +474,7 @@ def top_and_tail(a):
     if np.all(np.isnan(a)):
         return np.array([])
     nans = np.where(~np.isnan(a))[0]
-    last = None if nans[-1]+1 == a.size else nans[-1]+1
+    last = None if nans[-1] + 1 == a.size else nans[-1] + 1
     return a[nans[0]:last]
 
 
@@ -486,7 +489,7 @@ def dms2dd(dms):
         float.
     """
     d, m, s = dms
-    return d + m/60. + s/3600.
+    return d + m / 60. + s / 3600.
 
 
 def dd2dms(dd):
@@ -516,8 +519,8 @@ def ricker(f, length, dt):
     Returns:
         tuple. time basis, amplitude values.
     """
-    t = np.linspace(-int(length/2), int((length-dt)/2), int(length/dt))
-    y = (1. - 2.*(np.pi**2)*(f**2)*(t**2))*np.exp(-(np.pi**2)*(f**2)*(t**2))
+    t = np.linspace(-int(length / 2), int((length - dt) / 2), int(length / dt))
+    y = (1. - 2. * (np.pi ** 2) * (f ** 2) * (t ** 2)) * np.exp(-(np.pi ** 2) * (f ** 2) * (t ** 2))
     return t, y
 
 
@@ -535,7 +538,7 @@ def hex_to_rgb(hexx):
     h = hexx.strip('#')
     l = len(h)
 
-    return tuple(int(h[i:i+l//3], 16) for i in range(0, l, l//3))
+    return tuple(int(h[i:i + l // 3], 16) for i in range(0, l, l // 3))
 
 
 def hex_is_dark(hexx, percent=50):

@@ -6,7 +6,6 @@ Field mapping from welly to LAS.
 """
 from .crs import CRS
 
-
 las_fields = {
     'well': {
     },
@@ -53,7 +52,6 @@ las_fields = {
         'date': ('well', 'DATE')
     }
 }
-
 
 dev_fields = {
     'x': (r"X-COORDINATE: ([.0-9]+).+?", float),
