@@ -5,3 +5,4 @@ tqdm
 striplog
 lasio
 wellpathpy
+pandas
