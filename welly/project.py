@@ -17,8 +17,7 @@ from tqdm import tqdm
 from .well import Well, WellError
 from . import utils
 from .utils import deprecated
-from .plot import plot_kdes_project
-from .plot import plot_map_project
+from .plot import plot_kdes_project, plot_map_project
 
 
 class Project(object):
