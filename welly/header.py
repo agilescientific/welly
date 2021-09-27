@@ -40,12 +40,12 @@ class Header(dict):
         return self.__dict__[key]
 
     @classmethod
-    def from_lasio(cls, l, remap=None, funcs=None):
+    def from_lasio(cls, header, remap=None, funcs=None):
         """
         Assumes we're starting with a lasio object, l.
 
         Args:
-            l (lasio): A lasio instance.
+            header (pd.DataFrame): Header data from las file
             remap (dict): Optional. A dict of 'old': 'new' LAS field names.
             funcs (dict): Optional. A dict of 'las field': function() for
                 implementing a transform before loading. Can be a lambda.
@@ -53,7 +53,7 @@ class Header(dict):
         """
         params = {}
         for field, (sect, code) in las_fields['header'].items():
-            params[field] = utils.lasio_get(l,
+            params[field] = utils.lasio_get(header,
                                             sect,
                                             code,
                                             remap=remap,

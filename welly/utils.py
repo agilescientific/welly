@@ -197,7 +197,7 @@ def list_and_add(a, b):
     return a + b
 
 
-def lasio_get(l,
+def lasio_get(header,
               section,
               item,
               attrib='value',
@@ -205,10 +205,10 @@ def lasio_get(l,
               remap=None,
               funcs=None):
     """
-    Grabs, renames and transforms stuff from a lasio object.
+    Grabs, renames and transforms stuff from a header dataframe.
 
     Args:
-        l (lasio): a lasio instance.
+        header (pd.DataFrame): Header from LAS file parsed to tabular form. See :func: 'parse_from_las2()' for format.
         section (str): The LAS section to grab from, eg ``well``
         item (str): The item in the LAS section to grab from, eg ``name``
         attrib (str): The attribute of the item to grab, eg ``value``
@@ -226,11 +226,11 @@ def lasio_get(l,
         return None
 
     try:
-        obj = getattr(l, section)
-        result = getattr(obj, item_to_fetch)[attrib]
-    except:
+        result = header[(header.mnemonic == item_to_fetch) & (header.section == las_objects[section])][attrib].values[0]
+    except Exception:
         return default
 
+    # apply input function on item
     if funcs is not None:
         f = funcs.get(item, null)
         result = f(result)
