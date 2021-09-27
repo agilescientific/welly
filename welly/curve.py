@@ -12,13 +12,8 @@ from scipy.interpolate import interp1d
 import warnings
 
 from . import utils
-from .plot import plot_kde_curve
-from .plot import plot_2d_curve
-from .plot import plot_curve
-from .quality import quality_curve
-from .quality import quality_score_curve
-from .quality import qflag_curve
-from.quality import qflags_curve
+from .plot import plot_kde_curve, plot_2d_curve, plot_curve
+from .quality import quality_curve, quality_score_curve, qflags_curve, qflag_curve
 
 
 class CurveError(Exception):
