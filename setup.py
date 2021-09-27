@@ -25,7 +25,8 @@ REQUIREMENTS = ['numpy',
                 'lasio',
                 'striplog',
                 'tqdm',
-                'wellpathpy'
+                'wellpathpy',
+                'pandas'
                 ]
 
 TEST_REQUIREMENTS = ['pytest',
