@@ -4,15 +4,20 @@ Utility functions for welly.
 :copyright: 2021 Agile Scientific
 :license: Apache 2.0
 """
-import re
-import glob
-import warnings
-import inspect
+import decimal
 import functools
+import glob
+import inspect
+import re
+import warnings
 
-import numpy as np
-import matplotlib.pyplot as plt
 import matplotlib.cbook as cbook
+import matplotlib.pyplot as plt
+import numpy as np
+
+from welly.fields import las_objects
+
+NULL_VALUES = [9999.25, -9999.25, -9999, 9999, 999.25, -999.25]
 
 
 def deprecated(instructions):
@@ -601,3 +606,74 @@ def to_filename(path):
         return path.absolute().__str__()
     else:
         return path
+
+
+def get_columns_decimal_formatter(data, null_value=None):
+    """
+    Get the column decimal point formatter from the two-dimensional numpy.ndarray.
+    Get the number of decimal points from columns with numerical values (float or int).
+    Take the highest number of decimal points of the column values.
+    The dictionary maps the column order of occurrence to the numerical formatter function.
+    If a column has no numerical values, don't create a mapping for that column in the dictionary.
+
+    Example:
+        Input np.ndarray:
+            - 1st column values: most occurring 2 decimal points
+            - 2nd column values: most occurring 5 decimal points
+            - 3rd column values: most occurring 10 decimal points
+
+        Returns:
+            column_fmt = {
+                0 : '%.2f',
+                1 : '%.5f',
+                2 : '%.10f'
+            }
+
+    Args:
+        data (numpy.ndarray): two-dimensional array with floats and/or ints (columns and rows).
+        null_value (float): Optional. A float that represents null/NaN in the column values from which we do not take
+                            the number of decimals.
+
+    Returns:
+        column_fmt (dict): Mapping of order of column occurrence to most occurring decimal point formatting function
+    """
+    if null_value:
+        NULL_VALUES.append(null_value)
+
+    column_fmt = {}
+
+    # iterate over the transpose to iterate over columns
+    for i, arr in enumerate(data.T):
+
+        # get most occurring decimal points for the values in the column, excluding null representation
+        column_values_n_decimal_points = [get_number_of_decimal_points(x) for x in arr if isinstance(x, (int, float))
+                                          and x not in NULL_VALUES]
+
+        # remove None values from list in place
+        column_values_n_decimal_points = [x for x in column_values_n_decimal_points if x is not None]
+
+        if len(column_values_n_decimal_points) > 0:
+            # get the highest number of decimal points that were found in column
+            mode = max(column_values_n_decimal_points)
+
+            if mode:
+                # create string formatter and map in dictionary to curve number of occurrence
+                column_fmt[i] = '%.{}f'.format(mode)
+
+    return column_fmt
+
+
+def get_number_of_decimal_points(value):
+    """
+    Get the number of decimal points from a numeric value (float or int).
+
+    Args:
+        value (float or int): Numeric value
+    Returns:
+        n_decimals (int): Number of decimal points if value is of type float or int, otherwise return None.
+    """
+    if isinstance(value, (int, float)) and not np.isnan(value):
+        # get and return the number of decimal points from the value
+        return -decimal.Decimal(str(value)).as_tuple().exponent
+    else:
+        return None
