@@ -28,11 +28,9 @@ from .canstrat import well_to_card_1
 from .canstrat import well_to_card_2
 from .canstrat import interval_to_card_7
 from .canstrat import write_row
-from .plot import plot_well
-from .plot import plot_depth_track_well
-from .quality import qc_data_well
-from .quality import qc_curve_group_well
-from .quality import qc_table_html_well
+from .plot import plot_well, plot_depth_track_well
+from .quality import qc_data_well, qc_curve_group_well, qc_table_html_well
+
 
 ###############################################
 # This module is not used directly, but must
