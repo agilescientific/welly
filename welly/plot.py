@@ -255,7 +255,7 @@ def plot_well(well,
     if '.' in track:
         track, kwargs['field'] = track.split('.')
     if track in depth_tracks:
-        ax0 = well._plot_depth_track(ax=ax0, md=basis, kind=track, tick_spacing=ts)
+        ax0 = plot_depth_track_well(well=well, ax=ax0, md=basis, kind=track, tick_spacing=ts)
     else:
         try:  # ...treating as a plottable object.
             ax0 = well.get_curve(track, alias=alias).plot(ax=ax0, legend=legend, **kwargs)
@@ -277,7 +277,7 @@ def plot_well(well,
         ax = fig.add_subplot(gs[0, i + 1])
         ax.depth_track = False
         if track in depth_tracks:
-            ax = well._plot_depth_track(ax=ax, md=basis, kind=track, tick_spacing=ts)
+            ax = plot_depth_track_well(well=well, ax=ax, md=basis, kind=track, tick_spacing=ts)
             continue
         if '.' in track:
             track, kwargs['field'] = track.split('.')
