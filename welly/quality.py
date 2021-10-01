@@ -65,7 +65,7 @@ def qc_data_well(well, tests, keys=None, alias=None):
     """
     keys = well._get_curve_mnemonics(keys, alias=alias, curves_only=False)
     r = {k: well.data.get(k).quality(tests, alias) for k in keys}
-    s = well.qc_curve_group(tests, keys, alias=alias)
+    s = qc_curve_group_well(well=well, tests=tests, keys=keys, alias=alias)
     for m, results in r.items():
         if m in s:
             results.update(s[m])
@@ -89,7 +89,7 @@ def qc_table_html_well(well, tests, keys=None, alias=None):
     Returns:
         str. An HTML string.
     """
-    data = well.qc_data(tests, keys=keys, alias=alias)
+    data = qc_data_well(well=well, keys=keys, alias=alias)
     all_tests = [list(d.keys()) for d in data.values()]
     tests = list(set(utils.flatten_list(all_tests)))
 
@@ -172,7 +172,7 @@ def quality_score_curve(curve, tests, alias=None):
     Returns:
         float. The fraction of tests passed, or -1 for 'took no tests'.
     """
-    results = curve.quality(tests, alias=alias).values()
+    results = quality_curve(curve=curve, tests=tests, alias=alias).values()
     if results:
         return sum(results) / len(results)
     return -1
