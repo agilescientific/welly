@@ -27,7 +27,7 @@ def qc_curve_group_well(well, tests, keys=None, alias=None):
 
     Returns:
         dict. Test results for all the curves.
-            {curve_name: {test0: test_result0, ...}, ...}
+            {curve_name0: {test0: test_result0, ...}, ...}
     """
     keys = well._get_curve_mnemonics(keys, alias=alias)
 
@@ -62,7 +62,9 @@ def qc_data_well(well, tests, keys=None, alias=None):
             mnemonics. See example in tests/test_quality.py
 
     Returns:
-        list. The results. Stick to booleans (True = pass) or ints.
+        dict. The results. Stick to booleans (True = pass) or ints.
+            ({curve_name: {test_name: test_result}}
+
     """
     keys = well._get_curve_mnemonics(keys, alias=alias, curves_only=False)
     r = {k: well.data.get(k).quality(tests, alias) for k in keys}
@@ -137,7 +139,8 @@ def quality_curve(curve, tests, alias=None):
             See example in tests/test_quality.py
 
     Returns:
-        list. The results. Stick to booleans (True = pass) or ints.
+        dict. The results. Stick to booleans (True = pass) or ints.
+            {test_name: test_result}
     """
     # Gather the test s.
     # First, anything called 'all', 'All', or 'ALL'.
@@ -193,7 +196,8 @@ def qflag_curve(curve, tests, alias=None):
             See example in tests/test_quality.py
 
     Returns:
-        list. The results. Stick to booleans (True = pass) or ints.
+        dict. The results. Stick to booleans (True = pass) or ints.
+            {test_name: test_result}
     """
     # Gather the tests.
     # First, anything called 'all', 'All', or 'ALL'.
@@ -220,7 +224,8 @@ def qflags_curve(curve, tests, alias=None):
             See example in tests/test_quality.py
 
     Returns:
-        list. The results. Stick to booleans (True = pass) or ints.
+        dict. The results. Stick to booleans (True = pass) or ints.
+            {test_name: test_result}
     """
     # Gather the tests.
     # First, anything called 'all', 'All', or 'ALL'.
