@@ -26,7 +26,8 @@ def qc_curve_group_well(well, tests, keys=None, alias=None):
             mnemonics. See example in tests/test_quality.py
 
     Returns:
-        dict.
+        results (dict): Test results for all the curves. 
+            {curve_name: {test0: test_result0, ...}, ...}
     """
     keys = well._get_curve_mnemonics(keys, alias=alias)
 
