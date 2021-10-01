@@ -20,10 +20,10 @@ def qc_curve_group_well(well, tests, keys=None, alias=None):
             tests. Two special keys, `all` and `each` map tests to the set
             of all curves, and to each curve in the well, respectively.
             You only need `all` if the test involves multiple inputs, e.g.
-            comparing one curve to another.
+            comparing one curve to another. See example in tests/test_quality.py
         keys (list): a list of the mnemonics to run the tests against.
         alias (dict): an alias dictionary, mapping mnemonics to lists of
-            mnemonics.
+            mnemonics. See example in tests/test_quality.py
 
     Returns:
         dict.
@@ -55,10 +55,10 @@ def qc_data_well(well, tests, keys=None, alias=None):
             tests. Two special keys, `all` and `each` map tests to the set
             of all curves, and to each curve in the well, respectively.
             You only need `all` if the test involves multiple inputs, e.g.
-            comparing one curve to another.
+            comparing one curve to another. See example in tests/test_quality.py
         keys (list): a list of the mnemonics to run the tests against.
         alias (dict): an alias dictionary, mapping mnemonics to lists of
-            mnemonics.
+            mnemonics. See example in tests/test_quality.py
 
     Returns:
         list. The results. Stick to booleans (True = pass) or ints.
@@ -81,10 +81,10 @@ def qc_table_html_well(well, tests, keys=None, alias=None):
             tests. Two special keys, `all` and `each` map tests to the set
             of all curves, and to each curve in the well, respectively.
             You only need `all` if the test involves multiple inputs, e.g.
-            comparing one curve to another.
+            comparing one curve to another. See example in tests/test_quality.py
         keys (list): a list of the mnemonics to run the tests against.
         alias (dict): an alias dictionary, mapping mnemonics to lists of
-            mnemonics.
+            mnemonics. See example in tests/test_quality.py
 
     Returns:
         str. An HTML string.
@@ -133,6 +133,7 @@ def quality_curve(curve, tests, alias=None):
         curve (welly.curve.Curve): Curve object.
         tests (list): a list of functions.
         alias (dict): a dictionary mapping mnemonics to lists of mnemonics.
+            See example in tests/test_quality.py
 
     Returns:
         list. The results. Stick to booleans (True = pass) or ints.
@@ -168,6 +169,7 @@ def quality_score_curve(curve, tests, alias=None):
         curve (welly.curve.Curve): Curve object.
         tests (list): a list of functions.
         alias (dict): a dictionary mapping mnemonics to lists of mnemonics.
+            See example in tests/test_quality.py
 
     Returns:
         float. The fraction of tests passed, or -1 for 'took no tests'.
@@ -187,6 +189,7 @@ def qflag_curve(curve, tests, alias=None):
         curve (welly.curve.Curve): Curve object.
         tests (list): a list of functions.
         alias (dict): a dictionary mapping mnemonics to lists of mnemonics.
+            See example in tests/test_quality.py
 
     Returns:
         list. The results. Stick to booleans (True = pass) or ints.
@@ -213,6 +216,7 @@ def qflags_curve(curve, tests, alias=None):
         curve (welly.curve.Curve): Curve object.
         tests (list): a list of functions.
         alias (dict): a dictionary mapping mnemonics to lists of mnemonics.
+            See example in tests/test_quality.py
 
     Returns:
         list. The results. Stick to booleans (True = pass) or ints.
