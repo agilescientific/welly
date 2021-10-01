@@ -114,7 +114,7 @@ def plot_depth_track_well(well,
                           kind='MD',
                           tick_spacing=100):
     """
-    Private function. Depth track plotting.
+    Depth track plotting for well.
     Args:
         well (welly.well.Well): Well object.
         ax (ax): A matplotlib axis.
@@ -534,7 +534,8 @@ def plot_kde_curve(curve,
         label (string): What to put on the y-axis. Defaults to curve name.
         return_fig (bool): If you want to return the MPL figure object. Default True.
     Returns:
-        None, axis, figure: depending on what you ask for.
+        None, axis, figure: depending on what you ask for. The returned plot is
+        a KDE plot for the curve.
     """
     from scipy.stats import gaussian_kde
 
