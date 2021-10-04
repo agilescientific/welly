@@ -302,13 +302,13 @@ class Well(object):
                     raise KeyError("index must be 'm', or 'ft' but {} was given.".format(index_unit))
 
             if l_index[0] < l_index[1]:
-                well_params['depth'] = l_index
+                well_params['index'] = l_index
             else:
-                well_params['depth'] = np.flipud(l_index)
+                well_params['index'] = np.flipud(l_index)
 
             well_params['basis_units'] = index_unit
 
-            # retrieve curve mnemonic and units from header
+            # retrieve curve mnemonic, units and description from header
             curve_units = df_header[
                 (df_header["section"] == name)][['mnemonic', 'unit', 'descr']].set_index('mnemonic').T
 
@@ -316,16 +316,19 @@ class Well(object):
                 req = utils.flatten_list([v for k, v in alias.items() if k in req])
 
             if data and req:
-                curves = {m: Curve.from_lasio_curve(
-                    df_data[m].values, m, curve_units[m].unit, curve_units[m].descr, **well_params)
-                          for m in df_data.columns
-                          if (m[:4] not in index_curves)
-                          and (m in req)}
+                curves = {mem: Curve(data=df_data[mem].values,
+                                     mnemonic=mem,
+                                     units=curve_units[mem].unit,
+                                     description=curve_units[mem].descr,
+                                     **well_params)
+                          for mem in df_data.columns if (mem[:4] not in index_curves) and (mem in req)}
             elif data and not req:
-                curves = {m: Curve.from_lasio_curve(
-                    df_data[m].values, m, curve_units[m].unit, curve_units[m].descr, **well_params)
-                          for m in df_data.columns
-                          if (m[:4] not in index_curves)}
+                curves = {m: Curve(data=df_data[m].values,
+                                   mnemonic=m,
+                                   units=curve_units[m].unit,
+                                   description=curve_units[m].descr,
+                                   **well_params)
+                          for m in df_data.columns if (m[:4] not in index_curves)}
             elif (not data) and req:
                 curves = {m: True
                           for m in df_data.columns
