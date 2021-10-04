@@ -6,7 +6,17 @@ from welly.quality import quality_score_curve, qflags_curve, quality_curve, qfla
 
 class Curve(object):
     """
-    Curve object
+    Curve object that can hold 1D and 2D curve categorical/numerical data.
+
+    The following input parameters are passed to pd.DataFrame constructor:
+        - data
+        - index  (if passed, optional)
+        - mnemonic  (if passed, optional)
+        - dtype  (if passed, optional)
+        - index_name  (if passed, optional)
+
+    The other input parameters are attached to the Curve object as attributes if passed.
+
     """
 
     def __init__(self,
@@ -14,12 +24,12 @@ class Curve(object):
                  index=None,
                  mnemonic=None,
                  dtype=None,
+                 index_name=None,
                  api=None,
                  basis_units=None,
                  code=None,
                  description=None,
                  date=None,
-                 index_name=None,
                  null=None,
                  run=None,
                  service_company=None,
@@ -41,6 +51,8 @@ class Curve(object):
                 pd.DataFrame constructor.
             dtype (str):
                 data type to force. Only a single dtype is allowed. If None, infer. Passed to pd.DataFrame constructor.
+            index_name (str):
+                name of the index that will be assigned to pd.DataFrame.index.name (e.g. 'depth', 'time').
             api (str):
                 application program interface number.
             basis_units (str):
@@ -51,8 +63,6 @@ class Curve(object):
                 date of when the curve was recorded.
             description (str):
                 description of the curve.
-            index_name (str):
-                name of the index that will be assigned to pd.DataFrame.index.name (e.g. 'depth', 'time').
             null (float):
                 numeric null value representation (e.g. -9999).
             run (int):
@@ -94,6 +104,22 @@ class Curve(object):
         self.units = units
 
     def __str__(self) -> str:
+        """
+        A more useful and comprehensive representation of the Curve instance.
+
+        Arguments:
+            None
+
+        Return:
+            String representation of:
+            - the class name
+            - the pd.DataFrame if ndim>1 and the pd.Series if ndim==1
+            - the attributes that are attached to the object and are not None
+
+        Example of how to use:
+            curve = Curve([])
+            print(curve)
+        """
         params = {
             'api': self.api,
             'code': self.code,
