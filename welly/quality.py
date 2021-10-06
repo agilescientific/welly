@@ -92,7 +92,7 @@ def qc_table_html_well(well, tests, keys=None, alias=None):
     Returns:
         str. An HTML string.
     """
-    data = qc_data_well(well=well, keys=keys, alias=alias)
+    data = qc_data_well(well=well, tests=tests, keys=keys, alias=alias)
     all_tests = [list(d.keys()) for d in data.values()]
     tests = list(set(utils.flatten_list(all_tests)))
 

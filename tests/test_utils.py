@@ -78,11 +78,11 @@ def test_colour():
 
 def test_get_columns_decimal_formatter():
     """
-    Test if the columns decimal formatter getter is returning the correct dictionary
+    Test if the columns decimal formatter getter is returning the correct dictionary.
+    It should take the highest number of decimal points from every column
     """
-    # mode of 1st column is 1, mode of 2nd column is 2
-    numeric_twodim_arr = np.array([[1.1, 1.1], [1.1, 1.12], [1.11, 1.12]])
-    assert get_columns_decimal_formatter(numeric_twodim_arr) == {0: '%.1f', 1: '%.2f'}
+    numeric_twodim_arr = np.array([[1.122, 1.1], [1.1, 1.12], [1.11, 1.12]])
+    assert get_columns_decimal_formatter(numeric_twodim_arr) == {0: '%.3f', 1: '%.2f'}
     mixed_twodim_arr = np.array([['str'], [np.nan], [1.001]], dtype='object')
     assert get_columns_decimal_formatter(mixed_twodim_arr) == {0: '%.3f'}
 
