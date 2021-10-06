@@ -176,7 +176,8 @@ class Well(object):
                    req=None,
                    alias=None,
                    fname=None,
-                   index=None):
+                   index=None
+                   ):
         """
         Constructor. If you already have the lasio object, then this makes a
         well object from it. Will be deprecated but through this workaround it still functions for now.

@@ -4,27 +4,30 @@ import pandas as pd
 from lasio import HeaderItem, CurveItem, SectionItems
 import warnings
 
+from welly import utils
 from welly.fields import curve_sections, other_sections, header_sections
 from welly.utils import get_columns_decimal_formatter
 
-# get header item dictionary
+# the lasio header item dictionary contain the fields from which we will parse the LASFile header metadata
 header_item = HeaderItem().__dict__
 
-# get curve item dictionary
+# the lasio curve item dictionary contain the fields from which we will parse the LASFile curve header metadata
 curve_item = CurveItem().__dict__
 
+# set pandas precision higher than the default of 5 so that it will not automatically round off the curve data
 pd.set_option('precision', 10)
 
 
 def from_las(path, **kwargs):
     """
-    Read las file and parse every dataset to 2 pd.DataFrames:
+    Read LAS file with lasio and parse every LAS dataset to 2 pd.DataFrames:
         1. curve data
         2. header metadata
 
     Only LAS 1.2 and 2.0 are currently supported. LAS 3.0 will be supported when lasio LAS 3.0 work is finished:
     https://github.com/kinverarity1/lasio/issues/5. The design of this reader already accommodates for LAS 3.0
-    functionality where 1 lasio.LASFile can contain multiple 1D, 2D or 3D dataset entries.
+    functionality where 1 lasio.LASFile can contain multiple 1D, 2D or 3D dataset entries. Also see lasio documentation:
+    https://lasio.readthedocs.io/en/latest/header-section.html#tutorial
 
     Args:
         path (str): Path to LAS file
@@ -34,9 +37,13 @@ def from_las(path, **kwargs):
                     * :meth:`lasio.LASFile.read` - control how NULL values and errors are handled during parsing
 
     Returns:
-        datasets (Dict['dataset_name': (data (pd.DataFrame), header (pd.DataFrame))]): Datasets with data & header
+        datasets (Dict['dataset_name': (data (pd.DataFrame), header (pd.DataFrame))]):
+            A dict that has an item for every dataset found in the LAS file. Any LAS dataset has a header and data part
+            that is mapped 1-to-1 to two separate pd.DataFrames and put into a tuple. See below for an example of how
+            that is structured.
 
-    Example:
+
+    Example of how a return would be structured:
 
     datasets = {
         'Curves':   (data, header), # for LAS 1.2 & LAS 2.0
@@ -47,11 +54,12 @@ def from_las(path, **kwargs):
     }
 
     Where:
-        data   (pd.DataFrame): df where:
+        data (pd.DataFrame):   where:
                                 - every row represents a data index.
                                 - every column represents a data variable. Column name is the data variable mnemonic.
-        header (pd.DataFrame): df where every row represents a line read from LAS file and columns:
-                                - column 1-5 - directly parsed from the HeaderItem attributes:
+        header (pd.DataFrame): where:
+                                - every row represents a line read from LAS file and columns.
+                                - column 1-5 - directly parsed from the HeaderItem.__dict__:
                                     'original_mnemonic' - original mmnemonic
                                     'mnemonic' - mnemonic
                                     'unit' - unit
@@ -59,24 +67,23 @@ def from_las(path, **kwargs):
                                     'descr' - description
                                 - column 6 - is added as an identifier to track of sections:
                                     'section' (str) - Section name the line from the LAS file belongs to.
-    Example:
 
-    datasets = {'Curves': (data, header))
+        Example of how returns of a 'data' and 'header' object would look:
 
-    data = pd.DataFrame({
-        'DEPT': [100.0, 101.0, 102.0],
-        'GR': [80.0, 85.0, 82.0],
-        'DEN': [2.10, 2.15, 2.20]
-    })
+        data = pd.DataFrame({
+            'DEPT': [100.0, 101.0, 102.0],
+            'GR': [80.0, 85.0, 82.0],
+            'DEN': [2.10, 2.15, 2.20]
+        })
 
-    header = pd.DataFrame({
-        'original_mnemonic': ['VERS', 'WRAP', 'STRT', 'STOP', 'STEP', 'DEPT', 'GR', 'DEN', ''],
-        'mnemonic': ['VERS', 'WRAP', 'STRT', 'STOP', 'STEP', 'DEPT', 'GR', 'DEN', ''],
-        'unit': ['', '', 'M', 'M', 'M', 'M', 'GAPI', 'g/cm3', '']
-        'value': [2.0, 'NO', 100.0, 102.0, 1.0, '', '', '', '']
-        'descr': ['Version 2.0', 'One line per depth step', '', '', '', 'DEPTH', 'Gamma Ray', 'Density', 'Comment']
-        'section': ['Version', 'Version', 'Well', 'Well', 'Well', 'Curves', 'Curves', 'Curves', 'Other']
-    })
+        header = pd.DataFrame({
+            'original_mnemonic': ['VERS', 'WRAP', 'STRT', 'STOP', 'STEP', 'DEPT', 'GR', 'DEN', ''],
+            'mnemonic': ['VERS', 'WRAP', 'STRT', 'STOP', 'STEP', 'DEPT', 'GR', 'DEN', ''],
+            'unit': ['', '', 'M', 'M', 'M', 'M', 'GAPI', 'g/cm3', '']
+            'value': [2.0, 'NO', 100.0, 102.0, 1.0, '', '', '', '']
+            'descr': ['Version 2.0', 'One line per depth step', '', '', '', 'DEPTH', 'Gamma Ray', 'Density', 'Comment']
+            'section': ['Version', 'Version', 'Well', 'Well', 'Well', 'Curves', 'Curves', 'Curves', 'Other']
+        })
     """
     # read las file
     las = lasio.read(path, **kwargs)
@@ -89,8 +96,10 @@ def from_las(path, **kwargs):
     else:
         try:
             datasets = from_las2(las)
+            warnings.warn(f"Warning, LAS version {version} not yet supported. "
+                          "Attempting to use LAS<=2.0 parsing logic for LAS3.0.")
         except Exception:
-            raise NotImplementedError('LAS Version "{}" not yet supported.'.format(version))
+            raise NotImplementedError(f"LAS version {version} not yet supported")
 
     return datasets
 
@@ -209,6 +218,9 @@ def to_las(path, datasets, **kwargs):
     Return:
         Nothing, only writes in-memory object to disk.
     """
+    # ensure path is working on every dev set-up
+    path = utils.to_filename(path)
+
     # instantiate new LASFile to parse data and header to
     las = lasio.LASFile()
 
