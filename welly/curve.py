@@ -105,7 +105,7 @@ class Curve(object):
 
     def __str__(self) -> str:
         """
-        A more useful and comprehensive representation of the Curve instance.
+        A more useful and comprehensive string representation of the Curve instance.
 
         Arguments:
             None
@@ -113,8 +113,8 @@ class Curve(object):
         Return:
             String representation of:
             - the class name
-            - the pd.DataFrame if ndim>1 and the pd.Series if ndim==1
-            - the attributes that are attached to the object and are not None
+            - the pd.DataFrame if ncol>1 and the pd.Series if ncol==1
+            - the attributes that are attached to the object and that are not None
 
         Example of how to use:
             curve = Curve([])
