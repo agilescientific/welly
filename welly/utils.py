@@ -17,6 +17,7 @@ import numpy as np
 
 from welly.fields import las_objects
 
+# most common numeric null values representation in LAS files
 NULL_VALUES = [9999.25, -9999.25, -9999, 9999, 999.25, -999.25]
 
 
