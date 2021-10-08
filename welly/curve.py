@@ -90,18 +90,21 @@ class Curve(object):
         if index_name:
             self.df.index.name = index_name
 
-        self.api = api
-        self.code = code
-        self.date = date
-        self.description = description
+        # set parameters related to curve
         self.basis_units = basis_units
+        self.code = code
+        self.description = description
+        self.units = units
+
+        # set parameters related to well
+        self.api = api
+        self.date = date
         self.null = null
         self.run = run
         self.service_company = service_company
         self.start = start
         self.step = step
         self.stop = stop
-        self.units = units
 
     def __str__(self) -> str:
         """
