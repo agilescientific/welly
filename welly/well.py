@@ -8,20 +8,17 @@ from __future__ import division
 
 import re
 import datetime
-import os
 import warnings
 
 import lasio
 import numpy as np
-from io import StringIO
-import urllib
 
 import pandas as pd
 
 from . import utils
 from .fields import las_fields as LAS_FIELDS
 from .curve import Curve
-from .las import to_las, from_las, from_las2
+from .las import from_las, from_las_2_or_older, file_from_url, get_las_version
 from .location import Location
 from .synthetic import Synthetic
 from .canstrat import well_to_card_1
@@ -30,7 +27,6 @@ from .canstrat import interval_to_card_7
 from .canstrat import write_row
 from .plot import plot_well, plot_depth_track_well
 from .quality import qc_data_well, qc_curve_group_well, qc_table_html_well
-
 
 ###############################################
 # This module is not used directly, but must
@@ -176,11 +172,10 @@ class Well(object):
                    req=None,
                    alias=None,
                    fname=None,
-                   index=None
-                   ):
+                   index=None):
         """
         Constructor. If you already have the lasio object, then this makes a
-        well object from it. Will be deprecated but through this workaround it still functions for now.
+        well object from it.
 
         Args:
             l (lasio object): a lasio object.
@@ -198,28 +193,31 @@ class Well(object):
         Returns:
             well. The well object.
         """
-        warnings.warn(
-            "Well.from_lasio() will be deprecated. Use Well.from_las() method instead.",
-            DeprecationWarning,
-            stacklevel=2
-        )
+        version = get_las_version(l)
 
-        # parse to dataset
-        data_sets = from_las2(l)
+        if version == 1.2 or version == 2.0:
+            datasets = from_las2(l)
+        else:
+            try:
+                datasets = from_las2(l)
+                warnings.warn(f"Warning, LAS version {version} not yet "
+                              f"supported. Attempting to use LAS<=2.0 "
+                              f"parsing logic for LAS3.0 file.")
+            except Exception:
+                raise NotImplementedError(f"LAS version {version} not yet "
+                                          f"supported.")
 
-        if not fname:
-            fname = 'temp_file.las'
+        # create well from datasets
+        well = cls.from_datasets(datasets,
+                                 remap=remap,
+                                 funcs=funcs,
+                                 data=data,
+                                 req=req,
+                                 alias=alias,
+                                 fname=fname,
+                                 index=index)
 
-        # write LASFile temporarily to LAS on disk
-        to_las(fname, data_sets)
-
-        # delegate to well constructor
-        w = cls.from_las(fname=fname, remap=remap, funcs=funcs, data=data, req=req, alias=alias, index=index)
-
-        # remove temporary las file from disk
-        os.remove('temp_file.las')
-
-        return w
+        return well
 
     @classmethod
     def from_las(cls,
@@ -231,14 +229,13 @@ class Well(object):
                  alias=None,
                  encoding=None,
                  printfname=False,
-                 index=None
-                 ):
+                 index=None):
         """
-        Constructor. Essentially just wraps ``from_lasio()``, but is more
-        convenient for most purposes.
+        Constructor.
 
         Args:
-            fname (str or pathlib.Path): The path of the LAS file, or a URL to one.
+            fname (str or pathlib.Path): The path of the LAS file, or a URL to
+                one.
             remap (dict): Optional. A dict of 'old': 'new' LAS field names.
             funcs (dict): Optional. A dict of 'las field': function() for
                 implementing a transform before loading. Can be a lambda.
@@ -246,7 +243,7 @@ class Well(object):
             req (list): An alias list, giving all required curves.
             alias (dict): An alias dictionary.
             printfname (bool): prints filename before trying to load it, for
-                debugging
+                debugging.
             index (str): Optional. Either "existing" (use the index as found in
                 the LAS file) or "m", "ft" to use lasio's conversion of the
                 relevant index unit.
@@ -254,34 +251,62 @@ class Well(object):
         Returns:
             well. The well object.
         """
-        # possible index depth/time curves
-        index_curves = ['DEPT', 'TIME']
-
         fname = utils.to_filename(fname)
 
         if printfname:
             print(fname)
 
+        # if https URL is passed try reading and formatting it to text file
         if re.match(r'https?://.+\..+/.+?', fname) is not None:
-            try:
-                data = urllib.request.urlopen(fname).read().decode()
-            except urllib.error.HTTPError as e:
-                raise WellError('Could not retrieve url: ', e)
-            fname = (StringIO(data))
+            fname = file_from_url(fname)
 
-        data_sets = from_las(fname, encoding=encoding)
+        datasets = from_las(fname, encoding=encoding)
+
+        # create well from datasets
+        well = cls.from_datasets(datasets,
+                                 remap=remap,
+                                 funcs=funcs,
+                                 data=data,
+                                 req=req,
+                                 alias=alias,
+                                 fname=fname,
+                                 index=index)
+
+        return well
+
+    @classmethod
+    def from_datasets(cls,
+                      datasets,
+                      remap=None,
+                      funcs=None,
+                      data=None,
+                      req=None,
+                      alias=None,
+                      fname=None,
+                      index=None):
+        """
+        Creates a well from datasets.
+
+        TODO: complete docstring.
+        """
+        # possible index depth/time curves
+        index_curves = ['DEPT', 'TIME']
 
         # unpack datasets
-        for name, (df_data, df_header) in data_sets.items():
+        for name, (df_data, df_header) in datasets.items():
 
-            # The default behaviour is to keep welly's current behaviour, which is to:
+            # The default behaviour is to keep welly's current behaviour, which
+            # is to:
             # (1) assume the first column from data is the depth/time curve AND
             # (2) assume that lasio was able to recognise the depth unit
 
             # retrieve well parameters from header
             well_params = {}
             for field, (sect, code) in LAS_FIELDS['data'].items():
-                well_params[field] = utils.lasio_get(df_header, sect, code, remap=remap, funcs=funcs)
+                well_params[field] = utils.lasio_get(df_header,
+                                                     sect, code,
+                                                     remap=remap,
+                                                     funcs=funcs)
 
             # get index unit
             try:
@@ -294,13 +319,14 @@ class Well(object):
 
             if index:
                 if (index_unit == 'm' or index_unit == '') and "ft" in index.lower():
-                    l_index = l_index*3.280839895  # convert to ft
+                    l_index = l_index * 3.280839895  # convert to ft
                     index_unit = 'ft'
                 elif (index_unit == 'ft' or index_unit == '') and "m" in index.lower():
-                    l_index = l_index*0.3048000000012192  # convert to m
+                    l_index = l_index * 0.3048000000012192  # convert to m
                     index_unit = 'm'
                 else:
-                    raise KeyError("index must be 'm', or 'ft' but {} was given.".format(index_unit))
+                    raise KeyError("Index must be 'm', or 'ft' but {} was "
+                                   "given.".format(index_unit))
 
             if l_index[0] < l_index[1]:
                 well_params['depth'] = l_index
@@ -319,14 +345,14 @@ class Well(object):
             if data and req:
                 curves = {m: Curve.from_lasio_curve(
                     df_data[m].values, m, curve_units[m].unit, curve_units[m].descr, **well_params)
-                          for m in df_data.columns
-                          if (m[:4] not in index_curves)
-                          and (m in req)}
+                    for m in df_data.columns
+                    if (m[:4] not in index_curves)
+                       and (m in req)}
             elif data and not req:
                 curves = {m: Curve.from_lasio_curve(
                     df_data[m].values, m, curve_units[m].unit, curve_units[m].descr, **well_params)
-                          for m in df_data.columns
-                          if (m[:4] not in index_curves)}
+                    for m in df_data.columns
+                    if (m[:4] not in index_curves)}
             elif (not data) and req:
                 curves = {m: True
                           for m in df_data.columns
@@ -348,13 +374,19 @@ class Well(object):
                 row = df_header[df_header['mnemonic'] == item]
                 if not row.empty:
                     old_value = row['value'].iloc[0]
-                    row.replace(old_value, utils.lasio_get(row, sect, item, remap=remap, funcs=funcs), inplace=True)
+                    row.replace(old_value, utils.lasio_get(row,
+                                                           sect,
+                                                           item,
+                                                           remap=remap,
+                                                           funcs=funcs), inplace=True)
                     updated_df_header[updated_df_header['mnemonic'] == item] = row
 
             # build a dict of the well properties
             params = {'las': df_data,
                       'header': updated_df_header,
-                      'location': Location.from_lasio(df_header, remap=remap, funcs=funcs),
+                      'location': Location.from_lasio(df_header,
+                                                      remap=remap,
+                                                      funcs=funcs),
                       'data': curves,
                       'fname': fname}
 
