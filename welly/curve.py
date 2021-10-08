@@ -253,6 +253,26 @@ class Curve(object):
                              tests=tests,
                              alias=alias)
 
+    def quality_score(self, tests, alias=None):
+        """
+        Wrapping function from quality.py
+        Run a series of tests and return the normalized score.
+            1.0:   Passed all tests.
+            (0-1): Passed a fraction of tests.
+            0.0:   Passed no tests.
+            -1.0:  Took no tests.
+
+        Args:
+            tests (list): a list of functions.
+            alias (dict): a dictionary mapping mnemonics to lists of mnemonics.
+
+        Returns:
+            float. The fraction of tests passed, or -1 for 'took no tests'.
+        """
+        return quality_score_curve(curve=self,
+                                   tests=tests,
+                                   alias=alias)
+
     def qflag(self, tests, alias=None):
         """
         Run a test and return the corresponding results on a sample-by-sample
@@ -294,23 +314,3 @@ class Curve(object):
         return qflags_curve(curve=self,
                             tests=tests,
                             alias=alias)
-
-    def quality_score(self, tests, alias=None):
-        """
-        Wrapping function from quality.py
-        Run a series of tests and return the normalized score.
-            1.0:   Passed all tests.
-            (0-1): Passed a fraction of tests.
-            0.0:   Passed no tests.
-            -1.0:  Took no tests.
-
-        Args:
-            tests (list): a list of functions.
-            alias (dict): a dictionary mapping mnemonics to lists of mnemonics.
-
-        Returns:
-            float. The fraction of tests passed, or -1 for 'took no tests'.
-        """
-        return quality_score_curve(curve=self,
-                                   tests=tests,
-                                   alias=alias)
