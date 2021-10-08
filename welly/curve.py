@@ -146,22 +146,6 @@ class Curve(object):
 
         return '%s \n%s \n attributes: \n  %s' % (self.__class__, show_df, params)
 
-
-@pd.api.extensions.register_dataframe_accessor("curve")
-class CurveAccessor:
-    """
-    Curve accessor that enables custom curve plot and qc functions to be called on the curve df attribute directly
-    through the 'curve' namespace.
-
-    Examples of how to use:
-        c = Curve(data=[...], mnemonic=[...], ..)
-        c.df.curve.plot()
-        c.df.curve.quality(tests={'Each': [q.no_flat, q.no_monotonic]})
-    """
-
-    def __init__(self, pandas_obj):
-        self._obj = pandas_obj
-
     def plot_2d(self,
                 ax=None,
                 width=None,
@@ -188,7 +172,7 @@ class CurveAccessor:
         Returns:
             ax. If you passed in an ax, otherwise None.
         """
-        plot_2d_curve(curve=self._obj,
+        plot_2d_curve(curve=self,
                       ax=ax,
                       width=width,
                       aspect=aspect,
@@ -213,7 +197,7 @@ class CurveAccessor:
         Returns:
             ax. If you passed in an ax, otherwise None.
         """
-        return plot_curve(curve=self._obj,
+        return plot_curve(curve=self,
                           ax=ax,
                           legend=legend,
                           return_fig=return_fig,
@@ -241,7 +225,7 @@ class CurveAccessor:
         Returns:
             None, axis, figure: depending on what you ask for.
         """
-        return plot_kde_curve(curve=self._obj,
+        return plot_kde_curve(curve=self,
                               ax=ax,
                               amax=amax,
                               amin=amin,
@@ -265,7 +249,7 @@ class CurveAccessor:
         # Second, anything with the name of the curve we're in now.
         # Third, anything that the alias list has for this curve.
         # (This requires a reverse look-up so it's a bit messy.)
-        return quality_curve(curve=self._obj,
+        return quality_curve(curve=self,
                              tests=tests,
                              alias=alias)
 
@@ -286,7 +270,7 @@ class CurveAccessor:
         # Second, anything with the name of the curve we're in now.
         # Third, anything that the alias list has for this curve.
         # (This requires a reverse look-up so it's a bit messy.)
-        return qflag_curve(curve=self._obj,
+        return qflag_curve(curve=self,
                            tests=tests,
                            alias=alias)
 
@@ -307,7 +291,7 @@ class CurveAccessor:
         # Second, anything with the name of the curve we're in now.
         # Third, anything that the alias list has for this curve.
         # (This requires a reverse look-up so it's a bit messy.)
-        return qflags_curve(curve=self._obj,
+        return qflags_curve(curve=self,
                             tests=tests,
                             alias=alias)
 
@@ -327,6 +311,6 @@ class CurveAccessor:
         Returns:
             float. The fraction of tests passed, or -1 for 'took no tests'.
         """
-        return quality_score_curve(curve=self._obj,
+        return quality_score_curve(curve=self,
                                    tests=tests,
                                    alias=alias)
