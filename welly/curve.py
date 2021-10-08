@@ -200,7 +200,7 @@ class Curve(object):
         Returns:
             ax. If you passed in an ax, otherwise None.
         """
-        return plot_curve(curve=self,
+        return plot_curve(self,
                           ax=ax,
                           legend=legend,
                           return_fig=return_fig,
@@ -228,7 +228,7 @@ class Curve(object):
         Returns:
             None, axis, figure: depending on what you ask for.
         """
-        return plot_kde_curve(curve=self,
+        return plot_kde_curve(self,
                               ax=ax,
                               amax=amax,
                               amin=amin,
@@ -252,7 +252,7 @@ class Curve(object):
         # Second, anything with the name of the curve we're in now.
         # Third, anything that the alias list has for this curve.
         # (This requires a reverse look-up so it's a bit messy.)
-        return quality_curve(curve=self,
+        return quality_curve(self,
                              tests=tests,
                              alias=alias)
 
@@ -272,7 +272,7 @@ class Curve(object):
         Returns:
             float. The fraction of tests passed, or -1 for 'took no tests'.
         """
-        return quality_score_curve(curve=self,
+        return quality_score_curve(self,
                                    tests=tests,
                                    alias=alias)
 
@@ -293,7 +293,7 @@ class Curve(object):
         # Second, anything with the name of the curve we're in now.
         # Third, anything that the alias list has for this curve.
         # (This requires a reverse look-up so it's a bit messy.)
-        return qflag_curve(curve=self,
+        return qflag_curve(self,
                            tests=tests,
                            alias=alias)
 
@@ -314,6 +314,6 @@ class Curve(object):
         # Second, anything with the name of the curve we're in now.
         # Third, anything that the alias list has for this curve.
         # (This requires a reverse look-up so it's a bit messy.)
-        return qflags_curve(curve=self,
+        return qflags_curve(self,
                             tests=tests,
                             alias=alias)
