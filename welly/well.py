@@ -10,9 +10,6 @@ import re
 import datetime
 import warnings
 
-import matplotlib.pyplot as plt
-import matplotlib as mpl
-import matplotlib.ticker as ticker
 import lasio
 import numpy as np
 from io import StringIO
@@ -28,6 +25,9 @@ from .canstrat import well_to_card_1
 from .canstrat import well_to_card_2
 from .canstrat import interval_to_card_7
 from .canstrat import write_row
+from .plot import plot_well, plot_depth_track_well
+from .quality import qc_data_well, qc_curve_group_well, qc_table_html_well
+
 
 ###############################################
 # This module is not used directly, but must
@@ -568,6 +568,7 @@ class Well(object):
     def _plot_depth_track(self, ax, md, kind='MD', tick_spacing=100):
         """
         Private function. Depth track plotting.
+        Wrapping plot function from plot.py.
 
         Args:
             ax (ax): A matplotlib axis.
@@ -577,43 +578,11 @@ class Well(object):
         Returns:
             ax.
         """
-        if kind == 'MD':
-            ax.set_yscale('bounded', vmin=md.min(), vmax=md.max())
-        elif kind == 'TVD':
-            tvd = self.location.md2tvd(md)
-            ax.set_yscale('piecewise', x=tvd, y=md)
-        else:
-            raise Exception("Kind must be MD or TVD")
-
-        ax.xaxis.set_major_locator(ticker.MultipleLocator(tick_spacing))
-
-        for sp in ax.spines.values():
-            sp.set_color('gray')
-
-        if ax.is_first_col():
-            pad = -10
-            ax.spines['left'].set_color('none')
-            ax.yaxis.set_ticks_position('right')
-            for label in ax.get_yticklabels():
-                label.set_horizontalalignment('right')
-        elif ax.is_last_col():
-            pad = -10
-            ax.spines['right'].set_color('none')
-            ax.yaxis.set_ticks_position('left')
-            for label in ax.get_yticklabels():
-                label.set_horizontalalignment('left')
-        else:
-            pad = -30
-            for label in ax.get_yticklabels():
-                label.set_horizontalalignment('center')
-
-        ax.tick_params(axis='y', colors='gray', labelsize=12, pad=pad)
-        ax.set_xticks([])
-
-        ax.set(xticks=[])
-        ax.depth_track = True
-
-        return ax
+        return plot_depth_track_well(well=self,
+                                     ax=ax,
+                                     md=md,
+                                     kind=kind,
+                                     tick_spacing=tick_spacing)
 
     def plot(self,
              legend=None,
@@ -625,7 +594,9 @@ class Well(object):
              extents='td',
              **kwargs):
         """
-        Plot multiple tracks.
+        Plot multiple tracks. Wrapping plot function from plot.py.
+        By default only show the plot, not return the figure object.
+
         Args:
             legend (striplog.legend): A legend instance.
             tracks (list): A list of strings and/or lists of strings. The
@@ -648,139 +619,15 @@ class Well(object):
         Returns:
             None. The plot is a side-effect.
         """
-        # These will be treated differently.
-        depth_tracks = ['MD', 'TVD']
-
-        # Set tracks to 'all' if it's None.
-        tracks = tracks or list(self.data.keys())
-        track_titles = track_titles or tracks
-
-        # Check that there is at least one curve.
-        if self.count_curves(tracks, alias=alias) == 0:
-            if alias:
-                a = " with alias dict applied "
-            else:
-                a = " "
-            m = "Track list{}returned no curves.".format(a)
-            raise WellError(m)
-
-        # Figure out limits
-        if basis is None:
-            basis = self.survey_basis(keys=tracks, alias=alias)
-
-        if extents == 'curves':
-            upper, lower = basis[0], basis[-1]
-        elif extents == 'td':
-            try:
-                upper, lower = 0, self.location.td
-            except:
-                m = "Could not read self.location.td, try extents='curves'"
-                raise WellError(m)
-            if not lower:
-                lower = basis[-1]
-        elif extents == 'all':
-            raise NotImplementedError("You cannot do that yet.")
-        else:
-            try:
-                upper, lower = extents
-            except:
-                upper, lower = basis[0], basis[-1]
-
-        # Figure out widths because we can't us gs.update() for that.
-        widths = [0.4 if t in depth_tracks else 1.0 for t in tracks]
-
-        # Set up the figure.
-        ntracks = len(tracks)
-        fig = plt.figure(figsize=(2*ntracks, 12), facecolor='w')
-        fig.suptitle(self.name, size=16, zorder=100,
-                     bbox=dict(facecolor='w', alpha=1.0, ec='none'))
-        gs = mpl.gridspec.GridSpec(1, ntracks, width_ratios=widths)
-
-        # Tick spacing
-        order_of_mag = np.round(np.log10(lower - upper))
-        ts = 10**order_of_mag / 100
-
-        # Plot first axis.
-        # kwargs = {}
-        ax0 = fig.add_subplot(gs[0, 0])
-        ax0.depth_track = False
-        track = tracks[0]
-        if '.' in track:
-            track, kwargs['field'] = track.split('.')
-        if track in depth_tracks:
-            ax0 = self._plot_depth_track(ax=ax0, md=basis, kind=track, tick_spacing=ts)
-        else:
-            try:  # ...treating as a plottable object.
-                ax0 = self.get_curve(track, alias=alias).plot(ax=ax0, legend=legend, **kwargs)
-            except AttributeError:  # ...it's not there.
-                pass
-            except TypeError:  # ...it's a list.
-                for t in track:
-                    try:
-                        ax0 = self.get_curve(t, alias=alias).plot(ax=ax0, legend=legend, **kwargs)
-                    except AttributeError:  # ...it's not there.
-                        pass
-        tx = ax0.get_xticks()
-        ax0.set_xticks(tx[1:-1])
-        ax0.set_title(track_titles[0])
-
-        # Plot remaining axes.
-        for i, track in enumerate(tracks[1:]):
-            # kwargs = {}
-            ax = fig.add_subplot(gs[0, i+1])
-            ax.depth_track = False
-            if track in depth_tracks:
-                ax = self._plot_depth_track(ax=ax, md=basis, kind=track, tick_spacing=ts)
-                continue
-            if '.' in track:
-                track, kwargs['field'] = track.split('.')
-            plt.setp(ax.get_yticklabels(), visible=False)
-            try:  # ...treating as a plottable object.
-                curve = self.get_curve(track, alias=alias)
-                curve._alias = track  # So that can retreive alias from legend too.
-                ax = curve.plot(ax=ax, legend=legend, **kwargs)
-            except AttributeError:  # ...it's not there.
-                continue
-            except TypeError:  # ...it's a list.
-                for j, t in enumerate(track):
-                    if '.' in t:
-                        track, kwargs['field'] = track.split('.')
-                    try:
-                        curve = self.get_curve(t, alias=alias)
-                        curve._alias = t
-                        ax = curve.plot(ax=ax, legend=legend, **kwargs)
-                    except AttributeError:
-                        continue
-                    except KeyError:
-                        continue
-
-            tx = ax.get_xticks()
-            ax.set_xticks(tx[1:-1])
-            ax.set_title(track_titles[i+1])
-
-        # Set sharing.
-        axes = fig.get_axes()
-        utils.sharey(axes)
-        axes[0].set_ylim([lower, upper])
-
-        # Adjust the grid.
-        gs.update(wspace=0)
-
-        # Adjust spines and ticks for non-depth tracks.
-        for ax in axes:
-            if not ax.depth_track:
-                ax.set(yticks=[])
-                ax.autoscale(False)
-                ax.yaxis.set_ticks_position('none')
-                ax.spines['top'].set_visible(True)
-                ax.spines['bottom'].set_visible(True)
-                for sp in ax.spines.values():
-                    sp.set_color('gray')
-
-        if return_fig:
-            return fig
-        else:
-            return None
+        return plot_well(well=self,
+                         legend=legend,
+                         tracks=tracks,
+                         track_titles=track_titles,
+                         alias=alias,
+                         basis=basis,
+                         return_fig=return_fig,
+                         extents=extents,
+                         **kwargs)
 
     def coverage(self, keys=None, alias=None):
         """
@@ -1017,7 +864,7 @@ class Well(object):
 
     def qc_curve_group(self, tests, keys=None, alias=None):
         """
-        Run tests on a cohort of curves.
+        Run tests on a cohort of curves. Wrapping functions from quality.py
 
         Args:
             tests (dict): a dictionary of tests, mapping mnemonics to lists of
@@ -1032,26 +879,15 @@ class Well(object):
         Returns:
             dict.
         """
-        keys = self._get_curve_mnemonics(keys, alias=alias)
-
-        if not keys:
-            return {}
-
-        all_tests = tests.get('all', tests.get('All', tests.get('ALL', [])))
-        data = {test.__name__: test(self, keys, alias) for test in all_tests}
-
-        results = {}
-        for i, key in enumerate(keys):
-            this = {}
-            for test, result in data.items():
-                this[test] = result[i]
-            results[key] = this
-        return results
+        return qc_curve_group_well(well=self,
+                                   tests=tests,
+                                   keys=keys,
+                                   alias=alias)
 
     def qc_data(self, tests, keys=None, alias=None):
         """
         Run a series of tests against the data and return the corresponding
-        results.
+        results. Wrapping frunction from quality.py.
 
         Args:
             tests (dict): a dictionary of tests, mapping mnemonics to lists of
@@ -1066,55 +902,23 @@ class Well(object):
         Returns:
             list. The results. Stick to booleans (True = pass) or ints.
         """
-        keys = self._get_curve_mnemonics(keys, alias=alias, curves_only=False)
-        r = {k: self.data.get(k).quality(tests, alias) for k in keys}
-        s = self.qc_curve_group(tests, keys, alias=alias)
-        for m, results in r.items():
-            if m in s:
-                results.update(s[m])
-        return r
+        return qc_data_well(well=self,
+                            tests=tests,
+                            keys=keys,
+                            alias=alias)
 
     def qc_table_html(self, tests, keys=None, alias=None):
         """
-        Makes a nice table out of ``qc_data()``
+        Makes a nice table out of ``qc_data()`` Wrapping function from quality.py.
 
         Returns:
-            str. An HTML string.
+            str. An HTML string for visualization in Jupyter notebook.
+            Visualize through IPython.display.HTML(str)
         """
-        data = self.qc_data(tests, keys=keys, alias=alias)
-        all_tests = [list(d.keys()) for d in data.values()]
-        tests = list(set(utils.flatten_list(all_tests)))
-
-        # Header row.
-        r = '</th><th>'.join(['Curve', 'Passed', 'Score'] + tests)
-        rows = '<tr><th>{}</th></tr>'.format(r)
-
-        styles = {
-            True: "#CCEECC",   # Green
-            False: "#FFCCCC",  # Red
-        }
-
-        # Quality results.
-        for curve, results in data.items():
-
-            if results:
-                norm_score = sum(results.values()) / len(results)
-            else:
-                norm_score = -1
-
-            rows += '<tr><th>{}</th>'.format(curve)
-            rows += '<td>{} / {}</td>'.format(sum(results.values()), len(results))
-            rows += '<td>{:.3f}</td>'.format(norm_score)
-
-            for test in tests:
-                result = results.get(test, '')
-                style = styles.get(result, "#EEEEEE")
-                rows += '<td style="background-color:{};">'.format(style)
-                rows += '{}</td>'.format(result)
-            rows += '</tr>'
-
-        html = '<table>{}</table>'.format(rows)
-        return html
+        return qc_table_html_well(well=self,
+                                  tests=tests,
+                                  keys=keys,
+                                  alias=alias)
 
     def to_canstrat(self, key, log, lith_field, filename=None, as_text=False):
         """
