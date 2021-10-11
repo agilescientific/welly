@@ -98,7 +98,7 @@ def from_las(file_ref, **kwargs):
             'unit': ['', '', 'M', 'M', 'M', 'M', 'GAPI', 'g/cm3', '']
             'value': [2.0, 'NO', 100.0, 102.0, 1.0, '', '', '', '']
             'descr': ['Version 2.0', 'One line per depth step', '', '', '', 'DEPTH', 'Gamma Ray', 'Density', 'Comment']
-            'section': ['Version', 'Version', 'Well', 'Well', 'Well', 'Curve', 'Curve', 'Curve', 'Other']
+            'section': ['Version', 'Version', 'Well', 'Well', 'Well', 'Curves', 'Curves', 'Curves', 'Other']
         })
     """
     # read las file
@@ -142,7 +142,7 @@ def from_las_2_or_older(las):
         las (lasio.LASFile): `LASFile` constructed through `lasio.read()`
 
     Returns:
-        datasets = {'Curve': (data, header)}
+        datasets = {'Curves': (data, header)}
 
         data   (pd.DataFrame): where:
                                 - indexed by order of vertical occurrence in LAS file.
@@ -159,7 +159,7 @@ def from_las_2_or_older(las):
                                     'section' (str) - section name the line from the LAS file belongs to.
     Example:
 
-    datasets = {'Curve': (data, header))
+    datasets = {'Curves': (data, header))
 
     data = pd.DataFrame({
         'DEPT': [100.0, 101.0, 102.0],
@@ -173,7 +173,7 @@ def from_las_2_or_older(las):
         'unit': ['', '', 'M', 'M', 'M', 'M', 'GAPI', 'g/cm3', '']
         'value': [2.0, 'NO', 100.0, 102.0, 1.0, '', '', '', '']
         'descr': ['Version 2.0', 'One line per depth step', '', '', '', 'DEPTH', 'Gamma Ray', 'Density', 'Comment']
-        'section': ['Version', 'Version', 'Well', 'Well', 'Well', 'Curve', 'Curve', 'Curve', 'Other']
+        'section': ['Version', 'Version', 'Well', 'Well', 'Well', 'Curves', 'Curves', 'Curves', 'Other']
     })
     """
     # construct df to parse data sections to
@@ -239,7 +239,7 @@ def from_las_2_or_older(las):
 
     header.drop(['data'], axis=1, inplace=True)
 
-    return {'Curve': (data, header)}
+    return {'Curves': (data, header)}
 
 
 def to_las(path, datasets, **kwargs):
@@ -262,7 +262,7 @@ def to_las(path, datasets, **kwargs):
     # unpack datasets
     for dataset, (data, header) in datasets.items():
 
-        if dataset == 'Curve':
+        if dataset == 'Curves':
             # parse header pd.DataFrame to LASFile
             for section_name in set(header.section.values):
 
@@ -298,7 +298,7 @@ def to_las(path, datasets, **kwargs):
                                     r.descr) for i, r in
                          df_section.iterrows()])
 
-                elif section_name == 'Curve':
+                elif section_name == 'Curves':
                     for i, header_row in df_section.iterrows():
                         if header_row.mnemonic in data.columns:
                             curve_data = data.loc[:, header_row.mnemonic]
