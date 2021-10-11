@@ -29,18 +29,26 @@ def from_las(file_ref, **kwargs):
         1. curve data
         2. header metadata
 
-    Only LAS 1.2 and 2.0 are currently supported. LAS 3.0 will be supported when lasio LAS 3.0 work is finished:
-    https://github.com/kinverarity1/lasio/issues/5. The design of this reader already accommodates for LAS 3.0
-    functionality where 1 lasio.LASFile can contain multiple 1D, 2D or 3D dataset entries. Also see lasio documentation:
+    Only LAS 1.2 and 2.0 are currently supported. LAS 3.0 will be supported
+    when lasio LAS 3.0 work is finished:
+    https://github.com/kinverarity1/lasio/issues/5.
+
+    The design of this reader already accommodates for LAS 3.0 functionality
+    where one lasio.LASFile can contain multiple 1D, 2D or 3D dataset
+    entries. Also see lasio documentation:
     https://lasio.readthedocs.io/en/latest/header-section.html#tutorial
 
     Args:
         file_ref (file-like object, str): either a filename, an open file
             object, or a string containing the contents of a LAS file.
-        **kwargs: The additional keyword arguments are propagated to the lasio reader so you can use when reading in a
-                  LAS file. Find the routines of the different keyword possibilities look here:
-                    * :func:`lasio.reader.open_with_codecs` - manage issues relate to character encodings
-                    * :meth:`lasio.LASFile.read` - control how NULL values and errors are handled during parsing
+        **kwargs: The additional keyword arguments are propagated to the lasio
+                  reader so you can use when reading in a LAS file.
+                  Find the routines of the keyword possibilities here:
+                    * :func:`lasio.reader.open_with_codecs` -
+                        manage issues relate to character encodings.
+                    * :meth:`lasio.LASFile.read` -
+                        control how NULL values and errors are handled
+                        during parsing.
 
     Returns:
         datasets (Dict['dataset_name': (data (pd.DataFrame), header (pd.DataFrame))]):
@@ -52,7 +60,7 @@ def from_las(file_ref, **kwargs):
     Example of how a return would be structured:
 
     datasets = {
-        'Curves':   (data, header), # for LAS 1.2 & LAS 2.0
+        'Curve':   (data, header), # for LAS 1.2 & LAS 2.0
         'ASCII':    (data, header), # for LAS 3.0
         'Drilling': (data, header), # for LAS 3.0
         'Core[1]':  (data, header), # for LAS 3.0 - Run 1
@@ -71,8 +79,10 @@ def from_las(file_ref, **kwargs):
                                     'unit' - unit
                                     'value' - value
                                     'descr' - description
-                                - column 6 - is added as an identifier to track of sections:
-                                    'section' (str) - Section name the line from the LAS file belongs to.
+                                - column 6 - is added as a LAS section identifier:
+                                    'section' (str) - LAS Section name the
+                                    line from the LAS file belongs to (e.g.
+                                    ~Curve)
 
         Example of how returns of a 'data' and 'header' object would look:
 
@@ -88,7 +98,7 @@ def from_las(file_ref, **kwargs):
             'unit': ['', '', 'M', 'M', 'M', 'M', 'GAPI', 'g/cm3', '']
             'value': [2.0, 'NO', 100.0, 102.0, 1.0, '', '', '', '']
             'descr': ['Version 2.0', 'One line per depth step', '', '', '', 'DEPTH', 'Gamma Ray', 'Density', 'Comment']
-            'section': ['Version', 'Version', 'Well', 'Well', 'Well', 'Curves', 'Curves', 'Curves', 'Other']
+            'section': ['Version', 'Version', 'Well', 'Well', 'Well', 'Curve', 'Curve', 'Curve', 'Other']
         })
     """
     # read las file
@@ -101,10 +111,10 @@ def from_las(file_ref, **kwargs):
 
 def from_lasio(las):
     """
-
+    TODO: complete docstring.
     """
     # get las format version
-    version = float(las.version[0].value)
+    version = get_las_version(las)
 
     if version == 2.0 or version == 1.2:
         datasets = from_las_2_or_older(las)
@@ -123,22 +133,22 @@ def from_lasio(las):
 
 def from_las_2_or_older(las):
     """
-    Parse lasio.LASFile (LAS version 1.2 & 2.0) to 2 pd.DataFrames that form 1
-    datasets entry as a tuple.
+    Parse `lasio.LASFile` (LAS version 1.2 & 2.0) to two `pd.DataFrames` that
+    form 1 `datasets` entry as a tuple.
 
-    For LAS versions 1.2 & 2.0, 1 LAS file translates to 'Curves' 1 data set.
+    For LAS versions 1.2 & 2.0, 1 LAS file translates to `Curve` 1 data set.
 
     Args:
-        las (lasio.LASFile): LASFile constructed through lasio.read()
+        las (lasio.LASFile): `LASFile` constructed through `lasio.read()`
 
     Returns:
-        datasets = {'Curves': (data, header)}
+        datasets = {'Curve': (data, header)}
 
-        data   (pd.DataFrame): df where:
-                                - indexed by order of vertical occurrence in las file.
+        data   (pd.DataFrame): where:
+                                - indexed by order of vertical occurrence in LAS file.
                                 - every row represents a data index.
                                 - every column represents a data variable. Column name is the data variable mnemonic.
-        header (pd.DataFrame): df where every row represents a line read from LAS file and columns:
+        header (pd.DataFrame): where every row represents a line read from LAS file and columns:
                                 - column 1-5 - directly parsed from the HeaderItem where attributes are columns:
                                     'original_mnemonic' - original mmnemonic
                                     'mnemonic' - mnemonic
@@ -149,7 +159,7 @@ def from_las_2_or_older(las):
                                     'section' (str) - section name the line from the LAS file belongs to.
     Example:
 
-    datasets = {'Curves': (data, header))
+    datasets = {'Curve': (data, header))
 
     data = pd.DataFrame({
         'DEPT': [100.0, 101.0, 102.0],
@@ -163,7 +173,7 @@ def from_las_2_or_older(las):
         'unit': ['', '', 'M', 'M', 'M', 'M', 'GAPI', 'g/cm3', '']
         'value': [2.0, 'NO', 100.0, 102.0, 1.0, '', '', '', '']
         'descr': ['Version 2.0', 'One line per depth step', '', '', '', 'DEPTH', 'Gamma Ray', 'Density', 'Comment']
-        'section': ['Version', 'Version', 'Well', 'Well', 'Well', 'Curves', 'Curves', 'Curves', 'Other']
+        'section': ['Version', 'Version', 'Well', 'Well', 'Well', 'Curve', 'Curve', 'Curve', 'Other']
     })
     """
     # construct df to parse data sections to
@@ -229,7 +239,7 @@ def from_las_2_or_older(las):
 
     header.drop(['data'], axis=1, inplace=True)
 
-    return {'Curves': (data, header)}
+    return {'Curve': (data, header)}
 
 
 def to_las(path, datasets, **kwargs):
@@ -252,7 +262,7 @@ def to_las(path, datasets, **kwargs):
     # unpack datasets
     for dataset, (data, header) in datasets.items():
 
-        if dataset == 'Curves':
+        if dataset == 'Curve':
             # parse header pd.DataFrame to LASFile
             for section_name in set(header.section.values):
 
@@ -288,7 +298,7 @@ def to_las(path, datasets, **kwargs):
                                     r.descr) for i, r in
                          df_section.iterrows()])
 
-                elif section_name == 'Curves':
+                elif section_name == 'Curve':
                     for i, header_row in df_section.iterrows():
                         if header_row.mnemonic in data.columns:
                             curve_data = data.loc[:, header_row.mnemonic]
@@ -302,16 +312,17 @@ def to_las(path, datasets, **kwargs):
                     las.sections["Other"] = df_section['descr'][0]
 
                 else:
-                    warnings.warn(
-                        'Section was not recognized and not parsed: "{}"'.format(
-                            section_name))
+                    warnings.warn('Section was not recognized and not parsed: '
+                                  '"{}"'.format(section_name))
         else:
+            # TODO: Investigate how we parse LAS3 datasets
+            # ~Ascii or ~Log ~Core ~Inclinometry ~Drilling ~Tops ~Test
             raise NotImplementedError('LAS 3.0 is not yet supported.')
 
-        # get the numeric null value representation if it exists in the header (e.g. -9999)
+        # numeric null value representation if it exists in the header
+        # (e.g. -9999)
         try:
-            null_value = header[header.original_mnemonic == 'NULL'].value.iloc[
-                0]
+            null_value = header[header.original_mnemonic == 'NULL'].value.iloc[0]
         except IndexError:
             null_value = None
 
