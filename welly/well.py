@@ -8,7 +8,6 @@ from __future__ import division
 
 import re
 import datetime
-import warnings
 
 import lasio
 import numpy as np
@@ -18,7 +17,7 @@ import pandas as pd
 from . import utils
 from .fields import las_fields as LAS_FIELDS
 from .curve import Curve
-from .las import from_las, from_las_2_or_older, file_from_url, get_las_version
+from .las import from_las, file_from_url, from_lasio
 from .location import Location
 from .synthetic import Synthetic
 from .canstrat import well_to_card_1
@@ -135,7 +134,8 @@ class Well(object):
         """
         if self.header is not None:
             try:
-                return self.header[self.header.mnemonic == 'WELL'].value.iloc[0]
+                return self.header[self.header.mnemonic == 'WELL'].value.iloc[
+                    0]
             except IndexError:
                 return ''
         else:
@@ -165,7 +165,7 @@ class Well(object):
 
     @classmethod
     def from_lasio(cls,
-                   l,
+                   las,
                    remap=None,
                    funcs=None,
                    data=True,
@@ -178,7 +178,7 @@ class Well(object):
         well object from it.
 
         Args:
-            l (lasio object): a lasio object.
+            las (lasio.LASFile object): a lasio representation of a LAS file.
             remap (dict): Optional. A dict of 'old': 'new' LAS field names.
             funcs (dict): Optional. A dict of 'las field': function() for
                 implementing a transform before loading. Can be a lambda.
@@ -193,21 +193,8 @@ class Well(object):
         Returns:
             well. The well object.
         """
-        version = get_las_version(l)
+        datasets = from_lasio(las)
 
-        if version == 1.2 or version == 2.0:
-            datasets = from_las2(l)
-        else:
-            try:
-                datasets = from_las2(l)
-                warnings.warn(f"Warning, LAS version {version} not yet "
-                              f"supported. Attempting to use LAS<=2.0 "
-                              f"parsing logic for LAS3.0 file.")
-            except Exception:
-                raise NotImplementedError(f"LAS version {version} not yet "
-                                          f"supported.")
-
-        # create well from datasets
         well = cls.from_datasets(datasets,
                                  remap=remap,
                                  funcs=funcs,
@@ -310,7 +297,8 @@ class Well(object):
 
             # get index unit
             try:
-                index_unit = df_header[(df_header["section"] == name)].iloc[0].unit
+                index_unit = df_header[(df_header["section"] == name)].iloc[
+                    0].unit
             except AttributeError:
                 index_unit = ''
 
@@ -337,20 +325,24 @@ class Well(object):
 
             # retrieve curve mnemonic and units from header
             curve_units = df_header[
-                (df_header["section"] == name)][['mnemonic', 'unit', 'descr']].set_index('mnemonic').T
+                (df_header["section"] == name)][
+                ['mnemonic', 'unit', 'descr']].set_index('mnemonic').T
 
             if req and alias:
-                req = utils.flatten_list([v for k, v in alias.items() if k in req])
+                req = utils.flatten_list(
+                    [v for k, v in alias.items() if k in req])
 
             if data and req:
                 curves = {m: Curve.from_lasio_curve(
-                    df_data[m].values, m, curve_units[m].unit, curve_units[m].descr, **well_params)
+                    df_data[m].values, m, curve_units[m].unit,
+                    curve_units[m].descr, **well_params)
                     for m in df_data.columns
                     if (m[:4] not in index_curves)
                        and (m in req)}
             elif data and not req:
                 curves = {m: Curve.from_lasio_curve(
-                    df_data[m].values, m, curve_units[m].unit, curve_units[m].descr, **well_params)
+                    df_data[m].values, m, curve_units[m].unit,
+                    curve_units[m].descr, **well_params)
                     for m in df_data.columns
                     if (m[:4] not in index_curves)}
             elif (not data) and req:
@@ -364,7 +356,8 @@ class Well(object):
                           if (m[:4] not in index_curves)}
 
             if req:
-                aliases = utils.flatten_list([c.get_alias(alias) for m, c in curves.items()])
+                aliases = utils.flatten_list(
+                    [c.get_alias(alias) for m, c in curves.items()])
                 if len(set(aliases)) < len(req):
                     return cls(params={})
 
@@ -378,8 +371,10 @@ class Well(object):
                                                            sect,
                                                            item,
                                                            remap=remap,
-                                                           funcs=funcs), inplace=True)
-                    updated_df_header[updated_df_header['mnemonic'] == item] = row
+                                                           funcs=funcs),
+                                inplace=True)
+                    updated_df_header[
+                        updated_df_header['mnemonic'] == item] = row
 
             # build a dict of the well properties
             params = {'las': df_data,
@@ -392,7 +387,12 @@ class Well(object):
 
             return cls(params)
 
-    def df(self, keys=None, basis=None, uwi=False, alias=None, rename_aliased=True):
+    def df(self,
+           keys=None,
+           basis=None,
+           uwi=False,
+           alias=None,
+           rename_aliased=True):
         """
         Return current curve data as a ``pandas.DataFrame`` object.
 
@@ -551,7 +551,12 @@ class Well(object):
 
         return l
 
-    def to_las(self, fname, keys=None, basis=None, null_value=-999.25, **kwargs):
+    def to_las(self,
+               fname,
+               keys=None,
+               basis=None,
+               null_value=-999.25,
+               **kwargs):
         """
         Writes the current well instance as a LAS file. Essentially just wraps
         ``to_lasio()``, but is more convenient for most purposes.
@@ -627,13 +632,15 @@ class Well(object):
                                                 funcs=funcs)
 
             curve_units = df_header[
-                (df_header["section"] == name)][['mnemonic', 'unit', 'descr']].set_index('mnemonic').T
+                (df_header["section"] == name)][
+                ['mnemonic', 'unit', 'descr']].set_index('mnemonic').T
 
-            curves = {mnemonic: Curve.from_lasio_curve(curve=df_data[mnemonic].values,
-                                                       mnemonic=mnemonic,
-                                                       unit=curve_units[mnemonic].unit,
-                                                       description=curve_units[mnemonic].descr,
-                                                       **params)
+            curves = {mnemonic: Curve.from_lasio_curve(
+                curve=df_data[mnemonic].values,
+                mnemonic=mnemonic,
+                unit=curve_units[mnemonic].unit,
+                description=curve_units[mnemonic].descr,
+                **params)
                       for mnemonic in df_data.columns}
 
             # This will clobber anything with the same key!
@@ -871,7 +878,8 @@ class Well(object):
         """
         keys = self._get_curve_mnemonics(keys, alias=alias)
 
-        return len(list(filter(None, [self.get_mnemonic(k, alias=alias) for k in keys])))
+        return len(list(
+            filter(None, [self.get_mnemonic(k, alias=alias) for k in keys])))
 
     def is_complete(self, keys=None, alias=None):
         """
@@ -1113,7 +1121,7 @@ class Well(object):
                 data[i] = d.to_basis(basis=basis)
                 # Allow user to override the start and stop from the survey.
                 if (start is not None) or (stop is not None):
-                    data[i] = data[i].to_basis(start=start, stop=stop, step=step)
+                    data[i] = data[i].to_basis(start, stop, step)
                     basis = data[i].basis
             else:
                 # Empty_like gives unpredictable results
