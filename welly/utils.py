@@ -486,7 +486,7 @@ def dms2dd(dms):
     Args:
         dms (list). d must be negative for S and W.
 
-    Return:
+    Returns:
         float.
     """
     d, m, s = dms
@@ -500,7 +500,7 @@ def dd2dms(dd):
     Args:
         dd (float). Decimal degrees.
 
-    Return:
+    Returns:
         tuple. Degrees, minutes, and seconds.
     """
     m, s = divmod(dd * 3600, 60)
