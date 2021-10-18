@@ -149,9 +149,9 @@ def from_lasio(las):
         datasets = from_las_2_or_older(las)
     else:
         try:
-            warnings.warn(f"Warning, LAS version {version} not yet supported. "
-                          "Attempting to use LAS 1.2 and 2.0 parsing logic "
-                          "for LAS 3.0.")
+            m = f"Warning, LAS version {version} not yet supported. " \
+                f"Attempting to use LAS 1.2 and 2.0 parsing logic for LAS 3.0."
+            warnings.warn(m)
             datasets = from_las_2_or_older(las)
         except Exception:
             raise NotImplementedError(
@@ -191,11 +191,10 @@ def from_las_2_or_older(las):
     for section, item_list in las.sections.items():
 
         # section composed of SectionItem instance(s)
-        if section in header_sections:
+        if len(item_list) > 0 and section in header_sections:
             # construct df
-            df_section = pd.DataFrame(
-                [i.__dict__ for i in las.sections[section]])
-            # append section name as separate column
+            df_section = pd.DataFrame([i.__dict__ for i in las.sections[section]])
+            # append section name as a separate column
             df_section['section'] = section
             # concat metadata to header df
             header = pd.concat([header, df_section])
@@ -208,20 +207,20 @@ def from_las_2_or_older(las):
                         [i.__dict__ for i in las.sections[section]])
                     # parse curve data to separate df
                     df_section = pd.DataFrame(
-                        np.matrix(df_section.data.tolist()).transpose(),
+                        data=np.matrix(df_section.data.tolist()).transpose(),
                         columns=df_section.mnemonic.values)
                     # concat to curve data df
                     data = pd.concat([data, df_section])
                     # all Curves are parsed as strings if there is a string
                     for column in data.columns:
                         if data[column].dtype == 'O':
-                            # replacement of string null values with np.nan
+                            # replace string null values with np.nan
                             data[column] = data[column].replace(
                                 str(las.well["NULL"].value), np.nan)
                             data[column] = data[column].replace(
                                 str(las.well["NULL"].value) + '.0', np.nan)
                             try:
-                                # convert numeric Curves to floats
+                                # try to convert numeric Curve values to floats
                                 data[column] = data[column].astype(np.float64)
                             except ValueError:
                                 pass
@@ -243,6 +242,8 @@ def from_las_2_or_older(las):
                 '"{}"'.format(section))
 
     header.drop(['data'], axis=1, inplace=True)
+
+    header.reset_index(drop=True, inplace=True)
 
     return {'Curves': (data, header)}
 
@@ -297,7 +298,7 @@ def datasets_to_las(path, datasets, **kwargs):
                                     r.value,
                                     r.descr) for i, r in df_section.iterrows()])
 
-                elif section_name == 'Curves':
+                elif section_name in curve_sections:
                     for i, header_row in df_section.iterrows():
                         if header_row.mnemonic in data.columns:
                             curve_data = data.loc[:, header_row.mnemonic]
@@ -311,10 +312,10 @@ def datasets_to_las(path, datasets, **kwargs):
                     las.sections["Other"] = df_section['descr'][0]
 
                 else:
-                    warnings.warn('Section was not recognized and not parsed: '
-                                  '"{}"'.format(section_name))
+                    m = f"LAS Section was not recognized: '{section_name}'"
+                    warnings.warn(m)
         else:
-            # TODO: Investigate how we parse LAS3 datasets
+            # TODO: Investigate how we parse LAS3 datasets to LASFile
             # ~Ascii or ~Log ~Core ~Inclinometry ~Drilling ~Tops ~Test
             raise NotImplementedError('LAS 3.0 is not yet supported.')
 
@@ -364,10 +365,10 @@ def to_lasio(well, keys=None, alias=None, basis=None, null_value=-999.25):
     for obj, dic in LAS_FIELDS.items():
         if obj == 'header':
             for attr, (sect, item) in dic.items():
-                df = getattr(well, obj)
-                # get item value from df
+                df_header = getattr(well, obj)
+                # get item value from header dataframe
                 try:
-                    value = df[df.mnemonic == item].value.iloc[0]
+                    value = df_header[df_header.mnemonic == item].value.iloc[0]
                 except IndexError:
                     value = None
                 # set item value on LASFile instance

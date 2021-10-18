@@ -1,24 +1,57 @@
+import numpy as np
 import pandas as pd
 
 from welly.plot import plot_2d_curve, plot_curve, plot_kde_curve
-from welly.quality import quality_score_curve, qflags_curve, quality_curve, qflag_curve
+from welly.quality import quality_score_curve, qflags_curve, quality_curve, \
+    qflag_curve
 
 
 class Curve(object):
     """
-    Curve object that can hold 1D and 2D curve categorical/numerical data.
+    Curve object that can hold 1D, 2D 3D curve categorical/numerical data.
 
-    The following input parameters are passed to pd.DataFrame constructor:
-        - data
-        - index  (if passed, optional)
-        - mnemonic  (if passed, optional)
-        - dtype  (if passed, optional)
-        - index_name  (if passed, optional)
+    Args:
+        data (ndarray, Iterable, dict, or pd.DataFrame):
+            1D/2D/3D curve numerical or categorical data. Dict can contain
+            Series, arrays, constants, dataclass or list-like objects. If
+            data is a dict, column order follows insertion-order. Input is
+            passed as 'data' argument of pd.DataFrame constructor.
+        index (Index or array-like): Optional.
+            Index to use for resulting pd.DataFrame. Will default to
+            RangeIndex if no indexing information part of input data and no
+            index provided. Input is passed to 'index' parameter of the
+            pd.DataFrame constructor.
+        mnemonic (list or str): Optional.
+            The mnemonic(s) of the curve if the data does not have them. It is
+            passed as the 'columns' parameter of pd.DataFrame constructor.
+        dtype (str): Optional.
+            Data type to force. Only a single dtype is allowed. If None,
+            infer. Passed to pd.DataFrame constructor.
+        index_name (str): Optional.
+            Name of the index that will be assigned to
+            pd.DataFrame.index.name (e.g. 'depth', 'time').
+        api (str): Optional.
+            Application program interface number.
+        index_unit (str): Optional.
+            Unit of the index (e.g. 'ft', 'm', 'ms').
+        code (int): Optional.
+            Log code
+        date (str): Optional.
+            Date of when the curve was recorded.
+        description (str): Optional.
+            Description of the curve.
+        null (float): Optional.
+            Numeric null value representation (e.g. -9999).
+        run (int): Optional.
+            The count of the run of the same measurement through the same well.
+        service_company (str): Optional.
+            Company that executed logging operations.
+        units (str): Optional.
+            Units of the curve measurements.
 
-    The other input parameters are attached to the Curve object as attributes if passed.
-
+        Returns:
+            curve (welly.Curve): The curve object.
     """
-
     def __init__(self,
                  data,
                  index=None,
@@ -26,72 +59,29 @@ class Curve(object):
                  dtype=None,
                  index_name=None,
                  api=None,
-                 basis_units=None,
+                 index_unit=None,
                  code=None,
                  description=None,
                  date=None,
                  null=None,
                  run=None,
                  service_company=None,
-                 units=None,
-                 start=None,
-                 stop=None,
-                 step=None):
-        """
-        Args:
-            data (ndarray (structured or homogeneous), Iterable, dict, or DataFrame):
-                1D/2D curve numerical or categorical data. Dict can contain Series, arrays, constants, dataclass or
-                list-like objects. If data is a dict, column order follows insertion-order. Input is passed to 'data'
-                parameter of pd.DataFrame constructor.
-            index (Index or array-like):
-                index to use for resulting pd.DataFrame. Will default to RangeIndex if no indexing information part of
-                input data and no index provided. Input is passed to 'index' parameter of the pd.DataFrame constructor.
-            mnemonic (str):
-                the mnemonic of the curve if the data does not have them. It is passed as the 'columns' param of
-                pd.DataFrame constructor.
-            dtype (str):
-                data type to force. Only a single dtype is allowed. If None, infer. Passed to pd.DataFrame constructor.
-            index_name (str):
-                name of the index that will be assigned to pd.DataFrame.index.name (e.g. 'depth', 'time').
-            api (str):
-                application program interface number.
-            basis_units (str):
-                unit of the index (e.g. 'ft', 'm', 'ms').
-            code (int):
-                log code
-            date (str):
-                date of when the curve was recorded.
-            description (str):
-                description of the curve.
-            null (float):
-                numeric null value representation (e.g. -9999).
-            run (int):
-                the count of the run of the same measurement through the same well.
-            service_company (str):
-                company that executed logging operations.
-            start (float):
-                index value where index starts
-            step (float):
-                index value increment
-            stop (float):
-                index value where index stops
-            units (str):
-                units of the curve measurements.
+                 units=None):
 
-        Returns:
-            curve (welly.Curve): instance of the Curve object
-        """
+        # construct dataframe
         self.df = pd.DataFrame(data=data, index=index, dtype=dtype)
 
-        # assign mnemonic to the name of all df columns
-        if mnemonic:
-            self.df.columns = [mnemonic] * self.df.shape[1]
+        if type(mnemonic) == str:
+            mnemonic = [mnemonic]
+
+        # set mnemonic(s) as column name(s)
+        self.df.columns = mnemonic
 
         if index_name:
             self.df.index.name = index_name
 
         # set parameters related to curve
-        self.basis_units = basis_units
+        self.index_unit = index_unit
         self.code = code
         self.description = description
         self.units = units
@@ -102,33 +92,27 @@ class Curve(object):
         self.null = null
         self.run = run
         self.service_company = service_company
-        self.start = start
-        self.step = step
-        self.stop = stop
 
     def __str__(self) -> str:
         """
-        A more useful and comprehensive string representation of the Curve instance.
+        A more useful and comprehensive string representation of the Curve.
+        Access through calling `print(curve_object)`.
 
         Arguments:
-            None
+            No arguments
 
         Return:
             String representation of:
             - the class name
             - the pd.DataFrame if ncol>1 and the pd.Series if ncol==1
-            - the attributes that are attached to the object and that are not None
-
-        Example of how to use:
-            curve = Curve([])
-            print(curve)
+            - the attributes that are attached to the object and that exist
         """
         params = {
             'api': self.api,
             'code': self.code,
             'date': self.date,
             'description': self.description,
-            'basis_units': self.basis_units,
+            'index_unit': self.index_unit,
             'null': self.null,
             'run': self.run,
             'service_company': self.service_company,
@@ -148,6 +132,50 @@ class Curve(object):
             show_df = self.df
 
         return '%s \n%s \n attributes: \n  %s' % (self.__class__, show_df, params)
+
+    @property
+    def start(self):
+        """
+        The value of the first index. Requires the df (pd.DataFrame) to exist.
+
+        We keep track of this property because start (STRT) is a required field
+        in a LAS file.
+        """
+        return self.df.index[0]
+
+    @property
+    def stop(self):
+        """
+        The value of the last index.
+
+        We keep track of this property because stop (STOP) is a required field
+        in a LAS file.
+        """
+        return self.df.index[-1]
+
+    @property
+    def step(self):
+        """
+        The increment of the index. Requires a numeric index.
+
+        We keep track of this property because step (STEP) is a required field
+        in a LAS file.
+
+        Returns:
+            Float. If the index is numeric and equally sampled
+            0. If the index is numeric and not equally sampled
+            None. If the index is not numeric
+        """
+        if self.df.index.is_numeric():
+            # compute differences between subsequent elements in index array
+            dif = np.diff(self.df.index.values)
+            # index evenly sampled
+            if np.allclose(dif - np.mean(dif), np.zeros_like(dif)):
+                return np.nanmedian(dif)
+            else:
+                return 0
+        else:
+            return None
 
     def plot_2d(self,
                 ax=None,

@@ -52,12 +52,12 @@ class Header(dict):
 
         """
         params = {}
-        for field, (sect, code) in las_fields['header'].items():
-            params[field] = utils.lasio_get(header,
-                                            sect,
-                                            code,
-                                            remap=remap,
-                                            funcs=funcs)
+        for field, (sect, item) in las_fields['header'].items():
+            params[field] = utils.get_header_item(header,
+                                                  sect,
+                                                  item,
+                                                  remap=remap,
+                                                  funcs=funcs)
         return cls(params)
 
     @classmethod
