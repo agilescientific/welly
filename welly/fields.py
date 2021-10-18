@@ -6,7 +6,6 @@ Field mapping from welly to LAS.
 """
 from .crs import CRS
 
-
 las_fields = {
     'well': {
     },
@@ -54,10 +53,79 @@ las_fields = {
     }
 }
 
-
 dev_fields = {
     'x': (r"X-COORDINATE: ([.0-9]+).+?", float),
     'y': (r"Y-COORDINATE: ([.0-9]+).+?", float),
     'kb': (r"# WELL DATUM .+?: ([.0-9]+).+?", float),
     'crs': (r"XYZ TRACE .+? \[\d+_(\d+)\] .+?", CRS.from_epsg),
+}
+
+header_sections = [
+    # LAS Versions: 1.2, 2, 3
+    'Well',
+    'W',
+    'Version',
+    'V',
+    # LAS Versions: 1.2, 2
+    'Curves',
+    'C',
+    'Parameter',
+    'P',
+    # LAS Versions: 3
+    'Drilling_Parameter',
+    'Drilling_Definition',
+    'Core_Parameter',
+    'Core_Definition',
+    'Core_Parameter[1]',
+    'Core_Definition[1]',
+    'Core_Parameter[2]',
+    'Core_Definition[2]',
+    'Inclinometry_Parameter',
+    'Inclinometry_Definition',
+    'Log_Parameter',
+    'Log_Definition',
+    'Test_Parameter',
+    'Test_Definition',
+    'Tops_Parameter',
+    'Tops_Definition',
+    'TOPS_Definition',
+    'Perforation_Parameter',
+    'Perforation_Definition',
+    'Perforations_Definition',
+]
+
+curve_sections = [
+    # LAS Versions: 1.2, 2
+    'Ascii',
+    'ASCII',
+    'A',
+    'Curves',
+    'C',
+    # LAS Versions: 3
+    'Drilling_Data',
+    'Core_Data[1]',
+    'Core_Data[2]',
+    'Inclinometry_Data',
+    'Test_Data',
+    'Tops_Data',
+    'Perforation_Data'
+]
+
+other_sections = [
+    # LAS Versions: 1.2, 2
+    'Other',  # Str
+    'O'
+]
+
+las_objects = {
+    'Version': 'version',
+    'Well': 'well',
+    'Curves': 'curves',
+    'Parameter': 'params',
+    'Other': 'other',
+    'version': 'Version',
+    'well': 'Well',
+    'curves': 'Curves',
+    'params': 'Parameter',
+    'other': 'Other'
 }

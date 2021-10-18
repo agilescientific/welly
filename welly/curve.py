@@ -170,7 +170,12 @@ class Curve(np.ndarray):
     get_stats = describe
 
     @classmethod
-    def from_lasio_curve(cls, curve,
+    def from_lasio_curve(cls,
+                         curve,
+                         mnemonic=None,
+                         unit=None,
+                         api=None,
+                         description=None,
                          depth=None,
                          basis=None,
                          start=None,
@@ -186,14 +191,18 @@ class Curve(np.ndarray):
         basis or start and step information.
 
         Args:
-            curve (ndarray)
-            depth (ndarray)
-            basis (ndarray)
-            start (float)
-            stop (float)
-            step (float): default: 0.1524
-            run (int): default: -1
-            null (float): default: -999.25
+            curve (ndarray): Curve object
+            mnemonic (str): Optional.
+            unit (str): Optional. unit of the curve measurement
+            api (str): Optional.
+            description (str): Optional.
+            depth (ndarray): Optional. depth array
+            basis (ndarray): Optional. basis array
+            start (float): Optional. depth at which measurement logging starts
+            stop (float): Optional. depth at which measurement logging stops
+            step (float): Optional. default: 0.1524
+            run (int): Optional. default: -1
+            null (float): Optional. default: -999.25
             service_company (str): Optional.
             date (str): Optional.
             basis_units (str): the units of the basis.
@@ -201,10 +210,12 @@ class Curve(np.ndarray):
         Returns:
             Curve. An instance of the class.
         """
-        data = curve.data
-        unit = curve.unit
+        data = curve
 
-        # See if we have uneven sampling.
+        if not unit:
+            unit = ''
+
+        # see if we have uneven sampling
         if depth is not None:
             d = np.diff(depth)
             if not np.allclose(d - np.mean(d), np.zeros_like(d)):
@@ -234,20 +245,9 @@ class Curve(np.ndarray):
             else:
                 step = (stop - start) / (curve.data.shape[0] - 1)
 
-        # Interpolate into this.
-
-        params = {}
-        params['mnemonic'] = curve.mnemonic
-        params['description'] = curve.descr
-        params['start'] = start
-        params['step'] = step
-        params['units'] = unit
-        params['run'] = run
-        params['null'] = null
-        params['service_company'] = service_company
-        params['date'] = date
-        params['code'] = curve.API_code
-        params['basis_units'] = basis_units
+        params = {'mnemonic': mnemonic, 'description': description, 'code': api, 'start': start, 'step': step,
+                  'units': unit, 'run': run, 'null': null, 'service_company': service_company, 'date': date,
+                  'basis_units': basis_units}
 
         return cls(data, params=params)
 

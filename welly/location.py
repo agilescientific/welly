@@ -98,13 +98,13 @@ class Location(object):
         return
 
     @classmethod
-    def from_lasio(cls, L, remap=None, funcs=None):
+    def from_lasio(cls, header, remap=None, funcs=None):
         """
         Make a Location object from a lasio object. Assumes we're starting
         with a lasio object, L.
 
         Args:
-            L (lasio).
+            header (pd.DataFrame). Header information from las file
             remap (dict): Optional. A dict of 'old': 'new' LAS field names.
             funcs (dict): Optional. A dict of 'las field': function() for
                 implementing a transform before loading. Can be a lambda.
@@ -116,7 +116,7 @@ class Location(object):
         funcs = funcs or {}
         funcs['location'] = str
         for field, (sect, code) in las_fields['location'].items():
-            params[field] = utils.lasio_get(L,
+            params[field] = utils.lasio_get(header,
                                             sect,
                                             code,
                                             remap=remap,

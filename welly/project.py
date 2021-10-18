@@ -27,6 +27,7 @@ class Project(object):
     One day it might want its own CRS, but then we'd have to cast the CRSs of
     the contained data.
     """
+
     def __init__(self, list_of_Wells, source=''):
         self.alias = {}
         self.source = source
@@ -117,10 +118,10 @@ class Project(object):
                  req=None,
                  alias=None,
                  max=None,
-                 encoding=None, 
+                 encoding=None,
                  printfname=None,
                  index=None,
-                ):
+                 ):
         """
         Constructor. Essentially just wraps ``Well.from_las()``, but is more
         convenient for most purposes.
@@ -153,21 +154,19 @@ class Project(object):
             raise WellError("You need to provide an alias dict as well as requirement list.")
         if path is None:
             path = './*.[LlAaSs]'
-        list_of_Wells = [Well.from_las(f,
-                                       remap=remap,
-                                       funcs=funcs, 
-                                       data=data,
-                                       req=req,
-                                       alias=alias,
-                                       encoding=encoding,
-                                       printfname=printfname,
-                                       index=index,
-                                      )
-                         for i, f in tqdm(enumerate(glob.iglob(path))) if i < max]
-        return cls(list(filter(None, list_of_Wells)))
+        wells = [Well.from_las(f,
+                               remap=remap,
+                               funcs=funcs,
+                               data=data,
+                               req=req,
+                               alias=alias,
+                               encoding=encoding,
+                               printfname=printfname,
+                               index=index)
+                 for i, f in tqdm(enumerate(glob.iglob(path))) if i < max]
+        return cls(list(filter(None, wells)))
 
-    def add_canstrat_striplogs(self,
-                               path, uwi_transform=None, name='canstrat'):
+    def add_canstrat_striplogs(self, path, uwi_transform=None, name='canstrat'):
         """
         This may be too specific a method... just move it to the workflow.
 
@@ -283,7 +282,7 @@ class Project(object):
         alias = alias or self.alias
 
         # Make header.
-        keys_ = [k+'*' if k in alias else k for k in keys]
+        keys_ = [k + '*' if k in alias else k for k in keys]
         r = '</th><th>'.join(['Idx', 'UWI', 'Data', 'Passing'] + keys_)
         rows = '<tr><th>{}</th></tr>'.format(r)
 
@@ -338,7 +337,7 @@ class Project(object):
             if count == 0:
                 score = '–'
             else:
-                score = '{:.0f}'.format(100*(q_total/q_count)) if (q_total >= 0) and (q_count > 0) else '–'
+                score = '{:.0f}'.format(100 * (q_total / q_count)) if (q_total >= 0) and (q_count > 0) else '–'
             s = '<td>{}</td><td><span style="font-weight:bold;">{}</span></td><td>{}/{}&nbsp;curves</td><td>{}</td>'
             rows += s.format(i, w.uwi, count, len(w.data), score)
 
@@ -618,7 +617,7 @@ class Project(object):
                                                 )
 
         if y_train is None:
-        	return
+            return
 
         if remove_zeros:
             X_train = X_train[np.nonzero(y_train)]
@@ -693,6 +692,7 @@ class Project(object):
             except IndexError:
                 s = 1
             return s
+
         cols += get_cols(include)
 
         X = np.zeros(cols)

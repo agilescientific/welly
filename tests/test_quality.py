@@ -38,7 +38,7 @@ def test_quality():
     """
     Test basic stuff.
     """
-    w = Well.from_las('tests/P-129_out.LAS')
+    w = Well.from_las('tests/assets/P-129_out.LAS')
     r = w.qc_data(tests, alias=alias)
     assert len(r['GR'].values()) == 6
     assert sum(r['GR'].values()) == 3
@@ -57,7 +57,7 @@ def test_quality_curve():
     """
     Test qc functions in class Curve
     """
-    w = Well.from_las('tests/P-129_out.LAS')
+    w = Well.from_las('tests/assets/P-129_out.LAS')
     c = w.get_curve(mnemonic='CALI')
 
     tests_curve = c.quality(tests=tests)
