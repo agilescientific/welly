@@ -1001,7 +1001,8 @@ class Well(object):
         Makes a nice table out of ``qc_data()`` Wrapping function from quality.py.
 
         Returns:
-            str. An HTML string.
+            str. An HTML string for visualization in Jupyter notebook.
+            Visualize through IPython.display.HTML(str)
         """
         return qc_table_html_well(well=self, tests=tests, keys=keys,
                                   alias=alias)
