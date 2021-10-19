@@ -88,8 +88,8 @@ header_sections = [
     'Test_Definition',
     'Tops_Parameter',
     'Tops_Definition',
-    'TOPS_Definition',
     'Perforation_Parameter',
+    'Perforations_Parameter',
     'Perforation_Definition',
     'Perforations_Definition',
 ]
@@ -103,6 +103,7 @@ curve_sections = [
     'C',
     # LAS Versions: 3.0
     'Drilling_Data',
+    'Core_Data',
     'Core_Data[1]',
     'Core_Data[2]',
     'Inclinometry_Data',
