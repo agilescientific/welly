@@ -23,7 +23,7 @@ def qc_curve_group_well(well, tests, keys=None, alias=None):
             comparing one curve to another. See example in tests/test_quality.py
         keys (list): a list of the mnemonics to run the tests against.
         alias (dict): an alias dictionary, mapping mnemonics to lists of
-            mnemonics. See example in tests/test_quality.py
+            mnemonics. e.g. {'density': ['DEN', 'DENS']}
 
     Returns:
         dict. Test results for all the curves.
@@ -59,7 +59,7 @@ def qc_data_well(well, tests, keys=None, alias=None):
             comparing one curve to another. See example in tests/test_quality.py
         keys (list): a list of the mnemonics to run the tests against.
         alias (dict): an alias dictionary, mapping mnemonics to lists of
-            mnemonics. See example in tests/test_quality.py
+            mnemonics. e.g. {'density': ['DEN', 'DENS']}
 
     Returns:
         dict. The results. Stick to booleans (True = pass) or ints.
@@ -87,7 +87,7 @@ def qc_table_html_well(well, tests, keys=None, alias=None):
             comparing one curve to another. See example in tests/test_quality.py
         keys (list): a list of the mnemonics to run the tests against.
         alias (dict): an alias dictionary, mapping mnemonics to lists of
-            mnemonics. See example in tests/test_quality.py
+            mnemonics. e.g. {'density': ['DEN', 'DENS']}
 
     Returns:
         str. An HTML string for visualization in Jupyter notebook.
@@ -137,7 +137,7 @@ def quality_curve(curve, tests, alias=None):
         curve (welly.curve.Curve): Curve object.
         tests (list): a list of functions.
         alias (dict): a dictionary mapping mnemonics to lists of mnemonics.
-            See example in tests/test_quality.py
+            e.g. {'density': ['DEN', 'DENS']}
 
     Returns:
         dict. The results. Stick to booleans (True = pass) or ints.
@@ -174,7 +174,7 @@ def quality_score_curve(curve, tests, alias=None):
         curve (welly.curve.Curve): Curve object.
         tests (list): a list of functions.
         alias (dict): a dictionary mapping mnemonics to lists of mnemonics.
-            See example in tests/test_quality.py
+            e.g. {'density': ['DEN', 'DENS']}
 
     Returns:
         float. The fraction of tests passed, or -1 for 'took no tests'.
@@ -194,7 +194,7 @@ def qflag_curve(curve, tests, alias=None):
         curve (welly.curve.Curve): Curve object.
         tests (list): a list of functions.
         alias (dict): a dictionary mapping mnemonics to lists of mnemonics.
-            See example in tests/test_quality.py
+            e.g. {'density': ['DEN', 'DENS']}
 
     Returns:
         dict. The results. Stick to booleans (True = pass) or ints.
@@ -222,7 +222,7 @@ def qflags_curve(curve, tests, alias=None):
         curve (welly.curve.Curve): Curve object.
         tests (list): a list of functions.
         alias (dict): a dictionary mapping mnemonics to lists of mnemonics.
-            See example in tests/test_quality.py
+            e.g. {'density': ['DEN', 'DENS']}
 
     Returns:
         dict. The results. Stick to booleans (True = pass) or ints.

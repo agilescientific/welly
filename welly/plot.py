@@ -25,7 +25,7 @@ def plot_kdes_project(project,
     Args:
         project (welly.project.Project): Project object
         menemonic (str): the name of the curve to look for.
-        alias (dict): a welly alias dictionary.
+        alias (dict): a welly alias dictionary. e.g. {'density': ['DEN', 'DENS']}
         uwi_regex (str): a regex pattern. Only this part of the UWI will be displayed
             on the plot of KDEs.
         return_fig (bool): whether to return the matplotlib figure object. Default True
@@ -183,6 +183,7 @@ def plot_well(well,
             strings. The names to give the tracks, if you don't want welly
             to guess.
         alias (dict): a dictionary mapping mnemonics to lists of mnemonics.
+                e.g. {'density': ['DEN', 'DENS']}
         basis (ndarray): Optional. The basis of the plot, if you don't
             want welly to guess (probably the best idea).
         return_fig (bool): Whether to return the matplotlig figure. Default
