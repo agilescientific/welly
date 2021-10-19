@@ -1,3 +1,4 @@
+from functools import reduce
 import warnings
 from datetime import datetime
 from io import StringIO
@@ -10,7 +11,7 @@ from lasio import HeaderItem, CurveItem, SectionItems
 
 from welly import utils
 from welly.fields import curve_sections, other_sections, header_sections
-from welly.utils import get_columns_decimal_formatter
+from welly.utils import get_columns_decimal_formatter, get_step_from_array
 from .fields import las_fields as LAS_FIELDS
 
 # the lasio header item dictionary contains the fields from which we will parse
@@ -57,22 +58,22 @@ def from_las(file_ref, **kwargs):
                     * :meth:`lasio.LASFile.read` -
                         control how NULL values and errors are handled during
                         parsing.
-
     Returns:
-        datasets (Dict['dataset_name': (data (pd.DataFrame), header (pd.DataFrame))]):
+        datasets (Dict['dataset_name': pd.DataFrame]):
             A dict that has an item entry for every dataset found in the LAS
-            file. Any LAS dataset has a header and data part that is mapped
-            1-to-1 to two separate pd.DataFrames and put into a tuple. See
-            description and example below of how that is structured.
+            file. All LAS files have a header. Every other dataset data part
+            that is mapped 1-to-1 to a separate pd.DataFrame. See description
+            and example below of how that is structured.
 
     Description of datasets object:
 
     datasets = {
-        'Curves':   (data, header), # for LAS 1.2 & LAS 2.0
-        'ASCII':    (data, header), # for LAS 3.0
-        'Drilling': (data, header), # for LAS 3.0
-        'Core[1]':  (data, header), # for LAS 3.0 - Run 1
-        'Core[2]':  (data, header)  # for LAS 3.0 - Run 2
+        'Curves':   data,   # for LAS 1.2 & LAS 2.0
+        'ASCII':    data,   # for LAS 3.0
+        'Drilling': data,   # for LAS 3.0
+        'Core[1]':  data,   # for LAS 3.0 - Run 1
+        'Core[2]':  data,   # for LAS 3.0 - Run 2
+        'Header':   header, # for all (LAS 1.2, LAS 2.0, LAS 3.0)
     }
 
     Where:
@@ -99,13 +100,13 @@ def from_las(file_ref, **kwargs):
     --------
     >> datasets = from_las(path)
 
-    >> datasets['Curves'][0]
+    >> datasets['Curves']
          DEPT    CALI     FACIES
     0    1.0     2.4438   0
     1    1.5     2.4438   1
     2    2.0     2.4438   2
 
-    >> datasets['Curves'][1]
+    >> datasets['Header']
         original_mnemonic   mnemonic unit  value    descr         section
     0   VERS                VERS           2.0                    Version
     1   WRAP                WRAP           YES                    Version
@@ -173,60 +174,41 @@ def from_las_2_or_older(las):
         las (lasio.LASFile): `LASFile` constructed through `lasio.read()`
 
     Returns:
-        datasets (Dict['Curves': (data, header)]):
-            Dictionary with one item that maps dataset name (`Curves`) to a
-            tuple with `data` & `header` objects.
-
-        Where:
-            data   (pd.DataFrame): curve data
-            header (pd.DataFrame): well and curve header metadata
+        datasets (Dict['dataset_name': pd.DataFrame]):
+            Dictionary maps a dataset name (e.g. Curves) to a pd.DataFrame.
     """
-    # construct df to parse data sections to
-    data = pd.DataFrame()
+    datasets = {}
 
     # construct df to parse header sections to
     header = pd.DataFrame()
 
     # parse header from LASFile to df
     for section, item_list in las.sections.items():
+        # skip section if item list is empty and not an `Other` section
+        if len(item_list) == 0 and type(item_list) != str:
+            continue
 
-        # section composed of SectionItem instance(s)
-        if len(item_list) > 0 and section in header_sections:
-            # construct df
+        # section contains `SectionItem` instance(s)
+        elif section.casefold() in [s.casefold() for s in header_sections]:
+            # construct df for LAS section
             df_section = pd.DataFrame([i.__dict__ for i in las.sections[section]])
             # append section name as a separate column
             df_section['section'] = section
             # concat metadata to header df
             header = pd.concat([header, df_section])
 
-            # section is also composed of CurveItem instance(s)
-            if section in curve_sections:
-                if len(las.sections[section]) > 0:
-                    # construct df
-                    df_section = pd.DataFrame(
-                        [i.__dict__ for i in las.sections[section]])
-                    # parse curve data to separate df
-                    df_section = pd.DataFrame(
-                        data=np.matrix(df_section.data.tolist()).transpose(),
-                        columns=df_section.mnemonic.values)
-                    # concat to curve data df
-                    data = pd.concat([data, df_section])
-                    # all Curves are parsed as strings if there is a string
-                    for column in data.columns:
-                        if data[column].dtype == 'O':
-                            # replace string null values with np.nan
-                            data[column] = data[column].replace(
-                                str(las.well["NULL"].value), np.nan)
-                            data[column] = data[column].replace(
-                                str(las.well["NULL"].value) + '.0', np.nan)
-                            try:
-                                # try to convert numeric Curve values to floats
-                                data[column] = data[column].astype(np.float64)
-                            except ValueError:
-                                pass
+            # section is also contains `CurveItem` instance(s)
+            if section.casefold() in [s.casefold() for s in curve_sections]:
+                # get and append data df to datasets
+                datasets[section] = _get_curve_las_df(las, section)
 
-        # section is a Str instance
-        elif section in other_sections:
+        # section contains only `CurveItem` instance(s)
+        elif section.casefold() in [s.casefold() for s in curve_sections]:
+            # get and append data df to datasets
+            datasets[section] = _get_curve_las_df(las, section)
+
+        # section is a string instance
+        elif section.casefold() in [s.casefold() for s in other_sections]:
             # fill other section in descr key of header item dictionary
             header_item['descr'] = item_list
             # construct dataframe for 'Other' section
@@ -237,15 +219,16 @@ def from_las_2_or_older(las):
             header = pd.concat([header, df_section])
 
         else:
-            warnings.warn(
-                'This section was not recognized and therefore not parsed: '
-                '"{}"'.format(section))
+            m = f'Section was not recognized and not parsed: {section}'
+            warnings.warn(m)
 
     header.drop(['data'], axis=1, inplace=True)
 
     header.reset_index(drop=True, inplace=True)
 
-    return {'Curves': (data, header)}
+    datasets['Header'] = header
+
+    return datasets
 
 
 def datasets_to_las(path, datasets, **kwargs):
@@ -266,15 +249,18 @@ def datasets_to_las(path, datasets, **kwargs):
     # instantiate new LASFile to parse data & header to
     las = lasio.LASFile()
 
+    # set header df as variable to later retrieve curve meta data from
+    header = datasets['Header']
+
     # unpack datasets
-    for dataset, (data, header) in datasets.items():
+    for dataset_name, df in datasets.items():
 
-        if dataset == 'Curves':
+        # dataset is the header
+        if dataset_name == 'Header':
             # parse header pd.DataFrame to LASFile
-            for section_name in set(header.section.values):
-
-                # get header section
-                df_section = header[header.section == section_name]
+            for section_name in set(df.section.values):
+                # get header section df
+                df_section = df[df.section == section_name]
 
                 if section_name == 'Version':
                     if len(df_section[df_section.original_mnemonic == 'VERS']) > 0:
@@ -298,43 +284,40 @@ def datasets_to_las(path, datasets, **kwargs):
                                     r.value,
                                     r.descr) for i, r in df_section.iterrows()])
 
-                elif section_name in curve_sections:
-                    for i, header_row in df_section.iterrows():
-                        if header_row.mnemonic in data.columns:
-                            curve_data = data.loc[:, header_row.mnemonic]
-                            las.append_curve(mnemonic=header_row.mnemonic,
-                                             data=curve_data,
-                                             unit=header_row.unit,
-                                             descr=header_row.descr,
-                                             value=header_row.value)
-
                 elif section_name == 'Other':
                     las.sections["Other"] = df_section['descr'][0]
 
                 else:
                     m = f"LAS Section was not recognized: '{section_name}'"
                     warnings.warn(m)
-        else:
-            # TODO: Investigate how we parse LAS3 datasets to LASFile
-            # ~Ascii or ~Log ~Core ~Inclinometry ~Drilling ~Tops ~Test
-            raise NotImplementedError('LAS 3.0 is not yet supported.')
 
-        # numeric null value representation from the header (e.g. # -9999)
-        try:
-            null_value = header[header.original_mnemonic == 'NULL'].value.iloc[0]
-        except IndexError:
-            null_value = None
+        # dataset contains curve data
+        if dataset_name in curve_sections:
+            for i, header_row in header.iterrows():
+                if header_row.mnemonic in df.columns:
+                    curve_data = df.loc[:, header_row.mnemonic]
+                    las.append_curve(mnemonic=header_row.mnemonic,
+                                     data=curve_data,
+                                     unit=header_row.unit,
+                                     descr=header_row.descr,
+                                     value=header_row.value)
 
-        # las.write defaults to %.5 decimal points. We want to retain the
-        # number of decimals. We first construct a column formatter based on
-        # the max number of decimal points found in each curve.
-        if 'column_fmt' not in kwargs:
-            kwargs['column_fmt'] = get_columns_decimal_formatter(
-                data=las.data, null_value=null_value)
+    # numeric null value representation from the header (e.g. # -9999)
+    try:
+        null_value = header[header.original_mnemonic == 'NULL'].value.iloc[0]
+    except IndexError:
+        null_value = None
 
-        # write file to disk
-        with open(path, mode='w') as f:
-            las.write(f, **kwargs)
+    # las.write defaults to %.5 decimal points. We want to retain the
+    # number of decimals. We first construct a column formatter based
+    # on the max number of decimal points found in each curve.
+    if 'column_fmt' not in kwargs:
+        kwargs['column_fmt'] = get_columns_decimal_formatter(
+            data=las.data, null_value=null_value)
+
+    # write file to disk
+    with open(path, mode='w') as f:
+        las.write(f, **kwargs)
 
 
 def to_lasio(well, keys=None, alias=None, basis=None, null_value=-999.25):
@@ -347,6 +330,7 @@ def to_lasio(well, keys=None, alias=None, basis=None, null_value=-999.25):
             include, if not all of them. You can have nested lists, such
             as you might use for ``tracks`` in ``well.plot()``.
         alias (dict): Optional. A dictionary alias for the curve mnemonics.
+                e.g. {'density': ['DEN', 'DENS']}
         basis (numpy.ndarray): Optional. The basis to export the curves in.
             If you don't specify one, it will survey all the curves with
             `survey_basis()``.
@@ -391,18 +375,31 @@ def to_lasio(well, keys=None, alias=None, basis=None, null_value=-999.25):
     # Clear curves from header portion.
     l.header['Curves'] = []
 
-    # Add a depth basis.
-    if basis is None:
-        basis = well.survey_basis(keys=keys, alias=alias)
+    # put all curve dfs in a list
+    dfs = [curve.df for curve in well.data.values()]
+
+    # merge all curve dfs to one df
+    df_merged = reduce(lambda left, right: pd.merge(left,
+                                                    right,
+                                                    left_index=True,
+                                                    right_index=True), dfs)
+
+    # get the mnemonics to select
+    keys = well._get_curve_mnemonics(keys, alias=alias)
+
+    df_merged = df_merged[keys]
+
+    if basis:
+        df_merged = df_merged.reindex(basis)
     try:
-        l.add_curve('DEPT', basis)
+        l.add_curve('DEPT', df_merged.index)
     except:
-        raise Exception("Please provide a depth basis.")
+        raise Exception("Please provide an index.")
 
     # Add meta from basis.
-    setattr(l.well, 'STRT', basis[0])
-    setattr(l.well, 'STOP', basis[-1])
-    setattr(l.well, 'STEP', basis[1] - basis[0])
+    setattr(l.well, 'STRT', df_merged.index[0])
+    setattr(l.well, 'STOP', df_merged.index[-1])
+    setattr(l.well, 'STEP', get_step_from_array(df_merged.index.values))
 
     # Add data entities.
     other = ''
@@ -410,21 +407,21 @@ def to_lasio(well, keys=None, alias=None, basis=None, null_value=-999.25):
     keys = well._get_curve_mnemonics(keys, alias=alias)
 
     for k in keys:
-        d = well.data[k]
+        curve = well.data[k]
         # if getattr(d, 'null', None) is not None:
         #     d[np.isnan(d)] = d.null
         try:
-            new_data = np.copy(d.to_basis_like(basis))
+            new_data = np.copy(curve.to_basis_like(basis))
         except:
             # Basis shift failed; is probably not a curve
             pass
         try:
-            descr = getattr(d, 'description', '')
-            l.add_curve(k.upper(), new_data, unit=d.units, descr=descr)
+            descr = getattr(curve, 'description', '')
+            l.add_curve(k.upper(), new_data, unit=curve.units, descr=descr)
         except:
             try:
                 # Treat as OTHER
-                other += "{}\n".format(k.upper()) + d.to_csv()
+                other += "{}\n".format(k.upper()) + curve.to_csv()
             except:
                 pass
 
@@ -472,3 +469,34 @@ def get_las_version(las):
     version = float(las.version[0].value)
 
     return version
+
+
+def _get_curve_las_df(las, section):
+    """
+
+    """
+    # construct df
+    df_section = pd.DataFrame([i.__dict__ for i in las.sections[section]])
+
+    if df_section.empty:
+        return None
+    else:
+        # parse curve data to separate df
+        data = pd.DataFrame(data=np.matrix(df_section.data.tolist()).transpose(),
+                            columns=df_section.mnemonic.values)
+
+        # all curves are parsed as strings if there is a string
+        for column in data.columns:
+            if data[column].dtype == 'O':
+                # replace string null values with np.nan
+                data[column] = data[column].replace(
+                    str(las.well["NULL"].value), np.nan)
+                data[column] = data[column].replace(
+                    str(las.well["NULL"].value) + '.0', np.nan)
+                try:
+                    # try to convert numeric curve values to floats
+                    data[column] = data[column].astype(np.float64)
+                except ValueError:
+                    pass
+        return data
+
