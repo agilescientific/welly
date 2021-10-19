@@ -684,3 +684,25 @@ def get_number_of_decimal_points(value):
         return -decimal.Decimal(str(value)).as_tuple().exponent
     else:
         return None
+
+
+def get_step_from_array(arr):
+    """
+    Gets the 'step' or increment of the array. Requires numeric values in array
+
+    Args:
+        arr (np.array): The array
+
+    Returns:
+        Float. If the index is numeric and equally sampled
+        0. If the index is numeric and not equally sampled
+        None. If the index is not numeric
+    """
+    # compute differences between subsequent elements in index array
+    dif = np.diff(arr)
+    if np.allclose(dif - np.mean(dif), np.zeros_like(dif)):
+        # index evenly sampled
+        return np.nanmedian(dif)
+    else:
+        # index unevenly sampled so cannot derive `step`
+        return 0

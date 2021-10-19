@@ -4,11 +4,12 @@ import pandas as pd
 from welly.plot import plot_2d_curve, plot_curve, plot_kde_curve
 from welly.quality import quality_score_curve, qflags_curve, quality_curve, \
     qflag_curve
+from welly.utils import get_step_from_array
 
 
 class Curve(object):
     """
-    Curve object that can hold 1D, 2D 3D curve categorical/numerical data.
+    Curve object that can hold 1D and 2D categorical/numerical curve data.
 
     Args:
         data (ndarray, Iterable, dict, or pd.DataFrame):
@@ -24,20 +25,21 @@ class Curve(object):
         mnemonic (list or str): Optional.
             The mnemonic(s) of the curve if the data does not have them. It is
             passed as the 'columns' parameter of pd.DataFrame constructor.
+            Single mnemonic for 1D data, multiple mnemnonics for 2D data.
         dtype (str): Optional.
             Data type to force. Only a single dtype is allowed. If None,
             infer. Passed to pd.DataFrame constructor.
         index_name (str): Optional.
             Name of the index that will be assigned to
             pd.DataFrame.index.name (e.g. 'depth', 'time').
-        api (str): Optional.
-            Application program interface number.
         index_unit (str): Optional.
             Unit of the index (e.g. 'ft', 'm', 'ms').
+        api (str): Optional.
+            Application program interface number.
         code (int): Optional.
             Log code
         date (str): Optional.
-            Date of when the curve was recorded.
+            Date of when the curve was recorded, interpreted or exported.
         description (str): Optional.
             Description of the curve.
         null (float): Optional.
@@ -58,8 +60,8 @@ class Curve(object):
                  mnemonic=None,
                  dtype=None,
                  index_name=None,
-                 api=None,
                  index_unit=None,
+                 api=None,
                  code=None,
                  description=None,
                  date=None,
@@ -167,13 +169,7 @@ class Curve(object):
             None. If the index is not numeric
         """
         if self.df.index.is_numeric():
-            # compute differences between subsequent elements in index array
-            dif = np.diff(self.df.index.values)
-            # index evenly sampled
-            if np.allclose(dif - np.mean(dif), np.zeros_like(dif)):
-                return np.nanmedian(dif)
-            else:
-                return 0
+            return get_step_from_array(self.df.index.values)
         else:
             return None
 
@@ -203,7 +199,7 @@ class Curve(object):
         Returns:
             ax. If you passed in an ax, otherwise None.
         """
-        plot_2d_curve(curve=self,
+        plot_2d_curve(self,
                       ax=ax,
                       width=width,
                       aspect=aspect,
@@ -271,6 +267,7 @@ class Curve(object):
         Args:
             tests (list): a list of functions.
             alias (dict): a dictionary mapping mnemonics to lists of mnemonics.
+                e.g. {'density': ['DEN', 'DENS']}
 
         Returns:
             list. The results. Stick to booleans (True = pass) or ints.
@@ -296,6 +293,7 @@ class Curve(object):
         Args:
             tests (list): a list of functions.
             alias (dict): a dictionary mapping mnemonics to lists of mnemonics.
+                e.g. {'density': ['DEN', 'DENS']}
 
         Returns:
             float. The fraction of tests passed, or -1 for 'took no tests'.
@@ -312,6 +310,7 @@ class Curve(object):
         Args:
             tests (list): a list of functions.
             alias (dict): a dictionary mapping mnemonics to lists of mnemonics.
+                e.g. {'density': ['DEN', 'DENS']}
 
         Returns:
             list. The results. Stick to booleans (True = pass) or ints.
@@ -333,6 +332,7 @@ class Curve(object):
         Args:
             tests (list): a list of functions.
             alias (dict): a dictionary mapping mnemonics to lists of mnemonics.
+                e.g. {'density': ['DEN', 'DENS']}
 
         Returns:
             list. The results. Stick to booleans (True = pass) or ints.
