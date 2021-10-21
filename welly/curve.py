@@ -173,6 +173,17 @@ class Curve(object):
         else:
             return None
 
+    @property
+    def basis(self):
+        """
+        The depth or time basis of the curve's points. Computed
+        on the fly from the start, stop and step.
+
+        Returns
+            ndarray. The array, the same length as the curve.
+        """
+        return np.linspace(self.start, self.stop, self.df.__len__(), endpoint=True)
+
     def plot_2d(self,
                 ax=None,
                 width=None,
