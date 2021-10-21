@@ -547,7 +547,8 @@ def plot_kde_curve(curve,
     else:
         return_ax = True
 
-    a = curve[~np.isnan(curve)]
+    # a = curve[~np.isnan(curve)]
+    a = curve.df.dropna().to_numpy()
 
     # Find values for common axis to exclude outliers.
     if amax is None:
@@ -565,7 +566,7 @@ def plot_kde_curve(curve,
     extent = [amin, amax, 0, 1]
     ax.imshow(img, aspect='auto', cmap='viridis', extent=extent)
     ax.set_yticklabels([])
-    ax.set_ylabel(label or curve.mnemonic)
+    ax.set_ylabel(label or curve.df.columns[0])
 
     if return_ax:
         return ax
