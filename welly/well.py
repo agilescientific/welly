@@ -207,9 +207,10 @@ class Well(object):
         """
         Non-rich representation.
         """
-        return "Well(uwi: '{}', {} curves: {})".format(self.uwi,
-                                                       len(self.data),
-                                                       list(self.data.keys()))
+        return "Well(uwi: '{}', name: '{}', {} curves: {})".format(self.uwi,
+                                                                   self.name,
+                                                                   len(self.data),
+                                                                   list(self.data.keys()))
 
     def _repr_html_(self):
         """
@@ -435,7 +436,7 @@ class Well(object):
         # store header as variable
         df_header = datasets['Header']
 
-        # delete header entry from dict to save memory
+        # delete header entry from dict
         del datasets['Header']
 
         # copy header df to later store updated item values in

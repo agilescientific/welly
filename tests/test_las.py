@@ -21,7 +21,7 @@ paths_in = [
 ]
 
 # create temporary directory write las files to disk with welly.to_las()
-dir_temp = 'tests/temp'
+dir_temp = 'tests\\temp'
 if os.path.exists(dir_temp):
     shutil.rmtree(dir_temp)
     os.mkdir(dir_temp)
@@ -72,9 +72,11 @@ def test_to_las():
     # untouched las should be equal to those of written las
     for las_original, las_export in zip(las_originals, las_exported):
         assert_frame_equal(las_original.df(), las_export.df(), check_names=False)
+        assert las_original.sections['Version'] == las_export.sections['Version']
         assert las_original.sections['Well'] == las_export.sections['Well']
         assert las_original.sections['Parameter'] == las_export.sections['Parameter']
         assert las_original.sections['Curves'] == las_export.sections['Curves']
+        assert las_original.sections['Other'] == las_export.sections['Other']
 
     # delete the temporary directory where the temporary las files are stored
     shutil.rmtree(dir_temp)

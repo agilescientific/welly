@@ -237,8 +237,7 @@ def datasets_to_las(path, datasets, **kwargs):
 
     Args:
         path (Str): Path to write LAS file to
-        datasets (Dict['dataset_name': (data (pd.DataFrame), header (pd.DataFrame))]):
-            Datasets with data & header
+        datasets (Dict['dataset_name': pd.DataFrame]): Datasets with data & header
 
     Returns:
         Nothing, only writes in-memory object to disk as .las
@@ -248,6 +247,7 @@ def datasets_to_las(path, datasets, **kwargs):
 
     # instantiate new LASFile to parse data & header to
     las = lasio.LASFile()
+    las.version = []
 
     # set header df as variable to later retrieve curve meta data from
     header = datasets['Header']
@@ -262,7 +262,11 @@ def datasets_to_las(path, datasets, **kwargs):
                 # get header section df
                 df_section = df[df.section == section_name]
 
-                if section_name == 'Version':
+                if section_name == 'Curves':
+                    # curves header items are handled in curve data loop
+                    pass
+
+                elif section_name == 'Version':
                     if len(df_section[df_section.original_mnemonic == 'VERS']) > 0:
                         las.version.VERS = df_section[df_section.original_mnemonic == 'VERS']['value'].values[0]
                     if len(df_section[df_section.original_mnemonic == 'WRAP']) > 0:
@@ -285,7 +289,7 @@ def datasets_to_las(path, datasets, **kwargs):
                                     r.descr) for i, r in df_section.iterrows()])
 
                 elif section_name == 'Other':
-                    las.sections["Other"] = df_section['descr'][0]
+                    las.sections["Other"] = df_section['descr'].iloc[0]
 
                 else:
                     m = f"LAS Section was not recognized: '{section_name}'"
@@ -293,7 +297,8 @@ def datasets_to_las(path, datasets, **kwargs):
 
         # dataset contains curve data
         if dataset_name in curve_sections:
-            for i, header_row in header.iterrows():
+            header_curves = header[header.section == dataset_name]
+            for i, header_row in header_curves.iterrows():
                 if header_row.mnemonic in df.columns:
                     curve_data = df.loc[:, header_row.mnemonic]
                     las.append_curve(mnemonic=header_row.mnemonic,
@@ -378,28 +383,30 @@ def to_lasio(well, keys=None, alias=None, basis=None, null_value=-999.25):
     # put all curve dfs in a list
     dfs = [curve.df for curve in well.data.values()]
 
-    # merge all curve dfs to one df
-    df_merged = reduce(lambda left, right: pd.merge(left,
-                                                    right,
-                                                    left_index=True,
-                                                    right_index=True), dfs)
+    # Deal with data if available
+    if len(dfs) > 0:
+        # merge all curve dfs to one df
+        df_merged = reduce(lambda left, right: pd.merge(left,
+                                                        right,
+                                                        left_index=True,
+                                                        right_index=True), dfs)
 
-    # get the mnemonics to select
-    keys = well._get_curve_mnemonics(keys, alias=alias)
+        # get the mnemonics to select
+        keys = well._get_curve_mnemonics(keys, alias=alias)
 
-    df_merged = df_merged[keys]
+        df_merged = df_merged[keys]
 
-    if basis:
-        df_merged = df_merged.reindex(basis)
-    try:
-        l.add_curve('DEPT', df_merged.index)
-    except:
-        raise Exception("Please provide an index.")
+        if basis:
+            df_merged = df_merged.reindex(basis)
+        try:
+            l.add_curve('DEPT', df_merged.index)
+        except:
+            raise Exception("Please provide an index.")
 
-    # Add meta from basis.
-    setattr(l.well, 'STRT', df_merged.index[0])
-    setattr(l.well, 'STOP', df_merged.index[-1])
-    setattr(l.well, 'STEP', get_step_from_array(df_merged.index.values))
+        # Add meta from basis.
+        setattr(l.well, 'STRT', df_merged.index[0])
+        setattr(l.well, 'STOP', df_merged.index[-1])
+        setattr(l.well, 'STEP', get_step_from_array(df_merged.index.values))
 
     # Add data entities.
     other = ''
