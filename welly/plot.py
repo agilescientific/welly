@@ -476,7 +476,7 @@ def plot_curve(curve,
         kwargs['lw'] = getattr(d, 'lineweight', None) or getattr(d, 'lw', 1)
         kwargs['ls'] = getattr(d, 'linestyle', None) or getattr(d, 'ls', '-')
 
-    ax.plot(curve, curve.basis, **kwargs)
+    ax.plot(curve.df, curve.basis, **kwargs)
 
     if d is not None:
         # Attempt to get axis parameters from decor.
@@ -496,7 +496,7 @@ def plot_curve(curve,
 
         ax.set(**axkwargs)
 
-    ax.set_title(curve.mnemonic)  # no longer needed
+    ax.set_title(curve.df.columns[0])  # no longer needed
     ax.set_xlabel(curve.units)
 
     if False:  # labeltop of axes?
