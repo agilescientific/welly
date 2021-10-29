@@ -9,6 +9,7 @@ import numpy as np
 import pandas as pd
 from lasio import HeaderItem, CurveItem, SectionItems
 
+from welly.curve import Curve
 from welly import utils
 from welly.fields import curve_sections, other_sections, header_sections
 from welly.utils import get_columns_decimal_formatter, get_step_from_array
@@ -59,11 +60,8 @@ def from_las(file_ref, **kwargs):
                         control how NULL values and errors are handled during
                         parsing.
     Returns:
-        datasets (Dict['dataset_name': pd.DataFrame]):
-            A dict that has an item entry for every dataset found in the LAS
-            file. All LAS files have a header. Every other dataset data part
-            that is mapped 1-to-1 to a separate pd.DataFrame. See description
-            and example below of how that is structured.
+        datasets (Dict['<name>': pd.DataFrame]): Dictionary maps a
+            dataset name (e.g. 'Curves') or 'Header' to a pd.DataFrame.
 
     Description of datasets object:
 
@@ -163,19 +161,17 @@ def from_lasio(las):
 
 def from_las_2_or_older(las):
     """
-    Parse `lasio.LASFile` (LAS version 1.2 & 2.0) to two `pd.DataFrames` that
-    form 1 `datasets` entry as a tuple.
+    Parse `lasio.LASFile` to two `pd.DataFrames`. The 'Header' and 'Curves'
+    section translate both to a `pd.DataFrame`.
 
     Requires: LASFile version 1.2 or 2.0.
-
-    For LAS versions 1.2 & 2.0, one LAS file translates to one `Curves` dataset
 
     Args:
         las (lasio.LASFile): `LASFile` constructed through `lasio.read()`
 
     Returns:
-        datasets (Dict['dataset_name': pd.DataFrame]):
-            Dictionary maps a dataset name (e.g. Curves) to a pd.DataFrame.
+        datasets (Dict['<name>': pd.DataFrame]): Dictionary maps a
+            dataset name (e.g. 'Curves') or 'Header' to a pd.DataFrame.
     """
     datasets = {}
 
@@ -237,7 +233,8 @@ def datasets_to_las(path, datasets, **kwargs):
 
     Args:
         path (Str): Path to write LAS file to
-        datasets (Dict['dataset_name': pd.DataFrame]): Datasets with data & header
+        datasets (Dict['<name>': pd.DataFrame]): Dictionary maps a
+            dataset name (e.g. 'Curves') or 'Header' to a pd.DataFrame.
 
     Returns:
         Nothing, only writes in-memory object to disk as .las
@@ -399,7 +396,7 @@ def to_lasio(well, keys=None, alias=None, basis=None, null_value=-999.25):
         if basis:
             df_merged = df_merged.reindex(basis)
         try:
-            l.add_curve('DEPT', df_merged.index)
+            l.add_curve('DEPT', df_merged.index.values)
         except:
             raise Exception("Please provide an index.")
 
@@ -413,24 +410,26 @@ def to_lasio(well, keys=None, alias=None, basis=None, null_value=-999.25):
 
     keys = well._get_curve_mnemonics(keys, alias=alias)
 
-    for k in keys:
-        curve = well.data[k]
-        # if getattr(d, 'null', None) is not None:
-        #     d[np.isnan(d)] = d.null
-        try:
-            new_data = np.copy(curve.to_basis_like(basis))
-        except:
-            # Basis shift failed; is probably not a curve
+    for key in keys:
+        # select curve from well
+        curve = well.data[key]
+
+        if isinstance(curve, Curve):
+            # iterate over columns for 2D curve data
+            for col in curve.df.columns:
+                try:
+                    # take the series, reindex it and transform to np.array
+                    new_data = curve.df[col].reindex(basis).values
+                    descr = getattr(curve, 'description', '')
+                    l.add_curve(mnemonic=key.upper(),
+                                data=new_data,
+                                unit=curve.units,
+                                descr=descr)
+                except:
+                    # appending curve failed, add to OTHER section
+                    other += "{}\n".format(key.upper()) + curve.to_csv()
+        else:
             pass
-        try:
-            descr = getattr(curve, 'description', '')
-            l.add_curve(k.upper(), new_data, unit=curve.units, descr=descr)
-        except:
-            try:
-                # Treat as OTHER
-                other += "{}\n".format(k.upper()) + curve.to_csv()
-            except:
-                pass
 
     # Write OTHER, if any.
     if other:
@@ -489,7 +488,7 @@ def _get_curve_las_df(las, section):
         return None
     else:
         # parse curve data to separate df
-        data = pd.DataFrame(data=np.matrix(df_section.data.tolist()).transpose(),
+        data = pd.DataFrame(np.matrix(df_section.data.tolist()).transpose(),
                             columns=df_section.mnemonic.values)
 
         # all curves are parsed as strings if there is a string

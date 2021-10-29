@@ -37,26 +37,24 @@ def test_basis(well):
     Test basis change.
     """
     gr = well.data['GR']
+    curve_new = gr.to_basis(start=100, stop=200, step=1)
+    assert curve_new.df.size == 101
+    assert curve_new.df.iloc[0][0] - 66.6059 < 0.001
 
-    x = gr.to_basis(start=100, stop=200, step=1)
-    assert x.size == 101
-    assert x[0] - 66.6059 < 0.001
-
-    y = gr.to_basis_like(x)
-    assert y.size == 101
-    assert y[0] - 66.6059 < 0.001
+    curve_new2 = gr.to_basis_like(curve_new)
+    assert curve_new2.df.size == 101
+    assert curve_new2.df.iloc[0][0] - 66.6059 < 0.001
 
 
-def test_read(well):
+def test_read_at(well):
     """
-    Test reading for single number and array.
+    Test reading at index value for single number and array of numbers.
     """
     gr = well.data['GR']
-
-    assert gr.read_at(1000) - 109.414177 < 0.001
+    assert gr.read_at(1000) == 109.414177
 
     actual = gr.read_at([500, 1000, 1500])
-    desired = np.array([91.29946709, 109.4141766, 64.55931458])
+    desired = np.array([91.72541, 111.21344, 64.187462])
     np.testing.assert_allclose(actual, desired)
 
 
@@ -74,7 +72,7 @@ def test_block(well):
     b = gr.block()
     assert b.mean() - 0.46839 < 0.001
 
-    b = gr.block(cutoffs=[50, 100], values=[12, 24, 36])
+    b = gr.block(cutoffs=[50, 100, 120], values=[12, 24, 36])
     assert b.max() == 36
     assert b.mean() - 25.077528 < 0.001
 

@@ -120,9 +120,11 @@ def _convert_depth_index_unit(index, unit_from, unit_to):
 
     # flip the index if it is descending
     if index[0] > index[1]:
-        if isinstance(x, pd.Index):
+        if isinstance(index, pd.Index):
+            # index is pandas index
             index = index.reindex(index[::-1])
         else:
+            # index is np array
             index = np.flipud(index)
 
     return index
@@ -272,6 +274,18 @@ class Well(object):
         If `keys` is a list-like of mnemonics, or list of lists (such as might
         be used to plot tracks), then only get those (ignores anything that is
         not a Curve).
+
+        Args:
+            keys (list): List of strings: the keys of the data items to
+                include, if not passed, get all of them. You can have nested
+                lists, such as you might use for ``tracks`` in ``well.plot()``.
+            alias (dict): Optional. A dictionary alias for the curve mnemonics.
+                e.g. {'density': ['DEN', 'DENS']}
+            curves_only (bool): If true, only get mnemonics of curve objects in
+                well. If false, get mnemonics of any type of object in well.
+
+        Returns:
+            keys (list): A list of mnemonics
         """
         if keys is None:
             keys_ = self.data.keys()
@@ -400,18 +414,13 @@ class Well(object):
                       fname=None,
                       index_unit=None):
         """
-        Constructor. If you have `datasets`, this will create a well object
-        from it. See :func:`las.from_las()` for a description of a `datasets`
-        object.
-
-        This method requires:
-            - first column of `data` to be the Index/Depth/Time Curve
-            - TODO: Complete requirements
+        Constructor. If you have a `datasets` object, this will create a well
+        object from it. See :func:`las.from_las()` for a description of a
+        `datasets` object.
 
         Args:
-            datasets (Dict['name': (data (DataFrame), header (DataFrame))]):
-                A dictionary that maps the 'dataset name' to a tuple of a
-                header and data pd.DataFrames.
+            datasets (Dict['<name>': pd.DataFrame]): Dictionary maps a
+                dataset name (e.g. 'Curves') or 'Header' to a pd.DataFrame.
             remap (dict): Optional. A dict of 'old': 'new' LAS field names.
             funcs (dict): Optional. A dict of 'las field': function() for
                 implementing a transform before loading. Can be a lambda.
@@ -565,13 +574,19 @@ class Well(object):
             las = self.to_lasio(keys=keys, basis=basis, null_value=null_value)
             las.write(f, **kwargs)
 
-    def to_datasets(self):
+    def to_datasets(self,
+                    keys=None,
+                    alias=None,
+                    basis=None,
+                    null_value=-999.25):
         """
 
         """
-        # TODO
-        #   implement after refactoring of Curve object
-        pass
+        las = to_lasio(self, keys, alias, basis, null_value)
+
+        datasets = from_lasio(las)
+
+        return datasets
 
     def df(self,
            keys=None,
@@ -672,7 +687,8 @@ class Well(object):
         Essentially just wraps ``add_curves_from_lasio()``.
 
         Args:
-            datasets (dict): Datasets with curves and headers.
+            datasets (Dict['<name>': pd.DataFrame]): Dictionary maps a
+                dataset name (e.g. 'Curves') or 'Header' to a pd.DataFrame.
             remap (dict): Optional. A dict of 'old': 'new' LAS field names.
             funcs (dict): Optional. A dict of 'las field': function() for
                 implementing a transform before loading. Can be a lambda.
