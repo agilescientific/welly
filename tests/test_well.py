@@ -12,7 +12,7 @@ def test_well(well):
     # Check some basics.
     assert well.location.country == 'CA'
     assert len(well.data) == 24
-    assert well.data['GR'][0] - 46.69865036 < 0.001
+    assert well.data['GR'].df.iloc[0][0] - 46.69865036 < 0.001
     assert len(well.survey_basis()) == 12718
 
     # This is garbled, but it is what it is.
@@ -26,13 +26,13 @@ def test_well(well):
 
     # Check we can add curves.
     well.add_curves_from_las(['tests/assets/1.las'])
-    assert len(well.data['HCAL']) == 4  # New short curve.
+    assert len(well.data['HCAL'].df) == 4  # New short curve.
 
     # Unify basis.
     # well.data['GR'] = well.data['GR'].to_basis(start=100, stop=200, step=1)
-    assert len(well.data['HCAL']) != len(well.data['RHOB'])
+    assert len(well.data['HCAL'].df) != len(well.data['RHOB'].df)
     well.unify_basis()
-    assert len(well.data['HCAL']) == len(well.data['RHOB'])
+    assert len(well.data['HCAL'].df) == len(well.data['RHOB'].df)
 
 
 def test_well_pathlib():
@@ -60,5 +60,5 @@ def test_well_write(well):
     path = 'tests/assets/test.las'
     well.to_las(path)
     well = Well.from_las(path)
-    assert well.data['GR'][0] - 46.69865036 < 0.001
+    assert well.data['GR'].df.iloc[0][0] - 46.69865036 < 0.001
     os.remove(path)

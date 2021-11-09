@@ -663,7 +663,7 @@ class Well(object):
         Essentially just wraps ``add_curves_from_lasio()``.
 
         Args:
-            fname (str): The path of the LAS file to read curves from.
+            fname (str or list): The path(s) of the LAS file to read curves from
             remap (dict): Optional. A dict of 'old': 'new' LAS field names.
             funcs (dict): Optional. A dict of 'las field': function() for
                 implementing a transform before loading. Can be a lambda.
@@ -671,24 +671,21 @@ class Well(object):
         Returns:
             None. Works in place.
         """
-        try:  # To treat as a single file
-            self.add_curves_from_lasio(from_las(fname), remap=remap,
-                                       funcs=funcs)
-        except AttributeError:  # It's a list!
-            for f in fname:
-                self.add_curves_from_lasio(from_las(f), remap=remap,
-                                           funcs=funcs)
+        # put str in a list to iterate over
+        if type(fname) == str:
+            fname = [fname]
 
-        return None
+        for f in fname:
+            w = self.from_las(f, remap=remap, funcs=funcs)
+            self.data.update(w.data)
 
-    def add_curves_from_lasio(self, datasets, remap=None, funcs=None):
+    def add_curves_from_lasio(self, las, remap=None, funcs=None):
         """
         Given a LAS file, add curves from it to the current well instance.
         Essentially just wraps ``add_curves_from_lasio()``.
 
         Args:
-            datasets (Dict['<name>': pd.DataFrame]): Dictionary maps a
-                dataset name (e.g. 'Curves') or 'Header' to a pd.DataFrame.
+            las (lasio.LASFile object): a lasio representation of a LAS file.
             remap (dict): Optional. A dict of 'old': 'new' LAS field names.
             funcs (dict): Optional. A dict of 'las field': function() for
                 implementing a transform before loading. Can be a lambda.
@@ -696,25 +693,9 @@ class Well(object):
         Returns:
             None. Works in place.
         """
-        for name, (df_data, df_header) in datasets.items():
-            params = {}
-            for field, (sect, code) in LAS_FIELDS['data'].items():
-                params[field] = utils.get_header_item(df_header, sect, code,
-                                                      remap=remap, funcs=funcs)
+        w = from_lasio(las)
+        self.data.update(w.data)
 
-            curve_units = df_header[(df_header["section"] == name)][
-                ['mnemonic', 'unit', 'descr']].set_index('mnemonic').T
-
-            curves = {mnemonic: Curve.from_lasio_curve(
-                curve=df_data[mnemonic].values, mnemonic=mnemonic,
-                unit=curve_units[mnemonic].unit,
-                description=curve_units[mnemonic].descr, **params) for mnemonic
-                in df_data.columns}
-
-            # This will clobber anything with the same key!
-            self.data.update(curves)
-
-        return None
 
     def _plot_depth_track(self, ax, md, kind='MD', tick_spacing=100):
         """
