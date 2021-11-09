@@ -1,3 +1,5 @@
+import copy
+
 import numpy as np
 import pandas as pd
 from scipy.interpolate import interp1d
@@ -6,6 +8,7 @@ from welly.plot import plot_2d_curve, plot_curve, plot_kde_curve
 from welly.quality import quality_score_curve, qflags_curve, quality_curve, \
     qflag_curve
 from welly.utils import get_step_from_array
+from . import utils
 
 
 class Curve(object):
@@ -71,14 +74,16 @@ class Curve(object):
                  service_company=None,
                  units=None):
 
-        # construct dataframe
-        self.df = pd.DataFrame(data=data, index=index, dtype=dtype)
-
         if type(mnemonic) == str:
             mnemonic = [mnemonic]
 
-        # set mnemonic(s) as column name(s)
-        self.df.columns = mnemonic
+        if isinstance(data, pd.DataFrame):
+            self.df = data
+            if mnemonic:
+                self.df.columns = mnemonic
+        else:
+            # construct dataframe
+            self.df = pd.DataFrame(data=data, index=index, dtype=dtype, columns=mnemonic)
 
         if index_name:
             self.df.index.name = index_name
@@ -134,6 +139,25 @@ class Curve(object):
             show_df = self.df
 
         return '%s \n%s \n attributes: \n  %s' % (self.__class__, show_df, params)
+
+    @property
+    def index(self):
+        return self.df.index
+
+    @property
+    def mnemonic(self):
+        return list(self.df.columns)
+
+    @property
+    def dtype(self):
+        return self.df.dtypes
+
+    @property
+    def index_name(self):
+        if isinstance(self.df.index, pd.MultiIndex):
+            return self.df.index.names
+        else:
+            return self.df.index.name
 
     @property
     def start(self):
@@ -346,22 +370,25 @@ class Curve(object):
                             tests=tests,
                             alias=alias)
 
-    def read_at(self, index_value, index_name=None, method=None):
+    def read_at(self, index_value, index_name=None, method='linear'):
         """
         Read the log at a specific depth/time or an array of depths/times.
 
-        If the passed depth/time doesn't exist in the index, search for the
-        closest index value and return the curve value at that index value.
+        If the passed depth/time doesn't exist in the index, interpolate or
+        pick the nearest, depending on the passed method. Default is linear
+        interpolation.
 
         Args:
-            index_value (float or list of floats): value or values to read from curve
+            index_value (float or list of floats): value or values to read from Curve
             index_name (str): Name of the index (e.g. 'DEPTH', 'MD', 'TWT')
             method (str): Optional. Method of interpolation:
-                {None, ‘pad’/’ffill’, ‘backfill’/’bfill’, ‘nearest’}
+                {‘linear’,  ‘pad’/’ffill’, ‘backfill’/’bfill’, ‘nearest’}
         Returns:
-            read_value (float or ndarray): The curve value that was read at the
-                provided index value.
+            read_value (float or ndarray): The curve value(s) that was read at
+                the provided index value(s).
         """
+        not_found = False
+
         if type(index_value) != list:
             index_value = [index_value]
 
@@ -376,12 +403,23 @@ class Curve(object):
         for value in index_value:
             try:
                 # try reading if the passed index value exists
-                idx_to_read = self.df.index[self.df.index.get_loc(value, method)]
+                idx_to_read = self.df.index[self.df.index.get_loc(value)]
+                read_values.append(
+                    self.df.query(f'{idx_to_read} == {index_name}').values[0][0])
             except KeyError:
-                # if it doesn't exist we search for the nearest index value
-                idx_to_read = self.df.index[self.df.index.get_loc(value, 'nearest')]
+                not_found = True
 
-            read_values.append(self.df.query(f'{idx_to_read} == {index_name}').values[0][0])
+            if not_found:
+                if method == 'linear':
+                    i, d = utils.find_previous(self.index.values, value,
+                                               index=True, return_distance=True)
+                    val = utils.linear(self.df.iloc[i, :], self.df.iloc[i+1, :], d).values[0]
+                    read_values.append(val)
+                else:
+                    # if it doesn't exist get previous, next or nearest index
+                    idx_to_read = self.df.index[self.df.index.get_loc(value, method)]
+                    read_values.append(
+                        self.df.query(f'{idx_to_read} == {index_name}').values[0][0])
 
         if len(read_values) == 1:
             return read_values[0]
@@ -419,6 +457,8 @@ class Curve(object):
         Returns:
             Curve. The current instance in the new basis.
         """
+        new_curve = copy.deepcopy(self)
+
         if basis is None:
             new_start = self.start if start is None else start
             new_stop = self.stop if stop is None else stop
@@ -448,17 +488,17 @@ class Curve(object):
                                   index=basis,
                                   columns=self.df.columns)
             # create and set new df attribute on curve
-            setattr(self, 'df', new_df)
+            setattr(new_curve, 'df', new_df)
             # propagate old df attributes to new df curve attribute
-            setattr(self.df.index, 'name', self.df.index.name)
-            setattr(self.df, 'columns', self.df.columns)
+            setattr(new_curve.df.index, 'name', self.df.index.name)
+            setattr(new_curve.df, 'columns', self.df.columns)
         else:
             new_df = self.df.reindex(index=basis,
                                      method=interp_kind,
                                      fill_value=undefined)
-            setattr(self, 'df', new_df)
+            setattr(new_curve, 'df', new_df)
 
-        return self
+        return new_curve
 
     def to_basis_like(self, basis):
         """
@@ -478,6 +518,85 @@ class Curve(object):
             undefined = None
 
         return self.to_basis(basis=basis, undefined=undefined)
+
+    # def block(self,
+    #           cutoffs=None,
+    #           values=None,
+    #           n_bins=0,
+    #           right=False,
+    #           function=None):
+    #     """
+    #     Block a log based on number of bins, or on cutoffs. Requires data to be
+    #     numerical.
+    #
+    #     Args:
+    #         cutoffs (array): the values at which to create the blocks. Pass
+    #             a single number, or an array-like of multiple values. If you
+    #             don't pass `cutoffs`, you should pass `n_bins` (below).
+    #         values (array): the values to map to. Defaults to [0, 1, 2,...].
+    #             There must be one more value than you have `cutoffs` (e.g.
+    #             2 cutoffs will create 3 zones, each of which needs a value).
+    #         n_bins (int): The number of discrete values to use in the blocked
+    #             log. Only used if you don't pass `cutoffs`.
+    #         right (bool): Indicating whether the intervals include the right
+    #             or the left bin edge. Default behavior is `right==False`
+    #             indicating that the interval does not include the right edge.
+    #         function (function): transform the log with a reducing function,
+    #             such as np.mean.
+    #
+    #     Returns:
+    #         Curve.
+    #     """
+    #     # We'll return a copy.
+    #     new_curve = copy.deepcopy(self)
+    #
+    #     if (values is not None) and (cutoffs is None):
+    #         cutoffs = values[1:]
+    #
+    #     if (cutoffs is None) and (n_bins == 0):
+    #         cutoffs = np.mean(self.df.values)
+    #
+    #     if (n_bins != 0) and (cutoffs is None):
+    #         mi, ma = np.amin(self.df.values), np.amax(self.df.values)
+    #         cutoffs = np.linspace(mi, ma, n_bins+1)
+    #         cutoffs = cutoffs[:-1]
+    #
+    #     try:  # To use cutoff as a list.
+    #         data = np.digitize(self.df.values, cutoffs, right)
+    #     except ValueError:  # It's just a number.
+    #         data = np.digitize(self.df.values, [cutoffs], right)
+    #
+    #     if (function is None) and (values is None):
+    #         # place new data in dataframe
+    #         new_curve.df.iloc[:, :] = data
+    #         return new_curve
+    #
+    #     data = data.astype(float)
+    #
+    #     # Set the function for reducing.
+    #     f = function or utils.null
+    #
+    #     # Find the tops of the 'zones'.
+    #     tops, vals = utils.find_edges(data)
+    #
+    #     # End of array trick... adding this should remove the
+    #     # need for the marked lines below. But it doesn't.
+    #     # np.append(tops, None)
+    #     # np.append(vals, None)
+    #
+    #     if values is None:
+    #         # Transform each segment in turn, then deal with the last segment.
+    #         for top, base in zip(tops[:-1], tops[1:]):
+    #             data[top:base] = f(np.copy(self[top:base]))
+    #         data[base:] = f(np.copy(self[base:]))  # See above
+    #     else:
+    #         for top, base, val in zip(tops[:-1], tops[1:], vals[:-1]):
+    #             data[top:base] = values[int(val)]
+    #         data[base:] = values[int(vals[-1])]  # See above
+    #
+    #     new_curve.df.iloc[:, :] = data
+    #
+    #     return new_curve
 
     def block(self,
               cutoffs=None,
@@ -506,31 +625,28 @@ class Curve(object):
         Returns:
             Curve.
         """
-        params = self.__dict__.copy()
-        del params['df']
+        # We'll return a copy.
+        new_curve = copy.deepcopy(self)
 
         if (values is not None) and (cutoffs is None):
             cutoffs = values[1:]
 
         if (cutoffs is None) and (n_bins == 0):
-            cutoffs = np.mean(self.df)
+            cutoffs = np.mean(self.df.values)
 
         if (n_bins != 0) and (cutoffs is None):
-            mi, ma = np.amin(self.df), np.amax(self.df)
+            mi, ma = np.amin(self.df.values), np.amax(self.df.values)
             cutoffs = np.linspace(mi, ma, n_bins+1)
             cutoffs = cutoffs[:-1]
 
         try:  # To use cutoff as a list.
-            data = np.digitize(self.df, cutoffs, right)
+            data = np.digitize(self.df.values, cutoffs, right)
         except ValueError:  # It's just a number.
-            data = np.digitize(self.df, [cutoffs], right)
+            data = np.digitize(self.df.values, [cutoffs], right)
 
         if (function is None) and (values is None):
-            setattr(self, 'df', data)
-            setattr(self.df.index, 'name', self.df.index.name)
-            setattr(self.df, 'columns', self.df.columns)
-
-            return
+            new_curve.df.iloc[:, :] = data
+            return new_curve
 
         data = data.astype(float)
 
@@ -548,11 +664,13 @@ class Curve(object):
         if values is None:
             # Transform each segment in turn, then deal with the last segment.
             for top, base in zip(tops[:-1], tops[1:]):
-                data[top:base] = f(np.copy(self[top:base]))
-            data[base:] = f(np.copy(self[base:]))  # See above
+                data[top:base] = f(np.copy(self.df.values[top:base]))
+            data[base:] = f(np.copy(self.df.values[base:]))  # See above
         else:
             for top, base, val in zip(tops[:-1], tops[1:], vals[:-1]):
                 data[top:base] = values[int(val)]
             data[base:] = values[int(vals[-1])]  # See above
 
-        return Curve(data, params=params)
+        new_curve.df.iloc[:, :] = data
+
+        return new_curve

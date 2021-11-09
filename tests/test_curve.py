@@ -3,7 +3,6 @@
 Define a suite a tests for the Curve module.
 """
 import numpy as np
-
 from pandas import RangeIndex
 
 from welly.curve import Curve
@@ -51,10 +50,10 @@ def test_read_at(well):
     Test reading at index value for single number and array of numbers.
     """
     gr = well.data['GR']
-    assert gr.read_at(1000) == 109.414177
+    assert gr.read_at(1000) - 109.414177 < 0.001
 
     actual = gr.read_at([500, 1000, 1500])
-    desired = np.array([91.72541, 111.21344, 64.187462])
+    desired = np.array([91.29946709, 109.4141766, 64.55931458])
     np.testing.assert_allclose(actual, desired)
 
 
@@ -65,24 +64,16 @@ def test_block(well):
     gr = well.data['GR']
 
     b = gr.block(cutoffs=[50, 100])
-    assert b.size == 12718
-    assert b.basis.size == 12718
-    assert b.max() == 2
+    assert b.df.size == 12718
+    assert b.index.size == 12718
+    assert b.df.max()[0] == 2
 
     b = gr.block()
-    assert b.mean() - 0.46839 < 0.001
+    assert b.df.mean()[0] - 0.46839 < 0.001
 
-    b = gr.block(cutoffs=[50, 100, 120], values=[12, 24, 36])
-    assert b.max() == 36
-    assert b.mean() - 25.077528 < 0.001
-
-
-def test_despike(well):
-    """
-    Test despiker with even window and z != 2.
-    """
-    gr = well.data['GR']
-    assert gr.max() - gr.despike(50, z=1).max() - 91.83918 < 0.001
+    b = gr.block(cutoffs=[50, 100, 110], values=[12, 24, 36, 40])
+    assert b.df.max()[0] == 40
+    assert b.df.mean()[0] - 26.072967 < 0.001
 
 
 # define test data
@@ -94,6 +85,7 @@ index = np.arange(20, 40)
 
 # define curve attributes
 mnemonic = 'GR'
+mnemonic2d = ['GR[0]', 'GR[1]']
 units = 'API'
 
 
@@ -140,27 +132,27 @@ def test_create_1d_curve_categorical():
 
 
 def test_create_2d_curve_num():
-    c = Curve(data=data_num_2d, mnemonic=mnemonic)
+    c = Curve(data=data_num_2d, mnemonic=mnemonic2d)
     assert c.df.shape == (20, 2)
     assert c.df.iloc[1, 1] == 389.5263157894737
 
 
 def test_create_2d_curve_cat():
-    c = Curve(data=data_cat_2d, mnemonic=mnemonic, dtype='category')
+    c = Curve(data=data_cat_2d, mnemonic=mnemonic2d, dtype='category')
     assert c.df.shape == (20, 2)
     assert c.df.iloc[1, 1] == 'sand'
 
 
 def test_curve_plot_2d():
     c = Curve(data=data_num, index=index, mnemonic=mnemonic)
-    c.df.curve.plot_2d()
+    c.plot_2d()
 
 
 def test_curve_plot():
     c = Curve(data=data_num, index=index, mnemonic=mnemonic)
-    c.df.curve.plot()
+    c.plot()
 
 
 def test_curve_plot_kde():
     c = Curve(data=data_num, index=index, mnemonic=mnemonic)
-    c.df.curve.plot_kde()
+    c.plot_kde()
