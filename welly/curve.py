@@ -242,6 +242,7 @@ class Curve(object):
     def _rolling_window(self, window_length, func1d, step=1, return_rolled=False):
         """
         Private function. Smoother for other smoothing/conditioning functions.
+        Treat Curve data as numpy array.
 
         Args:
             window_length (int): the window length.
@@ -300,6 +301,29 @@ class Curve(object):
 
         copied_curve = copy.deepcopy(self)
         copied_curve.df.iloc[:, 0] = out
+        return copied_curve
+
+    def apply(self, window_length, samples=True, func1d=None):
+        """
+        Runs any kind of function over a window. Only works on a 1d Curve.
+
+        Args:
+            window_length (int): the window length. Required.
+            samples (bool): window length is in samples. Use False for a window
+                length given in metres.
+            func1d (function): a function that takes a 1D array and returns a
+                scalar. Default: ``np.mean()``.
+
+        Returns:
+            Curve.
+        """
+        window_length /= 1 if samples else self.step
+        if func1d is None:
+            func1d = np.mean
+        out = self._rolling_window(int(window_length), func1d)
+        copied_curve = copy.deepcopy(self)
+        copied_curve.df.iloc[:, 0] = out
+
         return copied_curve
 
     def plot_2d(self,
