@@ -120,9 +120,11 @@ def _convert_depth_index_unit(index, unit_from, unit_to):
 
     # flip the index if it is descending
     if index[0] > index[1]:
-        if isinstance(x, pd.Index):
+        if isinstance(index, pd.Index):
+            # index is pandas index
             index = index.reindex(index[::-1])
         else:
+            # index is np array
             index = np.flipud(index)
 
     return index
@@ -272,6 +274,18 @@ class Well(object):
         If `keys` is a list-like of mnemonics, or list of lists (such as might
         be used to plot tracks), then only get those (ignores anything that is
         not a Curve).
+
+        Args:
+            keys (list): List of strings: the keys of the data items to
+                include, if not passed, get all of them. You can have nested
+                lists, such as you might use for ``tracks`` in ``well.plot()``.
+            alias (dict): Optional. A dictionary alias for the curve mnemonics.
+                e.g. {'density': ['DEN', 'DENS']}
+            curves_only (bool): If true, only get mnemonics of curve objects in
+                well. If false, get mnemonics of any type of object in well.
+
+        Returns:
+            keys (list): A list of mnemonics
         """
         if keys is None:
             keys_ = self.data.keys()
@@ -400,18 +414,13 @@ class Well(object):
                       fname=None,
                       index_unit=None):
         """
-        Constructor. If you have `datasets`, this will create a well object
-        from it. See :func:`las.from_las()` for a description of a `datasets`
-        object.
-
-        This method requires:
-            - first column of `data` to be the Index/Depth/Time Curve
-            - TODO: Complete requirements
+        Constructor. If you have a `datasets` object, this will create a well
+        object from it. See :func:`las.from_las()` for a description of a
+        `datasets` object.
 
         Args:
-            datasets (Dict['name': (data (DataFrame), header (DataFrame))]):
-                A dictionary that maps the 'dataset name' to a tuple of a
-                header and data pd.DataFrames.
+            datasets (Dict['<name>': pd.DataFrame]): Dictionary maps a
+                dataset name (e.g. 'Curves') or 'Header' to a pd.DataFrame.
             remap (dict): Optional. A dict of 'old': 'new' LAS field names.
             funcs (dict): Optional. A dict of 'las field': function() for
                 implementing a transform before loading. Can be a lambda.
@@ -565,13 +574,19 @@ class Well(object):
             las = self.to_lasio(keys=keys, basis=basis, null_value=null_value)
             las.write(f, **kwargs)
 
-    def to_datasets(self):
+    def to_datasets(self,
+                    keys=None,
+                    alias=None,
+                    basis=None,
+                    null_value=-999.25):
         """
 
         """
-        # TODO
-        #   implement after refactoring of Curve object
-        pass
+        las = to_lasio(self, keys, alias, basis, null_value)
+
+        datasets = from_lasio(las)
+
+        return datasets
 
     def df(self,
            keys=None,
@@ -648,7 +663,7 @@ class Well(object):
         Essentially just wraps ``add_curves_from_lasio()``.
 
         Args:
-            fname (str): The path of the LAS file to read curves from.
+            fname (str or list): The path(s) of the LAS file to read curves from
             remap (dict): Optional. A dict of 'old': 'new' LAS field names.
             funcs (dict): Optional. A dict of 'las field': function() for
                 implementing a transform before loading. Can be a lambda.
@@ -656,23 +671,21 @@ class Well(object):
         Returns:
             None. Works in place.
         """
-        try:  # To treat as a single file
-            self.add_curves_from_lasio(from_las(fname), remap=remap,
-                                       funcs=funcs)
-        except AttributeError:  # It's a list!
-            for f in fname:
-                self.add_curves_from_lasio(from_las(f), remap=remap,
-                                           funcs=funcs)
+        # put str in a list to iterate over
+        if type(fname) == str:
+            fname = [fname]
 
-        return None
+        for f in fname:
+            w = self.from_las(f, remap=remap, funcs=funcs)
+            self.data.update(w.data)
 
-    def add_curves_from_lasio(self, datasets, remap=None, funcs=None):
+    def add_curves_from_lasio(self, las, remap=None, funcs=None):
         """
         Given a LAS file, add curves from it to the current well instance.
         Essentially just wraps ``add_curves_from_lasio()``.
 
         Args:
-            datasets (dict): Datasets with curves and headers.
+            las (lasio.LASFile object): a lasio representation of a LAS file.
             remap (dict): Optional. A dict of 'old': 'new' LAS field names.
             funcs (dict): Optional. A dict of 'las field': function() for
                 implementing a transform before loading. Can be a lambda.
@@ -680,25 +693,9 @@ class Well(object):
         Returns:
             None. Works in place.
         """
-        for name, (df_data, df_header) in datasets.items():
-            params = {}
-            for field, (sect, code) in LAS_FIELDS['data'].items():
-                params[field] = utils.get_header_item(df_header, sect, code,
-                                                      remap=remap, funcs=funcs)
+        w = from_lasio(las)
+        self.data.update(w.data)
 
-            curve_units = df_header[(df_header["section"] == name)][
-                ['mnemonic', 'unit', 'descr']].set_index('mnemonic').T
-
-            curves = {mnemonic: Curve.from_lasio_curve(
-                curve=df_data[mnemonic].values, mnemonic=mnemonic,
-                unit=curve_units[mnemonic].unit,
-                description=curve_units[mnemonic].descr, **params) for mnemonic
-                in df_data.columns}
-
-            # This will clobber anything with the same key!
-            self.data.update(curves)
-
-        return None
 
     def _plot_depth_track(self, ax, md, kind='MD', tick_spacing=100):
         """

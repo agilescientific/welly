@@ -72,7 +72,7 @@ def test_to_las():
     # untouched las should be equal to those of written las
     for las_original, las_export in zip(las_originals, las_exported):
         assert_frame_equal(las_original.df(), las_export.df(), check_names=False)
-        assert las_original.sections['Version'] == las_export.sections['Version']
+        assert las_original.version.VERS.value == las_export.version.VERS.value
         assert las_original.sections['Well'] == las_export.sections['Well']
         assert las_original.sections['Parameter'] == las_export.sections['Parameter']
         assert las_original.sections['Curves'] == las_export.sections['Curves']

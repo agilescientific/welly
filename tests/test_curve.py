@@ -3,7 +3,6 @@
 Define a suite a tests for the Curve module.
 """
 import numpy as np
-
 from pandas import RangeIndex
 
 from welly.curve import Curve
@@ -37,22 +36,20 @@ def test_basis(well):
     Test basis change.
     """
     gr = well.data['GR']
+    curve_new = gr.to_basis(start=100, stop=200, step=1)
+    assert curve_new.df.size == 101
+    assert curve_new.df.iloc[0][0] - 66.6059 < 0.001
 
-    x = gr.to_basis(start=100, stop=200, step=1)
-    assert x.size == 101
-    assert x[0] - 66.6059 < 0.001
-
-    y = gr.to_basis_like(x)
-    assert y.size == 101
-    assert y[0] - 66.6059 < 0.001
+    curve_new2 = gr.to_basis_like(curve_new)
+    assert curve_new2.df.size == 101
+    assert curve_new2.df.iloc[0][0] - 66.6059 < 0.001
 
 
-def test_read(well):
+def test_read_at(well):
     """
-    Test reading for single number and array.
+    Test reading at index value for single number and array of numbers.
     """
     gr = well.data['GR']
-
     assert gr.read_at(1000) - 109.414177 < 0.001
 
     actual = gr.read_at([500, 1000, 1500])
@@ -67,24 +64,16 @@ def test_block(well):
     gr = well.data['GR']
 
     b = gr.block(cutoffs=[50, 100])
-    assert b.size == 12718
-    assert b.basis.size == 12718
-    assert b.max() == 2
+    assert b.df.size == 12718
+    assert b.index.size == 12718
+    assert b.df.max()[0] == 2
 
     b = gr.block()
-    assert b.mean() - 0.46839 < 0.001
+    assert b.df.mean()[0] - 0.46839 < 0.001
 
-    b = gr.block(cutoffs=[50, 100], values=[12, 24, 36])
-    assert b.max() == 36
-    assert b.mean() - 25.077528 < 0.001
-
-
-def test_despike(well):
-    """
-    Test despiker with even window and z != 2.
-    """
-    gr = well.data['GR']
-    assert gr.max() - gr.despike(50, z=1).max() - 91.83918 < 0.001
+    b = gr.block(cutoffs=[50, 100, 110], values=[12, 24, 36, 40])
+    assert b.df.max()[0] == 40
+    assert b.df.mean()[0] - 26.072967 < 0.001
 
 
 # define test data
@@ -96,6 +85,7 @@ index = np.arange(20, 40)
 
 # define curve attributes
 mnemonic = 'GR'
+mnemonic2d = ['GR[0]', 'GR[1]']
 units = 'API'
 
 
@@ -142,27 +132,27 @@ def test_create_1d_curve_categorical():
 
 
 def test_create_2d_curve_num():
-    c = Curve(data=data_num_2d, mnemonic=mnemonic)
+    c = Curve(data=data_num_2d, mnemonic=mnemonic2d)
     assert c.df.shape == (20, 2)
     assert c.df.iloc[1, 1] == 389.5263157894737
 
 
 def test_create_2d_curve_cat():
-    c = Curve(data=data_cat_2d, mnemonic=mnemonic, dtype='category')
+    c = Curve(data=data_cat_2d, mnemonic=mnemonic2d, dtype='category')
     assert c.df.shape == (20, 2)
     assert c.df.iloc[1, 1] == 'sand'
 
 
 def test_curve_plot_2d():
     c = Curve(data=data_num, index=index, mnemonic=mnemonic)
-    c.df.curve.plot_2d()
+    c.plot_2d()
 
 
 def test_curve_plot():
     c = Curve(data=data_num, index=index, mnemonic=mnemonic)
-    c.df.curve.plot()
+    c.plot()
 
 
 def test_curve_plot_kde():
     c = Curve(data=data_num, index=index, mnemonic=mnemonic)
-    c.df.curve.plot_kde()
+    c.plot_kde()
