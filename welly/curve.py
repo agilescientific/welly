@@ -142,7 +142,15 @@ class Curve(object):
 
     @property
     def mnemonic(self):
-        return list(self.df.columns)
+        """
+        Return the mnemonic. For a 1d curve, the mnemonic is a string.
+        For a multiple dimension curve, the mnemonic is a list.
+        """
+        mnemonic = self.df.columns
+        if len(mnemonic) == 1:
+            mnemonic = mnemonic[0]
+
+        return mnemonic
 
     @property
     def dtype(self):
@@ -188,6 +196,111 @@ class Curve(object):
             return get_step_from_array(self.df.index.values)
         else:
             return None
+
+    @property
+    def basis(self):
+        """
+        The depth or time basis of the curve's points. Computed
+        on the fly from the start, stop and step.
+
+        Returns
+            ndarray. The array, the same length as the curve.
+        """
+        return np.linspace(self.start, self.stop, self.df.__len__(), endpoint=True)
+
+    def get_alias(self, alias):
+        """
+        Given a mnemonic, get the alias name(s) it falls under. If there aren't
+        any, you get an empty list.
+        """
+        alias = alias or {}
+
+        # 1-dimensional curve
+        if self.df.columns.__len__() == 1:
+            return [k for k, v in alias.items() if self.mnemonic in v]
+        # Multi-dimensional curve
+        elif self.df.columns.__len__() >= 2:
+            alias_list = []
+            for mnemonic in self.mnemonic:
+                alias_list += [k for k, v in alias.items() if mnemonic.replace('[0]', '') in v]
+            return alias_list
+        # Data is empty
+        else:
+            return []
+
+    def as_numpy(self):
+        """
+        Return only the numeric columns as numpy array
+        """
+        numerics = ['int16', 'int32', 'int64', 'float16', 'float32', 'float64']
+        numeric_df = self.df.select_dtypes(include=numerics)
+        if numeric_df.columns.__len__() == 1:
+            return numeric_df.iloc[:, 0].values
+        else:
+            return numeric_df.values
+
+    def _rolling_window(self, window_length, func1d, step=1, return_rolled=False):
+        """
+        Private function. Smoother for other smoothing/conditioning functions.
+
+        Args:
+            window_length (int): the window length.
+            func1d (function): a function that takes a 1D array and returns a
+                scalar.
+            step (int): if you want to skip samples in the shifted versions.
+                Don't use this for smoothing, you will get strange results.
+
+        Returns:
+            ndarray: the resulting array.
+        """
+        # Force odd.
+        if window_length % 2 == 0:
+            window_length += 1
+
+        curve_data = self.as_numpy()
+
+        shape = curve_data.shape[:-1] + (curve_data.shape[-1], window_length)
+        strides = curve_data.strides + (step * curve_data.strides[-1],)
+        data = np.nan_to_num(curve_data)
+
+        data = np.pad(data, int(step * window_length // 2), mode='edge')
+        rolled = np.lib.stride_tricks.as_strided(data,
+                                                 shape=shape,
+                                                 strides=strides)
+        result = np.apply_along_axis(func1d, -1, rolled)
+        result[np.isnan(curve_data)] = np.nan
+
+        if return_rolled:
+            return result, rolled
+        else:
+            return result
+
+    def despike(self, window_length=33, samples=True, z=2):
+        """
+        Args:
+            window (int): window length in samples. Default 33 (or 5 m for
+                most curves sampled at 0.1524 m intervals).
+            samples (bool): window length is in samples. Use False for a window
+                length given in metres.
+            z (float): Z score
+
+        Returns:
+            Curve.
+        """
+        curve_value = self.as_numpy()
+
+        window_length //= 1 if samples else self.step
+        z *= np.nanstd(curve_value)  # Transform to curve's units
+        curve_sm = self._rolling_window(window_length, np.median)
+        spikes = np.where(np.nan_to_num(curve_value - curve_sm) > z)[0]
+        spukes = np.where(np.nan_to_num(curve_sm - curve_value) > z)[0]
+        out = np.copy(curve_value)
+        out[spikes] = curve_sm[spikes] + z
+        out[spukes] = curve_sm[spukes] - z
+
+        copied_curve = copy.deepcopy(self)
+        copied_curve.df.iloc[:, 0] = out
+        return copied_curve
 
     def plot_2d(self,
                 ax=None,
