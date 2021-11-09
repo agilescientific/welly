@@ -244,7 +244,6 @@ def datasets_to_las(path, datasets, **kwargs):
 
     # instantiate new LASFile to parse data & header to
     las = lasio.LASFile()
-    las.version = []
 
     # set header df as variable to later retrieve curve meta data from
     header = datasets['Header']
