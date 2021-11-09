@@ -366,20 +366,22 @@ def plot_2d_curve(curve,
 
     # Set up the data.
     cmap = cmap or 'viridis'
-    default = int(curve.shape[0] / aspect)
-    if curve.ndim == 1:
-        a = np.expand_dims(curve, axis=1)
+
+    curve_data = curve.as_numpy()
+    default = int(curve_data.shape[0] / aspect)
+    if curve_data.ndim == 1:
+        a = np.expand_dims(curve_data, axis=1)
         a = np.repeat(a, width or default, axis=1)
-    elif curve.ndim == 2:
-        a = curve[:, :width] if width < curve.shape[1] else curve
-    elif curve.ndim == 3:
-        if 2 < curve.shape[-1] < 5:
+    elif curve_data.ndim == 2:
+        a = curve_data[:, :width] if width < curve_data.shape[1] else curve_data
+    elif curve_data.ndim == 3:
+        if 2 < curve_data.shape[-1] < 5:
             # Interpret as RGB or RGBA.
-            a = utils.normalize(np.copy(curve))
+            a = utils.normalize(np.copy(curve_data))
             cmap = None  # Actually doesn't matter.
         else:
             # Take first slice.
-            a = curve[:, :width, 0] if width < curve.shape[1] else curve[..., 0]
+            a = curve_data[:, :width, 0] if width < curve_data.shape[1] else curve_data[..., 0]
     else:
         raise NotImplementedError("Can only handle up to 3 dimensions.")
 
@@ -388,7 +390,7 @@ def plot_2d_curve(curve,
     im = ax.imshow(a, cmap=cmap, extent=extent, aspect='auto')
 
     if plot_curve:
-        paths = ax.fill_betweenx(curve.basis, curve, np.nanmin(curve),
+        paths = ax.fill_betweenx(curve.basis, curve_data, np.nanmin(curve_data),
                                  facecolor='none',
                                  **kwargs)
 
@@ -547,7 +549,6 @@ def plot_kde_curve(curve,
     else:
         return_ax = True
 
-    # a = curve[~np.isnan(curve)]
     a = curve.df.dropna().to_numpy()
 
     # Find values for common axis to exclude outliers.
