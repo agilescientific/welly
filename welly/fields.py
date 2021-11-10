@@ -14,7 +14,6 @@ las_fields = {
         'field': ('well', 'FLD'),
         'license': ('well', 'LIC'),
         'uwi': ('well', 'UWI'),
-        'api': ('well', 'API'),
         'company': ('well', 'COMP'),
         'start': ('well', 'STRT'),
         'stop': ('well', 'STOP'),
@@ -46,6 +45,7 @@ las_fields = {
         'tdl': ('params', 'TDL'),
     },
     'data': {
+        'api': ('well', 'API'),
         'null': ('well', 'NULL'),
         'run': ('params', 'RUN'),
         'service_company': ('well', 'SRVC'),

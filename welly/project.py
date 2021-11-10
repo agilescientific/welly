@@ -327,7 +327,7 @@ class Project(object):
                                 num_passes = sum(results)
                                 q = num_passes / num_tests
                     q_colour = q_colours.get(q, '#FFCC33')
-                    c_mean = '{:.2f}'.format(float(np.nanmean(c))) if np.any(c[~np.isnan(c)]) else np.nan
+                    c_mean = '{:.2f}'.format(float(np.nanmean(c.df.values))) if np.any(c.df.values[~np.isnan(c.df.values)]) else np.nan
                     curves.append(('#CCEECC', c.mnemonic, f"{num_passes}/{num_tests}", q_colour, c_mean, c.units))
                 q_total += num_passes
                 q_count += num_tests

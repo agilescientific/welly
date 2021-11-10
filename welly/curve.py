@@ -14,7 +14,6 @@ from . import utils
 class Curve(object):
     """
     Curve object that can hold 1D and 2D categorical/numerical curve data.
-
     Args:
         data (ndarray, Iterable, dict, or pd.DataFrame):
             1D/2D/3D curve numerical or categorical data. Dict can contain
@@ -54,7 +53,6 @@ class Curve(object):
             Company that executed logging operations.
         units (str): Optional.
             Units of the curve measurements.
-
         Returns:
             curve (welly.Curve): The curve object.
     """
@@ -104,10 +102,8 @@ class Curve(object):
         """
         A more useful and comprehensive string representation of the Curve.
         Access through calling `print(curve_object)`.
-
         Arguments:
             No arguments
-
         Return:
             String representation of:
             - the class name
@@ -146,7 +142,15 @@ class Curve(object):
 
     @property
     def mnemonic(self):
-        return list(self.df.columns)
+        """
+        Return the mnemonic. For a 1d curve, the mnemonic is a string.
+        For a multiple dimension curve, the mnemonic is a list.
+        """
+        mnemonic = self.df.columns
+        if len(mnemonic) == 1:
+            mnemonic = mnemonic[0]
+
+        return mnemonic
 
     @property
     def dtype(self):
@@ -163,7 +167,6 @@ class Curve(object):
     def start(self):
         """
         The value of the first index. Requires the df (pd.DataFrame) to exist.
-
         We keep track of this property because start (STRT) is a required field
         in a LAS file.
         """
@@ -173,7 +176,6 @@ class Curve(object):
     def stop(self):
         """
         The value of the last index.
-
         We keep track of this property because stop (STOP) is a required field
         in a LAS file.
         """
@@ -183,10 +185,8 @@ class Curve(object):
     def step(self):
         """
         The increment of the index. Requires a numeric index.
-
         We keep track of this property because step (STEP) is a required field
         in a LAS file.
-
         Returns:
             Float. If the index is numeric and equally sampled
             0. If the index is numeric and not equally sampled
@@ -196,6 +196,135 @@ class Curve(object):
             return get_step_from_array(self.df.index.values)
         else:
             return None
+
+    @property
+    def basis(self):
+        """
+        The depth or time basis of the curve's points. Computed
+        on the fly from the start, stop and step.
+
+        Returns
+            ndarray. The array, the same length as the curve.
+        """
+        return np.linspace(self.start, self.stop, self.df.__len__(), endpoint=True)
+
+    def get_alias(self, alias):
+        """
+        Given a mnemonic, get the alias name(s) it falls under. If there aren't
+        any, you get an empty list.
+        """
+        alias = alias or {}
+
+        # 1-dimensional curve
+        if self.df.columns.__len__() == 1:
+            return [k for k, v in alias.items() if self.mnemonic in v]
+        # Multi-dimensional curve
+        elif self.df.columns.__len__() >= 2:
+            alias_list = []
+            for mnemonic in self.mnemonic:
+                alias_list += [k for k, v in alias.items() if mnemonic.replace('[0]', '') in v]
+            return alias_list
+        # Data is empty
+        else:
+            return []
+
+    def as_numpy(self):
+        """
+        Return only the numeric columns as numpy array
+        """
+        numerics = ['int16', 'int32', 'int64', 'float16', 'float32', 'float64']
+        numeric_df = self.df.select_dtypes(include=numerics)
+        if numeric_df.columns.__len__() == 1:
+            return numeric_df.iloc[:, 0].values
+        else:
+            return numeric_df.values
+
+    def _rolling_window(self, window_length, func1d, step=1, return_rolled=False):
+        """
+        Private function. Smoother for other smoothing/conditioning functions.
+        Treat Curve data as numpy array.
+
+        Args:
+            window_length (int): the window length.
+            func1d (function): a function that takes a 1D array and returns a
+                scalar.
+            step (int): if you want to skip samples in the shifted versions.
+                Don't use this for smoothing, you will get strange results.
+
+        Returns:
+            ndarray: the resulting array.
+        """
+        # Force odd.
+        if window_length % 2 == 0:
+            window_length += 1
+
+        curve_data = self.as_numpy()
+
+        shape = curve_data.shape[:-1] + (curve_data.shape[-1], window_length)
+        strides = curve_data.strides + (step * curve_data.strides[-1],)
+        data = np.nan_to_num(curve_data)
+
+        data = np.pad(data, int(step * window_length // 2), mode='edge')
+        rolled = np.lib.stride_tricks.as_strided(data,
+                                                 shape=shape,
+                                                 strides=strides)
+        result = np.apply_along_axis(func1d, -1, rolled)
+        result[np.isnan(curve_data)] = np.nan
+
+        if return_rolled:
+            return result, rolled
+        else:
+            return result
+
+    def despike(self, window_length=33, samples=True, z=2):
+        """
+        Args:
+            window_length (int): window length in samples. Default 33
+                (or 5 m for most curves sampled at 0.1524 m intervals).
+            samples (bool): window length is in samples. Use False for a window
+                length given in metres.
+            z (float): Z score
+
+        Returns:
+            Curve.
+        """
+        curve_value = self.as_numpy()
+
+        window_length //= 1 if samples else self.step
+        z *= np.nanstd(curve_value)  # Transform to curve's units
+        curve_sm = self._rolling_window(window_length, np.median)
+        spikes = np.where(np.nan_to_num(curve_value - curve_sm) > z)[0]
+        spukes = np.where(np.nan_to_num(curve_sm - curve_value) > z)[0]
+        out = np.copy(curve_value)
+        out[spikes] = curve_sm[spikes] + z
+        out[spukes] = curve_sm[spukes] - z
+
+        copied_curve = copy.deepcopy(self)
+        copied_curve.df.iloc[:, 0] = out
+        return copied_curve
+
+    def apply(self, window_length, samples=True, func1d=None):
+        """
+        Runs any kind of function over a window. Only works on a 1d Curve.
+
+        Args:
+            window_length (int): the window length. Required.
+            samples (bool): window length is in samples. Use False for a window
+                length given in metres.
+            func1d (function): a function that takes a 1D array and returns a
+                scalar. Default: ``np.mean()``.
+
+        Returns:
+            Curve.
+        """
+        window_length /= 1 if samples else self.step
+        if func1d is None:
+            func1d = np.mean
+        out = self._rolling_window(int(window_length), func1d)
+        copied_curve = copy.deepcopy(self)
+        copied_curve.df.iloc[:, 0] = out
+
+        return copied_curve
 
     def plot_2d(self,
                 ax=None,
@@ -209,7 +338,6 @@ class Curve(object):
         """
         Plot a 2D curve. Wrapping plot function from plot.py.
         By default only show the plot, not return the figure object.
-
         Args:
             ax (ax): A matplotlib axis.
             width (int): The width of the image.
@@ -219,7 +347,6 @@ class Curve(object):
             ticks (tuple): The tick interval on the y-axis.
             return_fig (bool): whether to return the matplotlib figure.
                 Default False.
-
         Returns:
             ax. If you passed in an ax, otherwise None.
         """
@@ -237,14 +364,12 @@ class Curve(object):
         """
         Plot a curve. Wrapping plot function from plot.py.
         By default only show the plot, not return the figure object.
-
         Args:
             ax (ax): A matplotlib axis.
             legend (striplog.legend): A legend. Optional. Should contain kwargs for ax.set().
             return_fig (bool): whether to return the matplotlib figure.
                 Default False.
             kwargs: Arguments for ``ax.plot()``
-
         Returns:
             ax. If you passed in an ax, otherwise None.
         """
@@ -265,14 +390,12 @@ class Curve(object):
         https://jakevdp.github.io/blog/2013/12/01/kernel-density-estimation/
         Wrapping plot function from plot.py.
         By default only show the plot, not return the figure object.
-
         Args:
             ax (axis): Optional matplotlib (MPL) axis to plot into. Returned.
             amax (float): Optional max value to permit.
             amin (float): Optional min value to permit.
             label (string): What to put on the y-axis. Defaults to curve name.
             return_fig (bool): If you want to return the MPL figure object.
-
         Returns:
             None, axis, figure: depending on what you ask for.
         """
@@ -287,12 +410,10 @@ class Curve(object):
         """
         Run a series of tests and return the corresponding results.
         Wrapping function from quality.py
-
         Args:
             tests (list): a list of functions.
             alias (dict): a dictionary mapping mnemonics to lists of mnemonics.
                 e.g. {'density': ['DEN', 'DENS']}
-
         Returns:
             list. The results. Stick to booleans (True = pass) or ints.
         """
@@ -313,12 +434,10 @@ class Curve(object):
             (0-1): Passed a fraction of tests.
             0.0:   Passed no tests.
             -1.0:  Took no tests.
-
         Args:
             tests (list): a list of functions.
             alias (dict): a dictionary mapping mnemonics to lists of mnemonics.
                 e.g. {'density': ['DEN', 'DENS']}
-
         Returns:
             float. The fraction of tests passed, or -1 for 'took no tests'.
         """
@@ -330,12 +449,10 @@ class Curve(object):
         """
         Run a test and return the corresponding results on a sample-by-sample
         basis. Wrapping function from quality.py
-
         Args:
             tests (list): a list of functions.
             alias (dict): a dictionary mapping mnemonics to lists of mnemonics.
                 e.g. {'density': ['DEN', 'DENS']}
-
         Returns:
             list. The results. Stick to booleans (True = pass) or ints.
         """
@@ -352,12 +469,10 @@ class Curve(object):
         """
         Run a series of tests and return the corresponding results.
         Wrapping function from quality.py
-
         Args:
             tests (list): a list of functions.
             alias (dict): a dictionary mapping mnemonics to lists of mnemonics.
                 e.g. {'density': ['DEN', 'DENS']}
-
         Returns:
             list. The results. Stick to booleans (True = pass) or ints.
         """
@@ -373,11 +488,9 @@ class Curve(object):
     def read_at(self, index_value, index_name=None, method='linear'):
         """
         Read the log at a specific depth/time or an array of depths/times.
-
         If the passed depth/time doesn't exist in the index, interpolate or
         pick the nearest, depending on the passed method. Default is linear
         interpolation.
-
         Args:
             index_value (float or list of floats): value or values to read from Curve
             index_name (str): Name of the index (e.g. 'DEPTH', 'MD', 'TWT')
@@ -519,84 +632,6 @@ class Curve(object):
 
         return self.to_basis(basis=basis, undefined=undefined)
 
-    # def block(self,
-    #           cutoffs=None,
-    #           values=None,
-    #           n_bins=0,
-    #           right=False,
-    #           function=None):
-    #     """
-    #     Block a log based on number of bins, or on cutoffs. Requires data to be
-    #     numerical.
-    #
-    #     Args:
-    #         cutoffs (array): the values at which to create the blocks. Pass
-    #             a single number, or an array-like of multiple values. If you
-    #             don't pass `cutoffs`, you should pass `n_bins` (below).
-    #         values (array): the values to map to. Defaults to [0, 1, 2,...].
-    #             There must be one more value than you have `cutoffs` (e.g.
-    #             2 cutoffs will create 3 zones, each of which needs a value).
-    #         n_bins (int): The number of discrete values to use in the blocked
-    #             log. Only used if you don't pass `cutoffs`.
-    #         right (bool): Indicating whether the intervals include the right
-    #             or the left bin edge. Default behavior is `right==False`
-    #             indicating that the interval does not include the right edge.
-    #         function (function): transform the log with a reducing function,
-    #             such as np.mean.
-    #
-    #     Returns:
-    #         Curve.
-    #     """
-    #     # We'll return a copy.
-    #     new_curve = copy.deepcopy(self)
-    #
-    #     if (values is not None) and (cutoffs is None):
-    #         cutoffs = values[1:]
-    #
-    #     if (cutoffs is None) and (n_bins == 0):
-    #         cutoffs = np.mean(self.df.values)
-    #
-    #     if (n_bins != 0) and (cutoffs is None):
-    #         mi, ma = np.amin(self.df.values), np.amax(self.df.values)
-    #         cutoffs = np.linspace(mi, ma, n_bins+1)
-    #         cutoffs = cutoffs[:-1]
-    #
-    #     try:  # To use cutoff as a list.
-    #         data = np.digitize(self.df.values, cutoffs, right)
-    #     except ValueError:  # It's just a number.
-    #         data = np.digitize(self.df.values, [cutoffs], right)
-    #
-    #     if (function is None) and (values is None):
-    #         # place new data in dataframe
-    #         new_curve.df.iloc[:, :] = data
-    #         return new_curve
-    #
-    #     data = data.astype(float)
-    #
-    #     # Set the function for reducing.
-    #     f = function or utils.null
-    #
-    #     # Find the tops of the 'zones'.
-    #     tops, vals = utils.find_edges(data)
-    #
-    #     # End of array trick... adding this should remove the
-    #     # need for the marked lines below. But it doesn't.
-    #     # np.append(tops, None)
-    #     # np.append(vals, None)
-    #
-    #     if values is None:
-    #         # Transform each segment in turn, then deal with the last segment.
-    #         for top, base in zip(tops[:-1], tops[1:]):
-    #             data[top:base] = f(np.copy(self[top:base]))
-    #         data[base:] = f(np.copy(self[base:]))  # See above
-    #     else:
-    #         for top, base, val in zip(tops[:-1], tops[1:], vals[:-1]):
-    #             data[top:base] = values[int(val)]
-    #         data[base:] = values[int(vals[-1])]  # See above
-    #
-    #     new_curve.df.iloc[:, :] = data
-    #
-    #     return new_curve
 
     def block(self,
               cutoffs=None,
@@ -606,7 +641,6 @@ class Curve(object):
               function=None):
         """
         Block a log based on number of bins, or on cutoffs.
-
         Args:
             cutoffs (array): the values at which to create the blocks. Pass
                 a single number, or an array-like of multiple values. If you
@@ -621,7 +655,6 @@ class Curve(object):
                 indicating that the interval does not include the right edge.
             function (function): transform the log with a reducing function,
                 such as np.mean.
-
         Returns:
             Curve.
         """
