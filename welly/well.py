@@ -949,18 +949,20 @@ class Well(object):
         # Basic log values.
         dt_log = self.data['DT'].despike()  # assume µs/m
         rho_log = self.data['RHOB'].despike()  # assume kg/m3
-        if not np.allclose(dt_log.basis, rho_log.basis):
+        if not np.allclose(dt_log.df.index, rho_log.df.index):
             rho_log = rho_log.to_basis_like(dt_log)
-        Z = (1e6 / dt_log) * rho_log
+        Z = (1e6 / dt_log.df.values) * rho_log.df.values
 
         # Two-way-time.
-        scaled_dt = dt_log.step * np.nan_to_num(dt_log) / 1e6
+        scaled_dt = dt_log.step * np.nan_to_num(dt_log.df.values) / 1e6
         twt = 2 * np.cumsum(scaled_dt)
         t = twt + log_start_time
 
         # Move to time.
         t_max = t[-1] + 10 * dt
         t_reg = np.arange(0, t_max + 1e-9, dt)
+        if len(t.shape)+1 == len(Z.shape):
+            Z = Z[:, 0]
         Z_t = np.interp(x=t_reg, xp=t, fp=Z)
 
         # Make RC series.
