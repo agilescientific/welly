@@ -35,7 +35,13 @@ def plot_kdes_project(project,
     wells = project.find_wells_with_curve(mnemonic, alias=alias)
     fig, axs = plt.subplots(len(project), 1, figsize=(10, 1.5 * len(project)))
 
+    # get all curves
     curves = [w.get_curve(mnemonic, alias=alias) for w in wells]
+
+    # get curve data as np arrays
+    curves = [curve.df.values for curve in curves]
+
+    # remove nans
     all_data = np.hstack(curves)
     all_data = all_data[~np.isnan(all_data)]
 
