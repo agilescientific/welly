@@ -7,33 +7,33 @@ Defines wells.
 from __future__ import division
 
 import re
-import datetime
-import warnings
 
-import matplotlib.pyplot as plt
-import matplotlib as mpl
-import matplotlib.ticker as ticker
-import lasio
 import numpy as np
-from io import StringIO
-import urllib
+
+import pandas as pd
 
 from . import utils
 from .fields import las_fields as LAS_FIELDS
 from .curve import Curve
-from .header import Header
+from .las import from_las, file_from_url, from_lasio, to_lasio
 from .location import Location
 from .synthetic import Synthetic
 from .canstrat import well_to_card_1
 from .canstrat import well_to_card_2
 from .canstrat import interval_to_card_7
 from .canstrat import write_row
+from .plot import plot_well, plot_depth_track_well
+from .quality import qc_data_well, qc_curve_group_well, qc_table_html_well
 
 ###############################################
 # This module is not used directly, but must
 # be imported in order to register new scales.
 from . import scales  # DO NOT DELETE
 ###############################################
+
+
+# define possible depth/time/index curve mnemonics in a LAS file
+index_curve_mnemonics = ['DEPT', 'DEPTH', 'TIME', 'INDEX']
 
 
 class WellError(Exception):
@@ -43,10 +43,137 @@ class WellError(Exception):
     pass
 
 
+def _get_well_related_curve_params(header, remap, funcs):
+    """
+    Get the well related curve parameters from the header.
+
+    Remap and/or transform the parameters if `remap` dict or transform `funcs` are passed.
+
+    Args:
+        header (pd.DataFrame): Header meta data.
+            See `las.from_las()` for description.
+        remap (dict): Optional. A dict of 'old': 'new' LAS field names.
+        funcs (dict): Optional. A dict of 'las field': function() for
+            implementing a transform before loading. Can be a lambda.
+
+    Returns:
+        well_curve_params (dict): LAS parameters that belong to the well
+
+    """
+    # retrieve well parameters from header
+    well_curve_params = {}
+
+    # retrieve parameters from header and/or remap and transform if passed
+    for field, (section, item) in LAS_FIELDS['data'].items():
+        well_curve_params[field] = utils.get_header_item(header=header,
+                                                         section=section,
+                                                         item=item,
+                                                         remap=remap,
+                                                         funcs=funcs)
+
+    return well_curve_params
+
+
+def _get_curve_params(header, dataset_name):
+    """
+    Get the curve related LAS parameters from the header.
+    For every curve, get the 'mnemonic', 'unit' and 'description'.
+    Set the 'mnemonic' as index and return the transposed pd.DataFrame to be
+    able to index on them through the columns.
+
+    Args:
+        header (pd.DataFrame): Header meta data.
+            See `las.from_las()` for description.
+        dataset_name: The name of the dataset as found in the LAS file. Can be:
+            'Curves', 'Log,' 'Core', 'Inclinometry', 'Drilling', 'Tops', 'Test'
+
+    Returns:
+        curve_params (pd.DataFrame): LAS parameters that belong to the curve(s)
+
+    """
+    # retrieve curves mnemonics, units and descriptions from header
+    curve_header = header[(header["section"] == dataset_name)]
+
+    curve_params = curve_header[['mnemonic', 'unit', 'descr']]
+
+    return curve_params.set_index('mnemonic').T
+
+
+def _convert_depth_index_unit(index, unit_from, unit_to):
+    """
+    Convert a depth index from and to meters and feet. Flip the depth index if
+    it is descending because it should be ascending (increasing in depth).
+    Return index as a pandas Index object.
+
+    Args:
+        index (np.array or pd.Index): The index.
+        unit_from (str): The current index unit.
+        unit_to (str): The index unit to convert to (e.g. 'm', 'ft').
+
+    Returns:
+        index (np.array or pd.Index): The converted index
+    """
+    if (unit_from.lower() == 'm' or unit_from == '') and "ft" in unit_to.lower():
+        index = index * 3.280839895  # convert to ft
+    elif (unit_from.lower() == 'ft' or unit_from == '') and "m" in unit_to.lower():
+        index = index * 0.3048000000012192  # convert to m
+    else:
+        raise KeyError(f"Index must be 'm' or 'ft', but was: {unit_to}")
+
+    # flip the index if it is descending
+    if index[0] > index[1]:
+        if isinstance(index, pd.Index):
+            # index is pandas index
+            index = index.reindex(index[::-1])
+        else:
+            # index is np array
+            index = np.flipud(index)
+
+    return index
+
+
+def _update_las_header(header, remap=None, funcs=None):
+    """
+    Helper function that takes a header object, remapping dictionaries and
+    transformer functions. Retrieves every header LAS item from the
+    dataframe, remaps and/or transforms the item and puts it back in a copy
+    of the header dataframe.
+
+    Args:
+        header (pd.DataFrame): header meta data. See `las.from_las()` for
+            description.
+        remap (dict): Optional. A dict of 'old': 'new' LAS field names.
+        funcs (dict): Optional. A dict of 'las field': function() for
+            implementing a transform before loading. Can be a lambda.
+
+    Returns:
+        updated_header (pd.DataFrame): header with remapped and/or
+            transformed items, if passed.
+    """
+    updated_header = header.copy()
+
+    # loop over every header LAS field
+    for section, item in LAS_FIELDS['header'].values():
+        # remap or transform if remap/funcs is passed
+        new_item_value = utils.get_header_item(header=header,
+                                               section=section,
+                                               item=item,
+                                               remap=remap,
+                                               funcs=funcs)
+        # get row index of field
+        row_index = header.index[header['mnemonic'] == item]
+
+        # replace item with new item value
+        updated_header.loc[row_index, 'value'] = new_item_value
+
+    return updated_header
+
+
 class Well(object):
     """
     Well contains everything about the well.
     """
+
     def __init__(self, params=None):
         """
         Generic initializer.
@@ -59,7 +186,7 @@ class Well(object):
                 setattr(self, k, v)
 
         self.data = getattr(self, 'data', {})
-        self.header = getattr(self, 'header', Header())
+        self.header = getattr(self, 'header', pd.DataFrame())
         self.location = getattr(self, 'location', Location())
 
     def __eq__(self, other):
@@ -74,7 +201,7 @@ class Well(object):
         """
         Truthiness.
         """
-        if self.header or self.data or self.uwi:
+        if self.header is not None or self.data is not None or self.uwi:
             return True
         return False
 
@@ -84,10 +211,10 @@ class Well(object):
         """
         Non-rich representation.
         """
-        return "Well(uwi: '{}', {} curves: {})".format(self.uwi,
-                                                       len(self.data),
-                                                       list(self.data.keys())
-                                                       )
+        return "Well(uwi: '{}', name: '{}', {} curves: {})".format(self.uwi,
+                                                                   self.name,
+                                                                   len(self.data),
+                                                                   list(self.data.keys()))
 
     def _repr_html_(self):
         """
@@ -95,8 +222,8 @@ class Well(object):
         """
         row1 = '<tr><th style="text-align:center;" '
         row1 += 'colspan="2">{}<br><small>{{}}</small></th></tr>'
-        rows = row1.format(getattr(self.header, 'name', ''))
-        rows = rows.format(getattr(self.header, 'uwi', ''))
+        rows = row1.format(getattr(self, 'name', ''))
+        rows = rows.format(getattr(self, 'uwi', ''))
         s = '<tr><td><strong>{k}</strong></td><td>{v}</td></tr>'
 
         if getattr(self, 'location', None) is not None:
@@ -120,7 +247,13 @@ class Well(object):
         Property. Simply a shortcut to the UWI from the header, or the
         empty string if there isn't one.
         """
-        return self.header['uwi']
+        if self.header is not None:
+            try:
+                return self.header[self.header.mnemonic == 'UWI'].value.iloc[0]
+            except IndexError:
+                return ''
+        else:
+            return ''
 
     @property
     def name(self):
@@ -128,7 +261,14 @@ class Well(object):
         Property. Simply a shortcut to the well name from the header, or the
         empty string if there isn't one.
         """
-        return self.header['name']
+        if self.header is not None:
+            try:
+                return self.header[self.header.mnemonic == 'WELL'].value.iloc[
+                    0]
+            except IndexError:
+                return ''
+        else:
+            return ''
 
     def _get_curve_mnemonics(self, keys=None, alias=None, curves_only=True):
         """
@@ -136,6 +276,18 @@ class Well(object):
         If `keys` is a list-like of mnemonics, or list of lists (such as might
         be used to plot tracks), then only get those (ignores anything that is
         not a Curve).
+
+        Args:
+            keys (list): List of strings: the keys of the data items to
+                include, if not passed, get all of them. You can have nested
+                lists, such as you might use for ``tracks`` in ``well.plot()``.
+            alias (dict): Optional. A dictionary alias for the curve mnemonics.
+                e.g. {'density': ['DEN', 'DENS']}
+            curves_only (bool): If true, only get mnemonics of curve objects in
+                well. If false, get mnemonics of any type of object in well.
+
+        Returns:
+            keys (list): A list of mnemonics
         """
         if keys is None:
             keys_ = self.data.keys()
@@ -145,8 +297,8 @@ class Well(object):
             keys_ = utils.flatten_list(keys)
 
         if curves_only:
-            keys = [k for k in keys_
-                    if isinstance(self.get_curve(k, alias=alias), Curve)]
+            keys = [k for k in keys_ if
+                    isinstance(self.get_curve(k, alias=alias), Curve)]
         else:
             keys = [k for k in keys_ if k in self.data]
 
@@ -154,21 +306,20 @@ class Well(object):
 
     @classmethod
     def from_lasio(cls,
-                   l,
+                   las,
                    remap=None,
                    funcs=None,
                    data=True,
                    req=None,
                    alias=None,
                    fname=None,
-                   index=None,
-                   ):
+                   index=None):
         """
         Constructor. If you already have the lasio object, then this makes a
         well object from it.
 
         Args:
-            l (lasio object): a lasio object.
+            las (lasio.LASFile object): a lasio representation of a LAS file.
             remap (dict): Optional. A dict of 'old': 'new' LAS field names.
             funcs (dict): Optional. A dict of 'las field': function() for
                 implementing a transform before loading. Can be a lambda.
@@ -181,103 +332,20 @@ class Well(object):
                 relevant index unit.
 
         Returns:
-            well. The well object.
+            well (welly.Well). The well object.
         """
-        # The default behaviour is to keep welly's current behaviour, which is to
-        # (1) assume the LAS file is indexed against depth AND
-        # (2) assume that lasio is able to recognise the depth unit
-        if index is None:
-            m = "From v0.5 the default will be 'original',"
-            m += " keeping whatever is used in the LAS file. "
-            m += "If you want to force conversion to metres, change your code"
-            m += " to use `index='m'`."
-            warnings.warn(m, FutureWarning)
-            index = "m"  # Force welly to use metres
+        datasets = from_lasio(las)
 
-        if index.lower() in ["existing", "original"]:
-            index_attr = "index" # Use the index as it is in the LAS file
-            try:
-                index_unit = l.curves.DEPT.unit
-            except AttributeError:
-                index_unit = ''
-        elif "m" in index.lower():
-            index_attr = "depth_m" # Use lasio's conversion of the index to metres
-            index_unit = 'M'
-        elif "f" in index.lower():
-            index_attr = "depth_ft" # Use lasio's conversion of the index to feet
-            index_unit = 'F'
-        else:
-            raise KeyError("index must be 'existing', 'm', or 'ft'")
+        well = cls.from_datasets(datasets,
+                                 remap=remap,
+                                 funcs=funcs,
+                                 data=data,
+                                 req=req,
+                                 alias=alias,
+                                 fname=fname,
+                                 index_unit=index)
 
-        # Select the relevant index from the lasio object.
-        l_index = getattr(l, index_attr)
-
-        # Build a dict of curves.
-        curve_params = {}
-        for field, (sect, code) in LAS_FIELDS['data'].items():
-            curve_params[field] = utils.lasio_get(l,
-                                                  sect,
-                                                  code,
-                                                  remap=remap,
-                                                  funcs=funcs)
-
-        # This is annoying, but I need the whole depth array to
-        # deal with edge cases, eg non-uniform sampling.
-
-        # Add all required curves together.
-        if req:
-            reqs = utils.flatten_list([v for k, v in alias.items() if k in req])
-
-        if l_index[0] < l_index[1]:
-            curve_params['depth'] = l_index
-        else:
-            curve_params['depth'] = np.flipud(l_index)
-
-        curve_params['basis_units'] = index_unit
-
-        # Make the curve dictionary.
-        depth_curves = ['DEPT', 'TIME']
-        if data and req:
-            curves = {c.mnemonic: Curve.from_lasio_curve(c, **curve_params)
-                      for c in l.curves
-                      if (c.mnemonic[:4] not in depth_curves)
-                      and (c.mnemonic in reqs)}
-        elif data and not req:
-            curves = {c.mnemonic: Curve.from_lasio_curve(c, **curve_params)
-                      for c in l.curves
-                      if (c.mnemonic[:4] not in depth_curves)}
-        elif (not data) and req:
-            curves = {c.mnemonic: True
-                      for c in l.curves
-                      if (c.mnemonic[:4] not in depth_curves)
-                      and (c.mnemonic in reqs)}
-        else:
-            curves = {c.mnemonic: True
-                      for c in l.curves
-                      if (c.mnemonic[:4] not in depth_curves)}
-
-        if req:
-            aliases = utils.flatten_list([c.get_alias(alias)
-                                          for m, c
-                                          in curves.items()]
-                                         )
-            if len(set(aliases)) < len(req):
-                return cls(params={})
-
-        # Build a dict of the other well data.
-        params = {'las': l,
-                  'header': Header.from_lasio(l, remap=remap, funcs=funcs),
-                  'location': Location.from_lasio(l, remap=remap, funcs=funcs),
-                  'data': curves,
-                  'fname': fname}
-
-        for field, (sect, code) in LAS_FIELDS['well'].items():
-            params[field] = utils.lasio_get(l,
-                                            sect,
-                                            code,
-                                            remap=remap,
-                                            funcs=funcs)
-        return cls(params)
+        return well
 
     @classmethod
     def from_las(cls,
@@ -289,22 +357,24 @@ class Well(object):
                  alias=None,
                  encoding=None,
                  printfname=False,
-                 index=None
-                 ):
+                 index=None):
         """
-        Constructor. Essentially just wraps ``from_lasio()``, but is more
-        convenient for most purposes.
+        Constructor. If you have a LAS file saved on disk, this creates a well
+        object from it.
 
         Args:
-            fname (str): The path of the LAS file, or a URL to one.
+            fname (str or pathlib.Path): The path of the LAS file, or a URL to
+                one.
             remap (dict): Optional. A dict of 'old': 'new' LAS field names.
             funcs (dict): Optional. A dict of 'las field': function() for
                 implementing a transform before loading. Can be a lambda.
-            data (bool): Whether to load the data or only the header.
-            req (list): An alias list, giving all required curves.
-            alias (dict): An alias dictionary.
-            printfname (bool): prints filename before trying to load it, for
-                debugging
+            data (bool): Optional. Whether to load the data or only the header.
+            req (list): Optional. An alias list, giving all required curves.
+            alias (dict): Optional. An alias dictionary.
+            encoding (str): Optional. the character encoding used when reading
+                the LAS file in from disk.
+            printfname (bool): Optional. prints filename before trying to load
+                it, for debugging.
             index (str): Optional. Either "existing" (use the index as found in
                 the LAS file) or "m", "ft" to use lasio's conversion of the
                 relevant index unit.
@@ -312,32 +382,220 @@ class Well(object):
         Returns:
             well. The well object.
         """
-
         fname = utils.to_filename(fname)
 
         if printfname:
             print(fname)
 
+        # if https URL is passed try reading and formatting it to text file
         if re.match(r'https?://.+\..+/.+?', fname) is not None:
-            try:
-                data = urllib.request.urlopen(fname).read().decode()
-            except urllib.error.HTTPError as e:
-                raise WellError('Could not retrieve url: ', e)
-            fname = (StringIO(data))
+            fname = file_from_url(fname)
 
-        las = lasio.read(fname, encoding=encoding)
+        datasets = from_las(fname, encoding=encoding)
 
-        # Pass to other constructor.
-        return cls.from_lasio(las,
-                              remap=remap,
-                              funcs=funcs,
-                              data=data,
-                              req=req,
-                              alias=alias,
-                              fname=fname,
-                              index=index)
+        # create well from datasets
+        well = cls.from_datasets(datasets,
+                                 remap=remap,
+                                 funcs=funcs,
+                                 data=data,
+                                 req=req,
+                                 alias=alias,
+                                 fname=fname,
+                                 index_unit=index)
 
-    def df(self, keys=None, basis=None, uwi=False, alias=None, rename_aliased=True):
+        return well
+
+    @classmethod
+    def from_datasets(cls,
+                      datasets,
+                      remap=None,
+                      funcs=None,
+                      data=None,
+                      req=None,
+                      alias=None,
+                      fname=None,
+                      index_unit=None):
+        """
+        Constructor. If you have a `datasets` object, this will create a well
+        object from it. See :func:`las.from_las()` for a description of a
+        `datasets` object.
+
+        Args:
+            datasets (Dict['<name>': pd.DataFrame]): Dictionary maps a
+                dataset name (e.g. 'Curves') or 'Header' to a pd.DataFrame.
+            remap (dict): Optional. A dict of 'old': 'new' LAS field names.
+            funcs (dict): Optional. A dict of 'las field': function() for
+                implementing a transform before loading. Can be a lambda.
+            data (bool): Whether to load curves or not.
+            req (list): An alias list, giving all required curves.
+            alias (dict): An alias dictionary.
+            fname (str): The filename, if you want to keep it.
+            index_unit (str): Optional. The unit of the index upon construction
+                of the Curves (e.g. 'm' or 'ft'). Will perform unit conversion
+                if specified index unit is different than the existing index
+                unit.
+
+        Returns:
+            well (welly.Well). The well object.
+        """
+        # dict for storing curve objects
+        curves = {}
+
+        # list for storing original las dataframes
+        las = []
+
+        # store header as variable
+        df_header = datasets['Header']
+
+        # delete header entry from dict
+        del datasets['Header']
+
+        # copy header df to later store updated item values in
+        updated_df_header = df_header.copy()
+
+        # get the well related curve parameters from header
+        well_curve_params = _get_well_related_curve_params(df_header, remap, funcs)
+
+        # create location object
+        location = Location.from_lasio(df_header, remap, funcs)
+
+        # unpack datasets
+        for dataset_name, df_data in datasets.items():
+
+            las.append(df_data)
+
+            # set time/depth index, LAS requires it to be the first curve
+            df_data.set_index(df_data.columns[0], inplace=True)
+
+            # get index unit from the first curve
+            unit = df_header[(df_header["section"] == dataset_name)].iloc[0].unit
+
+            if index_unit:
+                # convert index to different index unit, if passed
+                df_data.index = _convert_depth_index_unit(index=df_data.index,
+                                                          unit_from=unit,
+                                                          unit_to=index_unit)
+                # set to the unit that the index has just been converted to
+                unit = index_unit
+
+            well_curve_params['index_unit'] = unit
+
+            # get the curve related parameters (mnemonic, unit, description)
+            curve_params = _get_curve_params(df_header, dataset_name)
+
+            # update header with remapped and transformed items, if passed
+            updated_df_header = _update_las_header(updated_df_header,
+                                                   remap,
+                                                   funcs)
+
+            if req and alias:
+                req = utils.flatten_list([v for k, v in alias.items() if k in req])
+
+            if data and req:
+                curves.update({mnemonic: Curve(data=df_data[mnemonic],
+                                               mnemonic=mnemonic,
+                                               units=curve_params[mnemonic].unit,
+                                               description=curve_params[mnemonic].descr,
+                                               **well_curve_params) for mnemonic in df_data.columns if mnemonic in req})
+            elif data and not req:
+                curves.update({mnemonic: Curve(data=df_data[mnemonic],
+                                               mnemonic=mnemonic,
+                                               units=curve_params[mnemonic].unit,
+                                               description=curve_params[mnemonic].descr,
+                                               **well_curve_params) for mnemonic in df_data.columns})
+            elif (not data) and req:
+                curves.update({mnemonic: True for mnemonic in df_data.columns
+                               if (mnemonic[:4] not in index_curve_mnemonics)
+                               and (mnemonic in req)})
+            else:
+                curves.update({mnemonic: True for mnemonic in df_data.columns
+                               if (mnemonic[:4] not in index_curve_mnemonics)})
+
+            if req:
+                aliases = utils.flatten_list([c.get_alias(alias) for mnemonic, c in curves.items()])
+                if len(set(aliases)) < len(req):
+                    return cls(params={})
+
+        # build a dict of the well properties
+        well_attributes = {'las': las,
+                           'header': updated_df_header,
+                           'location': location,
+                           'data': curves,
+                           'fname': fname}
+
+        return cls(well_attributes)
+
+    def to_lasio(self, keys=None, alias=None, basis=None, null_value=-999.25):
+        """
+        Makes a lasio object from the current well.
+
+        Args:
+            keys (list): List of strings: the keys of the data items to
+                include, if not all of them. You can have nested lists, such
+                as you might use for ``tracks`` in ``well.plot()``.
+            alias (dict): Optional. A dictionary alias for the curve mnemonics.
+                e.g. {'density': ['DEN', 'DENS']}
+            basis (numpy.ndarray): Optional. The basis to export the curves in.
+                If you don't specify one, it will survey all the curves with
+                `survey_basis()``.
+            null_value (float): Optional. The null value representation in the LAS file.
+
+        Returns:
+            las (lasio.LASFile). The lasio object representation of a LAS file.
+        """
+        las = to_lasio(self, keys, alias, basis, null_value)
+
+        return las
+
+    def to_las(self,
+               fname,
+               keys=None,
+               basis=None,
+               null_value=-999.25,
+               **kwargs):
+        """
+        Writes the current well instance as a LAS file. Essentially just wraps
+        ``to_lasio()``, but is more convenient for most purposes.
+
+        Args:
+            fname (str): The path of the LAS file to create.
+            basis (ndarray): Optional. The basis to export the curves in. If
+                you don't specify one, it will survey all the curves with
+                ``survey_basis()``.
+            null_value (float): Optional. numeric null value representation
+            keys (list): List of strings: the keys of the data items to
+                include, if not all of them. You can have nested lists, such
+                as you might use for ``tracks`` in ``well.plot()``.
+
+        Other keyword Args are passed to ``lasio.LASFile.write()``.
+
+        Returns:
+            None. Writes the file as a side-effect.
+        """
+        with open(fname, 'w') as f:
+            las = self.to_lasio(keys=keys, basis=basis, null_value=null_value)
+            las.write(f, **kwargs)
+
+    def to_datasets(self,
+                    keys=None,
+                    alias=None,
+                    basis=None,
+                    null_value=-999.25):
+        """
+
+        """
+        las = to_lasio(self, keys, alias, basis, null_value)
+
+        datasets = from_lasio(las)
+
+        return datasets
+
+    def df(self,
+           keys=None,
+           basis=None,
+           uwi=False,
+           alias=None,
+           rename_aliased=True):
         """
         Return current curve data as a ``pandas.DataFrame`` object.
 
@@ -360,11 +618,10 @@ class Well(object):
 
         Returns:
             pandas.DataFrame.
-
         """
         try:
             import pandas as pd
-        except:
+        except ModuleNotFoundError:
             m = "You must install pandas to use dataframes."
             raise WellError(m)
 
@@ -402,118 +659,13 @@ class Well(object):
 
         return df
 
-    def to_lasio(self, keys=None, alias=None, basis=None, null_value=-999.25):
-        """
-        Makes a lasio object from the current well.
-
-        Args:
-            basis (ndarray): Optional. The basis to export the curves in. If
-                you don't specify one, it will survey all the curves with
-                ``survey_basis()``.
-            keys (list): List of strings: the keys of the data items to
-                include, if not all of them. You can have nested lists, such
-                as you might use for ``tracks`` in ``well.plot()``.
-
-        Returns:
-            lasio. The lasio object.
-        """
-
-        # Create an empty lasio object.
-        l = lasio.LASFile()
-        l.well.DATE = str(datetime.datetime.today())
-        l.well["NULL"].value = null_value
-
-        # Deal with header.
-        for obj, dic in LAS_FIELDS.items():
-            if obj == 'data':
-                continue
-            for attr, (sect, item) in dic.items():
-                value = getattr(getattr(self, obj), attr, None)
-                try:
-                    getattr(l, sect)[item].value = value
-                except:
-                    h = lasio.HeaderItem(item, "", value, "")
-                    getattr(l, sect)[item] = h
-
-        # Clear curves from header portion.
-        l.header['Curves'] = []
-
-        # Add a depth basis.
-        if basis is None:
-            basis = self.survey_basis(keys=keys, alias=alias)
-        try:
-            l.add_curve('DEPT', basis)
-        except:
-            raise Exception("Please provide a depth basis.")
-
-        # Add meta from basis.
-        setattr(l.well, 'STRT', basis[0])
-        setattr(l.well, 'STOP', basis[-1])
-        setattr(l.well, 'STEP', basis[1]-basis[0])
-
-        # Add data entities.
-        other = ''
-
-        keys = self._get_curve_mnemonics(keys, alias=alias)
-
-        for k in keys:
-            d = self.data[k]
-            # if getattr(d, 'null', None) is not None:
-            #     d[np.isnan(d)] = d.null
-            try:
-                new_data = np.copy(d.to_basis_like(basis))
-            except:
-                # Basis shift failed; is probably not a curve
-                pass
-            try:
-                descr = getattr(d, 'description', '')
-                l.add_curve(k.upper(), new_data, unit=d.units, descr=descr)
-            except:
-                try:
-                    # Treat as OTHER
-                    other += "{}\n".format(k.upper()) + d.to_csv()
-                except:
-                    pass
-
-        # Write OTHER, if any.
-        if other:
-            l.other = other
-
-        return l
-
-    def to_las(self, fname, keys=None, basis=None, null_value=-999.25, **kwargs):
-        """
-        Writes the current well instance as a LAS file. Essentially just wraps
-        ``to_lasio()``, but is more convenient for most purposes.
-
-        Args:
-            fname (str): The path of the LAS file to create.
-            basis (ndarray): Optional. The basis to export the curves in. If
-                you don't specify one, it will survey all the curves with
-                ``survey_basis()``.
-            keys (list): List of strings: the keys of the data items to
-                include, if not all of them. You can have nested lists, such
-                as you might use for ``tracks`` in ``well.plot()``.
-
-        Other keyword args are passed to lasio.LASFile.write.
-
-        Returns:
-            None. Writes the file as a side-effect.
-        """
-        with open(fname, 'w') as f:
-            self.to_lasio(keys=keys,
-                          basis=basis,
-                          null_value=null_value).write(f, **kwargs)
-
-        return
-
     def add_curves_from_las(self, fname, remap=None, funcs=None):
         """
         Given a LAS file, add curves from it to the current well instance.
         Essentially just wraps ``add_curves_from_lasio()``.
 
         Args:
-            fname (str): The path of the LAS file to read curves from.
+            fname (str or list): The path(s) of the LAS file to read curves from
             remap (dict): Optional. A dict of 'old': 'new' LAS field names.
             funcs (dict): Optional. A dict of 'las field': function() for
                 implementing a transform before loading. Can be a lambda.
@@ -521,27 +673,21 @@ class Well(object):
         Returns:
             None. Works in place.
         """
-        try:  # To treat as a single file
-            self.add_curves_from_lasio(lasio.read(fname),
-                                       remap=remap,
-                                       funcs=funcs
-                                       )
-        except:  # It's a list!
-            for f in fname:
-                self.add_curves_from_lasio(lasio.read(f),
-                                           remap=remap,
-                                           funcs=funcs
-                                           )
+        # put str in a list to iterate over
+        if type(fname) == str:
+            fname = [fname]
 
-        return None
+        for f in fname:
+            w = self.from_las(f, remap=remap, funcs=funcs)
+            self.data.update(w.data)
 
-    def add_curves_from_lasio(self, l, remap=None, funcs=None):
+    def add_curves_from_lasio(self, las, remap=None, funcs=None):
         """
         Given a LAS file, add curves from it to the current well instance.
         Essentially just wraps ``add_curves_from_lasio()``.
 
         Args:
-            fname (str): The path of the LAS file to read curves from.
+            las (lasio.LASFile object): a lasio representation of a LAS file.
             remap (dict): Optional. A dict of 'old': 'new' LAS field names.
             funcs (dict): Optional. A dict of 'las field': function() for
                 implementing a transform before loading. Can be a lambda.
@@ -549,25 +695,14 @@ class Well(object):
         Returns:
             None. Works in place.
         """
-        params = {}
-        for field, (sect, code) in LAS_FIELDS['data'].items():
-            params[field] = utils.lasio_get(l,
-                                            sect,
-                                            code,
-                                            remap=remap,
-                                            funcs=funcs)
+        w = from_lasio(las)
+        self.data.update(w.data)
 
-        curves = {c.mnemonic: Curve.from_lasio_curve(c, **params)
-                  for c in l.curves}
-
-        # This will clobber anything with the same key!
-        self.data.update(curves)
-
-        return None
 
     def _plot_depth_track(self, ax, md, kind='MD', tick_spacing=100):
         """
         Private function. Depth track plotting.
+        Wrapping plot function from plot.py.
 
         Args:
             ax (ax): A matplotlib axis.
@@ -577,43 +712,8 @@ class Well(object):
         Returns:
             ax.
         """
-        if kind == 'MD':
-            ax.set_yscale('bounded', vmin=md.min(), vmax=md.max())
-        elif kind == 'TVD':
-            tvd = self.location.md2tvd(md)
-            ax.set_yscale('piecewise', x=tvd, y=md)
-        else:
-            raise Exception("Kind must be MD or TVD")
-
-        ax.xaxis.set_major_locator(ticker.MultipleLocator(tick_spacing))
-
-        for sp in ax.spines.values():
-            sp.set_color('gray')
-
-        if ax.is_first_col():
-            pad = -10
-            ax.spines['left'].set_color('none')
-            ax.yaxis.set_ticks_position('right')
-            for label in ax.get_yticklabels():
-                label.set_horizontalalignment('right')
-        elif ax.is_last_col():
-            pad = -10
-            ax.spines['right'].set_color('none')
-            ax.yaxis.set_ticks_position('left')
-            for label in ax.get_yticklabels():
-                label.set_horizontalalignment('left')
-        else:
-            pad = -30
-            for label in ax.get_yticklabels():
-                label.set_horizontalalignment('center')
-
-        ax.tick_params(axis='y', colors='gray', labelsize=12, pad=pad)
-        ax.set_xticks([])
-
-        ax.set(xticks=[])
-        ax.depth_track = True
-
-        return ax
+        return plot_depth_track_well(well=self, ax=ax, md=md, kind=kind,
+                                     tick_spacing=tick_spacing)
 
     def plot(self,
              legend=None,
@@ -625,7 +725,9 @@ class Well(object):
              extents='td',
              **kwargs):
         """
-        Plot multiple tracks.
+        Plot multiple tracks. Wrapping plot function from plot.py.
+        By default only show the plot, not return the figure object.
+
         Args:
             legend (striplog.legend): A legend instance.
             tracks (list): A list of strings and/or lists of strings. The
@@ -648,146 +750,21 @@ class Well(object):
         Returns:
             None. The plot is a side-effect.
         """
-        # These will be treated differently.
-        depth_tracks = ['MD', 'TVD']
-
-        # Set tracks to 'all' if it's None.
-        tracks = tracks or list(self.data.keys())
-        track_titles = track_titles or tracks
-
-        # Check that there is at least one curve.
-        if self.count_curves(tracks, alias=alias) == 0:
-            if alias:
-                a = " with alias dict applied "
-            else:
-                a = " "
-            m = "Track list{}returned no curves.".format(a)
-            raise WellError(m)
-
-        # Figure out limits
-        if basis is None:
-            basis = self.survey_basis(keys=tracks, alias=alias)
-
-        if extents == 'curves':
-            upper, lower = basis[0], basis[-1]
-        elif extents == 'td':
-            try:
-                upper, lower = 0, self.location.td
-            except:
-                m = "Could not read self.location.td, try extents='curves'"
-                raise WellError(m)
-            if not lower:
-                lower = basis[-1]
-        elif extents == 'all':
-            raise NotImplementedError("You cannot do that yet.")
-        else:
-            try:
-                upper, lower = extents
-            except:
-                upper, lower = basis[0], basis[-1]
-
-        # Figure out widths because we can't us gs.update() for that.
-        widths = [0.4 if t in depth_tracks else 1.0 for t in tracks]
-
-        # Set up the figure.
-        ntracks = len(tracks)
-        fig = plt.figure(figsize=(2*ntracks, 12), facecolor='w')
-        fig.suptitle(self.name, size=16, zorder=100,
-                     bbox=dict(facecolor='w', alpha=1.0, ec='none'))
-        gs = mpl.gridspec.GridSpec(1, ntracks, width_ratios=widths)
-
-        # Tick spacing
-        order_of_mag = np.round(np.log10(lower - upper))
-        ts = 10**order_of_mag / 100
-
-        # Plot first axis.
-        # kwargs = {}
-        ax0 = fig.add_subplot(gs[0, 0])
-        ax0.depth_track = False
-        track = tracks[0]
-        if '.' in track:
-            track, kwargs['field'] = track.split('.')
-        if track in depth_tracks:
-            ax0 = self._plot_depth_track(ax=ax0, md=basis, kind=track, tick_spacing=ts)
-        else:
-            try:  # ...treating as a plottable object.
-                ax0 = self.get_curve(track, alias=alias).plot(ax=ax0, legend=legend, **kwargs)
-            except AttributeError:  # ...it's not there.
-                pass
-            except TypeError:  # ...it's a list.
-                for t in track:
-                    try:
-                        ax0 = self.get_curve(t, alias=alias).plot(ax=ax0, legend=legend, **kwargs)
-                    except AttributeError:  # ...it's not there.
-                        pass
-        tx = ax0.get_xticks()
-        ax0.set_xticks(tx[1:-1])
-        ax0.set_title(track_titles[0])
-
-        # Plot remaining axes.
-        for i, track in enumerate(tracks[1:]):
-            # kwargs = {}
-            ax = fig.add_subplot(gs[0, i+1])
-            ax.depth_track = False
-            if track in depth_tracks:
-                ax = self._plot_depth_track(ax=ax, md=basis, kind=track, tick_spacing=ts)
-                continue
-            if '.' in track:
-                track, kwargs['field'] = track.split('.')
-            plt.setp(ax.get_yticklabels(), visible=False)
-            try:  # ...treating as a plottable object.
-                curve = self.get_curve(track, alias=alias)
-                curve._alias = track  # So that can retreive alias from legend too.
-                ax = curve.plot(ax=ax, legend=legend, **kwargs)
-            except AttributeError:  # ...it's not there.
-                continue
-            except TypeError:  # ...it's a list.
-                for j, t in enumerate(track):
-                    if '.' in t:
-                        track, kwargs['field'] = track.split('.')
-                    try:
-                        curve = self.get_curve(t, alias=alias)
-                        curve._alias = t
-                        ax = curve.plot(ax=ax, legend=legend, **kwargs)
-                    except AttributeError:
-                        continue
-                    except KeyError:
-                        continue
-
-            tx = ax.get_xticks()
-            ax.set_xticks(tx[1:-1])
-            ax.set_title(track_titles[i+1])
-
-        # Set sharing.
-        axes = fig.get_axes()
-        utils.sharey(axes)
-        axes[0].set_ylim([lower, upper])
-
-        # Adjust the grid.
-        gs.update(wspace=0)
-
-        # Adjust spines and ticks for non-depth tracks.
-        for ax in axes:
-            if not ax.depth_track:
-                ax.set(yticks=[])
-                ax.autoscale(False)
-                ax.yaxis.set_ticks_position('none')
-                ax.spines['top'].set_visible(True)
-                ax.spines['bottom'].set_visible(True)
-                for sp in ax.spines.values():
-                    sp.set_color('gray')
-
-        if return_fig:
-            return fig
-        else:
-            return None
+        return plot_well(well=self,
+                         legend=legend,
+                         tracks=tracks,
+                         track_titles=track_titles,
+                         alias=alias,
+                         basis=basis,
+                         return_fig=return_fig,
+                         extents=extents,
+                         **kwargs)
 
     def coverage(self, keys=None, alias=None):
         """
         Plot the coverage of the curves in a well.
         """
         raise NotImplementedError("Coverage is not implemented yet.")
-        return
 
     def survey_basis(self, keys=None, alias=None, step=None):
         """
@@ -811,25 +788,19 @@ class Well(object):
             if keys and (d is None):
                 continue
             try:
-                starts.append(d.basis[0])
-                stops.append(d.basis[-1])
-                steps.append(d.basis[1] - d.basis[0])
+                starts.append(d.start)
+                stops.append(d.stop)
+                steps.append(d.step)
             except Exception as e:
                 pass
         if starts and stops and steps:
             step = step or min(steps)
-            return np.arange(min(starts), max(stops)+1e-9, step)
+            return np.arange(min(starts), max(stops) + 1e-9, step)
         else:
             return None
 
-    def unify_basis(self,
-                    keys=None,
-                    alias=None,
-                    basis=None,
-                    start=None,
-                    stop=None,
-                    step=None
-                    ):
+    def unify_basis(self, keys=None, alias=None, basis=None, start=None,
+                    stop=None, step=None):
         """
         Give every Curve in the well, or everything in the list of keys, the
         same basis. If you don't provide a basis, welly will try to get one
@@ -839,7 +810,7 @@ class Well(object):
             keys (list): List of strings: the keys of the data items to
                 unify, if not all of them.
             alias (dict): an alias dictionary, mapping mnemonics to lists of
-                mnemonics.
+                mnemonics. e.g. {'density': ['DEN', 'DENS']}
             basis (ndarray): A basis: the regularly sampled depths at which
                 you want the samples.
             start (float): Optionally override the start of whatever basis
@@ -863,11 +834,8 @@ class Well(object):
             if keys and (k not in keys):
                 continue
             try:  # To treat as a curve.
-                self.data[k] = self.data[k].to_basis(basis,
-                                                     start=start,
-                                                     stop=stop,
-                                                     step=step
-                                                     )
+                self.data[k] = self.data[k].to_basis(basis, start=start,
+                                                     stop=stop, step=step)
             except:  # It's probably a striplog.
                 continue
 
@@ -909,7 +877,7 @@ class Well(object):
         Args:
             mnemonic (str): the name of the curve you want.
             alias (dict): an alias dictionary, mapping mnemonics to lists of
-                mnemonics.
+                mnemonics. e.g. {'density': ['DEN', 'DENS']}
 
         Returns:
             str.
@@ -934,7 +902,7 @@ class Well(object):
         Args:
             mnemonic (str): the name of the curve you want.
             alias (dict): an alias dictionary, mapping mnemonics to lists of
-                mnemonics.
+                mnemonics. e.g. {'density': ['DEN', 'DENS']}
 
         Returns:
             Curve.
@@ -948,7 +916,8 @@ class Well(object):
         """
         keys = self._get_curve_mnemonics(keys, alias=alias)
 
-        return len(list(filter(None, [self.get_mnemonic(k, alias=alias) for k in keys])))
+        return len(list(
+            filter(None, [self.get_mnemonic(k, alias=alias) for k in keys])))
 
     def is_complete(self, keys=None, alias=None):
         """
@@ -960,11 +929,7 @@ class Well(object):
     def alias_has_multiple(self, mnemonic, alias):
         return 1 < len([a for a in alias[mnemonic] if a in self.data])
 
-    def make_synthetic(self,
-                       srd=0,
-                       v_repl_seismic=2000,
-                       v_repl_log=2000,
-                       f=50,
+    def make_synthetic(self, srd=0, v_repl_seismic=2000, v_repl_log=2000, f=50,
                        dt=0.001):
         """
         Early hack. Use with extreme caution.
@@ -984,18 +949,20 @@ class Well(object):
         # Basic log values.
         dt_log = self.data['DT'].despike()  # assume µs/m
         rho_log = self.data['RHOB'].despike()  # assume kg/m3
-        if not np.allclose(dt_log.basis, rho_log.basis):
+        if not np.allclose(dt_log.df.index, rho_log.df.index):
             rho_log = rho_log.to_basis_like(dt_log)
-        Z = (1e6 / dt_log) * rho_log
+        Z = (1e6 / dt_log.df.values) * rho_log.df.values
 
         # Two-way-time.
-        scaled_dt = dt_log.step * np.nan_to_num(dt_log) / 1e6
+        scaled_dt = dt_log.step * np.nan_to_num(dt_log.df.values) / 1e6
         twt = 2 * np.cumsum(scaled_dt)
         t = twt + log_start_time
 
         # Move to time.
-        t_max = t[-1] + 10*dt
-        t_reg = np.arange(0, t_max+1e-9, dt)
+        t_max = t[-1] + 10 * dt
+        t_reg = np.arange(0, t_max + 1e-9, dt)
+        if len(t.shape)+1 == len(Z.shape):
+            Z = Z[:, 0]
         Z_t = np.interp(x=t_reg, xp=t, fp=Z)
 
         # Make RC series.
@@ -1006,10 +973,7 @@ class Well(object):
         _, ricker = utils.ricker(f=f, length=0.128, dt=dt)
         synth = np.convolve(ricker, rc_t, mode='same')
 
-        params = {'dt': dt,
-                  'z start': dt_log.start,
-                  'z stop': dt_log.stop
-                  }
+        params = {'dt': dt, 'z start': dt_log.start, 'z stop': dt_log.stop}
 
         self.data['Synthetic'] = Synthetic(synth, basis=t_reg, params=params)
 
@@ -1017,7 +981,7 @@ class Well(object):
 
     def qc_curve_group(self, tests, keys=None, alias=None):
         """
-        Run tests on a cohort of curves.
+        Run tests on a cohort of curves. Wrapping functions from quality.py
 
         Args:
             tests (dict): a dictionary of tests, mapping mnemonics to lists of
@@ -1027,31 +991,18 @@ class Well(object):
                 comparing one curve to another.
             keys (list): a list of the mnemonics to run the tests against.
             alias (dict): an alias dictionary, mapping mnemonics to lists of
-                mnemonics.
+                mnemonics. e.g. {'density': ['DEN', 'DENS']}
 
         Returns:
             dict.
         """
-        keys = self._get_curve_mnemonics(keys, alias=alias)
-
-        if not keys:
-            return {}
-
-        all_tests = tests.get('all', tests.get('All', tests.get('ALL', [])))
-        data = {test.__name__: test(self, keys, alias) for test in all_tests}
-
-        results = {}
-        for i, key in enumerate(keys):
-            this = {}
-            for test, result in data.items():
-                this[test] = result[i]
-            results[key] = this
-        return results
+        return qc_curve_group_well(well=self, tests=tests, keys=keys,
+                                   alias=alias)
 
     def qc_data(self, tests, keys=None, alias=None):
         """
         Run a series of tests against the data and return the corresponding
-        results.
+        results. Wrapping frunction from quality.py.
 
         Args:
             tests (dict): a dictionary of tests, mapping mnemonics to lists of
@@ -1061,60 +1012,23 @@ class Well(object):
                 comparing one curve to another.
             keys (list): a list of the mnemonics to run the tests against.
             alias (dict): an alias dictionary, mapping mnemonics to lists of
-                mnemonics.
+                mnemonics. e.g. {'density': ['DEN', 'DENS']}
 
         Returns:
             list. The results. Stick to booleans (True = pass) or ints.
         """
-        keys = self._get_curve_mnemonics(keys, alias=alias, curves_only=False)
-        r = {k: self.data.get(k).quality(tests, alias) for k in keys}
-        s = self.qc_curve_group(tests, keys, alias=alias)
-        for m, results in r.items():
-            if m in s:
-                results.update(s[m])
-        return r
+        return qc_data_well(well=self, tests=tests, keys=keys, alias=alias)
 
     def qc_table_html(self, tests, keys=None, alias=None):
         """
-        Makes a nice table out of ``qc_data()``
+        Makes a nice table out of ``qc_data()`` Wrapping function from quality.py.
 
         Returns:
-            str. An HTML string.
+            str. An HTML string for visualization in Jupyter notebook.
+            Visualize through IPython.display.HTML(str)
         """
-        data = self.qc_data(tests, keys=keys, alias=alias)
-        all_tests = [list(d.keys()) for d in data.values()]
-        tests = list(set(utils.flatten_list(all_tests)))
-
-        # Header row.
-        r = '</th><th>'.join(['Curve', 'Passed', 'Score'] + tests)
-        rows = '<tr><th>{}</th></tr>'.format(r)
-
-        styles = {
-            True: "#CCEECC",   # Green
-            False: "#FFCCCC",  # Red
-        }
-
-        # Quality results.
-        for curve, results in data.items():
-
-            if results:
-                norm_score = sum(results.values()) / len(results)
-            else:
-                norm_score = -1
-
-            rows += '<tr><th>{}</th>'.format(curve)
-            rows += '<td>{} / {}</td>'.format(sum(results.values()), len(results))
-            rows += '<td>{:.3f}</td>'.format(norm_score)
-
-            for test in tests:
-                result = results.get(test, '')
-                style = styles.get(result, "#EEEEEE")
-                rows += '<td style="background-color:{};">'.format(style)
-                rows += '{}</td>'.format(result)
-            rows += '</tr>'
-
-        html = '<table>{}</table>'.format(rows)
-        return html
+        return qc_table_html_well(well=self, tests=tests, keys=keys,
+                                  alias=alias)
 
     def to_canstrat(self, key, log, lith_field, filename=None, as_text=False):
         """
@@ -1141,11 +1055,9 @@ class Well(object):
         strip = self.data[key]
         strip = strip.fill()  # Default is to fill with 'null' intervals.
 
-        record = {1: [well_to_card_1(self)],
-                  2: [well_to_card_2(self, key)],
+        record = {1: [well_to_card_1(self)], 2: [well_to_card_2(self, key)],
                   8: [],
-                  7: [interval_to_card_7(iv, lith_field) for iv in strip]
-                  }
+                  7: [interval_to_card_7(iv, lith_field) for iv in strip]}
 
         result = ''
         for c in [1, 2, 8, 7]:
@@ -1159,17 +1071,9 @@ class Well(object):
                 f.write(result)
             return None
 
-    def data_as_matrix(self,
-                       keys=None,
-                       return_basis=False,
-                       basis=None,
-                       alias=None,
-                       start=None,
-                       stop=None,
-                       step=None,
-                       window_length=None,
-                       window_step=1,
-                       ):
+    def data_as_matrix(self, keys=None, return_basis=False, basis=None,
+                       alias=None, start=None, stop=None, step=None,
+                       window_length=None, window_step=1, ):
         """
         Provide a feature matrix, given a list of data items.
 
@@ -1186,6 +1090,7 @@ class Well(object):
             basis (ndarray): The basis to use. Default is to survey all curves
                 to find a common basis.
             alias (dict): A mapping of alias names to lists of mnemonics.
+                e.g. {'density': ['DEN', 'DENS']}
             start (float): Optionally override the start of whatever basis
                 you find or (more likely) is surveyed.
             stop (float): Optionally override the stop of whatever basis
@@ -1234,7 +1139,7 @@ class Well(object):
                 data[i] = d.to_basis(basis=basis)
                 # Allow user to override the start and stop from the survey.
                 if (start is not None) or (stop is not None):
-                    data[i] = data[i].to_basis(start=start, stop=stop, step=step)
+                    data[i] = data[i].to_basis(start, stop, step)
                     basis = data[i].basis
             else:
                 # Empty_like gives unpredictable results
@@ -1243,11 +1148,8 @@ class Well(object):
         if window_length is not None:
             d_new = []
             for d in data:
-                r = d._rolling_window(window_length,
-                                      func1d=utils.null,
-                                      step=window_step,
-                                      return_rolled=False,
-                                      )
+                r = d._rolling_window(window_length, func1d=utils.null,
+                                      step=window_step, return_rolled=False, )
                 d_new.append(r.T)
             data = d_new
 
@@ -1255,3 +1157,4 @@ class Well(object):
             return np.vstack(data).T, basis
         else:
             return np.vstack(data).T
+

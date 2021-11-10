@@ -60,3 +60,10 @@ docs/_build/
 # PyBuilder
 target/
 
+# PyCharm
+.idea/misc.xml
+.idea/*.iml
+csv-plugin.xml
+
+# temporary test folder
+tests/temp

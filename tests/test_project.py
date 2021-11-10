@@ -9,10 +9,10 @@ def test_project():
     """
     Test basic stuff.
     """
-    project = Project.from_las('tests/1.las')
+    project = Project.from_las('tests/assets/1.las')
     assert len(project) == 1
 
-    w = Well.from_las('tests/2.las')
+    w = Well.from_las('tests/assets/2.las')
     project += w
     assert w in project
     assert len(project) == 2
@@ -43,7 +43,7 @@ def test_project():
 
 def test_data_as_matrix():
     alias = {'Sonic': ['DT', 'foo']}
-    project = Project.from_las('tests/*.las')
+    project = Project.from_las('tests/assets/*.las')
     # X_train, y_train = project.data_as_matrix(X_keys=['DEPT', 'HCAL', 'Sonic'],
     #                                           y_key='CALI',
     #                                           alias=alias,
