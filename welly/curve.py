@@ -448,7 +448,8 @@ class Curve(np.ndarray):
         """
         From ``bruges``
 
-        Extrapolate up and down an array from the first and last non-NaN samples.
+        Extrapolate up and down an array from the first and last non-NaN
+        samples.
 
         E.g. Continue the first and last non-NaN values of a log up and down.
         """
