@@ -43,10 +43,11 @@ class WellError(Exception):
     pass
 
 
-def _get_well_params(header, remap, funcs):
+def _get_well_related_curve_params(header, remap, funcs):
     """
-    Get the well related LAS parameters from the header and remap and/or
-    transform the parameters if `remap` dict or transform `funcs` are passed.
+    Get the well related curve parameters from the header.
+
+    Remap and/or transform the parameters if `remap` dict or transform `funcs` are passed.
 
     Args:
         header (pd.DataFrame): Header meta data.
@@ -56,20 +57,21 @@ def _get_well_params(header, remap, funcs):
             implementing a transform before loading. Can be a lambda.
 
     Returns:
-        well_params (dict): LAS parameters that belong to the well
+        well_curve_params (dict): LAS parameters that belong to the well
 
     """
     # retrieve well parameters from header
-    well_params = {}
+    well_curve_params = {}
 
+    # retrieve parameters from header and/or remap and transform if passed
     for field, (section, item) in LAS_FIELDS['data'].items():
-        well_params[field] = utils.get_header_item(header=header,
-                                                   section=section,
-                                                   item=item,
-                                                   remap=remap,
-                                                   funcs=funcs)
+        well_curve_params[field] = utils.get_header_item(header=header,
+                                                         section=section,
+                                                         item=item,
+                                                         remap=remap,
+                                                         funcs=funcs)
 
-    return well_params
+    return well_curve_params
 
 
 def _get_curve_params(header, dataset_name):
@@ -162,7 +164,7 @@ def _update_las_header(header, remap=None, funcs=None):
         row_index = header.index[header['mnemonic'] == item]
 
         # replace item with new item value
-        header.loc[row_index, 'mnemonic'] = new_item_value
+        updated_header.loc[row_index, 'value'] = new_item_value
 
     return updated_header
 
@@ -451,8 +453,8 @@ class Well(object):
         # copy header df to later store updated item values in
         updated_df_header = df_header.copy()
 
-        # get the well related parameters from header
-        well_params = _get_well_params(df_header, remap, funcs)
+        # get the well related curve parameters from header
+        well_curve_params = _get_well_related_curve_params(df_header, remap, funcs)
 
         # create location object
         location = Location.from_lasio(df_header, remap, funcs)
@@ -476,7 +478,7 @@ class Well(object):
                 # set to the unit that the index has just been converted to
                 unit = index_unit
 
-            well_params['index_unit'] = unit
+            well_curve_params['index_unit'] = unit
 
             # get the curve related parameters (mnemonic, unit, description)
             curve_params = _get_curve_params(df_header, dataset_name)
@@ -494,13 +496,13 @@ class Well(object):
                                                mnemonic=mnemonic,
                                                units=curve_params[mnemonic].unit,
                                                description=curve_params[mnemonic].descr,
-                                               **well_params) for mnemonic in df_data.columns if mnemonic in req})
+                                               **well_curve_params) for mnemonic in df_data.columns if mnemonic in req})
             elif data and not req:
                 curves.update({mnemonic: Curve(data=df_data[mnemonic],
                                                mnemonic=mnemonic,
                                                units=curve_params[mnemonic].unit,
                                                description=curve_params[mnemonic].descr,
-                                               **well_params) for mnemonic in df_data.columns})
+                                               **well_curve_params) for mnemonic in df_data.columns})
             elif (not data) and req:
                 curves.update({mnemonic: True for mnemonic in df_data.columns
                                if (mnemonic[:4] not in index_curve_mnemonics)
