@@ -76,6 +76,13 @@ def test_block(well):
     assert b.df.mean()[0] - 26.072967 < 0.001
 
 
+def test_despike(well):
+    """
+    Test despiker with even window and z != 2.
+    """
+    gr = well.data['GR']
+    assert gr.df.max()[0] - gr.despike(50, z=1).df.max()[0] - 91.83918 < 0.001
+
 # define test data
 data_num = np.linspace(1, 200, 20)
 data_num_2d = np.array([data_num, np.linspace(400, 201, 20)]).T

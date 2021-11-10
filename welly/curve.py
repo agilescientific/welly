@@ -279,8 +279,8 @@ class Curve(object):
     def despike(self, window_length=33, samples=True, z=2):
         """
         Args:
-            window (int): window length in samples. Default 33 (or 5 m for
-                most curves sampled at 0.1524 m intervals).
+            window_length (int): window length in samples. Default 33
+                (or 5 m for most curves sampled at 0.1524 m intervals).
             samples (bool): window length is in samples. Use False for a window
                 length given in metres.
             z (float): Z score
