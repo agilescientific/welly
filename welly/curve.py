@@ -98,13 +98,58 @@ class Curve(object):
         self.run = run
         self.service_company = service_company
 
+    def __getitem__(self, index):
+        """
+        Index into pd.DataFrame that holds the curve data
+        """
+        curve = copy.deepcopy(self)
+        setattr(curve, 'df', self.df[index])
+        return curve
+
+    def __mul__(self, n):
+        """
+        Multiply curve data in pd.DataFrame by `n`
+        """
+        curve = copy.deepcopy(self)
+        setattr(curve, 'df', self.df.multiply(n))
+        return curve
+
+    def __truediv__(self, n):
+        """
+        Divide curve data in pd.DataFrame by `n`
+        """
+        curve = copy.deepcopy(self)
+        setattr(curve, 'df', self.df.divide(n))
+        return curve
+
+    def __sub__(self, n):
+        """
+        Subtract curve data in pd.DataFrame with `n`
+        """
+        curve = copy.deepcopy(self)
+        setattr(curve, 'df', self.df.sub(n))
+        return curve
+
+    def __add__(self, n):
+        """
+        Add curve data in pd.DataFrame with `n`
+        """
+        curve = copy.deepcopy(self)
+        setattr(curve, 'df', self.df.add(n))
+        return curve
+
+    def __repr__(self):
+        return pd.DataFrame.__repr__(self.df)
+
     def __str__(self) -> str:
         """
         A more useful and comprehensive string representation of the Curve.
         Access through calling `print(curve_object)`.
+
         Arguments:
             No arguments
-        Return:
+
+        Returns:
             String representation of:
             - the class name
             - the pd.DataFrame if ncol>1 and the pd.Series if ncol==1
@@ -129,12 +174,20 @@ class Curve(object):
         params = {k: v for k, v in params.items() if v is not None}
 
         # show the pd.Series if pd.DataFrame has only 1 column (1D data)
-        if self.df.shape[1] == 1:
+        if len(self.df.columns) == 1:
             show_df = self.df.iloc[:, 0]
         else:
             show_df = self.df
 
         return '%s \n%s \n attributes: \n  %s' % (self.__class__, show_df, params)
+
+    @property
+    def shape(self):
+        return self.df.shape
+
+    @property
+    def size(self):
+        return self.df.size
 
     @property
     def index(self):
@@ -170,7 +223,10 @@ class Curve(object):
         We keep track of this property because start (STRT) is a required field
         in a LAS file.
         """
-        return self.df.index[0]
+        if not self.df.index.empty:
+            return self.df.index[0]
+        else:
+            return None
 
     @property
     def stop(self):
@@ -179,7 +235,10 @@ class Curve(object):
         We keep track of this property because stop (STOP) is a required field
         in a LAS file.
         """
-        return self.df.index[-1]
+        if not self.df.index.empty:
+            return self.df.index[-1]
+        else:
+            return None
 
     @property
     def step(self):
@@ -192,7 +251,7 @@ class Curve(object):
             0. If the index is numeric and not equally sampled
             None. If the index is not numeric
         """
-        if self.df.index.is_numeric():
+        if self.df.index.is_numeric() and not self.df.index.empty:
             return get_step_from_array(self.df.index.values)
         else:
             return None
@@ -206,7 +265,72 @@ class Curve(object):
         Returns
             ndarray. The array, the same length as the curve.
         """
-        return np.linspace(self.start, self.stop, self.df.__len__(), endpoint=True)
+        return self.df.index.values
+
+    def _repr_html_(self):
+        """
+        Jupyter Notebook magic repr function.
+
+        old..
+        """
+        if self.size < 10:
+            return pd.DataFrame.__repr__(self.df)
+        attribs = self.__dict__.copy()
+        attribs.pop('df')
+
+        # Header.
+        row1 = '<tr><th style="text-align:center;" colspan="2">{} [{{}}]</th></tr>'
+        rows = row1.format(' '.join(list(self.df.columns)))
+        rows = rows.format(attribs.pop('units', '&ndash;'))
+        row2 = '<tr><td style="text-align:center;" colspan="2">{:.4f} : {:.4f} : {:.4f}</td></tr>'
+        rows += row2.format(self.start, self.stop, self.step)
+
+        # Curve attributes.
+        s = '<tr><td><strong>{k}</strong></td><td>{v}</td></tr>'
+        for k, v in attribs.items():
+            rows += s.format(k=k, v=v)
+
+        # Curve stats.
+        rows += '<tr><th style="border-top: 2px solid #000; text-align:center;" colspan="2"><strong>Stats</strong></th></tr>'
+        stats = self.get_stats()
+        s = '<tr><td><strong>samples (NaNs)</strong></td><td>{samples} ({nulls})</td></tr>'
+        s += '<tr><td><strong><sub>min</sub> mean <sup>max</sup></strong></td>'
+        s += '<td><sub>{min:.2f}</sub> {mean:.3f} <sup>{max:.2f}</sup></td></tr>'
+        rows += s.format(**stats)
+
+        # Curve preview.
+        s = '<tr><th style="border-top: 2px solid #000;">Depth</th><th style="border-top: 2px solid #000;">Value</th></tr>'
+        rows += s.format(self.start, self.df.values[0][0])
+        s = '<tr><td>{:.4f}</td><td>{:.4f}</td></tr>'
+        for depth, value in self.df.iloc[:3].iterrows():
+            rows += s.format(depth, value[0])
+        rows += '<tr><td>⋮</td><td>⋮</td></tr>'
+        for depth, value in self.df.iloc[-3:].iterrows():
+            rows += s.format(depth, value[0])
+
+        # Footer.
+        # ...
+
+        # End.
+        html = '<table>{}</table>'.format(rows)
+        return html
+
+    def describe(self):
+        """
+        Return basic statistics about the curve.
+        """
+        stats = {}
+        stats['samples'] = self.shape[0]
+        stats['nulls'] = self[np.isnan(self.df.values)].shape[0]
+        stats['mean'] = float(np.nanmean(self.df.values.real))
+        stats['min'] = float(np.nanmin(self.df.values.real))
+        stats['max'] = float(np.nanmax(self.df.values.real))
+        return stats
+
+    get_stats = describe
+
+    def mean(self):
+        return self.df.mean()
 
     def get_alias(self, alias):
         """
@@ -216,10 +340,10 @@ class Curve(object):
         alias = alias or {}
 
         # 1-dimensional curve
-        if self.df.columns.__len__() == 1:
+        if len(self.df.columns) == 1:
             return [k for k, v in alias.items() if self.mnemonic in v]
         # Multi-dimensional curve
-        elif self.df.columns.__len__() >= 2:
+        elif len(self.df.columns) >= 2:
             alias_list = []
             for mnemonic in self.mnemonic:
                 alias_list += [k for k, v in alias.items() if mnemonic.replace('[0]', '') in v]
@@ -234,7 +358,7 @@ class Curve(object):
         """
         numerics = ['int16', 'int32', 'int64', 'float16', 'float32', 'float64']
         numeric_df = self.df.select_dtypes(include=numerics)
-        if numeric_df.columns.__len__() == 1:
+        if len(numeric_df.columns) == 1:
             return numeric_df.iloc[:, 0].values
         else:
             return numeric_df.values
@@ -631,7 +755,6 @@ class Curve(object):
             undefined = None
 
         return self.to_basis(basis=basis, undefined=undefined)
-
 
     def block(self,
               cutoffs=None,
