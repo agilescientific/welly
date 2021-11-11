@@ -62,3 +62,9 @@ def test_well_write(well):
     well = Well.from_las(path)
     assert well.data['GR'].df.iloc[0][0] - 46.69865036 < 0.001
     os.remove(path)
+
+
+def test_df(well):
+    df = well.df()
+    assert df.iloc[10, 2] - 3.586400032 < 0.001
+    assert df.shape == (12718, 24)
