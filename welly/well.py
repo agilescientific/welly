@@ -629,7 +629,7 @@ class Well(object):
 
         keys = self._get_curve_mnemonics(keys, alias=alias)
 
-        data = {k: self.get_curve(k, alias=alias) for k in keys}
+        data = {k: self.get_curve(k, alias=alias).df for k in keys}
 
         if basis is None:
             basis = self.survey_basis(keys=keys, alias=alias)
@@ -637,18 +637,15 @@ class Well(object):
             m = "No basis was provided and welly could not retrieve common basis."
             raise WellError(m)
 
-        df = pd.DataFrame(data, index=None)
-        df['Depth'] = basis
-        df = df.set_index('Depth')
+        df = pd.concat(list(data.values()), axis=1)
 
         if not rename_aliased:
             mapper = {k: self.get_mnemonic(k, alias=alias) for k in keys}
             df = df.rename(columns=mapper)
 
         if uwi:
-            df['UWI'] = [self.uwi for _ in basis]
-            df = df.reset_index()
-            df = df.set_index(['UWI', 'Depth'])
+            df['UWI'] = self.uwi
+            df.set_index(['UWI'], append=True, inplace=True)
 
         for column in df.columns:
             if is_object_dtype(df[column].dtype):
