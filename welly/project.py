@@ -11,7 +11,7 @@ from collections import Counter
 import warnings
 
 import numpy as np
-import matplotlib.pyplot as plt
+import pandas as pd
 from tqdm import tqdm
 
 from .well import Well, WellError
@@ -560,8 +560,6 @@ class Project(object):
         Returns:
             ``pandas.DataFrame``.
         """
-        import pandas as pd
-
         dfs = []
         for w in self:
             try:
