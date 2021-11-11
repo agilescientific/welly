@@ -13,6 +13,11 @@ from .crs import CRS
 from . import tools
 from . import quality
 
+
+def read_las(path, **kwargs):
+    return Project.from_las(path, **kwargs)
+
+
 __all__ = [
            'Project',
            'Well',
@@ -23,6 +28,7 @@ __all__ = [
            'CRS',
            'quality',
            'tools',  # Various classes in here
+           'read_las'
           ]
 
 
