@@ -194,6 +194,10 @@ class Curve(object):
         return self.df.index
 
     @property
+    def values(self):
+        return self.df.values
+
+    @property
     def mnemonic(self):
         """
         Return the mnemonic. For a 1d curve, the mnemonic is a string.
@@ -259,11 +263,11 @@ class Curve(object):
     @property
     def basis(self):
         """
-        The depth or time basis of the curve's points. Computed
-        on the fly from the start, stop and step.
+        The depth or time basis of the curve's points.
+
 
         Returns
-            ndarray. The array, the same length as the curve.
+            ndarray. The array representation of the index.
         """
         return self.df.index.values
 
@@ -316,6 +320,9 @@ class Curve(object):
         return html
 
     def describe(self):
+        return self.df.describe()
+
+    def get_stats(self):
         """
         Return basic statistics about the curve.
         """
@@ -327,10 +334,14 @@ class Curve(object):
         stats['max'] = float(np.nanmax(self.df.values.real))
         return stats
 
-    get_stats = describe
-
     def mean(self):
         return self.df.mean()
+
+    def min(self):
+        return self.df.min()
+
+    def max(self):
+        return self.df.max()
 
     def get_alias(self, alias):
         """
