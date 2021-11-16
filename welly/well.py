@@ -1130,6 +1130,20 @@ class Well(object):
                     # add new row to header
                     self.header = self.header.append(new_row, ignore_index=True)
 
+    def assign_categorical(self, mnemonics):
+        """
+        Assign the `category` dtype to the columns of the `curve.df` attribute.
+
+        Args:
+            mnemonics (list): Mnemonics of the curves to be assigned as categorical
+
+        Returns:
+            Nothing, works inplace.
+        """
+        for mnemonic, curve in self.data.items():
+            if mnemonic in mnemonics:
+                setattr(self.data[mnemonic], 'df',  self.data[mnemonic].df.astype("category"))
+
 
 def _get_well_related_curve_params(header, remap, funcs):
     """

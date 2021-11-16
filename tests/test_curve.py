@@ -60,6 +60,12 @@ def test_read_at(curve):
     np.testing.assert_allclose(actual, desired)
 
 
+def test_assign_categorical(curve):
+    assert curve.dtypes[0] == 'float'
+    curve.dtypes = 'category'
+    assert curve.dtypes[0] == 'category'
+
+
 def test_block(curve):
     """
     Test log blocking.

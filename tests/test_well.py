@@ -110,3 +110,8 @@ def test_read_df(df):
 
     well = welly.read_df(df)
     assert well.data['GR'].shape == (3, 1)
+
+
+def test_assign_categorical(well):
+    well.assign_categorical(['RXOZ', 'RXO_HRLT'])
+    assert well.data['RXOZ'].dtypes[0] == 'category'

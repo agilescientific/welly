@@ -70,7 +70,8 @@ class Curve(object):
                  null=None,
                  run=None,
                  service_company=None,
-                 units=None):
+                 units=None,
+                 family=None):
 
         if type(mnemonic) == str:
             mnemonic = [mnemonic]
@@ -91,6 +92,7 @@ class Curve(object):
         self.code = code
         self.description = description
         self.units = units
+        self.family = family
         # set parameters related to well
         self.api = api
         self.date = date
@@ -173,7 +175,8 @@ class Curve(object):
             'start': self.start,
             'step': self.step,
             'stop': self.stop,
-            'unit': self.units
+            'unit': self.units,
+            'family': self.family
         }
 
         # remove items where item value is None
@@ -216,8 +219,12 @@ class Curve(object):
         return mnemonic
 
     @property
-    def dtype(self):
+    def dtypes(self):
         return self.df.dtypes
+
+    @dtypes.setter
+    def dtypes(self, dtypes):
+        return setattr(self, 'df',  self.df.astype(dtypes))
 
     @property
     def index_name(self):
