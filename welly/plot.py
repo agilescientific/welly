@@ -1,3 +1,9 @@
+"""
+Module for plotting projects, wells and curves
+
+:copyright: 2021 Agile Scientific
+:license: Apache 2.0
+"""
 import re
 import numpy as np
 import matplotlib.pyplot as plt
@@ -296,7 +302,7 @@ def plot_well(well,
         except AttributeError:  # ...it's not there.
             continue
         except TypeError:  # ...it's a list.
-            for j, t in enumerate(track):
+            for t in track:
                 if '.' in t:
                     track, kwargs['field'] = track.split('.')
                 try:

@@ -535,7 +535,7 @@ class Well(object):
                     basis=None,
                     null_value=-999.25):
         """
-
+        Unpack a well to datasets (a dict with pd.DataFrames)
         """
         las = to_lasio(self, keys, alias, basis, null_value)
 
@@ -1140,7 +1140,7 @@ class Well(object):
         Returns:
             Nothing, works inplace.
         """
-        for mnemonic, curve in self.data.items():
+        for mnemonic in self.data.keys():
             if mnemonic in mnemonics:
                 setattr(self.data[mnemonic], 'df',  self.data[mnemonic].df.astype("category"))
 

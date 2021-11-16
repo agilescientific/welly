@@ -43,6 +43,9 @@ def test_basis_numerical(curve):
 
 
 def test_basis_categorical():
+    """
+    Test reindexing a categorical curve
+    """
     cat_data = ['sand'] * 20 + [np.nan] * 5 + ['cement'] * 10 + [np.nan] * 5
     curve_cat = Curve(cat_data, index=range(0, 40))
     curve_new = curve_cat.to_basis(start=5, stop=30, step=1)
@@ -61,6 +64,9 @@ def test_read_at(curve):
 
 
 def test_assign_categorical(curve):
+    """
+    Test assigning the categorical dtype to a curve. Calls the attribute setter.
+    """
     assert curve.dtypes[0] == 'float'
     curve.dtypes = 'category'
     assert curve.dtypes[0] == 'category'
@@ -91,6 +97,9 @@ def test_despike(curve):
 
 
 def test_repr_html_(curve):
+    """
+    Test getting the HTML representation of the curve
+    """
     html = curve._repr_html_()
     assert html[77] == '<'
 

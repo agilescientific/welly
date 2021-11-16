@@ -88,6 +88,9 @@ def test_get_columns_decimal_formatter():
 
 
 def test_get_number_of_decimal_points():
+    """
+    Test if the number of decimal points for various num/str/nan inputs
+    """
     assert get_number_of_decimal_points('string') is None
     assert get_number_of_decimal_points([1.12]) is None
     assert get_number_of_decimal_points(np.nan) is None

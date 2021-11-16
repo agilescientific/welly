@@ -113,5 +113,8 @@ def test_read_df(df):
 
 
 def test_assign_categorical(well):
+    """
+    Test assigning category dtype to multiple curves in a well.
+    """
     well.assign_categorical(['RXOZ', 'RXO_HRLT'])
     assert well.data['RXOZ'].dtypes[0] == 'category'

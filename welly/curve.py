@@ -1,3 +1,9 @@
+"""
+Defines log curves
+
+:copyright: 2021 Agile Scientific
+:license: Apache 2.0
+"""
 import copy
 
 import numpy as np
@@ -73,7 +79,7 @@ class Curve(object):
                  units=None,
                  family=None):
 
-        if type(mnemonic) == str:
+        if isinstance(mnemonic, str):
             mnemonic = [mnemonic]
 
         if isinstance(data, pd.DataFrame):
@@ -147,6 +153,9 @@ class Curve(object):
         return len(self.df)
 
     def __repr__(self):
+        """
+        Return the pd.DataFrame representation as representation of the Curve
+        """
         return pd.DataFrame.__repr__(self.df)
 
     def __str__(self) -> str:
@@ -192,18 +201,30 @@ class Curve(object):
 
     @property
     def shape(self):
+        """
+        The number of dimensions is the pd.DataFrame shape (tuple) of the Curve
+        """
         return self.df.shape
 
     @property
     def size(self):
+        """
+        The size is the pd.DataFrame size (int) of the Curve
+        """
         return self.df.size
 
     @property
     def index(self):
+        """
+        The index is the pd.DataFrame index (pd.Index) of the Curve
+        """
         return self.df.index
 
     @property
     def values(self):
+        """
+        The numpy.array representation of the pd.DataFrame of the Curve
+        """
         return self.df.values
 
     @property
@@ -220,14 +241,23 @@ class Curve(object):
 
     @property
     def dtypes(self):
+        """
+        The data types is the pd.DataFrame data types (pd.Series)
+        """
         return self.df.dtypes
 
     @dtypes.setter
     def dtypes(self, dtypes):
+        """
+        Set the data types of the columns of the pd.DataFrame (str)
+        """
         return setattr(self, 'df',  self.df.astype(dtypes))
 
     @property
     def index_name(self):
+        """
+        The index name is the pd.DataFrame index name (str)
+        """
         if isinstance(self.df.index, pd.MultiIndex):
             return self.df.index.names
         else:
@@ -278,7 +308,6 @@ class Curve(object):
         """
         The depth or time basis of the curve's points.
 
-
         Returns
             ndarray. The array representation of the index.
         """
@@ -287,8 +316,6 @@ class Curve(object):
     def _repr_html_(self):
         """
         Jupyter Notebook magic repr function.
-
-        old..
         """
         if self.size < 10:
             return pd.DataFrame.__repr__(self.df)
@@ -333,6 +360,9 @@ class Curve(object):
         return html
 
     def describe(self):
+        """
+        Returns statistics of the pd.DataFrame of the curve
+        """
         return self.df.describe()
 
     def get_stats(self):
@@ -348,12 +378,24 @@ class Curve(object):
         return stats
 
     def mean(self):
+        """
+        Returns the mean of the pd.DataFrame values of the columns in the curve
+        in a pd.Series
+        """
         return self.df.mean()
 
     def min(self):
+        """
+        Returns the minimum of the pd.DataFrame values of the columns in the curve
+        in a pd.Series
+        """
         return self.df.min()
 
     def max(self):
+        """
+        Returns the maximum of the pd.DataFrame values of the columns in the curve
+        in a pd.Series
+        """
         return self.df.max()
 
     def get_alias(self, alias):
@@ -650,7 +692,7 @@ class Curve(object):
         """
         not_found = False
 
-        if type(index_value) != list:
+        if not isinstance(index_value, list):
             index_value = [index_value]
 
         if not index_name:
