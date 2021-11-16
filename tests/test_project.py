@@ -65,7 +65,7 @@ def test_df(project):
     Returns:
         Assert a the shape and a value in DataFrame
     """
-    p = Project.from_las("assets/P-*_out.LAS")
+    p = Project.from_las("tests/assets/P-129_out.LAS")
     alias = {'Gamma': ['GR', 'GRC', 'NGT'], 'Caliper': ['HCAL', 'CALI']}
     keys = ['Caliper', 'Gamma', 'DT']
     df = p.df(keys=keys, alias=alias)
