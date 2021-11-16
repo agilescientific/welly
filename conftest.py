@@ -1,4 +1,6 @@
 from pytest import fixture
+import numpy as np
+import pandas as pd
 
 from welly import Project
 
@@ -16,3 +18,8 @@ def well(project):
 @fixture()
 def curve(well):
     return well.data['GR']
+
+
+@fixture()
+def df():
+    return pd.DataFrame({'GR': [80, 100, 90], 'DEN': [1.5, 1.2, np.nan]}, index=[100, 150, 200])
