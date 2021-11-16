@@ -12,16 +12,16 @@ from pandas.testing import assert_frame_equal
 from welly.las import datasets_to_las, from_las
 
 paths_in = [
-    'tests\\assets\\1.las',
-    'tests\\assets\\2.las',
-    'tests\\assets\\F03-02.las',
-    'tests\\assets\\P-129_out-with-numeric-td.LAS',
-    'tests\\assets\\P-129_out-with-string-td.LAS',
-    'tests\\assets\\P-129_out.LAS'
+    'tests/assets/1.las',
+    'tests/assets/2.las',
+    'tests/assets/F03-02.las',
+    'tests/assets/P-129_out-with-numeric-td.LAS',
+    'tests/assets/P-129_out-with-string-td.LAS',
+    'tests/assets/P-129_out.LAS'
 ]
 
 # create temporary directory write las files to disk with welly.to_las()
-dir_temp = 'tests\\temp'
+dir_temp = 'tests/temp'
 if os.path.exists(dir_temp):
     shutil.rmtree(dir_temp)
     os.mkdir(dir_temp)
