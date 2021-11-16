@@ -55,15 +55,12 @@ class Synthetic(np.ndarray):
         precision_adj = self.dt / 100
         return np.arange(self.start, self.stop - precision_adj, self.dt)
 
-    def as_curve(self, data, start=None, stop=None):
+    def as_curve(self, data):
         """
         Get the synthetic as a Curve, in depth. Facilitates plotting along-
         side other curve data.
         """
-        params = {'start': start or getattr(self, 'z start', None),
-                  'mnemonic': 'SYN',
-                  'step': 0.1524,
-                  'stop': stop}
+        params = {'mnemonic': 'SYN'}
 
         return Curve(data, **params)
 
@@ -91,7 +88,7 @@ class Synthetic(np.ndarray):
         hypertime = np.linspace(self.start, self.stop, (10 * self.size - 1) + 1)
         hyperamp = np.interp(hypertime, self.basis, self)
 
-        ax.plot(hyperamp, hypertime, 'k')
+        ax.plot(hyperamp, hypertime, 'k', **kwargs)
         ax.fill_betweenx(hypertime, hyperamp, 0, hyperamp > 0.0, facecolor='k', lw=0)
         ax.invert_yaxis()
         ax.set_title(self.name)

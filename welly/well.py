@@ -11,6 +11,7 @@ import re
 import numpy as np
 
 import pandas as pd
+from pandas.api.types import is_object_dtype
 
 from . import utils
 from .fields import las_fields as LAS_FIELDS
@@ -572,14 +573,6 @@ class Well(object):
         Returns:
             pandas.DataFrame.
         """
-        try:
-            import pandas as pd
-        except ModuleNotFoundError:
-            m = "You must install pandas to use dataframes."
-            raise WellError(m)
-
-        from pandas.api.types import is_object_dtype
-
         keys = self._get_curve_mnemonics(keys, alias=alias)
 
         data = {k: self.get_curve(k, alias=alias).df for k in keys}
@@ -624,7 +617,7 @@ class Well(object):
             None. Works in place.
         """
         # put str in a list to iterate over
-        if type(fname) == str:
+        if isinstance(fname, str):
             fname = [fname]
 
         for f in fname:
