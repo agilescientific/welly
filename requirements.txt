@@ -6,3 +6,7 @@ striplog
 lasio
 wellpathpy
 pandas
+pytest
+pytest-cov
+pytest-mpl
+requests
