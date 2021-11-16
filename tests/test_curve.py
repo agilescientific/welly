@@ -29,9 +29,9 @@ def test_curve(curve):
     assert data in html
 
 
-def test_basis(curve):
+def test_basis_numerical(curve):
     """
-    Test basis change.
+    Test basis change for numerical data.
     """
     curve_new = curve.to_basis(start=100, stop=200, step=1)
     assert curve_new.df.size == 101
@@ -40,6 +40,13 @@ def test_basis(curve):
     curve_new2 = curve.to_basis_like(curve_new)
     assert curve_new2.df.size == 101
     assert curve_new2.df.iloc[0][0] - 66.6059 < 0.001
+
+
+def test_basis_categorical():
+    cat_data = ['sand'] * 20 + [np.nan] * 5 + ['cement'] * 10 + [np.nan] * 5
+    curve_cat = Curve(cat_data, index=range(0, 40))
+    curve_new = curve_cat.to_basis(start=5, stop=30, step=1)
+    assert len(curve_new) == 26
 
 
 def test_read_at(curve):
