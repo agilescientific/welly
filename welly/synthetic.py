@@ -55,17 +55,17 @@ class Synthetic(np.ndarray):
         precision_adj = self.dt / 100
         return np.arange(self.start, self.stop - precision_adj, self.dt)
 
-    def as_curve(self, start=None, stop=None):
+    def as_curve(self, data, start=None, stop=None):
         """
         Get the synthetic as a Curve, in depth. Facilitates plotting along-
         side other curve data.
         """
         params = {'start': start or getattr(self, 'z start', None),
                   'mnemonic': 'SYN',
-                  'step': 0.1524
-                  }
+                  'step': 0.1524,
+                  'stop': stop}
 
-        return Curve(data, params=params)
+        return Curve(data, **params)
 
     def plot(self, ax=None, return_fig=False, **kwargs):
         """
