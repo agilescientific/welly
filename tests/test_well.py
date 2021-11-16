@@ -5,10 +5,14 @@ Define a suite a tests for the Well module.
 import os
 from pathlib import Path
 
+import welly
 from welly import Well
 
 
 def test_well(well):
+    """
+    Test loading wells with various meta data
+    """
     # Check some basics.
     assert well.location.country == 'CA'
     assert len(well.data) == 24
@@ -35,13 +39,28 @@ def test_well(well):
     assert len(well.data['HCAL'].df) == len(well.data['RHOB'].df)
 
 
+def test_well_remap_index():
+    """
+    Test loading a well and remapping the index name upon load time
+    """
+    path = Path('tests/assets/P-129_out.LAS')
+    well = Well.from_las(path, remap={'DEPT': 'DEPTH'})
+    assert well.data['GR'].index.name == 'DEPTH'
+
+
 def test_well_pathlib():
+    """
+    Test loading a well from a `Path` instance
+    """
     path = Path('tests/assets/P-129_out.LAS')
     well = Well.from_las(path)
     assert isinstance(well, Well)
 
 
 def test_html_repr(well):
+    """
+    Test html representation of a well for Jupyter notebooks.
+    """
     html = well._repr_html_()
 
     name = """<table><tr><th style="text-align:center;" colspan="2">Kennetcook #2<br><small>Long = 63* 45'24.460  W</small></th></tr>"""
@@ -57,6 +76,9 @@ def test_html_repr(well):
 
 
 def test_well_write(well):
+    """
+    Test writing a well to a .las file
+    """
     path = 'tests/assets/test.las'
     well.to_las(path)
     well = Well.from_las(path)
@@ -65,6 +87,26 @@ def test_well_write(well):
 
 
 def test_df(well):
+    """
+    Test creating a pd.DataFrame from a well
+    """
     df = well.df()
     assert df.iloc[10, 2] - 3.586400032 < 0.001
     assert df.shape == (12718, 24)
+
+
+def test_read_df(df):
+    """
+    Test creating a well from a pd.DataFrame with different arguments
+    """
+    well = Well.from_df(df)
+    assert well.data['GR'].shape == (3, 1)
+    well = Well.from_df(df, units={'GR': 'API', 'DEN': 'kg/m3'}, name='WELL1')
+    assert well.data['GR'].units == 'API'
+    assert well.name == 'WELL1'
+    well = Well.from_df(df, req=['GR'], uwi='1001', name='WELL1')
+    assert well.data['GR'].shape == (3, 1)
+    assert well.uwi == '1001'
+
+    well = welly.read_df(df)
+    assert well.data['GR'].shape == (3, 1)
