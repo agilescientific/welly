@@ -2,6 +2,7 @@
 """
 Define a suite a tests for the Project module.
 """
+import welly
 from welly import Project, Well
 
 
@@ -70,3 +71,14 @@ def test_df(project):
     df = p.df(keys=keys, alias=alias)
     assert df.iloc[10, 1] - 46.69865036 < 0.001
     assert df.shape == (12718, 3)
+
+
+def test_url_project():
+    url = 'https://www.nlog.nl/brh-web/rest/brh/logdocument/394951463'
+    p = Project.from_las(url)
+    assert len(p) == 1
+
+
+def test_read_las():
+    project = welly.read_las('tests/assets/1.las')
+    assert len(project) == 1
