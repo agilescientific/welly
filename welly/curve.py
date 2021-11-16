@@ -138,6 +138,12 @@ class Curve(object):
         setattr(curve, 'df', self.df.add(n))
         return curve
 
+    def __len__(self):
+        """
+        Return length of the pd.DataFrame
+        """
+        return len(self.df)
+
     def __repr__(self):
         return pd.DataFrame.__repr__(self.df)
 
@@ -682,12 +688,15 @@ class Curve(object):
                  stop=None,
                  step=None,
                  undefined=None,
-                 interp_kind='linear'):
+                 interp_kind=None):
         """
         Make a new curve in a new basis, given a basis, or a new start, step,
         and/or stop. You only need to set the parameters you want to change.
         If the new extents go beyond the current extents, the curve is padded
         with the ``undefined`` parameter.
+
+        Currently only works for 1D data (1-column `df` attribute)
+
         Args:
             basis (ndarray): The basis to compute values for. You can provide
                 a basis, or start, stop, step, or a combination of the two.
@@ -700,11 +709,19 @@ class Curve(object):
             undefined (float): The value to use outside the curve's range. By
                 default, np.nan is used.
             interp_kind (str): The kind of interpolation to use to compute the
-                new positions, default is 'nearest'. Options are:
+                new positions, default is 'linear' for numerical data and
+                'nearest' for categorical data. Options are:
                 {None, ‘linear‘, backfill’/’bfill’, ‘pad’/’ffill’, ‘nearest’}
         Returns:
             Curve. The current instance in the new basis.
         """
+        # category data type or a string in data defaults to 'nearest'
+        if self.df.dtypes[0] == 'category' or self.df.applymap(type).eq(str).any()[0]:
+            interp_kind = 'nearest'
+        else:
+            # otherwise apply linear interpolation
+            interp_kind = 'linear'
+
         new_curve = copy.deepcopy(self)
 
         if basis is None:
