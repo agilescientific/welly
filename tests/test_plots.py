@@ -10,6 +10,7 @@ welly/run_tests.py
 https://pypi.python.org/pypi/pytest-mpl/0.3
 """
 import pytest
+import matplotlib.pyplot as plt
 
 from welly import Well
 from welly import Project
@@ -65,13 +66,12 @@ def test_curve_kde_plot():
 
 
 @pytest.mark.mpl_image_compare(**params)
-def test_curve_plot(well):
+def test_curve_plot(curve):
     """
     Tests mpl image of curve.
     """
-    fig = well.data['GR'].plot(return_fig=True)
-
-    return fig
+    curve.plot()
+    assert plt.gca().lines[0].get_xdata()[50] - 46.69865036 < 0.001
 
 
 @pytest.mark.mpl_image_compare(**params)

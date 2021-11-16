@@ -2,6 +2,7 @@
 """
 Define a suite a tests for the Project module.
 """
+import welly
 from welly import Project, Well
 
 
@@ -52,3 +53,32 @@ def test_data_as_matrix():
     #                                           )
     # # Test needs repair
     # assert X_train.shape[0] == y_train.size
+
+
+def test_df(project):
+    """
+    Test transforming a project to a pd.DataFrame
+
+    Args:
+        project (well.Project):
+
+    Returns:
+        Assert a the shape and a value in DataFrame
+    """
+    p = Project.from_las("data/P-*_out.LAS")
+    alias = {'Gamma': ['GR', 'GRC', 'NGT'], 'Caliper': ['HCAL', 'CALI']}
+    keys = ['Caliper', 'Gamma', 'DT']
+    df = p.df(keys=keys, alias=alias)
+    assert df.iloc[10, 1] - 46.69865036 < 0.001
+    assert df.shape == (12718, 3)
+
+
+def test_url_project():
+    url = 'https://www.nlog.nl/brh-web/rest/brh/logdocument/394951463'
+    p = Project.from_las(url)
+    assert len(p) == 1
+
+
+def test_read_las():
+    project = welly.read_las('tests/assets/1.las')
+    assert len(project) == 1

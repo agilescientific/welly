@@ -11,7 +11,7 @@ from collections import Counter
 import warnings
 
 import numpy as np
-import matplotlib.pyplot as plt
+import pandas as pd
 from tqdm import tqdm
 
 from .well import Well, WellError
@@ -127,7 +127,7 @@ class Project(object):
         convenient for most purposes.
 
         Args:
-            path (str): The path of the LAS files, e.g. ``./*.las`` (the
+            path (str or list): The path of the LAS files, e.g. ``./*.las`` (the
                 default). It will attempt to load everything it finds, so
                 make sure it only leads to LAS files.
             remap (dict): Optional. A dict of 'old': 'new' LAS field names.
@@ -153,7 +153,13 @@ class Project(object):
         if (req is not None) and (alias is None):
             raise WellError("You need to provide an alias dict as well as requirement list.")
         if path is None:
-            path = './*.[LlAaSs]'
+            path = glob.iglob('./*.[LlAaSs]')
+        if isinstance(path, str):
+            if '*' in path:
+                path = glob.iglob(path)
+            else:
+                path = [path]
+
         wells = [Well.from_las(f,
                                remap=remap,
                                funcs=funcs,
@@ -163,7 +169,8 @@ class Project(object):
                                encoding=encoding,
                                printfname=printfname,
                                index=index)
-                 for i, f in tqdm(enumerate(glob.iglob(path))) if i < max]
+                 for i, f in tqdm(enumerate(path)) if i < max]
+
         return cls(list(filter(None, wells)))
 
     def add_canstrat_striplogs(self, path, uwi_transform=None, name='canstrat'):
@@ -560,8 +567,6 @@ class Project(object):
         Returns:
             ``pandas.DataFrame``.
         """
-        import pandas as pd
-
         dfs = []
         for w in self:
             try:

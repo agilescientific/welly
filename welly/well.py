@@ -43,132 +43,6 @@ class WellError(Exception):
     pass
 
 
-def _get_well_related_curve_params(header, remap, funcs):
-    """
-    Get the well related curve parameters from the header.
-
-    Remap and/or transform the parameters if `remap` dict or transform `funcs` are passed.
-
-    Args:
-        header (pd.DataFrame): Header meta data.
-            See `las.from_las()` for description.
-        remap (dict): Optional. A dict of 'old': 'new' LAS field names.
-        funcs (dict): Optional. A dict of 'las field': function() for
-            implementing a transform before loading. Can be a lambda.
-
-    Returns:
-        well_curve_params (dict): LAS parameters that belong to the well
-
-    """
-    # retrieve well parameters from header
-    well_curve_params = {}
-
-    # retrieve parameters from header and/or remap and transform if passed
-    for field, (section, item) in LAS_FIELDS['data'].items():
-        well_curve_params[field] = utils.get_header_item(header=header,
-                                                         section=section,
-                                                         item=item,
-                                                         remap=remap,
-                                                         funcs=funcs)
-
-    return well_curve_params
-
-
-def _get_curve_params(header, dataset_name):
-    """
-    Get the curve related LAS parameters from the header.
-    For every curve, get the 'mnemonic', 'unit' and 'description'.
-    Set the 'mnemonic' as index and return the transposed pd.DataFrame to be
-    able to index on them through the columns.
-
-    Args:
-        header (pd.DataFrame): Header meta data.
-            See `las.from_las()` for description.
-        dataset_name: The name of the dataset as found in the LAS file. Can be:
-            'Curves', 'Log,' 'Core', 'Inclinometry', 'Drilling', 'Tops', 'Test'
-
-    Returns:
-        curve_params (pd.DataFrame): LAS parameters that belong to the curve(s)
-
-    """
-    # retrieve curves mnemonics, units and descriptions from header
-    curve_header = header[(header["section"] == dataset_name)]
-
-    curve_params = curve_header[['mnemonic', 'unit', 'descr']]
-
-    return curve_params.set_index('mnemonic').T
-
-
-def _convert_depth_index_unit(index, unit_from, unit_to):
-    """
-    Convert a depth index from and to meters and feet. Flip the depth index if
-    it is descending because it should be ascending (increasing in depth).
-    Return index as a pandas Index object.
-
-    Args:
-        index (np.array or pd.Index): The index.
-        unit_from (str): The current index unit.
-        unit_to (str): The index unit to convert to (e.g. 'm', 'ft').
-
-    Returns:
-        index (np.array or pd.Index): The converted index
-    """
-    if (unit_from.lower() == 'm' or unit_from == '') and "ft" in unit_to.lower():
-        index = index * 3.280839895  # convert to ft
-    elif (unit_from.lower() == 'ft' or unit_from == '') and "m" in unit_to.lower():
-        index = index * 0.3048000000012192  # convert to m
-    else:
-        raise KeyError(f"Index must be 'm' or 'ft', but was: {unit_to}")
-
-    # flip the index if it is descending
-    if index[0] > index[1]:
-        if isinstance(index, pd.Index):
-            # index is pandas index
-            index = index.reindex(index[::-1])
-        else:
-            # index is np array
-            index = np.flipud(index)
-
-    return index
-
-
-def _update_las_header(header, remap=None, funcs=None):
-    """
-    Helper function that takes a header object, remapping dictionaries and
-    transformer functions. Retrieves every header LAS item from the
-    dataframe, remaps and/or transforms the item and puts it back in a copy
-    of the header dataframe.
-
-    Args:
-        header (pd.DataFrame): header meta data. See `las.from_las()` for
-            description.
-        remap (dict): Optional. A dict of 'old': 'new' LAS field names.
-        funcs (dict): Optional. A dict of 'las field': function() for
-            implementing a transform before loading. Can be a lambda.
-
-    Returns:
-        updated_header (pd.DataFrame): header with remapped and/or
-            transformed items, if passed.
-    """
-    updated_header = header.copy()
-
-    # loop over every header LAS field
-    for section, item in LAS_FIELDS['header'].values():
-        # remap or transform if remap/funcs is passed
-        new_item_value = utils.get_header_item(header=header,
-                                               section=section,
-                                               item=item,
-                                               remap=remap,
-                                               funcs=funcs)
-        # get row index of field
-        row_index = header.index[header['mnemonic'] == item]
-
-        # replace item with new item value
-        updated_header.loc[row_index, 'value'] = new_item_value
-
-    return updated_header
-
-
 class Well(object):
     """
     Well contains everything about the well.
@@ -185,8 +59,12 @@ class Well(object):
             if k and (v is not None):
                 setattr(self, k, v)
 
+        # empty header if none is passed
+        empty_header = pd.DataFrame(columns=['original_mnemonic', 'mnemonic',
+                                             'unit', 'value', 'descr', 'section'])
+
         self.data = getattr(self, 'data', {})
-        self.header = getattr(self, 'header', pd.DataFrame())
+        self.header = getattr(self, 'header', empty_header)
         self.location = getattr(self, 'location', Location())
 
     def __eq__(self, other):
@@ -211,10 +89,7 @@ class Well(object):
         """
         Non-rich representation.
         """
-        return "Well(uwi: '{}', name: '{}', {} curves: {})".format(self.uwi,
-                                                                   self.name,
-                                                                   len(self.data),
-                                                                   list(self.data.keys()))
+        return f"Well(uwi: '{self.uwi}', name: '{self.name}', {len(self.data)} curves: {list(self.data.keys())})"
 
     def _repr_html_(self):
         """
@@ -247,13 +122,27 @@ class Well(object):
         Property. Simply a shortcut to the UWI from the header, or the
         empty string if there isn't one.
         """
-        if self.header is not None:
-            try:
-                return self.header[self.header.mnemonic == 'UWI'].value.iloc[0]
-            except IndexError:
-                return ''
-        else:
+        try:
+            return self.header[self.header.mnemonic == 'UWI'].value.iloc[0]
+        except:
             return ''
+
+    @uwi.setter
+    def uwi(self, uwi):
+        """
+        Set the uwi of the well by adding a row to the header dataframe
+
+        Args:
+            uwi (str): Unique Well Identifier
+
+        Returns:
+            Nothing, works inplace
+        """
+        # delete existing row for uwi if it exists
+        if 'UWI' in self.header.mnemonic:
+            self.header = self.header[self.header.mnemonic != 'UWI']
+
+        self.add_header_item('uwi', uwi)
 
     @property
     def name(self):
@@ -261,14 +150,27 @@ class Well(object):
         Property. Simply a shortcut to the well name from the header, or the
         empty string if there isn't one.
         """
-        if self.header is not None:
-            try:
-                return self.header[self.header.mnemonic == 'WELL'].value.iloc[
-                    0]
-            except IndexError:
-                return ''
-        else:
+        try:
+            return self.header[self.header.mnemonic == 'WELL'].value.iloc[0]
+        except:
             return ''
+
+    @name.setter
+    def name(self, name):
+        """
+        Set the name of the well by adding a row to the header dataframe
+
+        Args:
+            name (str): Name of the well
+
+        Returns:
+            Nothing, works inplace
+        """
+        # delete existing row for name if it exists
+        if 'WELL' in self.header.mnemonic:
+            self.header = self.header[self.header.mnemonic != 'WELL']
+
+        self.add_header_item('name', name)
 
     def _get_curve_mnemonics(self, keys=None, alias=None, curves_only=True):
         """
@@ -422,7 +324,7 @@ class Well(object):
 
         Args:
             datasets (Dict['<name>': pd.DataFrame]): Dictionary maps a
-                dataset name (e.g. 'Curves') or 'Header' to a pd.DataFrame.
+                dataset name (e.g. 'Curves' or 'Header') to a pd.DataFrame.
             remap (dict): Optional. A dict of 'old': 'new' LAS field names.
             funcs (dict): Optional. A dict of 'las field': function() for
                 implementing a transform before loading. Can be a lambda.
@@ -464,6 +366,11 @@ class Well(object):
 
             las.append(df_data)
 
+            # remap index time/depth column if specified
+            if remap and df_data.columns[0] in remap.keys():
+                mapper = {df_data.columns[0]: remap[df_data.columns[0]]}
+                df_data.rename(columns=mapper, inplace=True)
+
             # set time/depth index, LAS requires it to be the first curve
             df_data.set_index(df_data.columns[0], inplace=True)
 
@@ -484,9 +391,7 @@ class Well(object):
             curve_params = _get_curve_params(df_header, dataset_name)
 
             # update header with remapped and transformed items, if passed
-            updated_df_header = _update_las_header(updated_df_header,
-                                                   remap,
-                                                   funcs)
+            updated_df_header = _update_las_header(updated_df_header, remap, funcs)
 
             if req and alias:
                 req = utils.flatten_list([v for k, v in alias.items() if k in req])
@@ -524,6 +429,54 @@ class Well(object):
                            'fname': fname}
 
         return cls(well_attributes)
+
+    @classmethod
+    def from_df(cls, df, units=None, req=None, uwi=None, name=None):
+        """
+        Constructor. If you have a pd.DataFrame with the time/depth index set as
+        the `pd.DataFrame` index and the columns as the curve data, this makes
+        a `well` object from it. The column name is taken as the respective
+        curve mnemonic.
+
+        Use this if you don't have a header dataframe with meta data. If you do,
+        please use `Well.from_datasets()`
+
+        Args:
+            df (pd.DataFrame): Curve data.
+            units (dict): Optional. Units of measurement of the curves in `df`.
+            req (list): Optional. An alias list, giving all required curves.
+            uwi (str): Unique Well Identifier (UWI)
+            name (str): Name
+
+        Returns:
+            well. The well object.
+        """
+        if units is None:
+            units = {}
+
+        # if req not defined, load all columns
+        if not req:
+            req = list(df.columns)
+
+        # add missing mnemonics to dict with None value
+        units.update({mnemonic: None for mnemonic in df.columns if mnemonic not in units.keys()})
+
+        # create curves
+        curves = {mnemonic: Curve(data=df[mnemonic], units=units[mnemonic]) for mnemonic in df.columns if mnemonic in req}
+
+        # build a dict of the well properties
+        well = cls({'las': None,
+                    'header': None,
+                    'location': None,
+                    'data': curves,
+                    'fname': None})
+
+        if uwi:
+            setattr(well, 'uwi', uwi)
+        if name:
+            setattr(well, 'name', name)
+
+        return well
 
     def to_lasio(self, keys=None, alias=None, basis=None, null_value=-999.25):
         """
@@ -629,7 +582,7 @@ class Well(object):
 
         keys = self._get_curve_mnemonics(keys, alias=alias)
 
-        data = {k: self.get_curve(k, alias=alias) for k in keys}
+        data = {k: self.get_curve(k, alias=alias).df for k in keys}
 
         if basis is None:
             basis = self.survey_basis(keys=keys, alias=alias)
@@ -637,18 +590,15 @@ class Well(object):
             m = "No basis was provided and welly could not retrieve common basis."
             raise WellError(m)
 
-        df = pd.DataFrame(data, index=None)
-        df['Depth'] = basis
-        df = df.set_index('Depth')
+        df = pd.concat(list(data.values()), axis=1)
 
         if not rename_aliased:
             mapper = {k: self.get_mnemonic(k, alias=alias) for k in keys}
             df = df.rename(columns=mapper)
 
         if uwi:
-            df['UWI'] = [self.uwi for _ in basis]
-            df = df.reset_index()
-            df = df.set_index(['UWI', 'Depth'])
+            df['UWI'] = self.uwi
+            df.set_index(['UWI'], append=True, inplace=True)
 
         for column in df.columns:
             if is_object_dtype(df[column].dtype):
@@ -681,23 +631,19 @@ class Well(object):
             w = self.from_las(f, remap=remap, funcs=funcs)
             self.data.update(w.data)
 
-    def add_curves_from_lasio(self, las, remap=None, funcs=None):
+    def add_curves_from_lasio(self, las):
         """
         Given a LAS file, add curves from it to the current well instance.
         Essentially just wraps ``add_curves_from_lasio()``.
 
         Args:
-            las (lasio.LASFile object): a lasio representation of a LAS file.
-            remap (dict): Optional. A dict of 'old': 'new' LAS field names.
-            funcs (dict): Optional. A dict of 'las field': function() for
-                implementing a transform before loading. Can be a lambda.
+            las (lasio.LASFile object): a lasio representation of a LAS file
 
         Returns:
             None. Works in place.
         """
         w = from_lasio(las)
         self.data.update(w.data)
-
 
     def _plot_depth_track(self, ax, md, kind='MD', tick_spacing=100):
         """
@@ -1143,7 +1089,7 @@ class Well(object):
                     basis = data[i].basis
             else:
                 # Empty_like gives unpredictable results
-                data[i] = Curve(np.full(basis.shape, np.nan), basis=basis)
+                data[i] = Curve(np.full(basis.shape, np.nan), index=basis)
 
         if window_length is not None:
             d_new = []
@@ -1158,3 +1104,154 @@ class Well(object):
         else:
             return np.vstack(data).T
 
+    def add_header_item(self, item, value, unit=None, descr=None):
+        """
+        Args:
+            item (str): The item name to add. Requires to be present in
+                `las_fields` (e.g. well, uwi, null)
+            value (str/float/int): The value of the item to add
+            unit (str): Optional. The unit of the item to add
+            descr (str): Optional. The description of the item to add
+
+        Returns:
+            Nothing, works inplace.
+        """
+        for obj, dic in LAS_FIELDS.items():
+            for key, df_item in dic.items():
+                if key == item:
+                    # create new row to add to header
+                    new_row = {'original_mnemonic': df_item[1],
+                               'mnemonic': df_item[1],
+                               'unit': unit,
+                               'value': value,
+                               'descr': descr,
+                               'section': obj}
+
+                    # add new row to header
+                    self.header = self.header.append(new_row, ignore_index=True)
+
+
+def _get_well_related_curve_params(header, remap, funcs):
+    """
+    Get the well related curve parameters from the header.
+
+    Remap and/or transform the parameters if `remap` dict or transform `funcs` are passed.
+
+    Args:
+        header (pd.DataFrame): Header meta data.
+            See `las.from_las()` for description.
+        remap (dict): Optional. A dict of 'old': 'new' LAS field names.
+        funcs (dict): Optional. A dict of 'las field': function() for
+            implementing a transform before loading. Can be a lambda.
+
+    Returns:
+        well_curve_params (dict): LAS parameters that belong to the well
+
+    """
+    # retrieve well parameters from header
+    well_curve_params = {}
+
+    # retrieve parameters from header and/or remap and transform if passed
+    for field, (section, item) in LAS_FIELDS['data'].items():
+        well_curve_params[field] = utils.get_header_item(header=header,
+                                                         section=section,
+                                                         item=item,
+                                                         remap=remap,
+                                                         funcs=funcs)
+
+    return well_curve_params
+
+
+def _get_curve_params(header, dataset_name):
+    """
+    Get the curve related LAS parameters from the header.
+    For every curve, get the 'mnemonic', 'unit' and 'description'.
+    Set the 'mnemonic' as index and return the transposed pd.DataFrame to be
+    able to index on them through the columns.
+
+    Args:
+        header (pd.DataFrame): Header meta data.
+            See `las.from_las()` for description.
+        dataset_name: The name of the dataset as found in the LAS file. Can be:
+            'Curves', 'Log,' 'Core', 'Inclinometry', 'Drilling', 'Tops', 'Test'
+
+    Returns:
+        curve_params (pd.DataFrame): LAS parameters that belong to the curve(s)
+
+    """
+    # retrieve curves mnemonics, units and descriptions from header
+    curve_header = header[(header["section"] == dataset_name)]
+
+    curve_params = curve_header[['mnemonic', 'unit', 'descr']]
+
+    return curve_params.set_index('mnemonic').T
+
+
+def _convert_depth_index_unit(index, unit_from, unit_to):
+    """
+    Convert a depth index from and to meters and feet. Flip the depth index if
+    it is descending because it should be ascending (increasing in depth).
+    Return index as a pandas Index object.
+
+    Args:
+        index (np.array or pd.Index): The index.
+        unit_from (str): The current index unit.
+        unit_to (str): The index unit to convert to (e.g. 'm', 'ft').
+
+    Returns:
+        index (np.array or pd.Index): The converted index
+    """
+    if (unit_from.lower() == 'm' or unit_from == '') and "ft" in unit_to.lower():
+        index = index * 3.280839895  # convert to ft
+    elif (unit_from.lower() == 'ft' or unit_from == '') and "m" in unit_to.lower():
+        index = index * 0.3048000000012192  # convert to m
+    else:
+        raise KeyError(f"Index must be 'm' or 'ft', but was: {unit_to}")
+
+    # flip the index if it is descending
+    if index[0] > index[1]:
+        if isinstance(index, pd.Index):
+            # index is pandas index
+            index = index.reindex(index[::-1])
+        else:
+            # index is np array
+            index = np.flipud(index)
+
+    return index
+
+
+def _update_las_header(header, remap=None, funcs=None):
+    """
+    Helper function that takes a header object, remapping dictionaries and
+    transformer functions. Retrieves every header LAS item from the
+    dataframe, remaps and/or transforms the item and puts it back in a copy
+    of the header dataframe.
+
+    Args:
+        header (pd.DataFrame): header meta data. See `las.from_las()` for
+            description.
+        remap (dict): Optional. A dict of 'old': 'new' LAS field names.
+        funcs (dict): Optional. A dict of 'las field': function() for
+            implementing a transform before loading. Can be a lambda.
+
+    Returns:
+        updated_header (pd.DataFrame): header with remapped and/or
+            transformed items, if passed.
+    """
+    updated_header = header.copy()
+
+    # loop over every header LAS field
+    for section, item in LAS_FIELDS['header'].values():
+        # remap or transform if remap/funcs is passed
+        new_item_value = utils.get_header_item(header=header,
+                                               section=section,
+                                               item=item,
+                                               remap=remap,
+                                               funcs=funcs)
+        # get row index of field
+        row_index = header.index[header['mnemonic'] == item]
+
+        # replace item with new item value
+        updated_header.loc[row_index, 'value'] = new_item_value
+
+    return updated_header
