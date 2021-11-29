@@ -3,7 +3,6 @@
 Define a suite a tests for the canstrat functions.
 """
 from striplog import Striplog
-from welly import Well
 
 
 def test_canstrat(well):

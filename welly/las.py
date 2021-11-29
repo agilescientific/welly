@@ -1,3 +1,9 @@
+"""
+Module for reading and writing to and from LAS files
+
+:copyright: 2021 Agile Scientific
+:license: Apache 2.0
+"""
 from functools import reduce
 import warnings
 from datetime import datetime
@@ -181,7 +187,7 @@ def from_las_2_or_older(las):
     # parse header from LASFile to df
     for section, item_list in las.sections.items():
         # skip section if item list is empty and not an `Other` section
-        if len(item_list) == 0 and type(item_list) != str:
+        if len(item_list) == 0 and not isinstance(item_list, str):
             continue
 
         # section contains `SectionItem` instance(s)
