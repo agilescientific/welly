@@ -1,8 +1,7 @@
-welly
-========
 
-**Manage subsurface well data.**
-
+.. image:: https://www.dropbox.com/s/a8jg7zomi4wgolb/welly_banner.png?raw=1
+    :alt: welly: subsurface well data
+    
 .. image:: https://img.shields.io/travis/agile-geoscience/welly.svg
     :target: https://travis-ci.org/agile-geoscience/welly
     :alt: Travis build status
@@ -27,8 +26,11 @@ welly
     :target: http://www.apache.org/licenses/LICENSE-2.0
     :alt: License
 
-Welly is a family of classes to facilitate the loading, processing, and analysis of subsurface wells and well data, such as striplogs, formation tops, well log curves, and synthetic seismograms.
+----
 
+**Welly is a family of classes to facilitate the loading, processing, and analysis of subsurface wells and well data, such as striplogs, formation tops, well log curves, and synthetic seismograms.**
+
+----
 
 Installation
 ============
