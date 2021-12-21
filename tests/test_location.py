@@ -25,7 +25,7 @@ def test_deviation(well):
     assert well.location.position.shape == (46, 3)
     assert well.location.md2tvd(1000) - 998.45378 < 0.001
     assert well.location.tvd2md(998.45378) - 1000 < 0.001
-    assert (well.location.dogleg < 0.02).all()
+    assert (well.location.dogleg < 1.15).all()
 
 
 def test_well_remap():

@@ -24,8 +24,7 @@ class WellPlotError(Exception):
 def plot_kdes_project(project,
                       mnemonic,
                       alias=None,
-                      uwi_regex=None,
-                      return_fig=True):
+                      uwi_regex=None):
     """
     Plot KDEs for all curves with the given name.
     Args:
@@ -34,11 +33,11 @@ def plot_kdes_project(project,
         alias (dict): a welly alias dictionary. e.g. {'density': ['DEN', 'DENS']}
         uwi_regex (str): a regex pattern. Only this part of the UWI will be displayed
             on the plot of KDEs.
-        return_fig (bool): whether to return the matplotlib figure object. Default True
+
     Returns:
         None or figure.
     """
-    wells = project.find_wells_with_curve(mnemonic, alias=alias)
+    wells = project.filter_wells_by_data([mnemonic], alias=alias)
     fig, axs = plt.subplots(len(project), 1, figsize=(10, 1.5 * len(project)))
 
     # get all curves
@@ -68,10 +67,7 @@ def plot_kdes_project(project,
         else:
             continue
 
-    if return_fig:
-        return fig
-    else:
-        return
+    return fig
 
 
 def plot_map_project(project,
@@ -95,15 +91,14 @@ def plot_map_project(project,
         matplotlib.figure.Figure, or matplotlib.axes.Axes if you passed in
             an axes object as `ax`.
     """
-    fig = None
     xattr, yattr = fields
     xys = np.array([[getattr(w.location, xattr), getattr(w.location, yattr)] for w in project])
 
     if ax is None:
         fig, ax = plt.subplots(figsize=(1 + width, width / utils.aspect(xys)))
-        return_ax = True
-    else:
         return_ax = False
+    else:
+        return_ax = True
 
     ax.scatter(*xys.T, s=60)
     ax.axis('equal')
@@ -148,7 +143,7 @@ def plot_depth_track_well(well,
     for sp in ax.spines.values():
         sp.set_color('gray')
 
-    if ax.is_first_col():
+    if ax.get_subplotspec().is_first_col():
         pad = -10
         ax.spines['left'].set_color('none')
         ax.yaxis.set_ticks_position('right')
@@ -180,7 +175,6 @@ def plot_well(well,
               track_titles=None,
               alias=None,
               basis=None,
-              return_fig=True,
               extents='td',
               **kwargs):
     """
@@ -198,8 +192,6 @@ def plot_well(well,
                 e.g. {'density': ['DEN', 'DENS']}
         basis (ndarray): Optional. The basis of the plot, if you don't
             want welly to guess (probably the best idea).
-        return_fig (bool): Whether to return the matplotlig figure. Default
-            True.
         extents (str): What to use for the y limits:
             'td' — plot 0 to TD.
             'curves' — use a basis that accommodates all the curves.
@@ -337,10 +329,7 @@ def plot_well(well,
             for sp in ax.spines.values():
                 sp.set_color('gray')
 
-    if return_fig:
-        return fig
-    else:
-        return None
+    return fig
 
 
 def plot_2d_curve(curve,
@@ -350,7 +339,6 @@ def plot_2d_curve(curve,
                   cmap=None,
                   plot_curve=False,
                   ticks=(1, 10),
-                  return_fig=True,
                   **kwargs):
     """
     Plot a 2D curve.
@@ -362,13 +350,11 @@ def plot_2d_curve(curve,
         cmap (str): The colourmap to use.
         plot_curve (bool): Whether to plot the curve as well.
         ticks (tuple): The tick interval on the y-axis.
-        return_fig (bool): whether to return the matplotlib figure.
-            Default True.
+
     Returns:
         ax. If you passed in an ax, otherwise None.
     """
     # Set up the figure.
-    fig = None
     if ax is None:
         fig = plt.figure(figsize=(2, 10))
         ax = fig.add_subplot(111)
@@ -446,17 +432,14 @@ def plot_2d_curve(curve,
 
     if return_ax:
         return ax
-    elif return_fig:
-        plt.tight_layout()
-        return fig
-    else:
-        return None
 
+    plt.tight_layout()
+    return fig  # This should be the only alternative. Check other plot functions.
+    
 
 def plot_curve(curve,
                ax=None,
                legend=None,
-               return_fig=True,
                **kwargs):
     """
     Plot a curve.
@@ -464,11 +447,9 @@ def plot_curve(curve,
         curve (welly.curve.Curve): Curve object
         ax (ax): A matplotlib axis.
         legend (striplog.legend): A legend. Optional. Should contain kwargs for ax.set().
-        return_fig (bool): whether to return the matplotlib figure.
-            Default True.
         kwargs: Arguments for ``ax.plot()``
     Returns:
-        ax. If you passed in an ax, otherwise None.
+        ax. If you passed in an ax, otherwise the figure.
     """
     if ax is None:
         fig = plt.figure(figsize=(2, 10))
@@ -526,18 +507,15 @@ def plot_curve(curve,
 
     if return_ax:
         return ax
-    elif return_fig:
-        return fig
-    else:
-        return None
+
+    return fig  # This should be the only alternative.
 
 
 def plot_kde_curve(curve,
                    ax=None,
                    amax=None,
                    amin=None,
-                   label=None,
-                   return_fig=True):
+                   label=None):
     """
     Plot a KDE for the curve. Very nice summary of KDEs:
     https://jakevdp.github.io/blog/2013/12/01/kernel-density-estimation/
@@ -547,7 +525,7 @@ def plot_kde_curve(curve,
         amax (float): Optional max value to permit.
         amin (float): Optional min value to permit.
         label (string): What to put on the y-axis. Defaults to curve name.
-        return_fig (bool): If you want to return the MPL figure object. Default True.
+
     Returns:
         None, axis, figure: depending on what you ask for. The returned plot is
         a KDE plot for the curve.
@@ -583,7 +561,4 @@ def plot_kde_curve(curve,
 
     if return_ax:
         return ax
-    elif return_fig:
-        return fig
-    else:
-        return None
+    return fig

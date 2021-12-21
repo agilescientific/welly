@@ -64,7 +64,7 @@ class Synthetic(np.ndarray):
 
         return Curve(data, **params)
 
-    def plot(self, ax=None, return_fig=False, **kwargs):
+    def plot(self, ax=None, **kwargs):
         """
         Plot a synthetic.
 
@@ -72,8 +72,6 @@ class Synthetic(np.ndarray):
             ax (ax): A matplotlib axis.
             legend (Legend): For now, only here to match API for other plot
                 methods.
-            return_fig (bool): whether to return the matplotlib figure.
-                Default False.
 
         Returns:
             ax. If you passed in an ax, otherwise None.
@@ -95,7 +93,5 @@ class Synthetic(np.ndarray):
 
         if return_ax:
             return ax
-        elif return_fig:
-            return fig
-        else:
-            return None
+
+        return fig

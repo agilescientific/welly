@@ -389,7 +389,7 @@ class Project(object):
                                 label=label,
                                 width=width)
 
-    def plot_kdes(self, mnemonic, alias=None, uwi_regex=None, return_fig=False):
+    def plot_kdes(self, mnemonic, alias=None, uwi_regex=None):
         """
         Plot KDEs for all curves with the given name.
 
@@ -399,7 +399,6 @@ class Project(object):
                 e.g. {'density': ['DEN', 'DENS']}
             uwi_regex (str): a regex pattern. Only this part of the UWI will be displayed
                 on the plot of KDEs.
-            return_fig (bool): whether to return the matplotlib figure object.
 
         Returns:
             None or figure.
@@ -408,7 +407,7 @@ class Project(object):
                                  mnemonic=mnemonic,
                                  alias=alias,
                                  uwi_regex=uwi_regex,
-                                 return_fig=return_fig)
+                                )
 
     @deprecated('Project.find_wells_with_curve() is deprecated; use Project.filter_wells_by_data().')
     def find_wells_with_curve(self, mnemonic, alias=None):

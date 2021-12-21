@@ -76,10 +76,4 @@ def compute_position_log(deviation,
     position = np.stack([pos.easting, pos.northing, pos.depth]).T
     dogleg = dev.minimum_curvature(course_length=course_length).dls
 
-    # Keep dls in radians but warn about it. Changing in next version.
-    msg = "Dogleg severity is in radians. From v0.5 it will be returned as "
-    msg += "degrees per course length (a new argument)."
-    warnings.warn(msg, category=FutureWarning)
-    dogleg = np.radians(dogleg)
-
     return deviation, position, dogleg

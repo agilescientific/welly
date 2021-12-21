@@ -19,6 +19,9 @@ if mo:
 else:
     raise RuntimeError("Unable to find version string in %s." % (VERSIONFILE,))
 
+with open("README.rst", "r") as f:
+    LONG_DESCRIPTION = f.read()
+
 REQUIREMENTS = ['numpy',
                 'scipy',
                 'matplotlib',
@@ -35,9 +38,6 @@ TEST_REQUIREMENTS = ['pytest',
                      'pytest-mpl',
                      ]
 
-# Test command is:
-# python run_tests.py
-
 CLASSIFIERS = ['Development Status :: 4 - Beta',
                'Intended Audience :: Science/Research',
                'Natural Language :: English',
@@ -48,11 +48,14 @@ CLASSIFIERS = ['Development Status :: 4 - Beta',
                'Programming Language :: Python :: 3.7',
                'Programming Language :: Python :: 3.8',
                'Programming Language :: Python :: 3.9',
+               'Programming Language :: Python :: 3.10',
                ]
 
 setup(name='welly',
       version=verstr,
       description='Tools for making and managing well data.',
+      long_description=LONG_DESCRIPTION,
+      # long_description_content_type=NOT_NEEDED_FOR_RST,
       url='http://github.com/agile-geoscience/welly',
       author='Agile Scientific',
       author_email='hello@agilescientific.com',

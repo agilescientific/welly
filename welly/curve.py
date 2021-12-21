@@ -523,7 +523,6 @@ class Curve(object):
                 cmap=None,
                 curve=False,
                 ticks=(1, 10),
-                return_fig=False,
                 **kwargs):
         """
         Plot a 2D curve. Wrapping plot function from plot.py.
@@ -535,30 +534,26 @@ class Curve(object):
             cmap (str): The colourmap to use.
             curve (bool): Whether to plot the curve as well.
             ticks (tuple): The tick interval on the y-axis.
-            return_fig (bool): whether to return the matplotlib figure.
-                Default False.
+
         Returns:
             ax. If you passed in an ax, otherwise None.
         """
-        plot_2d_curve(self,
-                      ax=ax,
-                      width=width,
-                      aspect=aspect,
-                      cmap=cmap,
-                      plot_curve=curve,
-                      ticks=ticks,
-                      return_fig=return_fig,
-                      **kwargs)
+        return plot_2d_curve(self,
+                             ax=ax,
+                             width=width,
+                             aspect=aspect,
+                             cmap=cmap,
+                             plot_curve=curve,
+                             ticks=ticks,
+                             **kwargs)
 
-    def plot(self, ax=None, legend=None, return_fig=False, **kwargs):
+    def plot(self, ax=None, legend=None, **kwargs):
         """
         Plot a curve. Wrapping plot function from plot.py.
         By default only show the plot, not return the figure object.
         Args:
             ax (ax): A matplotlib axis.
             legend (striplog.legend): A legend. Optional. Should contain kwargs for ax.set().
-            return_fig (bool): whether to return the matplotlib figure.
-                Default False.
             kwargs: Arguments for ``ax.plot()``
         Returns:
             ax. If you passed in an ax, otherwise None.
@@ -566,15 +561,13 @@ class Curve(object):
         return plot_curve(self,
                           ax=ax,
                           legend=legend,
-                          return_fig=return_fig,
                           **kwargs)
 
     def plot_kde(self,
                  ax=None,
                  amax=None,
                  amin=None,
-                 label=None,
-                 return_fig=False):
+                 label=None):
         """
         Plot a KDE for the curve. Very nice summary of KDEs:
         https://jakevdp.github.io/blog/2013/12/01/kernel-density-estimation/
@@ -585,7 +578,6 @@ class Curve(object):
             amax (float): Optional max value to permit.
             amin (float): Optional min value to permit.
             label (string): What to put on the y-axis. Defaults to curve name.
-            return_fig (bool): If you want to return the MPL figure object.
         Returns:
             None, axis, figure: depending on what you ask for.
         """
@@ -593,8 +585,7 @@ class Curve(object):
                               ax=ax,
                               amax=amax,
                               amin=amin,
-                              label=label,
-                              return_fig=return_fig)
+                              label=label)
 
     def quality(self, tests, alias=None):
         """

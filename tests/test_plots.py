@@ -48,7 +48,7 @@ def test_project_kdes_plot():
     project = Project.from_las(FNAME)
     project += project
 
-    fig = project.plot_kdes(mnemonic='GR', return_fig=True)
+    fig = project.plot_kdes(mnemonic='GR')
 
     return fig
 
@@ -60,7 +60,7 @@ def test_curve_kde_plot():
     """
     well = Well.from_las(FNAME)
 
-    fig = well.data['GR'].plot_kde(return_fig=True)
+    fig = well.data['GR'].plot_kde()
 
     return fig
 
@@ -70,8 +70,8 @@ def test_curve_plot(curve):
     """
     Tests mpl image of curve.
     """
-    curve.plot()
-    assert plt.gca().lines[0].get_xdata()[50] - 46.69865036 < 0.001
+    fig = curve.plot()
+    return fig
 
 
 @pytest.mark.mpl_image_compare(**params)
@@ -79,7 +79,7 @@ def test_curve_2d_plot(well):
     """
     Tests mpl image of curve as VD display.
     """
-    fig = well.data['GR'].plot_2d(return_fig=True)
+    fig = well.data['GR'].plot_2d()
 
     return fig
 
@@ -93,7 +93,7 @@ def test_synthetic_plot():
     params = {'dt': 0.004}
     s = Synthetic(data, params=params)
 
-    fig = s.plot(return_fig=True)
+    fig = s.plot()
 
     return fig
 
@@ -106,7 +106,7 @@ def test_well_synthetic_plot():
     w = Well.from_las(FNAME)
     w.make_synthetic()
 
-    fig = w.data['Synthetic'].plot(return_fig=True)
+    fig = w.data['Synthetic'].plot()
 
     return fig
 
@@ -117,7 +117,6 @@ def test_well_plot(well):
     Tests mpl image of well.
     """
     fig = well.plot(tracks=['MD', 'GR', 'DT'],
-                    extents='curves',
-                    return_fig=True)
+                    extents='curves')
 
     return fig

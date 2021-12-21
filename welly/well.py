@@ -660,7 +660,6 @@ class Well(object):
              track_titles=None,
              alias=None,
              basis=None,
-             return_fig=False,
              extents='td',
              **kwargs):
         """
@@ -678,13 +677,11 @@ class Well(object):
             alias (dict): a dictionary mapping mnemonics to lists of mnemonics.
             basis (ndarray): Optional. The basis of the plot, if you don't
                 want welly to guess (probably the best idea).
-            return_fig (bool): Whether to return the matplotlig figure. Default
-                False.
             extents (str): What to use for the y limits:
-                'td' — plot 0 to TD.
-                'curves' — use a basis that accommodates all the curves.
-                'all' — use a basis that accommodates everything.
-                (tuple) — give the upper and lower explictly.
+                'td': plot 0 to TD.
+                'curves': use a basis that accommodates all the curves.
+                'all': use a basis that accommodates everything.
+                (tuple): give the upper and lower explictly.
 
         Returns:
             None. The plot is a side-effect.
@@ -695,7 +692,6 @@ class Well(object):
                          track_titles=track_titles,
                          alias=alias,
                          basis=basis,
-                         return_fig=return_fig,
                          extents=extents,
                          **kwargs)
 

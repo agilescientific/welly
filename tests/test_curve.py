@@ -169,18 +169,3 @@ def test_create_2d_curve_cat():
     c = Curve(data=data_cat_2d, mnemonic=mnemonic2d, dtype='category')
     assert c.df.shape == (20, 2)
     assert c.df.iloc[1, 1] == 'sand'
-
-
-def test_curve_plot_2d():
-    c = Curve(data=data_num, index=index, mnemonic=mnemonic)
-    c.plot_2d()
-
-
-def test_curve_plot():
-    c = Curve(data=data_num, index=index, mnemonic=mnemonic)
-    c.plot()
-
-
-def test_curve_plot_kde():
-    c = Curve(data=data_num, index=index, mnemonic=mnemonic)
-    c.plot_kde()

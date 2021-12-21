@@ -493,7 +493,7 @@ def _get_curve_las_df(las, section):
         return None
     else:
         # parse curve data to separate df
-        data = pd.DataFrame(np.matrix(df_section.data.tolist()).transpose(),
+        data = pd.DataFrame(np.array(df_section.data.tolist()).transpose(),
                             columns=df_section.mnemonic.values)
 
         # all curves are parsed as strings if there is a string
