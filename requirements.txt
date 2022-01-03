@@ -1,12 +1,1 @@
-numpy>=1.10.0
-matplotlib
-scipy
-tqdm
-striplog
-lasio
-wellpathpy
-pandas
-pytest
-pytest-cov
-pytest-mpl
-requests
+.
