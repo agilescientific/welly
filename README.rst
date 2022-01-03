@@ -7,6 +7,10 @@ welly
     :target: https://travis-ci.org/agile-geoscience/welly
     :alt: Travis build status
     
+.. image:: https://readthedocs.org/projects/welly/badge/?version=latest
+    :target: https://welly.readthedocs.io/en/latest/?badge=latest
+    :alt: Documentation Status
+
 .. image:: https://img.shields.io/pypi/status/welly.svg
     :target: https://pypi.python.org/pypi/welly/
     :alt: Development status

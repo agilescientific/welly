@@ -11,28 +11,26 @@ from welly import Well, Location
 from welly import utils
 
 # Some globals.
-FNAME = 'tests/P-129_out.LAS'
-DNAME = 'tests/P-129_deviation_survey.csv'
-DNAME2 = 'tests/Well_1515_directional.csv'
+FNAME = 'tests/assets/P-129_out.LAS'
+DNAME = 'tests/assets/P-129_deviation_survey.csv'
+DNAME2 = 'tests/assets/Well_1515_directional.csv'
 
 
-def test_deviation():
+def test_deviation(well):
     """
     Test that we can load a deviation survey and compute position.
     """
-    well = Well.from_las(FNAME)
     dev = np.loadtxt(DNAME, delimiter=',', skiprows=1)
     well.location.add_deviation(dev)
     assert well.location.position.shape == (46, 3)
     assert well.location.md2tvd(1000) - 998.45378 < 0.001
     assert well.location.tvd2md(998.45378) - 1000 < 0.001
-    assert (well.location.dogleg < 0.02).all()
+    assert (well.location.dogleg < 1.15).all()
 
 
 def test_well_remap():
     """
-    This is about loading messy data from LAS by renaming and transforming
-    fields.
+    This is about loading messy data from LAS by renaming and transforming fields.
     """
     def transform_ll(text):
         """
@@ -87,7 +85,6 @@ def test_deviation_to_position_conversion():
     and compute position (a.k.a path) – a N x 3 arry with columns X, Y, Z relative
     to the KB location. Tests the minimum curvature method only.
     """
-    tolerance = 0.1 # absolute distance in metres we'll allow to be off.
     location = {'x': 382769.09, 'y': 4994021.65, 'kb': 94.8 }
     well = Well({'location': Location(params=location)})
 
@@ -97,13 +94,12 @@ def test_deviation_to_position_conversion():
     well.location.add_deviation(dev_surv)
 
     assert well.location.position.shape == (83, 3)
-    assert well.location.position.shape == (83,3)
-    assert(np.allclose(posx, well.location.position[:,0], atol=0.1))
-    assert(np.allclose(posy, well.location.position[:,1], atol=0.1))
+    assert well.location.position.shape == (83, 3)
+    assert (np.allclose(posx, well.location.position[:, 0], atol=0.1))
+    assert (np.allclose(posy, well.location.position[:, 1], atol=0.1))
 
 
-def test_empty_location_td():
-    well = Well.from_las(FNAME)
+def test_empty_location_td(well):
     well.to_las("temporary.las")
 
     new_well = Well.from_las("temporary.las")
@@ -114,7 +110,7 @@ def test_empty_location_td():
 
 
 def test_string_location_td():
-    FNAME = 'tests/P-129_out-with-string-td.LAS'
+    FNAME = 'tests/assets/P-129_out-with-string-td.LAS'
     well = Well.from_las(FNAME)
     well.to_las("temporary.las")
 
@@ -126,7 +122,7 @@ def test_string_location_td():
 
 
 def test_numerical_location_td():
-    FNAME = 'tests/P-129_out-with-numeric-td.LAS'
+    FNAME = 'tests/assets/P-129_out-with-numeric-td.LAS'
     well = Well.from_las(FNAME)
     well.to_las("temporary.las")
 
