@@ -128,10 +128,10 @@ def from_las(file_ref, **kwargs):
     2   EREF                EREF:1   M     100.0    Elevation     Parameter
     0                       UNKNOWN                 Comment       Other
     """
-    # read las file with lasio
+    # Read las file with lasio.
     las = lasio.read(file_ref, **kwargs)
 
-    # parse lasio.LASFile object to datasets dictionary
+    # Parse lasio.LASFile object to datasets dictionary.
     datasets = from_lasio(las)
 
     return datasets

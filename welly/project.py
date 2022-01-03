@@ -121,6 +121,7 @@ class Project(object):
                  encoding=None,
                  printfname=None,
                  index=None,
+                 **kwargs,
                  ):
         """
         Constructor. Essentially just wraps ``Well.from_las()``, but is more
@@ -168,7 +169,9 @@ class Project(object):
                                alias=alias,
                                encoding=encoding,
                                printfname=printfname,
-                               index=index)
+                               index=index,
+                               **kwargs,
+                               )
                  for i, f in tqdm(enumerate(path)) if i < max]
 
         return cls(list(filter(None, wells)))

@@ -260,7 +260,9 @@ class Well(object):
                  alias=None,
                  encoding=None,
                  printfname=False,
-                 index=None):
+                 index=None,
+                 **kwargs,
+                 ):
         """
         Constructor. If you have a LAS file saved on disk, this creates a well
         object from it.
@@ -281,6 +283,7 @@ class Well(object):
             index (str): Optional. Either "existing" (use the index as found in
                 the LAS file) or "m", "ft" to use lasio's conversion of the
                 relevant index unit.
+            kwargs: More keyword arguments are passed to `lasio`.
 
         Returns:
             well. The well object.
@@ -294,7 +297,7 @@ class Well(object):
         if re.match(r'https?://.+\..+/.+?', fname) is not None:
             fname = file_from_url(fname)
 
-        datasets = from_las(fname, encoding=encoding)
+        datasets = from_las(fname, encoding=encoding, **kwargs)
 
         # create well from datasets
         well = cls.from_datasets(datasets,
@@ -304,7 +307,8 @@ class Well(object):
                                  req=req,
                                  alias=alias,
                                  fname=fname,
-                                 index_unit=index)
+                                 index_unit=index,
+                                 )
 
         return well
 
