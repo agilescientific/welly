@@ -114,21 +114,16 @@ class Curve(object):
         setattr(curve, 'df', self.df[index])
         return curve
 
-    def __mul__(self, n):
+    def __add__(self, n):
         """
-        Multiply curve data in pd.DataFrame by `n`
+        Add curve data in pd.DataFrame with `n`
         """
         curve = copy.deepcopy(self)
-        setattr(curve, 'df', self.df.multiply(n))
+        setattr(curve, 'df', self.df.add(n))
         return curve
 
-    def __truediv__(self, n):
-        """
-        Divide curve data in pd.DataFrame by `n`
-        """
-        curve = copy.deepcopy(self)
-        setattr(curve, 'df', self.df.divide(n))
-        return curve
+    def __radd__(self, n):
+        return self.__add__(n)
 
     def __sub__(self, n):
         """
@@ -138,13 +133,63 @@ class Curve(object):
         setattr(curve, 'df', self.df.sub(n))
         return curve
 
-    def __add__(self, n):
+    def __rsub__(self, n):
+        return self.__sub__(n)
+
+    def __pow__(self, n):
         """
-        Add curve data in pd.DataFrame with `n`
+        Exponentiate curve data in pd.DataFrame by `n`
         """
         curve = copy.deepcopy(self)
-        setattr(curve, 'df', self.df.add(n))
+        setattr(curve, 'df', self.df.pow(n))
         return curve
+
+    def __rpow__(self, n):
+        return self.__pow__(n)
+
+    def __mul__(self, n):
+        """
+        Multiply curve data in pd.DataFrame by `n`
+        """
+        curve = copy.deepcopy(self)
+        setattr(curve, 'df', self.df.multiply(n))
+        return curve
+
+    def __rmul__(self, n):
+        return self.__mul__(n)
+
+    def __floordiv__(self, n):
+        """
+        Floor-divide curve data in pd.DataFrame by `n`
+        """
+        curve = copy.deepcopy(self)
+        setattr(curve, 'df', self.df.floordiv(n))
+        return curve
+
+    def __rfloordiv__(self, n):
+        return self.__floordiv__(n)
+
+    def __mod__(self, n):
+        """
+        Modulo curve data in pd.DataFrame by `n`
+        """
+        curve = copy.deepcopy(self)
+        setattr(curve, 'df', self.df.mod(n))
+        return curve
+
+    def __rmod__(self, n):
+        return self.__mod__(n)
+
+    def __truediv__(self, n):
+        """
+        Divide curve data in pd.DataFrame by `n`
+        """
+        curve = copy.deepcopy(self)
+        setattr(curve, 'df', self.df.divide(n))
+        return curve
+
+    def __rtruediv__(self, n):
+        return self.__truediv__(n)
 
     def __len__(self):
         """
@@ -197,7 +242,8 @@ class Curve(object):
         else:
             show_df = self.df
 
-        return '%s \n%s \n attributes: \n  %s' % (self.__class__, show_df, params)
+        return f"Curve('mnemonic': {self.mnemonic}, 'units': {self.units}, 'start': {self.start})"
+        # return '%s \n%s \n attributes: \n  %s' % (self.__class__, show_df, params)
 
     @property
     def shape(self):
@@ -317,8 +363,8 @@ class Curve(object):
         """
         Jupyter Notebook magic repr function.
         """
-        if self.size < 10:
-            return pd.DataFrame.__repr__(self.df)
+        # if self.size < 10:
+        #     return pd.DataFrame.__repr__(self.df)
         attribs = self.__dict__.copy()
         attribs.pop('df')
 
@@ -464,7 +510,7 @@ class Curve(object):
         if return_rolled:
             return result, rolled
         else:
-            return None
+            return result
 
 
     def despike(self, window_length=33, samples=True, z=2):
