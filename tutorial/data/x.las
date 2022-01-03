@@ -4,7 +4,7 @@ WRAP.    NO : One line per depth step
 DLM . SPACE : Column Data Section Delimiter
 ~Well ------------------------------------------------------
 STRT  .m                     1.0668 : START DEPTH
-STOP  .m         1939.1376000000012 : STOP DEPTH
+STOP  .m                  1939.1376 : STOP DEPTH
 STEP  .m                    0.15240 : STEP
 NULL  .                    -111.111 : NULL VALUE
 COMP  . Elmworth Energy Corporation : COMPANY
@@ -16,7 +16,7 @@ CNTY  .                             : COUNTY
 STAT  .                             : STATE
 CTRY  .                          CA : COUNTRY
 SRVC  .                             : SERVICE COMPANY
-DATE  .  2021-11-10 16:57:03.842905 : DATE
+DATE  .  2022-01-03 15:47:58.667548 : DATE
 UWI   .               Kennetcook #2 : UNIQUE WELL ID
 API   .                             : API NUMBER
 LIC   .                       P-129 : 
