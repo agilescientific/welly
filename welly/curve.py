@@ -114,82 +114,96 @@ class Curve(object):
         setattr(curve, 'df', self.df[index])
         return curve
 
-    def __add__(self, n):
+    def __add__(self, other):
         """
-        Add curve data in pd.DataFrame with `n`
-        """
-        curve = copy.deepcopy(self)
-        setattr(curve, 'df', self.df.add(n))
-        return curve
-
-    def __radd__(self, n):
-        return self.__add__(n)
-
-    def __sub__(self, n):
-        """
-        Subtract curve data in pd.DataFrame with `n`
+        Add curve data in pd.DataFrame with ``other``
         """
         curve = copy.deepcopy(self)
-        setattr(curve, 'df', self.df.sub(n))
+        if isinstance(other, Curve):
+            other = other.df
+        setattr(curve, 'df', self.df.add(other))
         return curve
 
-    def __rsub__(self, n):
-        return self.__sub__(n)
+    def __radd__(self, other):
+        return self.__add__(other)
 
-    def __pow__(self, n):
+    def __sub__(self, other):
         """
-        Exponentiate curve data in pd.DataFrame by `n`
+        Subtract curve data in pd.DataFrame with ``other``
         """
         curve = copy.deepcopy(self)
-        setattr(curve, 'df', self.df.pow(n))
+        if isinstance(other, Curve):
+            other = other.df
+        setattr(curve, 'df', self.df.sub(other))
         return curve
 
-    def __rpow__(self, n):
-        return self.__pow__(n)
+    def __rsub__(self, other):
+        return self.__sub__(other)
 
-    def __mul__(self, n):
+    def __mul__(self, other):
         """
-        Multiply curve data in pd.DataFrame by `n`
+        Multiply curve data in pd.DataFrame by ``other``
         """
         curve = copy.deepcopy(self)
-        setattr(curve, 'df', self.df.multiply(n))
+        if isinstance(other, Curve):
+            other = other.df
+        setattr(curve, 'df', self.df.multiply(other))
         return curve
 
-    def __rmul__(self, n):
-        return self.__mul__(n)
+    def __rmul__(self, other):
+        return self.__mul__(other)
 
-    def __floordiv__(self, n):
+    def __pow__(self, other):
         """
-        Floor-divide curve data in pd.DataFrame by `n`
+        Exponentiate curve data in pd.DataFrame by ``other``
         """
         curve = copy.deepcopy(self)
-        setattr(curve, 'df', self.df.floordiv(n))
+        if isinstance(other, Curve):
+            other = other.df
+        setattr(curve, 'df', self.df.pow(other))
         return curve
 
-    def __rfloordiv__(self, n):
-        return self.__floordiv__(n)
+    def __rpow__(self, other):
+        return self.__pow__(other)
 
-    def __mod__(self, n):
+    def __truediv__(self, other):
         """
-        Modulo curve data in pd.DataFrame by `n`
+        Divide curve data in pd.DataFrame by ``other``
         """
         curve = copy.deepcopy(self)
-        setattr(curve, 'df', self.df.mod(n))
+        if isinstance(other, Curve):
+            other = other.df
+        setattr(curve, 'df', self.df.divide(other))
         return curve
 
-    def __rmod__(self, n):
-        return self.__mod__(n)
+    def __rtruediv__(self, other):
+        return self.__truediv__(other)
 
-    def __truediv__(self, n):
+    def __floordiv__(self, other):
         """
-        Divide curve data in pd.DataFrame by `n`
+        Floor-divide curve data in pd.DataFrame by ``other``
         """
         curve = copy.deepcopy(self)
-        setattr(curve, 'df', self.df.divide(n))
+        if isinstance(other, Curve):
+            other = other.df
+        setattr(curve, 'df', self.df.floordiv(other))
         return curve
 
-    def __rtruediv__(self, n):
-        return self.__truediv__(n)
+    def __rfloordiv__(self, other):
+        return self.__floordiv__(other)
+
+    def __mod__(self, other):
+        """
+        Modulo curve data in pd.DataFrame by ``other``
+        """
+        curve = copy.deepcopy(self)
+        if isinstance(other, Curve):
+            other = other.df
+        setattr(curve, 'df', self.df.mod(other))
+        return curve
+
+    def __rmod__(self, other):
+        return self.__mod__(other)
 
     def __len__(self):
         """
@@ -198,52 +212,56 @@ class Curve(object):
         return len(self.df)
 
     def __repr__(self):
+        return f"Curve(mnemonic={self.mnemonic}, units={self.units}, start={self.start:.4f}, stop={self.stop:.4f}, step={self.step:.4f}, count={self.df.count().tolist()})"
+
+    def _repr_html_(self):
         """
-        Return the pd.DataFrame representation as representation of the Curve
+        Jupyter Notebook magic repr function.
         """
-        return pd.DataFrame.__repr__(self.df)
+        # if self.size < 10:
+        #     return pd.DataFrame.__repr__(self.df)
+        attribs = self.__dict__.copy()
+        attribs.pop('df')
 
-    def __str__(self) -> str:
-        """
-        A more useful and comprehensive string representation of the Curve.
-        Access through calling `print(curve_object)`.
+        # Header.
+        row1 = '<tr><th style="text-align:center;" colspan="2">{} [{{}}]</th></tr>'
+        rows = row1.format(' '.join(list(self.df.columns)))
+        rows = rows.format(attribs.pop('units', '&ndash;'))
+        row2 = '<tr><td style="text-align:center;" colspan="2">{:.4f} : {:.4f} : {:.4f}</td></tr>'
+        rows += row2.format(self.start, self.stop, self.step)
 
-        Arguments:
-            No arguments
+        # Curve attributes.
+        s = '<tr><td><strong>{k}</strong></td><td>{v}</td></tr>'
+        for k, v in attribs.items():
+            rows += s.format(k=k, v=v)
 
-        Returns:
-            String representation of:
-            - the class name
-            - the pd.DataFrame if ncol>1 and the pd.Series if ncol==1
-            - the attributes that are attached to the object and that exist
-        """
-        params = {
-            'api': self.api,
-            'code': self.code,
-            'date': self.date,
-            'description': self.description,
-            'index_unit': self.index_unit,
-            'null': self.null,
-            'run': self.run,
-            'service_company': self.service_company,
-            'start': self.start,
-            'step': self.step,
-            'stop': self.stop,
-            'unit': self.units,
-            'family': self.family
-        }
+        # Curve stats.
+        rows += '<tr><th style="border-top: 2px solid #000; text-align:center;" colspan="2"><strong>Stats</strong></th></tr>'
+        stats = self.get_stats()
+        s = '<tr><td><strong>samples (NaNs)</strong></td><td>{samples} ({nulls})</td></tr>'
+        s += '<tr><td><strong><sub>min</sub> mean <sup>max</sup></strong></td>'
+        s += '<td><sub>{min:.2f}</sub> {mean:.3f} <sup>{max:.2f}</sup></td></tr>'
+        rows += s.format(**stats)
 
-        # remove items where item value is None
-        params = {k: v for k, v in params.items() if v is not None}
-
-        # show the pd.Series if pd.DataFrame has only 1 column (1D data)
-        if len(self.df.columns) == 1:
-            show_df = self.df.iloc[:, 0]
+        # Curve preview.
+        s = '<tr><th style="border-top: 2px solid #000;">Depth</th><th style="border-top: 2px solid #000;">Value</th></tr>'
+        rows += s.format(self.start, self.df.values[0][0])
+        if self.dtypes[0] == float:
+            s = '<tr><td>{:.4f}</td><td>{:.4f}</td></tr>'
         else:
-            show_df = self.df
+            s = '<tr><td>{}</td><td>{}</td></tr>'
+        for depth, value in self.df.iloc[:3].iterrows():
+            rows += s.format(depth, value[0])
+        rows += '<tr><td>⋮</td><td>⋮</td></tr>'
+        for depth, value in self.df.iloc[-3:].iterrows():
+            rows += s.format(depth, value[0])
 
-        return f"Curve('mnemonic': {self.mnemonic}, 'units': {self.units}, 'start': {self.start})"
-        # return '%s \n%s \n attributes: \n  %s' % (self.__class__, show_df, params)
+        # Footer.
+        # ...
+
+        # End.
+        html = '<table>{}</table>'.format(rows)
+        return html
 
     @property
     def shape(self):
@@ -359,55 +377,6 @@ class Curve(object):
         """
         return self.df.index.values
 
-    def _repr_html_(self):
-        """
-        Jupyter Notebook magic repr function.
-        """
-        # if self.size < 10:
-        #     return pd.DataFrame.__repr__(self.df)
-        attribs = self.__dict__.copy()
-        attribs.pop('df')
-
-        # Header.
-        row1 = '<tr><th style="text-align:center;" colspan="2">{} [{{}}]</th></tr>'
-        rows = row1.format(' '.join(list(self.df.columns)))
-        rows = rows.format(attribs.pop('units', '&ndash;'))
-        row2 = '<tr><td style="text-align:center;" colspan="2">{:.4f} : {:.4f} : {:.4f}</td></tr>'
-        rows += row2.format(self.start, self.stop, self.step)
-
-        # Curve attributes.
-        s = '<tr><td><strong>{k}</strong></td><td>{v}</td></tr>'
-        for k, v in attribs.items():
-            rows += s.format(k=k, v=v)
-
-        # Curve stats.
-        rows += '<tr><th style="border-top: 2px solid #000; text-align:center;" colspan="2"><strong>Stats</strong></th></tr>'
-        stats = self.get_stats()
-        s = '<tr><td><strong>samples (NaNs)</strong></td><td>{samples} ({nulls})</td></tr>'
-        s += '<tr><td><strong><sub>min</sub> mean <sup>max</sup></strong></td>'
-        s += '<td><sub>{min:.2f}</sub> {mean:.3f} <sup>{max:.2f}</sup></td></tr>'
-        rows += s.format(**stats)
-
-        # Curve preview.
-        s = '<tr><th style="border-top: 2px solid #000;">Depth</th><th style="border-top: 2px solid #000;">Value</th></tr>'
-        rows += s.format(self.start, self.df.values[0][0])
-        if self.dtypes[0] == float:
-            s = '<tr><td>{:.4f}</td><td>{:.4f}</td></tr>'
-        else:
-            s = '<tr><td>{}</td><td>{}</td></tr>'
-        for depth, value in self.df.iloc[:3].iterrows():
-            rows += s.format(depth, value[0])
-        rows += '<tr><td>⋮</td><td>⋮</td></tr>'
-        for depth, value in self.df.iloc[-3:].iterrows():
-            rows += s.format(depth, value[0])
-
-        # Footer.
-        # ...
-
-        # End.
-        html = '<table>{}</table>'.format(rows)
-        return html
-
     def astype(self, dtype):
         curve = copy.deepcopy(self)
         setattr(curve, 'df', self.df.astype(dtype))
@@ -453,7 +422,7 @@ class Curve(object):
         """
         stats = {}
         stats['samples'] = self.shape[0]
-        stats['nulls'] = self[np.isnan(self.df.values)].shape[0]
+        stats['nulls'] = np.sum(np.isnan(self.df.values))
         stats['mean'] = float(np.nanmean(self.df.values.real))
         stats['min'] = float(np.nanmin(self.df.values.real))
         stats['max'] = float(np.nanmax(self.df.values.real))
