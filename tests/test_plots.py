@@ -35,9 +35,7 @@ def test_project_plot_map():
     project[0].location = Location(params={'x': 1000, 'y': 1050})
     project[1].location = Location(params={'x': 1010, 'y': 1060})
 
-    fig = project.plot_map()
-
-    return fig
+    return project.plot_map().get_figure()
 
 
 @pytest.mark.mpl_image_compare(**params)
@@ -48,9 +46,7 @@ def test_project_kdes_plot():
     project = Project.from_las(FNAME)
     project += project
 
-    fig = project.plot_kdes(mnemonic='GR')
-
-    return fig
+    return project.plot_kdes(mnemonic='GR').get_figure()
 
 
 @pytest.mark.mpl_image_compare(**params)
@@ -60,7 +56,7 @@ def test_curve_kde_plot():
     """
     well = Well.from_las(FNAME)
 
-    fig = well.data['GR'].plot_kde()
+    fig = well.data['GR'].plot_kde().get_figure()
 
     return fig
 
@@ -70,7 +66,8 @@ def test_curve_plot(curve):
     """
     Tests mpl image of curve.
     """
-    fig = curve.plot()
+    fig = curve.plot().get_figure()
+    
     return fig
 
 
@@ -79,7 +76,7 @@ def test_curve_2d_plot(well):
     """
     Tests mpl image of curve as VD display.
     """
-    fig = well.data['GR'].plot_2d()
+    fig = well.data['GR'].plot_2d().get_figure()
 
     return fig
 
@@ -93,7 +90,7 @@ def test_synthetic_plot():
     params = {'dt': 0.004}
     s = Synthetic(data, params=params)
 
-    fig = s.plot()
+    fig = s.plot().get_figure()
 
     return fig
 
@@ -106,7 +103,7 @@ def test_well_synthetic_plot():
     w = Well.from_las(FNAME)
     w.make_synthetic()
 
-    fig = w.data['Synthetic'].plot()
+    fig = w.data['Synthetic'].plot().get_figure()
 
     return fig
 
@@ -116,7 +113,7 @@ def test_well_plot(well):
     """
     Tests mpl image of well.
     """
-    fig = well.plot(tracks=['MD', 'GR', 'DT'],
+    plot = well.plot(tracks=['MD', 'GR', 'DT'],
                     extents='curves')
 
-    return fig
+    return plot.get_figure()

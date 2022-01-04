@@ -67,6 +67,7 @@ def plot_kdes_project(project,
         else:
             continue
 
+    plt.close()
     return fig
 
 
@@ -96,9 +97,6 @@ def plot_map_project(project,
 
     if ax is None:
         fig, ax = plt.subplots(figsize=(1 + width, width / utils.aspect(xys)))
-        return_ax = False
-    else:
-        return_ax = True
 
     ax.scatter(*xys.T, s=60)
     ax.axis('equal')
@@ -109,10 +107,7 @@ def plot_map_project(project,
         for xy, label in zip(xys, labels):
             ax.annotate(label, xy + 1000, color='gray')
 
-    if return_ax:
-        return ax
-    else:
-        return fig
+    return ax
 
 
 def plot_depth_track_well(well,
@@ -329,6 +324,7 @@ def plot_well(well,
             for sp in ax.spines.values():
                 sp.set_color('gray')
 
+    plt.close()
     return fig
 
 
@@ -356,11 +352,7 @@ def plot_2d_curve(curve,
     """
     # Set up the figure.
     if ax is None:
-        fig = plt.figure(figsize=(2, 10))
-        ax = fig.add_subplot(111)
-        return_ax = False
-    else:
-        return_ax = True
+        fig, ax = plt.subplots(figsize=(2, 10))
 
     # Set up the data.
     cmap = cmap or 'viridis'
@@ -429,12 +421,8 @@ def plot_2d_curve(curve,
 
     ax.yaxis.set_ticks_position('left')
     ax.get_yaxis().set_tick_params(which='both', direction='out')
-
-    if return_ax:
-        return ax
-
     plt.tight_layout()
-    return fig  # This should be the only alternative. Check other plot functions.
+    return ax
     
 
 def plot_curve(curve,
@@ -452,11 +440,7 @@ def plot_curve(curve,
         ax. If you passed in an ax, otherwise the figure.
     """
     if ax is None:
-        fig = plt.figure(figsize=(2, 10))
-        ax = fig.add_subplot(111)
-        return_ax = False
-    else:
-        return_ax = True
+        fig, ax = plt.subplots(figsize=(2, 10))
 
     d = None
 
@@ -504,11 +488,8 @@ def plot_curve(curve,
 
     ax.set_ylim([curve.stop, curve.start])
     ax.grid('on', color='k', alpha=0.33, lw=0.33, linestyle='-')
-
-    if return_ax:
-        return ax
-
-    return fig  # This should be the only alternative.
+    
+    return ax
 
 
 def plot_kde_curve(curve,
@@ -533,11 +514,7 @@ def plot_kde_curve(curve,
     from scipy.stats import gaussian_kde
 
     if ax is None:
-        fig = plt.figure()
-        ax = fig.add_subplot(111)
-        return_ax = False
-    else:
-        return_ax = True
+        fig, ax = plt.subplots()
 
     a = curve.df.dropna().to_numpy()
 
@@ -559,6 +536,4 @@ def plot_kde_curve(curve,
     ax.set_yticklabels([])
     ax.set_ylabel(label or curve.df.columns[0])
 
-    if return_ax:
-        return ax
-    return fig
+    return ax

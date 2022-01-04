@@ -423,21 +423,28 @@ class Curve(object):
         stats['max'] = float(np.nanmax(self.df.values.real))
         return stats
 
-    def mean(self):
+    def median(self, axis=None, **kwargs):
+        """
+        Returns the median of the pd.DataFrame values of the columns in the curve
+        in a pd.Series
+        """
+        return self.df.median(axis=axis, **kwargs)
+
+    def mean(self, axis=None, **kwargs):
         """
         Returns the mean of the pd.DataFrame values of the columns in the curve
         in a pd.Series
         """
-        return self.df.mean()
+        return self.df.mean(axis=axis, **kwargs)
 
-    def min(self):
+    def min(self, axis=None, **kwargs):
         """
         Returns the minimum of the pd.DataFrame values of the columns in the curve
         in a pd.Series
         """
         return self.df.min()
 
-    def max(self):
+    def max(self, axis=None, **kwargs):
         """
         Returns the maximum of the pd.DataFrame values of the columns in the curve
         in a pd.Series
