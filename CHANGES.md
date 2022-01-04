@@ -1,8 +1,12 @@
 # CHANGES.md
 
-## 0.4.11, develop
+## 0.5.0, coming in January 2022
 
-- Work in progress
+- Major change: Everything in `welly` is now much closer to `pandas`. Chiefly, `Curve` objects are now represented by wrapped `pandas.DataFrame` objects (note: not `Series` as you might expect, so they can be two-dimensional). They were previously subclassed NumPy `ndarray` objects, so while we've tried to preserve as much of it as possible, expect some changes to the `Curve` API. Please let us know if there's something you miss, it can probably be implemented. Many thanks to the developers that made this happen.
+- Major change: as previously indicated, the default behaviour is now to load the depth curve in its original units. That is: `welly` no longer converts everything to metres. Use `index='metres'` in `from_las()` to get the old behaviour.
+- You can now create a project with `welly.read_las('path/to/*.las')`. Note: this always gives you a project, even if it only contains a single well.
+- As previously indicated, dogleg severity is now given in units of degrees per course length.
+- `kwargs` are passed to `lasio` in `read_las()`, `Well.from_las()` and `Project.from_las()`, so you can add things like `ignore_header_errors=True`.
 
 
 ## 0.4.10, 22 June 2021
@@ -37,7 +41,6 @@
 - Thank you Miguel de la Varga for an update that allows a trajectory to have fewer than 3 points.
 - Thank you DC Slagel for an update that ensures all well header fields are populated with valid types.
 
----
 
 ## 0.4.7, 6 June 2020
 - Load your well in feet! The number one most hated 'feature' has been 'fixed'... you can now pass the `index` argument to `Well.from_las()` or `Well.from_lasio()` to control how the index is interpreted. Use `'existing'` or `'original'` to keep whatever is specified in the LAS file (probably what you want).  To convert to metres, use `'m'`; to convert to feet use `'ft'`.
@@ -45,6 +48,7 @@
 - The `Curve` object now has a `basis_units` attribute carrying this information. Either `'m'` or `'ft'`.
 - See `tutorial/Well_depth_units_v0.4.7.ipynb`.
 - Thank you to Kent Inverarity for implementing this long-hoped-for feature.
+
 
 ## 0.4.6, 7 May 2020
 - Big fix in `Location`.
