@@ -391,7 +391,10 @@ class Curve(object):
         # Curve preview.
         s = '<tr><th style="border-top: 2px solid #000;">Depth</th><th style="border-top: 2px solid #000;">Value</th></tr>'
         rows += s.format(self.start, self.df.values[0][0])
-        s = '<tr><td>{:.4f}</td><td>{:.4f}</td></tr>'
+        if self.dtypes[0] == float:
+            s = '<tr><td>{:.4f}</td><td>{:.4f}</td></tr>'
+        else:
+            s = '<tr><td>{}</td><td>{}</td></tr>'
         for depth, value in self.df.iloc[:3].iterrows():
             rows += s.format(depth, value[0])
         rows += '<tr><td>⋮</td><td>⋮</td></tr>'
@@ -405,23 +408,10 @@ class Curve(object):
         html = '<table>{}</table>'.format(rows)
         return html
 
-    def describe(self):
-        """
-        Returns statistics of the pd.DataFrame of the curve
-        """
-        return self.df.describe()
-
-    def get_stats(self):
-        """
-        Return basic statistics about the curve.
-        """
-        stats = {}
-        stats['samples'] = self.shape[0]
-        stats['nulls'] = self[np.isnan(self.df.values)].shape[0]
-        stats['mean'] = float(np.nanmean(self.df.values.real))
-        stats['min'] = float(np.nanmin(self.df.values.real))
-        stats['max'] = float(np.nanmax(self.df.values.real))
-        return stats
+    def astype(self, dtype):
+        curve = copy.deepcopy(self)
+        setattr(curve, 'df', self.df.astype(dtype))
+        return curve
 
     def median(self, axis=None, **kwargs):
         """
@@ -450,6 +440,24 @@ class Curve(object):
         in a pd.Series
         """
         return self.df.max()
+
+    def describe(self):
+        """
+        Returns statistics of the pd.DataFrame of the curve
+        """
+        return self.df.describe()
+
+    def get_stats(self):
+        """
+        Return basic statistics about the curve.
+        """
+        stats = {}
+        stats['samples'] = self.shape[0]
+        stats['nulls'] = self[np.isnan(self.df.values)].shape[0]
+        stats['mean'] = float(np.nanmean(self.df.values.real))
+        stats['min'] = float(np.nanmin(self.df.values.real))
+        stats['max'] = float(np.nanmax(self.df.values.real))
+        return stats
 
     def get_alias(self, alias):
         """
