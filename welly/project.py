@@ -580,7 +580,8 @@ class Project(object):
 
         return pd.concat(dfs)
 
-    def data_as_matrix(self, X_keys,
+    def data_as_matrix(self,
+                       X_keys,
                        y_key=None,
                        alias=None,
                        legend=None,
@@ -597,19 +598,60 @@ class Project(object):
                        remove_zeros=False,
                        include_basis=False,
                        include_index=False,
-                       include=None,
-                       complete_only=False,
-                       ):
+                       include=None):
+        """
+        Create train matrices of wells in project for mnemonic keys. Optionally add test
+        matrices.
 
+        Args:
+            X_keys (list): list mnemonics to create `X_train` matrices from
+            y_key (str): mnemonic to create `y_train` matrix
+            alias (dict): a dictionary mapping mnemonics to lists of mnemonics.
+                e.g. {'density': ['DEN', 'DENS']}
+            legend (Legend): Passed to `striplog.to_log()`. If you want the codes to come
+                from a legend, provide one. Otherwise the codes come from the log, using
+                integers in the order of prevalence. If you use a legend,
+                they are assigned in the order of the legend.
+            match_only (list): Passed to `striplog.to_log()`. If you only want to match
+                some attributes of the Components (e.g. lithology), provide a list of
+                those you want to match.
+            field (str): Passed to `striplog.to_log()`. If you want the data to come from
+                one of the attributes of the components in the striplog, provide it.
+            field_function (function): Passed to `striplog.to_log()`. Provide a function
+                to apply to the field you are asking for. It's up to you to make sure the
+                function does what you want.
+            table (list): Passed to `striplog.to_log()`. Provide a look-up table of values
+                if you want. If you don't, then it will be constructed from the data.
+            legend_field (str): Passed to `striplog.to_log()`. If you want to get a log
+                representing one of the fields in the legend, such as 'width' or
+                'grainsize'.
+            basis (np.array or list): basis to be used for returned sliced data
+            step (float or int): step used for reindexing curve basis
+            window_length (int): The number of samples to return around each sample.
+                This will provide one or more shifted versions of the features.
+            window_step (int): How much to step the offset versions.
+            test (list): UWIs to create test matrices from.
+            remove_zeros (bool): Whether to remove zeros from matrices
+            include_basis (bool): Whether to include basis in matrices
+            include_index (bool): Whether to include index in matrices
+            include (np.array): An additional array to include in the matrices.
+
+        Returns:
+            X_train, X_test, y_train, y_test (np.arrays): train and test matrices.
+        """
         test = test or []
+
         train_, test_ = [], []
+
         for w in self.__list:
             if w.uwi in test:
                 test_.append(w.uwi)
             else:
                 train_.append(w.uwi)
 
-        X_train, y_train = self._data_as_matrix(X_keys=X_keys, y_key=y_key,
+        # create matrices for train wells
+        X_train, y_train = self._data_as_matrix(X_keys=X_keys,
+                                                y_key=y_key,
                                                 alias=alias,
                                                 legend=legend,
                                                 match_only=match_only,
@@ -624,9 +666,7 @@ class Project(object):
                                                 uwis=train_,
                                                 include_basis=include_basis,
                                                 include_index=include_index,
-                                                include=include,
-                                                complete_only=False,
-                                                )
+                                                include=include)
 
         if y_train is None:
             return
@@ -638,7 +678,9 @@ class Project(object):
         if not test:
             return X_train, y_train
 
-        X_test, y_test = self._data_as_matrix(X_keys=X_keys, y_key=y_key,
+        # create matrices for test wells
+        X_test, y_test = self._data_as_matrix(X_keys=X_keys,
+                                              y_key=y_key,
                                               alias=alias,
                                               legend=legend,
                                               match_only=match_only,
@@ -653,9 +695,7 @@ class Project(object):
                                               uwis=test_,
                                               include_basis=include_basis,
                                               include_index=include_index,
-                                              include=include,
-                                              complete_only=False,
-                                              )
+                                              include=include)
 
         if remove_zeros:
             X_test = X_test[np.nonzero(y_test)]
@@ -663,7 +703,9 @@ class Project(object):
 
         return X_train, X_test, y_train, y_test
 
-    def _data_as_matrix(self, X_keys, y_key=None,
+    def _data_as_matrix(self,
+                        X_keys,
+                        y_key=None,
                         alias=None,
                         legend=None,
                         match_only=None,
@@ -678,12 +720,9 @@ class Project(object):
                         uwis=None,
                         include_basis=False,
                         include_index=False,
-                        include=None,
-                        complete_only=False,
-                        ):
+                        include=None):
         """
-        Make X.
-
+        Make X and y matrices
         """
         alias = alias or self.alias
         if include is not None:
@@ -741,7 +780,7 @@ class Project(object):
                     else:
                         raise IndexError('Too many dimensions in include.')
                 except:
-                    raise WellError('Problem braodcasting include into X matrix.')
+                    raise WellError('Problem broadcasting include into X matrix.')
 
             if include_basis:
                 _X = np.hstack([np.expand_dims(z, 1), _X])
@@ -753,27 +792,27 @@ class Project(object):
             X = np.vstack([X, _X])
             print(_X.shape[0])
 
-            if y_key is None:
-                continue
+            y_key_sel = w.get_mnemonic(y_key, alias=alias)
 
-            y_key = w.get_mnemonic(y_key, alias=alias)
-
-            if y_key is None:
+            if y_key_sel is None:
                 continue
 
             try:
-                _y = w.data[y_key].to_basis(basis=z)
+                # it's a `curve` object
+                _y = w.data[y_key_sel].to_basis(basis=z)
             except:
-                _y = w.data[y_key].to_log(basis=z,
-                                          legend=legend,
-                                          match_only=match_only,
-                                          field=field,
-                                          field_function=field_function,
-                                          table=table,
-                                          legend_field=legend_field,
-                                          )
-
-            y = np.hstack([y, _y])
+                # it's probably a `striplog` object
+                _y = w.data[y_key_sel].to_log(basis=z,
+                                              legend=legend,
+                                              match_only=match_only,
+                                              field=field,
+                                              field_function=field_function,
+                                              table=table,
+                                              legend_field=legend_field)
+            if _y.shape[1] == 1:
+                y = np.hstack([y, _y.df.to_numpy()[:, 0]])
+            else:
+                y = np.hstack([y, _y.df.to_numpy()])
 
         # Get rid of the 'seed'.
         X = X[1:]
