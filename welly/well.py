@@ -595,7 +595,10 @@ class Well(object):
 
         if uwi:
             df['UWI'] = self.uwi
+            # add UWI as index as part of a MultiIndex
             df.set_index(['UWI'], append=True, inplace=True)
+            # swap MultiIndex levels
+            df = df.swaplevel()
 
         for column in df.columns:
             if is_object_dtype(df[column].dtype):
