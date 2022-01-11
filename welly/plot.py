@@ -376,11 +376,13 @@ def plot_2d_curve(curve,
         raise NotImplementedError("Can only handle up to 3 dimensions.")
 
     # At this point, a is either a 2D array, or a 2D (rgb) array.
-    extent = [0, width or default, curve.stop, curve.start]
+    extent = [min(curve_data) or 0, max(curve_data) or default, curve.stop, curve.start]
     im = ax.imshow(a, cmap=cmap, extent=extent, aspect='auto')
 
     if plot_curve:
-        paths = ax.fill_betweenx(curve.basis, curve_data, np.nanmin(curve_data),
+        paths = ax.fill_betweenx(y=curve.basis,
+                                 x1=curve_data,
+                                 x2=np.nanmin(curve_data),
                                  facecolor='none',
                                  **kwargs)
 
@@ -388,8 +390,9 @@ def plot_2d_curve(curve,
         patch = PathPatch(paths._paths[0], visible=False)
         ax.add_artist(patch)
         im.set_clip_path(patch)
-
-    ax.set_xticks([])
+    else:
+        # if not plotting a curve, the x-axis is dimensionless
+        ax.set_xticks([])
 
     # Rely on interval order.
     lower, upper = curve.stop, curve.start
