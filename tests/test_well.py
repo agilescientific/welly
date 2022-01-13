@@ -118,3 +118,11 @@ def test_assign_categorical(well):
     """
     well.assign_categorical(['RXOZ', 'RXO_HRLT'])
     assert well.data['RXOZ'].dtypes[0] == 'category'
+
+
+def test_iter_well(well):
+    """
+    Test iterating over curves in a well
+    """
+    for curve in well:
+        assert curve == well.data['CALI']
