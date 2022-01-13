@@ -126,3 +126,4 @@ def test_iter_well(well):
     """
     for curve in well:
         assert curve == well.data['CALI']
+        break
