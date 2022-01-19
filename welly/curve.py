@@ -313,9 +313,12 @@ class Curve(object):
     @dtypes.setter
     def dtypes(self, dtypes):
         """
-        Set the data types of the columns of the pd.DataFrame (str)
+        Set the data types of the columns of the pd.DataFrame
+
+        Args:
+            dtypes (data type, or dict of column name: data type): types to convert to
         """
-        return setattr(self, 'df',  self.df.astype(dtypes))
+        setattr(self, 'df',  self.df.astype(dtypes))
 
     @property
     def index_name(self):
@@ -401,14 +404,14 @@ class Curve(object):
         Returns the minimum of the pd.DataFrame values of the columns in the curve
         in a pd.Series
         """
-        return self.df.min()
+        return self.df.min(axis=axis, **kwargs)
 
     def max(self, axis=None, **kwargs):
         """
         Returns the maximum of the pd.DataFrame values of the columns in the curve
         in a pd.Series
         """
-        return self.df.max()
+        return self.df.max(axis=axis, **kwargs)
 
     def describe(self):
         """
@@ -495,7 +498,6 @@ class Curve(object):
             return result, rolled
         else:
             return result
-
 
     def despike(self, window_length=33, samples=True, z=2):
         """
@@ -789,7 +791,7 @@ class Curve(object):
         # category data type or a string in data defaults to 'nearest'
         if self.df.dtypes[0] == 'category' or self.df.applymap(type).eq(str).any()[0]:
             interp_kind = 'nearest'
-
+            
         new_curve = copy.deepcopy(self)
 
         if basis is None:
@@ -817,9 +819,7 @@ class Curve(object):
                               bounds_error=False,
                               fill_value=undefined)
             # create new df with interpolated data
-            new_df = pd.DataFrame(interp(basis),
-                                  index=basis,
-                                  columns=self.df.columns)
+            new_df = pd.DataFrame(interp(basis), index=basis, columns=self.df.columns)
             # create and set new df attribute on curve
             setattr(new_curve, 'df', new_df)
             # propagate old df attributes to new df curve attribute
