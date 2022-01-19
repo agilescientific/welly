@@ -759,7 +759,7 @@ class Curve(object):
                  stop=None,
                  step=None,
                  undefined=None,
-                 interp_kind=None):
+                 interp_kind='linear'):
         """
         Make a new curve in a new basis, given a basis, or a new start, step,
         and/or stop. You only need to set the parameters you want to change.
@@ -789,9 +789,6 @@ class Curve(object):
         # category data type or a string in data defaults to 'nearest'
         if self.df.dtypes[0] == 'category' or self.df.applymap(type).eq(str).any()[0]:
             interp_kind = 'nearest'
-        else:
-            # otherwise apply linear interpolation
-            interp_kind = 'linear'
 
         new_curve = copy.deepcopy(self)
 
