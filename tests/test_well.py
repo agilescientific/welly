@@ -39,6 +39,11 @@ def test_well(well):
     assert len(well.data['HCAL'].df) == len(well.data['RHOB'].df)
 
 
+def test_set_uwi(well):
+    well.uwi = 'test'
+    assert well.uwi == 'test'
+
+
 def test_well_remap_index():
     """
     Test loading a well and remapping the index name upon load time
