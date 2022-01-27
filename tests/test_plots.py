@@ -16,6 +16,7 @@ from welly import Well
 from welly import Project
 from welly import Synthetic
 from welly import Location
+from welly.plot import WellPlotError
 
 params = {'tolerance': 20,
           'savefig_kwargs': {'dpi': 100},
@@ -79,6 +80,22 @@ def test_curve_2d_plot(well):
     fig = well.data['GR'].plot_2d().get_figure()
 
     return fig
+
+
+@pytest.mark.mpl_image_compare(**params)
+def test_well_plot(well):
+    """
+    Tests mpl image of well.
+    """
+    well.plot(tracks='TVD')
+
+    with pytest.raises(NotImplementedError):
+        well.plot(extends='all')
+
+    # pass empty well should raise an exception
+    with pytest.raises(WellPlotError):
+        well.data = {}
+        well.plot()
 
 
 @pytest.mark.mpl_image_compare(**params)
