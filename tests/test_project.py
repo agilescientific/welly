@@ -139,6 +139,7 @@ def test_omit_wells(project):
 
     assert len(project.omit_wells(["Long = 63* 45'24.460  W"])) == 0
 
+
 def test_data_as_matrix():
     """
     Test and method currently not working.
@@ -152,7 +153,8 @@ def test_data_as_matrix():
     #                                           remove_zeros=True)
     # # Test needs repair
     # assert X_train.shape[0] == y_train.size
-    
+
+
 def test_df():
     """
     Test transforming a project to a pd.DataFrame.
