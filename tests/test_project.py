@@ -4,6 +4,8 @@ Define a suite a tests for the Project module.
 """
 from urllib.error import URLError
 
+import pytest
+
 import welly
 from welly import Project, Well
 
@@ -43,10 +45,72 @@ def test_project():
     s = """<td style="background-color:#CCEECC; line-height:80%; padding:5px 4px 2px 4px;">DTS"""
     assert s in html
 
+    project.pop(2)
+    assert len(project) == 3
+
+
+def test_project_print(project, capsys):  # or use "capfd" for fd-level
+    print(project)
+    captured = capsys.readouterr()
+    assert captured.out == "Long = 63* 45'24.460  W\n"
+
+
+def test_filter_wells_by_data(project):
+    """
+    String should raise a warning. Should be an iterable
+    """
+    with pytest.warns(DeprecationWarning):
+        project.filter_wells_by_data('string')
+
+
+def test_get_wells(project):
+    """
+    Test `Project.get_wells()` method
+    """
+    # no keyword argument gets all wells
+    assert len(project.get_wells()) == 1
+
+    # get the only well in project
+    assert len(project.get_wells(["Long = 63* 45'24.460  W"])) == 1
+    assert isinstance(project.get_wells(["Long = 63* 45'24.460  W"]), Project)
+
+
+def test_get_well(project):
+    """
+    Test `Project.get_well()` method
+    """
+    # need to specify `uwi` keyword
+    with pytest.raises(TypeError):
+        project.get_well()
+
+    # get the only well in project
+    assert isinstance(project.get_well("Long = 63* 45'24.460  W"), Well)
+
+
+def test_merge_wells(project):
+    """
+    Test `Project.merge_wells()` method
+    """
+    project1 = welly.read_las('tests/assets/F03-02.las')
+    project1[0].uwi = "Long = 63* 45'24.460  W"
+    merged_project = project1.merge_wells(project)
+    assert len(merged_project[0].data.values()) == 32
+
+
+def test_omit_wells(project):
+    """
+    Test `Project.omit_wells()` method.
+    """
+    # need to specify `uwi` keyword
+    with pytest.raises(ValueError):
+        project.omit_wells()
+
+    assert len(project.omit_wells(["Long = 63* 45'24.460  W"])) == 0
+
 
 def test_data_as_matrix():
     """
-    Test currently not working
+    Test and method currently not working.
     """
     # alias = {'Sonic': ['DT', 'foo']}
     # project = Project.from_las('tests/assets/*.las')
@@ -54,15 +118,14 @@ def test_data_as_matrix():
     #                                           y_key='CALI',
     #                                           alias=alias,
     #                                           window_length=1,
-    #                                           remove_zeros=True,
-    #                                           )
+    #                                           remove_zeros=True)
     # # Test needs repair
     # assert X_train.shape[0] == y_train.size
 
 
 def test_df():
     """
-    Test transforming a project to a pd.DataFrame
+    Test transforming a project to a pd.DataFrame.
     """
     p = Project.from_las("tests/assets/P-129_out.LAS")
     alias = {'Gamma': ['GR', 'GRC', 'NGT'], 'Caliper': ['HCAL', 'CALI']}
