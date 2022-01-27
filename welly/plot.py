@@ -455,7 +455,7 @@ def plot_curve(curve,
         kwargs['lw'] = getattr(d, 'lineweight', None) or getattr(d, 'lw', 1)
         kwargs['ls'] = getattr(d, 'linestyle', None) or getattr(d, 'ls', '-')
 
-    ax.plot(curve.df, curve.basis, **kwargs)
+    ax.plot(curve.df.to_numpy(copy=True), curve.basis, **kwargs)
 
     if d is not None:
         # Attempt to get axis parameters from decor.
