@@ -85,14 +85,15 @@ def test_deviation_to_position_conversion():
     and compute position (a.k.a path) – a N x 3 arry with columns X, Y, Z relative
     to the KB location. Tests the minimum curvature method only.
     """
-    location = {'x': 382769.09, 'y': 4994021.65, 'kb': 94.8 }
+    location = {'x': 382769.09, 'y': 4994021.65, 'kb': 94.8}
     well = Well({'location': Location(params=location)})
 
     survey = np.loadtxt(DNAME2, skiprows=2, delimiter=',')
-    dev_surv = survey[:,2:5]  # MD, Incl, Azim columns in test file
-    posx, posy, posz = survey[:,8], survey[:,7], survey[:,5] # E/W, N/S, Z
+    dev_surv = survey[:, 2:5]  # MD, Incl, Azim columns in test file
+    posx, posy, posz = survey[:, 8], survey[:, 7], survey[:, 5]  # E/W, N/S, Z
     well.location.add_deviation(dev_surv)
 
+    assert well.location.trajectory().shape == (1000, 3)
     assert well.location.position.shape == (83, 3)
     assert well.location.position.shape == (83, 3)
     assert (np.allclose(posx, well.location.position[:, 0], atol=0.1))
