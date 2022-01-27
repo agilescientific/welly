@@ -14,6 +14,7 @@ import lasio
 import numpy as np
 import pandas as pd
 from lasio import HeaderItem, CurveItem, SectionItems
+from pandas._config.config import OptionError
 
 from welly.curve import Curve
 from welly import utils
@@ -30,7 +31,11 @@ header_item = HeaderItem().__dict__
 curve_item = CurveItem().__dict__
 
 # set pandas precision higher to not automatically round the curve data
-pd.set_option('precision', 10)
+try:
+    pd.set_option('precision', 10)
+except OptionError:
+    # python >= 3.8
+    pd.set_option('display.precision', 10)
 
 
 def from_las(file_ref, **kwargs):
