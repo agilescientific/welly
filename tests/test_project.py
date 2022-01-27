@@ -8,6 +8,28 @@ import pytest
 
 import welly
 from welly import Project, Well
+from welly.defaults import CRAIN, ALIAS
+from welly import quality as q
+
+tests = {
+    'Each': [
+        q.no_flat,
+        q.no_monotonic,
+        q.no_gaps,
+    ],
+    'Gamma': [
+        q.all_positive,
+        q.all_below(450),
+        q.check_units(['API', 'GAPI']),
+    ],
+    'DT': [
+        q.all_positive,
+    ],
+    'Sonic': [
+        q.all_between(1, 10000),  # 1333 to 5000 m/s
+        q.no_spikes(10),          # 10 spikes allowed
+    ],
+}
 
 
 def test_project():
@@ -49,7 +71,17 @@ def test_project():
     assert len(project) == 3
 
 
-def test_project_print(project, capsys):  # or use "capfd" for fd-level
+def test_curve_table_html(project):
+    """
+    Test passing tests to curve table html format.
+    """
+    html = project.curve_table_html(tests=tests)
+
+    # assert test score
+    assert '40' in html
+
+
+def test_project_print(project, capsys):
     print(project)
     captured = capsys.readouterr()
     assert captured.out == "Long = 63* 45'24.460  W\n"
@@ -133,6 +165,19 @@ def test_df():
     df = p.df(keys=keys, alias=alias)
     assert df.iloc[10, 1] - 46.69865036 < 0.001
     assert df.shape == (12718, 3)
+
+    # use default alias from CRAIN
+    df2 = p.df(keys=keys, alias=CRAIN)
+    assert 'DT' in df2.columns
+
+    # use default alias from ALIAS
+    df2 = p.df(keys=keys, alias=ALIAS)
+    assert 'DT' in df2.columns
+
+    # project with empty well should raise an error
+    with pytest.raises(ValueError):
+        p[0].data = {}
+        p.df()
 
 
 def test_url_project():
