@@ -284,7 +284,7 @@ def plot_well(well,
         plt.setp(ax.get_yticklabels(), visible=False)
         try:  # ...treating as a plottable object.
             curve = well.get_curve(track, alias=alias)
-            curve._alias = track  # So that can retreive alias from legend too.
+            curve._alias = track  # So that can retrieve alias from legend too.
             ax = curve.plot(ax=ax, legend=legend, **kwargs)
         except AttributeError:  # ...it's not there.
             continue
