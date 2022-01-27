@@ -99,6 +99,13 @@ def test_df(well):
     assert df.iloc[10, 2] - 3.586400032 < 0.001
     assert df.shape == (12718, 24)
 
+    # test with keyword arguments
+    alias = {'Gamma': ['GR', 'GRC', 'NGT'], 'Caliper': ['HCAL', 'CALI']}
+    keys = ['Caliper', 'Gamma', 'DT']
+    df = well.df(keys=keys, alias=alias, uwi=True)
+    assert df.iloc[10, 1] - 46.69865036 < 0.001
+    assert df.shape == (12718, 3)
+
 
 def test_read_df(df):
     """

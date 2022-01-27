@@ -19,8 +19,7 @@ from welly import Location
 from welly.plot import WellPlotError
 
 params = {'tolerance': 20,
-          'savefig_kwargs': {'dpi': 100},
-          }
+          'savefig_kwargs': {'dpi': 100}}
 
 FNAME = 'tests/assets/P-129_out.LAS'
 FNAME_PROJECT = 'tests/assets/P-129_out-with*.LAS'
@@ -130,7 +129,6 @@ def test_well_plot(well):
     """
     Tests mpl image of well.
     """
-    plot = well.plot(tracks=['MD', 'GR', 'DT'],
-                    extents='curves')
+    plot = well.plot(tracks=['MD', 'GR', 'DT'], extents='curves')
 
     return plot.get_figure()
