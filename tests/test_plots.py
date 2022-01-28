@@ -120,7 +120,6 @@ def test_well_plot(well):
     """
     Tests mpl image of well.
     """
-    plot = well.plot(tracks=['MD', 'GR', 'DT'],
-                    extents='curves')
+    plot = well.plot(tracks=['MD', 'GR', 'DT'], extents='curves')
 
     return plot.get_figure()

@@ -46,18 +46,16 @@ def test_project():
 
 def test_data_as_matrix():
     """
-    Test currently not working
+    Test creating test and train matrices from wells in a project
     """
-    # alias = {'Sonic': ['DT', 'foo']}
-    # project = Project.from_las('tests/assets/*.las')
-    # X_train, y_train = project.data_as_matrix(X_keys=['DEPT', 'HCAL', 'Sonic'],
-    #                                           y_key='CALI',
-    #                                           alias=alias,
-    #                                           window_length=1,
-    #                                           remove_zeros=True,
-    #                                           )
-    # # Test needs repair
-    # assert X_train.shape[0] == y_train.size
+    alias = {'Sonic': ['DT', 'foo']}
+    project = Project.from_las('tests/assets/*.las')
+    X_train, y_train = project.data_as_matrix(X_keys=['DEPT', 'HCAL', 'Sonic'],
+                                              y_key='CALI',
+                                              alias=alias,
+                                              window_length=1,
+                                              remove_zeros=True)
+    assert X_train.shape[0] == y_train.size
 
 
 def test_df():
