@@ -595,7 +595,10 @@ class Well(object):
 
         if uwi:
             df['UWI'] = self.uwi
+            # add UWI as index as part of a MultiIndex
             df.set_index(['UWI'], append=True, inplace=True)
+            # swap MultiIndex levels
+            df = df.swaplevel()
 
         for column in df.columns:
             if is_object_dtype(df[column].dtype):
@@ -723,23 +726,42 @@ class Well(object):
 
         starts, stops, steps = [], [], []
         for k in keys:
-            d = self.get_curve(k, alias=alias)
-            if keys and (d is None):
+            curve = self.get_curve(k, alias=alias)
+            if keys and (curve is None):
                 continue
             try:
-                starts.append(d.start)
-                stops.append(d.stop)
-                steps.append(d.step)
+                starts.append(curve.start)
+                stops.append(curve.stop)
+                steps.append(curve.step)
             except Exception as e:
                 pass
         if starts and stops and steps:
-            step = step or min(steps)
-            return np.arange(min(starts), max(stops) + 1e-9, step)
+            if 0 in steps:
+                # remove all unequally sampled curves (step = 0) from list
+                steps = list(filter((0).__ne__, steps))
+            if step:
+                step = step
+            elif steps:
+                step = min(steps)
+            else:
+                step = None
+            if min(starts) > min(stops):
+                # create basis array and flip to descending
+                return np.flipud(np.arange(max(stops), min(starts) + 1e-9, step))
+            else:
+                # create basis array
+                return np.arange(min(starts), max(stops) + 1e-9, step)
+
         else:
             return None
 
-    def unify_basis(self, keys=None, alias=None, basis=None, start=None,
-                    stop=None, step=None):
+    def unify_basis(self,
+                    keys=None,
+                    alias=None,
+                    basis=None,
+                    start=None,
+                    stop=None,
+                    step=None):
         """
         Give every Curve in the well, or everything in the list of keys, the
         same basis. If you don't provide a basis, welly will try to get one
