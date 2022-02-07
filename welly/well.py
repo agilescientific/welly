@@ -593,8 +593,8 @@ class Well(object):
 
         df = pd.concat(list(data.values()), axis=1)
 
-        if not rename_aliased:
-            mapper = {k: self.get_mnemonic(k, alias=alias) for k in keys}
+        if rename_aliased:
+            mapper = {self.get_mnemonic(k, alias=alias): k for k in keys}
             df = df.rename(columns=mapper)
 
         if uwi:
