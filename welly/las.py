@@ -33,7 +33,7 @@ curve_item = CurveItem().__dict__
 # set pandas precision higher to not automatically round the curve data
 try:
     pd.set_option('precision', 10)
-except OptionError:
+except:
     # python >= 3.8
     pd.set_option('display.precision', 10)
 
