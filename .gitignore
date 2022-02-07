@@ -1,4 +1,5 @@
-test.las
+# Kepp out of change control.
+_version.py
 tutorial/.ipynb_checkpoints
 .vscode
 
