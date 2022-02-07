@@ -3,6 +3,7 @@
 ## 0.5.0, coming in January 2022
 
 - Major change: Everything in `welly` is now much closer to `pandas`. Chiefly, `Curve` objects are now represented by wrapped `pandas.DataFrame` objects (note: not `Series` as you might expect, so they can be two-dimensional). They were previously subclassed NumPy `ndarray` objects, so while we've tried to preserve as much of it as possible, expect some changes to the `Curve` API. Please let us know if there's something you miss, it can probably be implemented. Many thanks to the developers that made this happen.
+- Major change: the `Curve` object can no longer be instantiated with `basis` and `params`, please instead use `index`
 - Major change: as previously indicated, the default behaviour is now to load the depth curve in its original units. That is: `welly` no longer converts everything to metres. Use `index='metres'` in `from_las()` to get the old behaviour.
 - You can now create a project with `welly.read_las('path/to/*.las')`. Note: this always gives you a project, even if it only contains a single well.
 - As previously indicated, dogleg severity is now given in units of degrees per course length.
