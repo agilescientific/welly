@@ -389,9 +389,12 @@ class Curve(object):
         """
         return self.df.index.values
 
-    def astype(self, dtype):
+    def astype(self, dtype, **kwargs):
+        """
+        Assign dtype to the Curve df.
+        """
         curve = copy.deepcopy(self)
-        setattr(curve, 'df', self.df.astype(dtype))
+        setattr(curve, 'df', self.df.astype(dtype, **kwargs))
         return curve
 
     def median(self, axis=None, **kwargs):
@@ -444,6 +447,10 @@ class Curve(object):
         """
         Given a mnemonic, get the alias name(s) it falls under. If there aren't
         any, you get an empty list.
+
+        Args:
+            alias (dict): a dictionary mapping mnemonics to lists of mnemonics.
+                e.g. {'density': ['DEN', 'DENS']}
         """
         alias = alias or {}
 

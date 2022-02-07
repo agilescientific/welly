@@ -144,7 +144,7 @@ class Well(object):
             Nothing, works inplace
         """
         # delete existing row for uwi if it exists
-        if 'UWI' in self.header.mnemonic:
+        if any(self.header.mnemonic.isin(['UWI'])):
             self.header = self.header[self.header.mnemonic != 'UWI']
 
         self.add_header_item('uwi', uwi)

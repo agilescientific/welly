@@ -521,8 +521,6 @@ class Project(object):
         Returns:
             well
         """
-        if uwi is None:
-            raise ValueError('a UWI must be provided')
         matching_wells = [w for w in self if w.uwi == uwi]
         return matching_wells[0] if len(matching_wells) >= 1 else None
 
@@ -531,13 +529,14 @@ class Project(object):
         Returns a new Project object containing wells from self where
         curves from the wells on the right have been added. Matching between
         wells in self and right is based on uwi match and ony wells in self
-        are considered
+        are considered.
 
         Args:
-            uwi (string): the UWI string for the well.
+            right (Project): Project with well that needs to be merged.
+            keys (list): list of mnemonics to merge.
         
         Returns:
-            project
+            Project
         """
         wells = []
         for w in self:
