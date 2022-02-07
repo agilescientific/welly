@@ -1147,7 +1147,7 @@ class Well(object):
                                'section': obj}
 
                     # add new row to header
-                    self.header = self.header.append(new_row, ignore_index=True)
+                    self.header = pd.concat([self.header, new_row], ignore_index=True)
 
     def assign_categorical(self, mnemonics):
         """
