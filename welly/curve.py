@@ -78,7 +78,7 @@ class Curve(object):
                  run=None,
                  service_company=None,
                  units=None,
-                 family=None):
+                 log_type=None):
 
         if basis is not None:
             m = "In a future release, the basis argument will be removed; use index instead."
@@ -107,8 +107,8 @@ class Curve(object):
         self.code = code
         self.description = description
         self.units = units
-        self.family = family
-        # Set parameters related to well.
+        self.log_type = log_type
+        # set parameters related to well
         self.api = api
         self.date = date
         self.null = null
@@ -322,9 +322,12 @@ class Curve(object):
     @dtypes.setter
     def dtypes(self, dtypes):
         """
-        Set the data types of the columns of the pd.DataFrame (str)
+        Set the data types of the columns of the pd.DataFrame
+
+        Args:
+            dtypes (data type, or dict of column name: data type): types to convert to
         """
-        return setattr(self, 'df',  self.df.astype(dtypes))
+        setattr(self, 'df',  self.df.astype(dtypes))
 
     @property
     def index_name(self):
@@ -410,14 +413,14 @@ class Curve(object):
         Returns the minimum of the pd.DataFrame values of the columns in the curve
         in a pd.Series
         """
-        return self.df.min()
+        return self.df.min(axis=axis, **kwargs)
 
     def max(self, axis=None, **kwargs):
         """
         Returns the maximum of the pd.DataFrame values of the columns in the curve
         in a pd.Series
         """
-        return self.df.max()
+        return self.df.max(axis=axis, **kwargs)
 
     def describe(self):
         """
@@ -504,7 +507,6 @@ class Curve(object):
             return result, rolled
         else:
             return result
-
 
     def despike(self, window_length=33, samples=True, z=2):
         """
@@ -795,12 +797,13 @@ class Curve(object):
         Returns:
             Curve. The current instance in the new basis.
         """
-        # category data type or a string in data defaults to 'nearest'
-        if self.df.dtypes[0] == 'category' or self.df.applymap(type).eq(str).any()[0]:
-            interp_kind = 'nearest'
-        else:
-            # otherwise apply linear interpolation
-            interp_kind = 'linear'
+        if not interp_kind:
+            # category data type or any string in data defaults to 'nearest'
+            if self.df.dtypes[0] == 'category' or self.df.applymap(type).eq(str).any()[0]:
+                interp_kind = 'nearest'
+            else:
+                # otherwise apply linear interpolation by default
+                interp_kind = 'linear'
 
         new_curve = copy.deepcopy(self)
 
@@ -829,9 +832,7 @@ class Curve(object):
                               bounds_error=False,
                               fill_value=undefined)
             # create new df with interpolated data
-            new_df = pd.DataFrame(interp(basis),
-                                  index=basis,
-                                  columns=self.df.columns)
+            new_df = pd.DataFrame(interp(basis), index=basis, columns=self.df.columns)
             # create and set new df attribute on curve
             setattr(new_curve, 'df', new_df)
             # propagate old df attributes to new df curve attribute

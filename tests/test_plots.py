@@ -10,7 +10,6 @@ welly/run_tests.py
 https://pypi.python.org/pypi/pytest-mpl/0.3
 """
 import pytest
-import matplotlib.pyplot as plt
 
 from welly import Well
 from welly import Project
@@ -18,8 +17,7 @@ from welly import Synthetic
 from welly import Location
 
 params = {'tolerance': 20,
-          'savefig_kwargs': {'dpi': 100},
-          }
+          'savefig_kwargs': {'dpi': 100}}
 
 FNAME = 'tests/assets/P-129_out.LAS'
 FNAME_PROJECT = 'tests/assets/P-129_out-with*.LAS'
@@ -76,7 +74,16 @@ def test_curve_2d_plot(well):
     """
     Tests mpl image of curve as VD display.
     """
-    fig = well.data['GR'].plot_2d().get_figure()
+    curve = well.data['GR']
+
+    # plot 2D curve
+    curve.plot_2d()
+
+    # subtract curve values from 200
+    curve2 = 200-curve
+
+    # plot a curve with clipped colored mask
+    fig = curve2.plot_2d(cmap='viridis', curve=True, lw=-.5, edgecolor='k').get_figure()
 
     return fig
 
@@ -87,8 +94,8 @@ def test_synthetic_plot():
     Tests mpl image of synthetic.
     """
     data = [4, 2, 0, -4, -2, 1, 3, 6, 3, 1, -2, -5, -1, 0]
-    params = {'dt': 0.004}
-    s = Synthetic(data, params=params)
+    test_params = {'dt': 0.004}
+    s = Synthetic(data, params=test_params)
 
     fig = s.plot().get_figure()
 
@@ -113,7 +120,6 @@ def test_well_plot(well):
     """
     Tests mpl image of well.
     """
-    plot = well.plot(tracks=['MD', 'GR', 'DT'],
-                    extents='curves')
+    plot = well.plot(tracks=['MD', 'GR', 'DT'], extents='curves')
 
     return plot.get_figure()
