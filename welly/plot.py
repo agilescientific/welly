@@ -376,7 +376,7 @@ def plot_2d_curve(curve,
         raise NotImplementedError("Can only handle up to 3 dimensions.")
 
     # At this point, a is either a 2D array, or a 2D (rgb) array.
-    extent = [min(curve_data) or 0, max(curve_data) or default, curve.stop, curve.start]
+    extent = [np.nanmin(curve_data) or 0, np.nanmax(curve_data) or default, curve.stop, curve.start]
     im = ax.imshow(a, cmap=cmap, extent=extent, aspect='auto')
 
     if plot_curve:
