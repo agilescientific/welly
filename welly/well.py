@@ -68,6 +68,10 @@ class Well(object):
         self.header = getattr(self, 'header', empty_header)
         self.location = getattr(self, 'location', Location())
 
+    def __iter__(self):
+        for curve in self.data.values():
+            yield curve
+
     def __eq__(self, other):
         if (not self.uwi) or (not other.uwi):
             m = "One or both UWIs is blank, cannot determine equality."
