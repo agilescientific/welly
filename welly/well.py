@@ -250,7 +250,7 @@ class Well(object):
                                  req=req,
                                  alias=alias,
                                  fname=fname,
-                                 index_unit=index)
+                                 index_units=index)
 
         return well
 
@@ -311,7 +311,7 @@ class Well(object):
                                  req=req,
                                  alias=alias,
                                  fname=fname,
-                                 index_unit=index,
+                                 index_units=index,
                                  )
 
         return well
@@ -325,7 +325,7 @@ class Well(object):
                       req=None,
                       alias=None,
                       fname=None,
-                      index_unit=None):
+                      index_units=None):
         """
         Constructor. If you have a `datasets` object, this will create a well
         object from it. See :func:`las.from_las()` for a description of a
@@ -341,7 +341,7 @@ class Well(object):
             req (list): An alias list, giving all required curves.
             alias (dict): An alias dictionary.
             fname (str): The filename, if you want to keep it.
-            index_unit (str): Optional. The unit of the index upon construction
+            index_units (str): Optional. The unit of the index upon construction
                 of the Curves (e.g. 'm' or 'ft'). Will perform unit conversion
                 if specified index unit is different than the existing index
                 unit.
@@ -386,15 +386,16 @@ class Well(object):
             # get index unit from the first curve
             unit = df_header[(df_header["section"] == dataset_name)].iloc[0].unit
 
-            if index_unit:
+            if index_units in ['m', 'ft']:
+                # If 'existing', we just leave it alone.
                 # convert index to different index unit, if passed
-                df_data.index = _convert_depth_index_unit(index=df_data.index,
+                df_data.index = _convert_depth_index_units(index=df_data.index,
                                                           unit_from=unit,
-                                                          unit_to=index_unit)
+                                                          unit_to=index_units)
                 # set to the unit that the index has just been converted to
-                unit = index_unit
+                unit = index_units
 
-            well_curve_params['index_unit'] = unit
+            well_curve_params['index_units'] = unit
 
             # get the curve related parameters (mnemonic, unit, description)
             curve_params = _get_curve_params(df_header, dataset_name)
@@ -1222,7 +1223,7 @@ def _get_curve_params(header, dataset_name):
     return curve_params.set_index('mnemonic').T
 
 
-def _convert_depth_index_unit(index, unit_from, unit_to):
+def _convert_depth_index_units(index, unit_from, unit_to):
     """
     Convert a depth index from and to meters and feet. Flip the depth index if
     it is descending because it should be ascending (increasing in depth).
@@ -1236,14 +1237,17 @@ def _convert_depth_index_unit(index, unit_from, unit_to):
     Returns:
         index (np.array or pd.Index): The converted index
     """
-    if (unit_from.lower() == 'm' or unit_from == '') and "ft" in unit_to.lower():
-        index = index * 3.280839895  # convert to ft
-    elif (unit_from.lower() == 'ft' or unit_from == '') and "m" in unit_to.lower():
-        index = index * 0.3048000000012192  # convert to m
-    else:
+    if unit_to.lower() not in ['m', 'f', 'ft']:
         raise KeyError(f"Index must be 'm' or 'ft', but was: {unit_to}")
 
-    # flip the index if it is descending
+    if (unit_from.lower() == 'm' or unit_from == '') and "f" in unit_to.lower():
+        index = index * 3.280839895  # convert to ft
+    elif (unit_from.lower() in ['f', 'ft'] or unit_from == '') and "m" in unit_to.lower():
+        index = index * 0.3048000000012192  # convert to m
+    else:
+        pass  # No conversion needed.
+        
+    # Flip the index if it is descending.
     if index[0] > index[1]:
         if isinstance(index, pd.Index):
             # index is pandas index

@@ -42,7 +42,7 @@ class Curve(object):
         index_name (str): Optional.
             Name of the index that will be assigned to
             pd.DataFrame.index.name (e.g. 'depth', 'time').
-        index_unit (str): Optional.
+        index_units (str): Optional.
             Unit of the index (e.g. 'ft', 'm', 'ms').
         api (str): Optional.
             Application program interface number.
@@ -69,7 +69,7 @@ class Curve(object):
                  mnemonic=None,
                  dtype=None,
                  index_name=None,
-                 index_unit=None,
+                 index_units=None,
                  api=None,
                  code=None,
                  description=None,
@@ -103,7 +103,7 @@ class Curve(object):
             self.df.index.name = index_name
 
         # Set parameters related to curve.
-        self.index_unit = index_unit
+        self.index_units = index_units
         self.code = code
         self.description = description
         self.units = units
@@ -271,6 +271,12 @@ class Curve(object):
         # End.
         html = '<table>{}</table>'.format(rows)
         return html
+
+    @property
+    def basis_units(self):
+        m = "In a future release, the basis argument will be removed; use index instead."
+        warnings.warn(m, DeprecationWarning, stacklevel=2)
+        return self.index_units
 
     @property
     def shape(self):

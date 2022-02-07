@@ -3,29 +3,29 @@ VERS.   2.0 : CWLS log ASCII Standard -VERSION 2.0
 WRAP.    NO : One line per depth step
 DLM . SPACE : Column Data Section Delimiter
 ~Well ------------------------------------------------------
-STRT  .m                     1.0668 : START DEPTH
-STOP  .m         1939.1376000000012 : STOP DEPTH
-STEP  .m         0.1524000000000001 : STEP
+STRT  .m                    1.06680 : START DEPTH
+STOP  .m                 1939.13760 : STOP DEPTH
+STEP  .m                    0.15240 : STEP
 NULL  .                     -999.25 : NULL VALUE
 COMP  . Elmworth Energy Corporation : COMPANY
 WELL  .               Kennetcook #2 : WELL
 FLD   .               Windsor Block : FIELD
 LOC   .     Lat = 45* 12' 34.237" N : LOCATION
 PROV  .                 Nova Scotia : PROVINCE
-CNTY  .                        None : COUNTY
-STAT  .                        None : STATE
+CNTY  .                             : COUNTY
+STAT  .                             : STATE
 CTRY  .                          CA : COUNTRY
 SRVC  .                             : SERVICE COMPANY
-DATE  .  2020-12-11 13:18:09.649657 : DATE
+DATE  .  2022-02-07 17:35:51.722026 : DATE
 UWI   .     Long = 63* 45'24.460  W : UNIQUE WELL ID
-API   .                        None : API NUMBER
+API   .                             : API NUMBER
 LIC   .                       P-129 : 
 LATI  .                             : 
 LONG  .                             : 
-NS    .                        None : 
-EW    .                        None : 
-XCOORD.                        None : 
-YCOORD.                        None : 
+NS    .                             : 
+EW    .                             : 
+XCOORD.                             : 
+YCOORD.                             : 
 GDAT  .                             : 
 SECT  .                 45.20 Deg N : 
 RANG  .                      PD 176 : 
@@ -59,9 +59,9 @@ SP      .mV     : SP
 ~Params ----------------------------------------------------
 EKB.   94.8 : 
 EGL.   90.3 : 
-KB .   None : 
+KB .        : 
 GL .   90.3 : 
-TD .   None : 
+TD .        : 
 TDD. 1935.0 : 
 TDL. 1935.0 : 
 ~Other -----------------------------------------------------
