@@ -3,6 +3,7 @@
 Define a suite a tests for the Curve module.
 """
 import numpy as np
+import pandas as pd
 from pandas import RangeIndex
 
 from welly.curve import Curve
@@ -16,6 +17,8 @@ def test_curve(curve):
     assert curve.shape[1] == 1
     assert curve.size == 12718
     assert curve.df.index.size == 12718
+    assert curve.values[0][0] - 46.69865036 < 0.0001
+    assert curve.index_name == 'DEPT'
 
     # Check HTML repr.
     html = curve._repr_html_()
@@ -121,6 +124,9 @@ def test_create_1d_curve():
     c = Curve(data=data_num)
     assert c.df.iloc[0, 0] == 1
 
+    c2 = Curve(data=pd.DataFrame(data_num))
+    pd.testing.assert_frame_equal(c.df, c2.df)
+
 
 def test_create_1d_curve_with_index_name():
     c = Curve(data=data_num, index_name='depth')
@@ -169,3 +175,106 @@ def test_create_2d_curve_cat():
     c = Curve(data=data_cat_2d, mnemonic=mnemonic2d, dtype='category')
     assert c.df.shape == (20, 2)
     assert c.df.iloc[1, 1] == 'sand'
+
+
+def test_add_curve():
+    """
+    Test adding to curve
+    """
+    c1 = Curve(data=data_num, mnemonic='test')
+    c2 = c1 + 100
+    assert (c2.df.iloc[0][0] - 101) < 0.0001
+
+
+def test_subtract_curve():
+    """
+    Test subtracting from curve
+    """
+    c1 = Curve(data=data_num, mnemonic='test')
+    c2 = c1 - 100
+    assert (c2.df.iloc[0][0] + 99) < 0.0001
+
+
+def test_multiply_curve():
+    """
+    Test multiplying curve
+    """
+    c1 = Curve(data=data_num, mnemonic='test')
+    c2 = c1 * 2
+    assert (c2.df.iloc[0][0] - 2) < 0.0001
+
+
+def test_divide_curve():
+    """
+    Test multiplying curve
+    """
+    c1 = Curve(data=data_num, mnemonic='test')
+    c2 = c1 / 2
+    assert (c2.df.iloc[0][0] - 0.5) < 0.0001
+
+
+def test_exponent_curve():
+    """
+    Test exponentiating curve
+    """
+    c1 = Curve(data=data_num, mnemonic='test')
+    c2 = c1 ** 2
+    assert (c2.df.iloc[1][0] - 131.64542936288086) < 0.0001
+
+
+def test_curve_print(curve, capsys):
+    print(curve)
+    captured = capsys.readouterr()
+    assert captured.out == 'Curve(mnemonic=GR, units=gAPI, start=1.0668, stop=1939.1376, step=0.1524, count=[12718])\n'
+
+
+def test_curve_astype():
+    """
+    Test assign curve type
+    """
+    c1 = Curve(data=np.linspace(1, 20, 2))
+    c2 = c1.astype('category')
+    assert c2.df.dtypes[0].name == 'category'
+
+
+def test_curve_statistics():
+    """
+    Test compute median, mean, min, max of curve
+    """
+    c = Curve(data=np.linspace(1, 20, 2))
+
+    assert c.median()[0] == 10.5
+    assert c.mean()[0] == 10.5
+    assert c.min()[0] == 1
+    assert c.max()[0] == 20
+    assert c.describe()[0][0] == 2
+
+
+def test_get_alias():
+    """
+    Test getting curve alias
+    """
+    c = Curve(data=np.linspace(1, 20, 2), mnemonic='DT')
+    alias = {'Sonic': ['DT', 'foo']}
+    assert c.get_alias(alias) == ['Sonic']
+
+
+def test_curve_as_numpy():
+    """
+    Test curve as numpy
+    """
+    c = Curve(data=data_num_2d)
+
+    assert c.as_numpy()[0][0] == 1
+
+
+def test_curve_apply():
+    """
+    Test apply function on curve
+    """
+    c = Curve(data=data_num)
+    c2 = c.apply(window_length=3)
+    c3 = c.apply(window_length=3, func1d=np.min)
+
+    assert c2.df.iloc[0][0] - 4.491228070175438 < 0.0001
+    assert c3.df.iloc[0][0] - 1 < 0.0001

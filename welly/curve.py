@@ -389,9 +389,12 @@ class Curve(object):
         """
         return self.df.index.values
 
-    def astype(self, dtype):
+    def astype(self, dtype, **kwargs):
+        """
+        Assign dtype to the Curve df.
+        """
         curve = copy.deepcopy(self)
-        setattr(curve, 'df', self.df.astype(dtype))
+        setattr(curve, 'df', self.df.astype(dtype, **kwargs))
         return curve
 
     def median(self, axis=None, **kwargs):
@@ -444,6 +447,10 @@ class Curve(object):
         """
         Given a mnemonic, get the alias name(s) it falls under. If there aren't
         any, you get an empty list.
+
+        Args:
+            alias (dict): a dictionary mapping mnemonics to lists of mnemonics.
+                e.g. {'density': ['DEN', 'DENS']}
         """
         alias = alias or {}
 
@@ -770,7 +777,7 @@ class Curve(object):
                  stop=None,
                  step=None,
                  undefined=None,
-                 interp_kind=None):
+                 interp_kind='linear'):
         """
         Make a new curve in a new basis, given a basis, or a new start, step,
         and/or stop. You only need to set the parameters you want to change.
@@ -797,14 +804,10 @@ class Curve(object):
         Returns:
             Curve. The current instance in the new basis.
         """
-        if not interp_kind:
-            # category data type or any string in data defaults to 'nearest'
-            if self.df.dtypes[0] == 'category' or self.df.applymap(type).eq(str).any()[0]:
-                interp_kind = 'nearest'
-            else:
-                # otherwise apply linear interpolation by default
-                interp_kind = 'linear'
-
+        # category data type or a string in data defaults to 'nearest'
+        if self.df.dtypes[0] == 'category' or self.df.applymap(type).eq(str).any()[0]:
+            interp_kind = 'nearest'
+            
         new_curve = copy.deepcopy(self)
 
         if basis is None:
