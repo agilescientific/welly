@@ -397,28 +397,28 @@ class Curve(object):
         setattr(curve, 'df', self.df.astype(dtype, **kwargs))
         return curve
 
-    def median(self, axis=None, **kwargs):
+    def median(self, axis=0, **kwargs):
         """
         Returns the median of the pd.DataFrame values of the columns in the curve
         in a pd.Series
         """
         return self.df.median(axis=axis, **kwargs)
 
-    def mean(self, axis=None, **kwargs):
+    def mean(self, axis=0, **kwargs):
         """
         Returns the mean of the pd.DataFrame values of the columns in the curve
         in a pd.Series
         """
         return self.df.mean(axis=axis, **kwargs)
 
-    def min(self, axis=None, **kwargs):
+    def min(self, axis=0, **kwargs):
         """
         Returns the minimum of the pd.DataFrame values of the columns in the curve
         in a pd.Series
         """
         return self.df.min(axis=axis, **kwargs)
 
-    def max(self, axis=None, **kwargs):
+    def max(self, axis=0, **kwargs):
         """
         Returns the maximum of the pd.DataFrame values of the columns in the curve
         in a pd.Series
