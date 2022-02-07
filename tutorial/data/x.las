@@ -16,7 +16,7 @@ CNTY  .                             : COUNTY
 STAT  .                             : STATE
 CTRY  .                          CA : COUNTRY
 SRVC  .                             : SERVICE COMPANY
-DATE  .  2022-01-03 15:47:58.667548 : DATE
+DATE  .  2022-01-06 14:50:56.211803 : DATE
 UWI   .               Kennetcook #2 : UNIQUE WELL ID
 API   .                             : API NUMBER
 LIC   .                       P-129 : 

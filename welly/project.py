@@ -58,6 +58,9 @@ class Project(object):
     def __setitem__(self, key, value):
         self.__list[key] = value
 
+    def __delitem__(self, key):
+        del(self.__list[key])
+
     def __iter__(self):
         for w in self.__list:
             yield w
@@ -156,9 +159,10 @@ class Project(object):
         if path is None:
             path = glob.iglob('./*.[LlAaSs]')
         if isinstance(path, str):
-            if '*' in path:
+            try:
                 path = glob.iglob(path)
-            else:
+            except:
+                # Is probably just a filename.
                 path = [path]
 
         wells = [Well.from_las(f,
