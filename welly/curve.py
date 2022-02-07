@@ -77,7 +77,7 @@ class Curve(object):
                  run=None,
                  service_company=None,
                  units=None,
-                 family=None):
+                 log_type=None):
 
         if isinstance(mnemonic, str):
             mnemonic = [mnemonic]
@@ -98,7 +98,7 @@ class Curve(object):
         self.code = code
         self.description = description
         self.units = units
-        self.family = family
+        self.log_type = log_type
         # set parameters related to well
         self.api = api
         self.date = date
