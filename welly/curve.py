@@ -5,6 +5,7 @@ Defines log curves
 :license: Apache 2.0
 """
 import copy
+import warnings
 
 import numpy as np
 import pandas as pd
@@ -63,8 +64,8 @@ class Curve(object):
             curve (welly.Curve): The curve object.
     """
     def __init__(self,
-                 data,
-                 index=None,
+                 data, *,
+                 index=None, basis=None,  # `basis` will be deprecated.
                  mnemonic=None,
                  dtype=None,
                  index_name=None,
@@ -79,6 +80,14 @@ class Curve(object):
                  units=None,
                  family=None):
 
+        if basis is not None:
+            m = "In a future release, the basis argument will be removed; use index instead."
+            warnings.warn(m, DeprecationWarning, stacklevel=2)
+            if index is not None:
+                m = "Using index in preference to basis; don't pass both."
+            else:
+                index = basis
+
         if isinstance(mnemonic, str):
             mnemonic = [mnemonic]
 
@@ -87,19 +96,19 @@ class Curve(object):
             if mnemonic:
                 self.df.columns = mnemonic
         else:
-            # construct dataframe
+            # Construct dataframe.
             self.df = pd.DataFrame(data=data, index=index, dtype=dtype, columns=mnemonic)
 
         if index_name:
             self.df.index.name = index_name
 
-        # set parameters related to curve
+        # Set parameters related to curve.
         self.index_unit = index_unit
         self.code = code
         self.description = description
         self.units = units
         self.family = family
-        # set parameters related to well
+        # Set parameters related to well.
         self.api = api
         self.date = date
         self.null = null
