@@ -184,13 +184,15 @@ def test_url_project():
     """
     Test loading a project through the URL. Requires internet connection.
     """
-    try:
-        url = 'https://www.nlog.nl/brh-web/rest/brh/logdocument/394951463'
-        p = Project.from_las(url)
-        assert len(p) == 1
-    except URLError:
-        # not connected to internet
-        pass
+    url = 'https://www.nlog.nl/brh-web/rest/brh/logdocument/394951463'
+    p = Project.from_las(url)
+    print(p)
+    assert len(p) == 1
+
+    p = Project.from_las('tests/assets/1.las')
+    print(p)
+    assert len(p) == 1
+
 
 
 def test_read_las():

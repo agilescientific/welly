@@ -8,6 +8,7 @@ from __future__ import print_function
 
 import glob
 from collections import Counter
+from urllib.parse import non_hierarchical
 import warnings
 
 import numpy as np
@@ -156,14 +157,18 @@ class Project(object):
             max = 1e12
         if (req is not None) and (alias is None):
             raise WellError("You need to provide an alias dict as well as requirement list.")
+
         if path is None:
-            path = glob.iglob('./*.[LlAaSs]')
-        if isinstance(path, str):
-            try:
-                path = glob.iglob(path)
-            except:
-                # Is probably just a filename.
-                path = [path]
+            uris = glob.glob('./*.[LlAaSs]')
+        elif isinstance(path, str):
+            uris = glob.glob(path)
+            if not uris:
+                # The glob produced nothing.
+                # URLs to 'folders' (eg a bucket) are not supported.
+                # If it's a non-existent file, we'll get an error later.
+                uris = [path]
+        else:
+            uris = path  # It's a list-like of files and/or URLs.
 
         wells = [Well.from_las(f,
                                remap=remap,
@@ -176,7 +181,7 @@ class Project(object):
                                index=index,
                                **kwargs,
                                )
-                 for i, f in tqdm(enumerate(path)) if i < max]
+                 for i, f in tqdm(enumerate(uris)) if i < max]
 
         return cls(list(filter(None, wells)))
 

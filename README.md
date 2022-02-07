@@ -14,7 +14,7 @@ Welly is a family of classes to facilitate the loading, processing, and analysis
 
     pip install welly
 
-For developers, there are `pip` options for installing `tests`, `docs` or `dev` (docs plus tests) dependencies.
+For developers, there are `pip` options for installing `test`, `docs` or `dev` (docs plus test) dependencies.
 
 
 ## Quick start
