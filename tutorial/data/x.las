@@ -3,8 +3,8 @@ VERS.   2.0 : CWLS log ASCII Standard -VERSION 2.0
 WRAP.    NO : One line per depth step
 DLM . SPACE : Column Data Section Delimiter
 ~Well ------------------------------------------------------
-STRT  .m                     1.0668 : START DEPTH
-STOP  .m                  1939.1376 : STOP DEPTH
+STRT  .m                    1.06680 : START DEPTH
+STOP  .m                 1939.13760 : STOP DEPTH
 STEP  .m                    0.15240 : STEP
 NULL  .                    -111.111 : NULL VALUE
 COMP  . Elmworth Energy Corporation : COMPANY
@@ -16,7 +16,7 @@ CNTY  .                             : COUNTY
 STAT  .                             : STATE
 CTRY  .                          CA : COUNTRY
 SRVC  .                             : SERVICE COMPANY
-DATE  .  2022-01-06 14:50:56.211803 : DATE
+DATE  .  2022-02-07 16:43:06.986846 : DATE
 UWI   .               Kennetcook #2 : UNIQUE WELL ID
 API   .                             : API NUMBER
 LIC   .                       P-129 : 
