@@ -5,6 +5,7 @@ Submodules
 ----------
 
 .. toctree::
+   :maxdepth: 4
 
    welly.canstrat
    welly.canstrat_codes
@@ -13,7 +14,9 @@ Submodules
    welly.defaults
    welly.fields
    welly.header
+   welly.las
    welly.location
+   welly.plot
    welly.project
    welly.quality
    welly.scales
@@ -26,6 +29,6 @@ Module contents
 ---------------
 
 .. automodule:: welly
-    :members:
-    :undoc-members:
-    :show-inheritance:
+   :members:
+   :undoc-members:
+   :show-inheritance:
