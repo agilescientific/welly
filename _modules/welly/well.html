@@ -1,0 +1,1396 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>welly.well &mdash; welly  documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> welly
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../source/intro.html">Home</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/req.html">Requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/api_toc.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/indices.html">Index</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">welly</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+          <li><a href="../welly.html">welly</a> &raquo;</li>
+      <li>welly.well</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for welly.well</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Defines wells.</span>
+
+<span class="sd">:copyright: 2021 Agile Scientific</span>
+<span class="sd">:license: Apache 2.0</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">division</span>
+
+<span class="kn">import</span> <span class="nn">re</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">pandas.api.types</span> <span class="kn">import</span> <span class="n">is_object_dtype</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">.fields</span> <span class="kn">import</span> <span class="n">las_fields</span> <span class="k">as</span> <span class="n">LAS_FIELDS</span>
+<span class="kn">from</span> <span class="nn">.curve</span> <span class="kn">import</span> <span class="n">Curve</span>
+<span class="kn">from</span> <span class="nn">.las</span> <span class="kn">import</span> <span class="n">from_las</span><span class="p">,</span> <span class="n">file_from_url</span><span class="p">,</span> <span class="n">from_lasio</span><span class="p">,</span> <span class="n">to_lasio</span>
+<span class="kn">from</span> <span class="nn">.location</span> <span class="kn">import</span> <span class="n">Location</span>
+<span class="kn">from</span> <span class="nn">.synthetic</span> <span class="kn">import</span> <span class="n">Synthetic</span>
+<span class="kn">from</span> <span class="nn">.canstrat</span> <span class="kn">import</span> <span class="n">well_to_card_1</span>
+<span class="kn">from</span> <span class="nn">.canstrat</span> <span class="kn">import</span> <span class="n">well_to_card_2</span>
+<span class="kn">from</span> <span class="nn">.canstrat</span> <span class="kn">import</span> <span class="n">interval_to_card_7</span>
+<span class="kn">from</span> <span class="nn">.canstrat</span> <span class="kn">import</span> <span class="n">write_row</span>
+<span class="kn">from</span> <span class="nn">.plot</span> <span class="kn">import</span> <span class="n">plot_well</span><span class="p">,</span> <span class="n">plot_depth_track_well</span>
+<span class="kn">from</span> <span class="nn">.quality</span> <span class="kn">import</span> <span class="n">qc_data_well</span><span class="p">,</span> <span class="n">qc_curve_group_well</span><span class="p">,</span> <span class="n">qc_table_html_well</span>
+
+<span class="c1">###############################################</span>
+<span class="c1"># This module is not used directly, but must</span>
+<span class="c1"># be imported in order to register new scales.</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">scales</span>  <span class="c1"># DO NOT DELETE</span>
+<span class="c1">###############################################</span>
+
+
+<span class="c1"># define possible depth/time/index curve mnemonics in a LAS file</span>
+<span class="n">index_curve_mnemonics</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;DEPT&#39;</span><span class="p">,</span> <span class="s1">&#39;DEPTH&#39;</span><span class="p">,</span> <span class="s1">&#39;TIME&#39;</span><span class="p">,</span> <span class="s1">&#39;INDEX&#39;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="WellError"><a class="viewcode-back" href="../../api/welly.well.html#welly.WellError">[docs]</a><span class="k">class</span> <span class="nc">WellError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generic error class.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="Well"><a class="viewcode-back" href="../../api/welly.well.html#welly.Well">[docs]</a><span class="k">class</span> <span class="nc">Well</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Well contains everything about the well.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generic initializer.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">params</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">params</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">params</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="ow">and</span> <span class="p">(</span><span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+
+        <span class="c1"># empty header if none is passed</span>
+        <span class="n">empty_header</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;original_mnemonic&#39;</span><span class="p">,</span> <span class="s1">&#39;mnemonic&#39;</span><span class="p">,</span>
+                                             <span class="s1">&#39;unit&#39;</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">,</span> <span class="s1">&#39;descr&#39;</span><span class="p">,</span> <span class="s1">&#39;section&#39;</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">header</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;header&#39;</span><span class="p">,</span> <span class="n">empty_header</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;location&#39;</span><span class="p">,</span> <span class="n">Location</span><span class="p">())</span>
+
+    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">curve</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">yield</span> <span class="n">curve</span>
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">uwi</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="ow">not</span> <span class="n">other</span><span class="o">.</span><span class="n">uwi</span><span class="p">):</span>
+            <span class="n">m</span> <span class="o">=</span> <span class="s2">&quot;One or both UWIs is blank, cannot determine equality.&quot;</span>
+            <span class="k">raise</span> <span class="n">WellError</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">uwi</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">uwi</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="fm">__bool__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Truthiness.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">uwi</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="n">__nonzero__</span> <span class="o">=</span> <span class="fm">__bool__</span>  <span class="c1"># Python 2.7.</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Non-rich representation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Well(uwi: &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">uwi</span><span class="si">}</span><span class="s2">&#39;, name: &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;, </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span><span class="si">}</span><span class="s2"> curves: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">)&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_repr_html_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Jupyter Notebook magic repr function.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">row1</span> <span class="o">=</span> <span class="s1">&#39;&lt;tr&gt;&lt;th style=&quot;text-align:center;&quot; &#39;</span>
+        <span class="n">row1</span> <span class="o">+=</span> <span class="s1">&#39;colspan=&quot;2&quot;&gt;</span><span class="si">{}</span><span class="s1">&lt;br&gt;&lt;small&gt;{{}}&lt;/small&gt;&lt;/th&gt;&lt;/tr&gt;&#39;</span>
+        <span class="n">rows</span> <span class="o">=</span> <span class="n">row1</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">))</span>
+        <span class="n">rows</span> <span class="o">=</span> <span class="n">rows</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;uwi&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">))</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="s1">&#39;&lt;tr&gt;&lt;td&gt;&lt;strong&gt;</span><span class="si">{k}</span><span class="s1">&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;</span><span class="si">{v}</span><span class="s1">&lt;/td&gt;&lt;/tr&gt;&#39;</span>
+
+        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;location&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;deviation&#39;</span><span class="p">,</span> <span class="s1">&#39;position&#39;</span><span class="p">]:</span>
+                    <span class="k">continue</span>
+                <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="s1">&#39;crs&#39;</span><span class="p">:</span>
+                    <span class="n">v</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span>
+                <span class="n">rows</span> <span class="o">+=</span> <span class="n">s</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="o">=</span><span class="n">v</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">v</span> <span class="o">=</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">())))</span>
+            <span class="n">rows</span> <span class="o">+=</span> <span class="n">s</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="n">v</span><span class="o">=</span><span class="n">v</span><span class="p">)</span>
+
+        <span class="n">html</span> <span class="o">=</span> <span class="s1">&#39;&lt;table&gt;</span><span class="si">{}</span><span class="s1">&lt;/table&gt;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">html</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">uwi</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Property. Simply a shortcut to the UWI from the header, or the</span>
+<span class="sd">        empty string if there isn&#39;t one.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">mnemonic</span> <span class="o">==</span> <span class="s1">&#39;UWI&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;&#39;</span>
+
+    <span class="nd">@uwi</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">uwi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uwi</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the uwi of the well by adding a row to the header dataframe</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            uwi (str): Unique Well Identifier</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Nothing, works inplace</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># delete existing row for uwi if it exists</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">mnemonic</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="s1">&#39;UWI&#39;</span><span class="p">])):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">header</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">mnemonic</span> <span class="o">!=</span> <span class="s1">&#39;UWI&#39;</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_header_item</span><span class="p">(</span><span class="s1">&#39;uwi&#39;</span><span class="p">,</span> <span class="n">uwi</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Property. Simply a shortcut to the well name from the header, or the</span>
+<span class="sd">        empty string if there isn&#39;t one.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">mnemonic</span> <span class="o">==</span> <span class="s1">&#39;WELL&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;&#39;</span>
+
+    <span class="nd">@name</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the name of the well by adding a row to the header dataframe</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            name (str): Name of the well</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Nothing, works inplace</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># delete existing row for name if it exists</span>
+        <span class="k">if</span> <span class="s1">&#39;WELL&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">mnemonic</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">header</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">mnemonic</span> <span class="o">!=</span> <span class="s1">&#39;WELL&#39;</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_header_item</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_curve_mnemonics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">curves_only</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get mnemonics for entries in `data`. By default, only gets curves.</span>
+<span class="sd">        If `keys` is a list-like of mnemonics, or list of lists (such as might</span>
+<span class="sd">        be used to plot tracks), then only get those (ignores anything that is</span>
+<span class="sd">        not a Curve).</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            keys (list): List of strings: the keys of the data items to</span>
+<span class="sd">                include, if not passed, get all of them. You can have nested</span>
+<span class="sd">                lists, such as you might use for ``tracks`` in ``well.plot()``.</span>
+<span class="sd">            alias (dict): Optional. A dictionary alias for the curve mnemonics.</span>
+<span class="sd">                e.g. {&#39;density&#39;: [&#39;DEN&#39;, &#39;DENS&#39;]}</span>
+<span class="sd">            curves_only (bool): If true, only get mnemonics of curve objects in</span>
+<span class="sd">                well. If false, get mnemonics of any type of object in well.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            keys (list): A list of mnemonics</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">keys</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">keys_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">keys</span><span class="p">:</span>
+            <span class="n">keys_</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">keys_</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">flatten_list</span><span class="p">(</span><span class="n">keys</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">curves_only</span><span class="p">:</span>
+            <span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys_</span> <span class="k">if</span>
+                    <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_curve</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">),</span> <span class="n">Curve</span><span class="p">)]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys_</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">keys</span>
+
+<div class="viewcode-block" id="Well.from_lasio"><a class="viewcode-back" href="../../api/welly.well.html#welly.Well.from_lasio">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_lasio</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span>
+                   <span class="n">las</span><span class="p">,</span>
+                   <span class="n">remap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                   <span class="n">funcs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                   <span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                   <span class="n">req</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                   <span class="n">alias</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                   <span class="n">fname</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                   <span class="n">index</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructor. If you already have the lasio object, then this makes a</span>
+<span class="sd">        well object from it.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            las (lasio.LASFile object): a lasio representation of a LAS file.</span>
+<span class="sd">            remap (dict): Optional. A dict of &#39;old&#39;: &#39;new&#39; LAS field names.</span>
+<span class="sd">            funcs (dict): Optional. A dict of &#39;las field&#39;: function() for</span>
+<span class="sd">                implementing a transform before loading. Can be a lambda.</span>
+<span class="sd">            data (bool): Whether to load curves or not.</span>
+<span class="sd">            req (list): An alias list, giving all required curves.</span>
+<span class="sd">            alias (dict): An alias dictionary.</span>
+<span class="sd">            fname (str): The filename, if you want to keep it.</span>
+<span class="sd">            index (str): Optional. Either &quot;existing&quot; (use the index as found in</span>
+<span class="sd">                the LAS file) or &quot;m&quot;, &quot;ft&quot; to use lasio&#39;s conversion of the</span>
+<span class="sd">                relevant index unit.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            well (welly.Well). The well object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">datasets</span> <span class="o">=</span> <span class="n">from_lasio</span><span class="p">(</span><span class="n">las</span><span class="p">)</span>
+
+        <span class="n">well</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_datasets</span><span class="p">(</span><span class="n">datasets</span><span class="p">,</span>
+                                 <span class="n">remap</span><span class="o">=</span><span class="n">remap</span><span class="p">,</span>
+                                 <span class="n">funcs</span><span class="o">=</span><span class="n">funcs</span><span class="p">,</span>
+                                 <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+                                 <span class="n">req</span><span class="o">=</span><span class="n">req</span><span class="p">,</span>
+                                 <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">,</span>
+                                 <span class="n">fname</span><span class="o">=</span><span class="n">fname</span><span class="p">,</span>
+                                 <span class="n">index_units</span><span class="o">=</span><span class="n">index</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">well</span></div>
+
+<div class="viewcode-block" id="Well.from_las"><a class="viewcode-back" href="../../api/welly.well.html#welly.Well.from_las">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_las</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span>
+                 <span class="n">fname</span><span class="p">,</span>
+                 <span class="n">remap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">funcs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                 <span class="n">req</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">alias</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">encoding</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">printfname</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                 <span class="n">index</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+                 <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructor. If you have a LAS file saved on disk, this creates a well</span>
+<span class="sd">        object from it.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            fname (str or pathlib.Path): The path of the LAS file, or a URL to</span>
+<span class="sd">                one.</span>
+<span class="sd">            remap (dict): Optional. A dict of &#39;old&#39;: &#39;new&#39; LAS field names.</span>
+<span class="sd">            funcs (dict): Optional. A dict of &#39;las field&#39;: function() for</span>
+<span class="sd">                implementing a transform before loading. Can be a lambda.</span>
+<span class="sd">            data (bool): Optional. Whether to load the data or only the header.</span>
+<span class="sd">            req (list): Optional. An alias list, giving all required curves.</span>
+<span class="sd">            alias (dict): Optional. An alias dictionary.</span>
+<span class="sd">            encoding (str): Optional. the character encoding used when reading</span>
+<span class="sd">                the LAS file in from disk.</span>
+<span class="sd">            printfname (bool): Optional. prints filename before trying to load</span>
+<span class="sd">                it, for debugging.</span>
+<span class="sd">            index (str): Optional. Either &quot;existing&quot; (use the index as found in</span>
+<span class="sd">                the LAS file) or &quot;m&quot;, &quot;ft&quot; to use lasio&#39;s conversion of the</span>
+<span class="sd">                relevant index unit.</span>
+<span class="sd">            kwargs: More keyword arguments are passed to `lasio`.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            well. The well object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">fname</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">to_filename</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">printfname</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+
+        <span class="c1"># if https URL is passed try reading and formatting it to text file</span>
+        <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;https?://.+\..+/.+?&#39;</span><span class="p">,</span> <span class="n">fname</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">fname</span> <span class="o">=</span> <span class="n">file_from_url</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+
+        <span class="n">datasets</span> <span class="o">=</span> <span class="n">from_las</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c1"># create well from datasets</span>
+        <span class="n">well</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_datasets</span><span class="p">(</span><span class="n">datasets</span><span class="p">,</span>
+                                 <span class="n">remap</span><span class="o">=</span><span class="n">remap</span><span class="p">,</span>
+                                 <span class="n">funcs</span><span class="o">=</span><span class="n">funcs</span><span class="p">,</span>
+                                 <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+                                 <span class="n">req</span><span class="o">=</span><span class="n">req</span><span class="p">,</span>
+                                 <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">,</span>
+                                 <span class="n">fname</span><span class="o">=</span><span class="n">fname</span><span class="p">,</span>
+                                 <span class="n">index_units</span><span class="o">=</span><span class="n">index</span><span class="p">,</span>
+                                 <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">well</span></div>
+
+<div class="viewcode-block" id="Well.from_datasets"><a class="viewcode-back" href="../../api/welly.well.html#welly.Well.from_datasets">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_datasets</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span>
+                      <span class="n">datasets</span><span class="p">,</span>
+                      <span class="n">remap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                      <span class="n">funcs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                      <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                      <span class="n">req</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                      <span class="n">alias</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                      <span class="n">fname</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                      <span class="n">index_units</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructor. If you have a `datasets` object, this will create a well</span>
+<span class="sd">        object from it. See :func:`las.from_las()` for a description of a</span>
+<span class="sd">        `datasets` object.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            datasets (Dict[&#39;&lt;name&gt;&#39;: pd.DataFrame]): Dictionary maps a</span>
+<span class="sd">                dataset name (e.g. &#39;Curves&#39; or &#39;Header&#39;) to a pd.DataFrame.</span>
+<span class="sd">            remap (dict): Optional. A dict of &#39;old&#39;: &#39;new&#39; LAS field names.</span>
+<span class="sd">            funcs (dict): Optional. A dict of &#39;las field&#39;: function() for</span>
+<span class="sd">                implementing a transform before loading. Can be a lambda.</span>
+<span class="sd">            data (bool): Whether to load curves or not.</span>
+<span class="sd">            req (list): An alias list, giving all required curves.</span>
+<span class="sd">            alias (dict): An alias dictionary.</span>
+<span class="sd">            fname (str): The filename, if you want to keep it.</span>
+<span class="sd">            index_units (str): Optional. The unit of the index upon construction</span>
+<span class="sd">                of the Curves (e.g. &#39;m&#39; or &#39;ft&#39;). Will perform unit conversion</span>
+<span class="sd">                if specified index unit is different than the existing index</span>
+<span class="sd">                unit.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            well (welly.Well). The well object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># dict for storing curve objects</span>
+        <span class="n">curves</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># list for storing original las dataframes</span>
+        <span class="n">las</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># store header as variable</span>
+        <span class="n">df_header</span> <span class="o">=</span> <span class="n">datasets</span><span class="p">[</span><span class="s1">&#39;Header&#39;</span><span class="p">]</span>
+
+        <span class="c1"># delete header entry from dict</span>
+        <span class="k">del</span> <span class="n">datasets</span><span class="p">[</span><span class="s1">&#39;Header&#39;</span><span class="p">]</span>
+
+        <span class="c1"># copy header df to later store updated item values in</span>
+        <span class="n">updated_df_header</span> <span class="o">=</span> <span class="n">df_header</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="c1"># get the well related curve parameters from header</span>
+        <span class="n">well_curve_params</span> <span class="o">=</span> <span class="n">_get_well_related_curve_params</span><span class="p">(</span><span class="n">df_header</span><span class="p">,</span> <span class="n">remap</span><span class="p">,</span> <span class="n">funcs</span><span class="p">)</span>
+
+        <span class="c1"># create location object</span>
+        <span class="n">location</span> <span class="o">=</span> <span class="n">Location</span><span class="o">.</span><span class="n">from_lasio</span><span class="p">(</span><span class="n">df_header</span><span class="p">,</span> <span class="n">remap</span><span class="p">,</span> <span class="n">funcs</span><span class="p">)</span>
+
+        <span class="c1"># unpack datasets</span>
+        <span class="k">for</span> <span class="n">dataset_name</span><span class="p">,</span> <span class="n">df_data</span> <span class="ow">in</span> <span class="n">datasets</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+
+            <span class="n">las</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df_data</span><span class="p">)</span>
+
+            <span class="c1"># remap index time/depth column if specified</span>
+            <span class="k">if</span> <span class="n">remap</span> <span class="ow">and</span> <span class="n">df_data</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">remap</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">mapper</span> <span class="o">=</span> <span class="p">{</span><span class="n">df_data</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span> <span class="n">remap</span><span class="p">[</span><span class="n">df_data</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="mi">0</span><span class="p">]]}</span>
+                <span class="n">df_data</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">mapper</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="c1"># set time/depth index, LAS requires it to be the first curve</span>
+            <span class="n">df_data</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="n">df_data</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="c1"># get index unit from the first curve</span>
+            <span class="n">unit</span> <span class="o">=</span> <span class="n">df_header</span><span class="p">[(</span><span class="n">df_header</span><span class="p">[</span><span class="s2">&quot;section&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">dataset_name</span><span class="p">)]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">unit</span>
+
+            <span class="k">if</span> <span class="n">index_units</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;m&#39;</span><span class="p">,</span> <span class="s1">&#39;ft&#39;</span><span class="p">]:</span>
+                <span class="c1"># If &#39;existing&#39;, we just leave it alone.</span>
+                <span class="c1"># convert index to different index unit, if passed</span>
+                <span class="n">df_data</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">_convert_depth_index_units</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">df_data</span><span class="o">.</span><span class="n">index</span><span class="p">,</span>
+                                                          <span class="n">unit_from</span><span class="o">=</span><span class="n">unit</span><span class="p">,</span>
+                                                          <span class="n">unit_to</span><span class="o">=</span><span class="n">index_units</span><span class="p">)</span>
+                <span class="c1"># set to the unit that the index has just been converted to</span>
+                <span class="n">unit</span> <span class="o">=</span> <span class="n">index_units</span>
+
+            <span class="n">well_curve_params</span><span class="p">[</span><span class="s1">&#39;index_units&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">unit</span>
+
+            <span class="c1"># get the curve related parameters (mnemonic, unit, description)</span>
+            <span class="n">curve_params</span> <span class="o">=</span> <span class="n">_get_curve_params</span><span class="p">(</span><span class="n">df_header</span><span class="p">,</span> <span class="n">dataset_name</span><span class="p">)</span>
+
+            <span class="c1"># update header with remapped and transformed items, if passed</span>
+            <span class="n">updated_df_header</span> <span class="o">=</span> <span class="n">_update_las_header</span><span class="p">(</span><span class="n">updated_df_header</span><span class="p">,</span> <span class="n">remap</span><span class="p">,</span> <span class="n">funcs</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">req</span> <span class="ow">and</span> <span class="n">alias</span><span class="p">:</span>
+                <span class="n">req</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">flatten_list</span><span class="p">([</span><span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">alias</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">req</span><span class="p">])</span>
+
+            <span class="k">if</span> <span class="n">data</span> <span class="ow">and</span> <span class="n">req</span><span class="p">:</span>
+                <span class="n">curves</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">mnemonic</span><span class="p">:</span> <span class="n">Curve</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">df_data</span><span class="p">[</span><span class="n">mnemonic</span><span class="p">],</span>
+                                               <span class="n">mnemonic</span><span class="o">=</span><span class="n">mnemonic</span><span class="p">,</span>
+                                               <span class="n">units</span><span class="o">=</span><span class="n">curve_params</span><span class="p">[</span><span class="n">mnemonic</span><span class="p">]</span><span class="o">.</span><span class="n">unit</span><span class="p">,</span>
+                                               <span class="n">description</span><span class="o">=</span><span class="n">curve_params</span><span class="p">[</span><span class="n">mnemonic</span><span class="p">]</span><span class="o">.</span><span class="n">descr</span><span class="p">,</span>
+                                               <span class="o">**</span><span class="n">well_curve_params</span><span class="p">)</span> <span class="k">for</span> <span class="n">mnemonic</span> <span class="ow">in</span> <span class="n">df_data</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="n">mnemonic</span> <span class="ow">in</span> <span class="n">req</span><span class="p">})</span>
+            <span class="k">elif</span> <span class="n">data</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">req</span><span class="p">:</span>
+                <span class="n">curves</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">mnemonic</span><span class="p">:</span> <span class="n">Curve</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">df_data</span><span class="p">[</span><span class="n">mnemonic</span><span class="p">],</span>
+                                               <span class="n">mnemonic</span><span class="o">=</span><span class="n">mnemonic</span><span class="p">,</span>
+                                               <span class="n">units</span><span class="o">=</span><span class="n">curve_params</span><span class="p">[</span><span class="n">mnemonic</span><span class="p">]</span><span class="o">.</span><span class="n">unit</span><span class="p">,</span>
+                                               <span class="n">description</span><span class="o">=</span><span class="n">curve_params</span><span class="p">[</span><span class="n">mnemonic</span><span class="p">]</span><span class="o">.</span><span class="n">descr</span><span class="p">,</span>
+                                               <span class="o">**</span><span class="n">well_curve_params</span><span class="p">)</span> <span class="k">for</span> <span class="n">mnemonic</span> <span class="ow">in</span> <span class="n">df_data</span><span class="o">.</span><span class="n">columns</span><span class="p">})</span>
+            <span class="k">elif</span> <span class="p">(</span><span class="ow">not</span> <span class="n">data</span><span class="p">)</span> <span class="ow">and</span> <span class="n">req</span><span class="p">:</span>
+                <span class="n">curves</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">mnemonic</span><span class="p">:</span> <span class="kc">True</span> <span class="k">for</span> <span class="n">mnemonic</span> <span class="ow">in</span> <span class="n">df_data</span><span class="o">.</span><span class="n">columns</span>
+                               <span class="k">if</span> <span class="p">(</span><span class="n">mnemonic</span><span class="p">[:</span><span class="mi">4</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">index_curve_mnemonics</span><span class="p">)</span>
+                               <span class="ow">and</span> <span class="p">(</span><span class="n">mnemonic</span> <span class="ow">in</span> <span class="n">req</span><span class="p">)})</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">curves</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">mnemonic</span><span class="p">:</span> <span class="kc">True</span> <span class="k">for</span> <span class="n">mnemonic</span> <span class="ow">in</span> <span class="n">df_data</span><span class="o">.</span><span class="n">columns</span>
+                               <span class="k">if</span> <span class="p">(</span><span class="n">mnemonic</span><span class="p">[:</span><span class="mi">4</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">index_curve_mnemonics</span><span class="p">)})</span>
+
+            <span class="k">if</span> <span class="n">req</span><span class="p">:</span>
+                <span class="n">aliases</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">flatten_list</span><span class="p">([</span><span class="n">c</span><span class="o">.</span><span class="n">get_alias</span><span class="p">(</span><span class="n">alias</span><span class="p">)</span> <span class="k">for</span> <span class="n">mnemonic</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">curves</span><span class="o">.</span><span class="n">items</span><span class="p">()])</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">aliases</span><span class="p">))</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">req</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">params</span><span class="o">=</span><span class="p">{})</span>
+
+        <span class="c1"># build a dict of the well properties</span>
+        <span class="n">well_attributes</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;las&#39;</span><span class="p">:</span> <span class="n">las</span><span class="p">,</span>
+                           <span class="s1">&#39;header&#39;</span><span class="p">:</span> <span class="n">updated_df_header</span><span class="p">,</span>
+                           <span class="s1">&#39;location&#39;</span><span class="p">:</span> <span class="n">location</span><span class="p">,</span>
+                           <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="n">curves</span><span class="p">,</span>
+                           <span class="s1">&#39;fname&#39;</span><span class="p">:</span> <span class="n">fname</span><span class="p">}</span>
+
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">well_attributes</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Well.from_df"><a class="viewcode-back" href="../../api/welly.well.html#welly.Well.from_df">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_df</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">req</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">uwi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructor. If you have a pd.DataFrame with the time/depth index set as</span>
+<span class="sd">        the `pd.DataFrame` index and the columns as the curve data, this makes</span>
+<span class="sd">        a `well` object from it. The column name is taken as the respective</span>
+<span class="sd">        curve mnemonic.</span>
+
+<span class="sd">        Use this if you don&#39;t have a header dataframe with meta data. If you do,</span>
+<span class="sd">        please use `Well.from_datasets()`</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            df (pd.DataFrame): Curve data.</span>
+<span class="sd">            units (dict): Optional. Units of measurement of the curves in `df`.</span>
+<span class="sd">            req (list): Optional. An alias list, giving all required curves.</span>
+<span class="sd">            uwi (str): Unique Well Identifier (UWI)</span>
+<span class="sd">            name (str): Name</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            well. The well object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">units</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">units</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># if req not defined, load all columns</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">req</span><span class="p">:</span>
+            <span class="n">req</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+
+        <span class="c1"># add missing mnemonics to dict with None value</span>
+        <span class="n">units</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">mnemonic</span><span class="p">:</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">mnemonic</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="n">mnemonic</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">units</span><span class="o">.</span><span class="n">keys</span><span class="p">()})</span>
+
+        <span class="c1"># create curves</span>
+        <span class="n">curves</span> <span class="o">=</span> <span class="p">{</span><span class="n">mnemonic</span><span class="p">:</span> <span class="n">Curve</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="n">mnemonic</span><span class="p">],</span> <span class="n">units</span><span class="o">=</span><span class="n">units</span><span class="p">[</span><span class="n">mnemonic</span><span class="p">])</span> <span class="k">for</span> <span class="n">mnemonic</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="n">mnemonic</span> <span class="ow">in</span> <span class="n">req</span><span class="p">}</span>
+
+        <span class="c1"># build a dict of the well properties</span>
+        <span class="n">well</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">({</span><span class="s1">&#39;las&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                    <span class="s1">&#39;header&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                    <span class="s1">&#39;location&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                    <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="n">curves</span><span class="p">,</span>
+                    <span class="s1">&#39;fname&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">})</span>
+
+        <span class="k">if</span> <span class="n">uwi</span><span class="p">:</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="n">well</span><span class="p">,</span> <span class="s1">&#39;uwi&#39;</span><span class="p">,</span> <span class="n">uwi</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">name</span><span class="p">:</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="n">well</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">well</span></div>
+
+<div class="viewcode-block" id="Well.to_lasio"><a class="viewcode-back" href="../../api/welly.well.html#welly.Well.to_lasio">[docs]</a>    <span class="k">def</span> <span class="nf">to_lasio</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">basis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">null_value</span><span class="o">=-</span><span class="mf">999.25</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Makes a lasio object from the current well.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            keys (list): List of strings: the keys of the data items to</span>
+<span class="sd">                include, if not all of them. You can have nested lists, such</span>
+<span class="sd">                as you might use for ``tracks`` in ``well.plot()``.</span>
+<span class="sd">            alias (dict): Optional. A dictionary alias for the curve mnemonics.</span>
+<span class="sd">                e.g. {&#39;density&#39;: [&#39;DEN&#39;, &#39;DENS&#39;]}</span>
+<span class="sd">            basis (numpy.ndarray): Optional. The basis to export the curves in.</span>
+<span class="sd">                If you don&#39;t specify one, it will survey all the curves with</span>
+<span class="sd">                `survey_basis()``.</span>
+<span class="sd">            null_value (float): Optional. The null value representation in the LAS file.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            las (lasio.LASFile). The lasio object representation of a LAS file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">las</span> <span class="o">=</span> <span class="n">to_lasio</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keys</span><span class="p">,</span> <span class="n">alias</span><span class="p">,</span> <span class="n">basis</span><span class="p">,</span> <span class="n">null_value</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">las</span></div>
+
+<div class="viewcode-block" id="Well.to_las"><a class="viewcode-back" href="../../api/welly.well.html#welly.Well.to_las">[docs]</a>    <span class="k">def</span> <span class="nf">to_las</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+               <span class="n">fname</span><span class="p">,</span>
+               <span class="n">keys</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+               <span class="n">basis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+               <span class="n">null_value</span><span class="o">=-</span><span class="mf">999.25</span><span class="p">,</span>
+               <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Writes the current well instance as a LAS file. Essentially just wraps</span>
+<span class="sd">        ``to_lasio()``, but is more convenient for most purposes.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            fname (str): The path of the LAS file to create.</span>
+<span class="sd">            basis (ndarray): Optional. The basis to export the curves in. If</span>
+<span class="sd">                you don&#39;t specify one, it will survey all the curves with</span>
+<span class="sd">                ``survey_basis()``.</span>
+<span class="sd">            null_value (float): Optional. numeric null value representation</span>
+<span class="sd">            keys (list): List of strings: the keys of the data items to</span>
+<span class="sd">                include, if not all of them. You can have nested lists, such</span>
+<span class="sd">                as you might use for ``tracks`` in ``well.plot()``.</span>
+
+<span class="sd">        Other keyword Args are passed to ``lasio.LASFile.write()``.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None. Writes the file as a side-effect.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">las</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_lasio</span><span class="p">(</span><span class="n">keys</span><span class="o">=</span><span class="n">keys</span><span class="p">,</span> <span class="n">basis</span><span class="o">=</span><span class="n">basis</span><span class="p">,</span> <span class="n">null_value</span><span class="o">=</span><span class="n">null_value</span><span class="p">)</span>
+            <span class="n">las</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Well.to_datasets"><a class="viewcode-back" href="../../api/welly.well.html#welly.Well.to_datasets">[docs]</a>    <span class="k">def</span> <span class="nf">to_datasets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                    <span class="n">keys</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                    <span class="n">alias</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                    <span class="n">basis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                    <span class="n">null_value</span><span class="o">=-</span><span class="mf">999.25</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Unpack a well to datasets (a dict with pd.DataFrames)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">las</span> <span class="o">=</span> <span class="n">to_lasio</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keys</span><span class="p">,</span> <span class="n">alias</span><span class="p">,</span> <span class="n">basis</span><span class="p">,</span> <span class="n">null_value</span><span class="p">)</span>
+
+        <span class="n">datasets</span> <span class="o">=</span> <span class="n">from_lasio</span><span class="p">(</span><span class="n">las</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">datasets</span></div>
+
+<div class="viewcode-block" id="Well.df"><a class="viewcode-back" href="../../api/welly.well.html#welly.Well.df">[docs]</a>    <span class="k">def</span> <span class="nf">df</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+           <span class="n">keys</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+           <span class="n">basis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+           <span class="n">uwi</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+           <span class="n">alias</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+           <span class="n">rename_aliased</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return current curve data as a ``pandas.DataFrame`` object.</span>
+
+<span class="sd">        Requires `pandas`.</span>
+
+<span class="sd">        Everything has to have the same basis, because the depth</span>
+<span class="sd">        is going to become the index of the DataFrame. If you don&#39;t</span>
+<span class="sd">        provide one, ``welly`` will make one using ``survey_basis()``.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            keys (list): List of strings: the keys of the data items to</span>
+<span class="sd">                survey, if not all of them.</span>
+<span class="sd">            basis (array): A basis, if you want to enforce one, otherwise</span>
+<span class="sd">                you&#39;ll get the result of ``survey_basis()``.</span>
+<span class="sd">            uwi (bool): Whether to add a &#39;UWI&#39; column.</span>
+<span class="sd">            alias (dict): Alias dictionary.</span>
+<span class="sd">            rename_aliased (bool): Whether to name the columns after the alias,</span>
+<span class="sd">                i.e. the alias dictionary key, or after the curve mnemonic.</span>
+<span class="sd">                Default is True, use the alias names.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            pandas.DataFrame.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">keys</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_curve_mnemonics</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">)</span>
+
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_curve</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">)</span><span class="o">.</span><span class="n">df</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">}</span>
+
+        <span class="k">if</span> <span class="n">basis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">basis</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">survey_basis</span><span class="p">(</span><span class="n">keys</span><span class="o">=</span><span class="n">keys</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">basis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">m</span> <span class="o">=</span> <span class="s2">&quot;No basis was provided and welly could not retrieve common basis.&quot;</span>
+            <span class="k">raise</span> <span class="n">WellError</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">values</span><span class="p">()),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">rename_aliased</span><span class="p">:</span>
+            <span class="n">mapper</span> <span class="o">=</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">get_mnemonic</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">):</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">}</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">mapper</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">uwi</span><span class="p">:</span>
+            <span class="n">df</span><span class="p">[</span><span class="s1">&#39;UWI&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">uwi</span>
+            <span class="c1"># add UWI as index as part of a MultiIndex</span>
+            <span class="n">df</span><span class="o">.</span><span class="n">set_index</span><span class="p">([</span><span class="s1">&#39;UWI&#39;</span><span class="p">],</span> <span class="n">append</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="c1"># swap MultiIndex levels</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">swaplevel</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">is_object_dtype</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">column</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span><span class="p">):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">df</span><span class="p">[</span><span class="n">column</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">column</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                    <span class="k">pass</span>
+
+        <span class="k">return</span> <span class="n">df</span></div>
+
+<div class="viewcode-block" id="Well.add_curves_from_las"><a class="viewcode-back" href="../../api/welly.well.html#welly.Well.add_curves_from_las">[docs]</a>    <span class="k">def</span> <span class="nf">add_curves_from_las</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">remap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">funcs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Given a LAS file, add curves from it to the current well instance.</span>
+<span class="sd">        Essentially just wraps ``add_curves_from_lasio()``.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            fname (str or list): The path(s) of the LAS file to read curves from</span>
+<span class="sd">            remap (dict): Optional. A dict of &#39;old&#39;: &#39;new&#39; LAS field names.</span>
+<span class="sd">            funcs (dict): Optional. A dict of &#39;las field&#39;: function() for</span>
+<span class="sd">                implementing a transform before loading. Can be a lambda.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None. Works in place.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># put str in a list to iterate over</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">fname</span> <span class="o">=</span> <span class="p">[</span><span class="n">fname</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fname</span><span class="p">:</span>
+            <span class="n">w</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">from_las</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">remap</span><span class="o">=</span><span class="n">remap</span><span class="p">,</span> <span class="n">funcs</span><span class="o">=</span><span class="n">funcs</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">data</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Well.add_curves_from_lasio"><a class="viewcode-back" href="../../api/welly.well.html#welly.Well.add_curves_from_lasio">[docs]</a>    <span class="k">def</span> <span class="nf">add_curves_from_lasio</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">las</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Given a LAS file, add curves from it to the current well instance.</span>
+<span class="sd">        Essentially just wraps ``add_curves_from_lasio()``.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            las (lasio.LASFile object): a lasio representation of a LAS file</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None. Works in place.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="n">from_lasio</span><span class="p">(</span><span class="n">las</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">data</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_plot_depth_track</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">md</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;MD&#39;</span><span class="p">,</span> <span class="n">tick_spacing</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Private function. Depth track plotting.</span>
+<span class="sd">        Wrapping plot function from plot.py.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            ax (ax): A matplotlib axis.</span>
+<span class="sd">            md (ndarray): The measured depths of the track.</span>
+<span class="sd">            kind (str): The kind of track to plot.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            ax.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">plot_depth_track_well</span><span class="p">(</span><span class="n">well</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">md</span><span class="o">=</span><span class="n">md</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">,</span>
+                                     <span class="n">tick_spacing</span><span class="o">=</span><span class="n">tick_spacing</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Well.plot"><a class="viewcode-back" href="../../api/welly.well.html#welly.Well.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+             <span class="n">legend</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+             <span class="n">tracks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+             <span class="n">track_titles</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+             <span class="n">alias</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+             <span class="n">basis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+             <span class="n">extents</span><span class="o">=</span><span class="s1">&#39;td&#39;</span><span class="p">,</span>
+             <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Plot multiple tracks. Wrapping plot function from plot.py.</span>
+<span class="sd">        By default only show the plot, not return the figure object.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            legend (striplog.legend): A legend instance.</span>
+<span class="sd">            tracks (list): A list of strings and/or lists of strings. The</span>
+<span class="sd">                tracks you want to plot from ``data``. Optional, but you will</span>
+<span class="sd">                usually want to give it.</span>
+<span class="sd">            track_titles (list): Optional. A list of strings and/or lists of</span>
+<span class="sd">                strings. The names to give the tracks, if you don&#39;t want welly</span>
+<span class="sd">                to guess.</span>
+<span class="sd">            alias (dict): a dictionary mapping mnemonics to lists of mnemonics.</span>
+<span class="sd">            basis (ndarray): Optional. The basis of the plot, if you don&#39;t</span>
+<span class="sd">                want welly to guess (probably the best idea).</span>
+<span class="sd">            extents (str): What to use for the y limits:</span>
+<span class="sd">                &#39;td&#39;: plot 0 to TD.</span>
+<span class="sd">                &#39;curves&#39;: use a basis that accommodates all the curves.</span>
+<span class="sd">                &#39;all&#39;: use a basis that accommodates everything.</span>
+<span class="sd">                (tuple): give the upper and lower explictly.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None. The plot is a side-effect.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">plot_well</span><span class="p">(</span><span class="n">well</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
+                         <span class="n">legend</span><span class="o">=</span><span class="n">legend</span><span class="p">,</span>
+                         <span class="n">tracks</span><span class="o">=</span><span class="n">tracks</span><span class="p">,</span>
+                         <span class="n">track_titles</span><span class="o">=</span><span class="n">track_titles</span><span class="p">,</span>
+                         <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">,</span>
+                         <span class="n">basis</span><span class="o">=</span><span class="n">basis</span><span class="p">,</span>
+                         <span class="n">extents</span><span class="o">=</span><span class="n">extents</span><span class="p">,</span>
+                         <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Well.coverage"><a class="viewcode-back" href="../../api/welly.well.html#welly.Well.coverage">[docs]</a>    <span class="k">def</span> <span class="nf">coverage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Plot the coverage of the curves in a well.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Coverage is not implemented yet.&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Well.survey_basis"><a class="viewcode-back" href="../../api/welly.well.html#welly.Well.survey_basis">[docs]</a>    <span class="k">def</span> <span class="nf">survey_basis</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Look at the basis of all the curves in ``well.data`` and return a</span>
+<span class="sd">        basis with the minimum start, maximum depth, and minimum step.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            keys (list): List of strings: the keys of the data items to</span>
+<span class="sd">                survey, if not all of them.</span>
+<span class="sd">            alias (dict): a dictionary mapping mnemonics to lists of mnemonics.</span>
+<span class="sd">            step (float): a new step, if you want to change it.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            ndarray. The most complete common basis.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">keys</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_curve_mnemonics</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">)</span>
+
+        <span class="n">starts</span><span class="p">,</span> <span class="n">stops</span><span class="p">,</span> <span class="n">steps</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+            <span class="n">curve</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_curve</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">keys</span> <span class="ow">and</span> <span class="p">(</span><span class="n">curve</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">starts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">curve</span><span class="o">.</span><span class="n">start</span><span class="p">)</span>
+                <span class="n">stops</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">curve</span><span class="o">.</span><span class="n">stop</span><span class="p">)</span>
+                <span class="n">steps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">curve</span><span class="o">.</span><span class="n">step</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">pass</span>
+        <span class="k">if</span> <span class="n">starts</span> <span class="ow">and</span> <span class="n">stops</span> <span class="ow">and</span> <span class="n">steps</span><span class="p">:</span>
+            <span class="k">if</span> <span class="mi">0</span> <span class="ow">in</span> <span class="n">steps</span><span class="p">:</span>
+                <span class="c1"># remove all unequally sampled curves (step = 0) from list</span>
+                <span class="n">steps</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">((</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="fm">__ne__</span><span class="p">,</span> <span class="n">steps</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">step</span><span class="p">:</span>
+                <span class="n">step</span> <span class="o">=</span> <span class="n">step</span>
+            <span class="k">elif</span> <span class="n">steps</span><span class="p">:</span>
+                <span class="n">step</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">steps</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">step</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="nb">min</span><span class="p">(</span><span class="n">starts</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">min</span><span class="p">(</span><span class="n">stops</span><span class="p">):</span>
+                <span class="c1"># create basis array and flip to descending</span>
+                <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">flipud</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">stops</span><span class="p">),</span> <span class="nb">min</span><span class="p">(</span><span class="n">starts</span><span class="p">)</span> <span class="o">+</span> <span class="mf">1e-9</span><span class="p">,</span> <span class="n">step</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># create basis array</span>
+                <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">starts</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">stops</span><span class="p">)</span> <span class="o">+</span> <span class="mf">1e-9</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="Well.unify_basis"><a class="viewcode-back" href="../../api/welly.well.html#welly.Well.unify_basis">[docs]</a>    <span class="k">def</span> <span class="nf">unify_basis</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                    <span class="n">keys</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                    <span class="n">alias</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                    <span class="n">basis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                    <span class="n">start</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                    <span class="n">stop</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                    <span class="n">step</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Give every Curve in the well, or everything in the list of keys, the</span>
+<span class="sd">        same basis. If you don&#39;t provide a basis, welly will try to get one</span>
+<span class="sd">        using ``survey_basis()``.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            keys (list): List of strings: the keys of the data items to</span>
+<span class="sd">                unify, if not all of them.</span>
+<span class="sd">            alias (dict): an alias dictionary, mapping mnemonics to lists of</span>
+<span class="sd">                mnemonics. e.g. {&#39;density&#39;: [&#39;DEN&#39;, &#39;DENS&#39;]}</span>
+<span class="sd">            basis (ndarray): A basis: the regularly sampled depths at which</span>
+<span class="sd">                you want the samples.</span>
+<span class="sd">            start (float): Optionally override the start of whatever basis</span>
+<span class="sd">                you provide or is surveyed.</span>
+<span class="sd">            stop (float): Optionally override the stop of whatever basis</span>
+<span class="sd">                you provide or is surveyed.</span>
+<span class="sd">            step (float): Optionally override the step in the basis.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None. Works in place.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">keys</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_curve_mnemonics</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">basis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">basis</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">survey_basis</span><span class="p">(</span><span class="n">keys</span><span class="o">=</span><span class="n">keys</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">basis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">m</span> <span class="o">=</span> <span class="s2">&quot;No basis was provided and welly could not retrieve common basis.&quot;</span>
+            <span class="k">raise</span> <span class="n">WellError</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">keys</span> <span class="ow">and</span> <span class="p">(</span><span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="k">try</span><span class="p">:</span>  <span class="c1"># To treat as a curve.</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">to_basis</span><span class="p">(</span><span class="n">basis</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="n">start</span><span class="p">,</span>
+                                                     <span class="n">stop</span><span class="o">=</span><span class="n">stop</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="n">step</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>  <span class="c1"># It&#39;s probably a striplog.</span>
+                <span class="k">continue</span>
+
+        <span class="k">return</span></div>
+
+<div class="viewcode-block" id="Well.get_mnemonics_from_regex"><a class="viewcode-back" href="../../api/welly.well.html#welly.Well.get_mnemonics_from_regex">[docs]</a>    <span class="k">def</span> <span class="nf">get_mnemonics_from_regex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pattern</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Should probably integrate getting curves with regex, vs getting with</span>
+<span class="sd">        aliases, even though mixing them is probably confusing. For now I can&#39;t</span>
+<span class="sd">        think of another use case for these wildcards, so I&#39;ll just implement</span>
+<span class="sd">        for the curve table and we can worry about a nice solution later if we</span>
+<span class="sd">        ever come back to it.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">regex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span>
+        <span class="n">keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="p">[</span><span class="n">regex</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">k</span><span class="p">)]</span> <span class="k">if</span> <span class="n">m</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Well.get_alias"><a class="viewcode-back" href="../../api/welly.well.html#welly.Well.get_alias">[docs]</a>    <span class="k">def</span> <span class="nf">get_alias</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mnemonic</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the alias key that this mnemonic belongs to.</span>
+
+<span class="sd">        Returns: str.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">alias</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">mnemonic</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">alias</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">mnemonic</span> <span class="ow">in</span> <span class="n">v</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">k</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="Well.get_mnemonic"><a class="viewcode-back" href="../../api/welly.well.html#welly.Well.get_mnemonic">[docs]</a>    <span class="k">def</span> <span class="nf">get_mnemonic</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mnemonic</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Instead of picking curves by name directly from the data dict, you</span>
+<span class="sd">        can pick them up with this method, which takes account of the alias</span>
+<span class="sd">        dict you pass it. If you do not pass an alias dict, then you get the</span>
+<span class="sd">        curve you asked for, if it exists, or None. NB Wells do not have alias</span>
+<span class="sd">        dicts, but Projects do.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            mnemonic (str): the name of the curve you want.</span>
+<span class="sd">            alias (dict): an alias dictionary, mapping mnemonics to lists of</span>
+<span class="sd">                mnemonics. e.g. {&#39;density&#39;: [&#39;DEN&#39;, &#39;DENS&#39;]}</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">alias</span> <span class="o">=</span> <span class="n">alias</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="n">aliases</span> <span class="o">=</span> <span class="n">alias</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">mnemonic</span><span class="p">,</span> <span class="p">[</span><span class="n">mnemonic</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">aliases</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">a</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">a</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="Well.get_curve"><a class="viewcode-back" href="../../api/welly.well.html#welly.Well.get_curve">[docs]</a>    <span class="k">def</span> <span class="nf">get_curve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mnemonic</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Wraps get_mnemonic.</span>
+
+<span class="sd">        Instead of picking curves by name directly from the data dict, you</span>
+<span class="sd">        can pick them up with this method, which takes account of the alias</span>
+<span class="sd">        dict you pass it. If you do not pass an alias dict, then you get the</span>
+<span class="sd">        curve you asked for, if it exists, or None. NB Wells do not have alias</span>
+<span class="sd">        dicts, but Projects do.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            mnemonic (str): the name of the curve you want.</span>
+<span class="sd">            alias (dict): an alias dictionary, mapping mnemonics to lists of</span>
+<span class="sd">                mnemonics. e.g. {&#39;density&#39;: [&#39;DEN&#39;, &#39;DENS&#39;]}</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Curve.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_mnemonic</span><span class="p">(</span><span class="n">mnemonic</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Well.count_curves"><a class="viewcode-back" href="../../api/welly.well.html#welly.Well.count_curves">[docs]</a>    <span class="k">def</span> <span class="nf">count_curves</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Counts the number of curves in the well that will be selected with the</span>
+<span class="sd">        given key list and the given alias dict. Used by Project&#39;s curve table.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">keys</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_curve_mnemonics</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span>
+            <span class="nb">filter</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">get_mnemonic</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">])))</span></div>
+
+<div class="viewcode-block" id="Well.is_complete"><a class="viewcode-back" href="../../api/welly.well.html#welly.Well.is_complete">[docs]</a>    <span class="k">def</span> <span class="nf">is_complete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns False if the well does not have one or more of the keys in its</span>
+<span class="sd">        data dictionary. Used by ``project.data_to_matrix()``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Well.alias_has_multiple"><a class="viewcode-back" href="../../api/welly.well.html#welly.Well.alias_has_multiple">[docs]</a>    <span class="k">def</span> <span class="nf">alias_has_multiple</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mnemonic</span><span class="p">,</span> <span class="n">alias</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mi">1</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">([</span><span class="n">a</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">alias</span><span class="p">[</span><span class="n">mnemonic</span><span class="p">]</span> <span class="k">if</span> <span class="n">a</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="Well.make_synthetic"><a class="viewcode-back" href="../../api/welly.well.html#welly.Well.make_synthetic">[docs]</a>    <span class="k">def</span> <span class="nf">make_synthetic</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">srd</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">v_repl_seismic</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span> <span class="n">v_repl_log</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span> <span class="n">f</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+                       <span class="n">dt</span><span class="o">=</span><span class="mf">0.001</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Early hack. Use with extreme caution.</span>
+
+<span class="sd">        Hands-free. There&#39;ll be a more granualr version in synthetic.py.</span>
+
+<span class="sd">        Assumes DT is in µs/m and RHOB is kg/m3.</span>
+
+<span class="sd">        There is no handling yet for TVD.</span>
+
+<span class="sd">        The datum handling is probably sketchy.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">kb</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="s1">&#39;kb&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="mi">0</span>
+        <span class="n">data0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;DT&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">start</span>
+        <span class="n">log_start_time</span> <span class="o">=</span> <span class="p">((</span><span class="n">srd</span> <span class="o">-</span> <span class="n">kb</span><span class="p">)</span> <span class="o">/</span> <span class="n">v_repl_seismic</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">data0</span> <span class="o">/</span> <span class="n">v_repl_log</span><span class="p">)</span>
+
+        <span class="c1"># Basic log values.</span>
+        <span class="n">dt_log</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;DT&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">despike</span><span class="p">()</span>  <span class="c1"># assume µs/m</span>
+        <span class="n">rho_log</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;RHOB&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">despike</span><span class="p">()</span>  <span class="c1"># assume kg/m3</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">dt_log</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">rho_log</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">):</span>
+            <span class="n">rho_log</span> <span class="o">=</span> <span class="n">rho_log</span><span class="o">.</span><span class="n">to_basis_like</span><span class="p">(</span><span class="n">dt_log</span><span class="p">)</span>
+        <span class="n">Z</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1e6</span> <span class="o">/</span> <span class="n">dt_log</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">values</span><span class="p">)</span> <span class="o">*</span> <span class="n">rho_log</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">values</span>
+
+        <span class="c1"># Two-way-time.</span>
+        <span class="n">scaled_dt</span> <span class="o">=</span> <span class="n">dt_log</span><span class="o">.</span><span class="n">step</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">dt_log</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">values</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1e6</span>
+        <span class="n">twt</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">scaled_dt</span><span class="p">)</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">twt</span> <span class="o">+</span> <span class="n">log_start_time</span>
+
+        <span class="c1"># Move to time.</span>
+        <span class="n">t_max</span> <span class="o">=</span> <span class="n">t</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">dt</span>
+        <span class="n">t_reg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">t_max</span> <span class="o">+</span> <span class="mf">1e-9</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">Z</span><span class="o">.</span><span class="n">shape</span><span class="p">):</span>
+            <span class="n">Z</span> <span class="o">=</span> <span class="n">Z</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="n">Z_t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">t_reg</span><span class="p">,</span> <span class="n">xp</span><span class="o">=</span><span class="n">t</span><span class="p">,</span> <span class="n">fp</span><span class="o">=</span><span class="n">Z</span><span class="p">)</span>
+
+        <span class="c1"># Make RC series.</span>
+        <span class="n">rc_t</span> <span class="o">=</span> <span class="p">(</span><span class="n">Z_t</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">Z_t</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="n">Z_t</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">+</span> <span class="n">Z_t</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">rc_t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">rc_t</span><span class="p">)</span>
+
+        <span class="c1"># Convolve.</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">ricker</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">ricker</span><span class="p">(</span><span class="n">f</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mf">0.128</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
+        <span class="n">synth</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span><span class="n">ricker</span><span class="p">,</span> <span class="n">rc_t</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;same&#39;</span><span class="p">)</span>
+
+        <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;dt&#39;</span><span class="p">:</span> <span class="n">dt</span><span class="p">,</span> <span class="s1">&#39;z start&#39;</span><span class="p">:</span> <span class="n">dt_log</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="s1">&#39;z stop&#39;</span><span class="p">:</span> <span class="n">dt_log</span><span class="o">.</span><span class="n">stop</span><span class="p">}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;Synthetic&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Synthetic</span><span class="p">(</span><span class="n">synth</span><span class="p">,</span> <span class="n">basis</span><span class="o">=</span><span class="n">t_reg</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="Well.qc_curve_group"><a class="viewcode-back" href="../../api/welly.well.html#welly.Well.qc_curve_group">[docs]</a>    <span class="k">def</span> <span class="nf">qc_curve_group</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tests</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Run tests on a cohort of curves. Wrapping functions from quality.py</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            tests (dict): a dictionary of tests, mapping mnemonics to lists of</span>
+<span class="sd">                tests. Two special keys, `all` and `each` map tests to the set</span>
+<span class="sd">                of all curves, and to each curve in the well, respectively.</span>
+<span class="sd">                You only need `all` if the test involves multiple inputs, e.g.</span>
+<span class="sd">                comparing one curve to another.</span>
+<span class="sd">            keys (list): a list of the mnemonics to run the tests against.</span>
+<span class="sd">            alias (dict): an alias dictionary, mapping mnemonics to lists of</span>
+<span class="sd">                mnemonics. e.g. {&#39;density&#39;: [&#39;DEN&#39;, &#39;DENS&#39;]}</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">qc_curve_group_well</span><span class="p">(</span><span class="n">well</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">tests</span><span class="o">=</span><span class="n">tests</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="n">keys</span><span class="p">,</span>
+                                   <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Well.qc_data"><a class="viewcode-back" href="../../api/welly.well.html#welly.Well.qc_data">[docs]</a>    <span class="k">def</span> <span class="nf">qc_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tests</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Run a series of tests against the data and return the corresponding</span>
+<span class="sd">        results. Wrapping frunction from quality.py.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            tests (dict): a dictionary of tests, mapping mnemonics to lists of</span>
+<span class="sd">                tests. Two special keys, `all` and `each` map tests to the set</span>
+<span class="sd">                of all curves, and to each curve in the well, respectively.</span>
+<span class="sd">                You only need `all` if the test involves multiple inputs, e.g.</span>
+<span class="sd">                comparing one curve to another.</span>
+<span class="sd">            keys (list): a list of the mnemonics to run the tests against.</span>
+<span class="sd">            alias (dict): an alias dictionary, mapping mnemonics to lists of</span>
+<span class="sd">                mnemonics. e.g. {&#39;density&#39;: [&#39;DEN&#39;, &#39;DENS&#39;]}</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list. The results. Stick to booleans (True = pass) or ints.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">qc_data_well</span><span class="p">(</span><span class="n">well</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">tests</span><span class="o">=</span><span class="n">tests</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="n">keys</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Well.qc_table_html"><a class="viewcode-back" href="../../api/welly.well.html#welly.Well.qc_table_html">[docs]</a>    <span class="k">def</span> <span class="nf">qc_table_html</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tests</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Makes a nice table out of ``qc_data()`` Wrapping function from quality.py.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str. An HTML string for visualization in Jupyter notebook.</span>
+<span class="sd">            Visualize through IPython.display.HTML(str)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">qc_table_html_well</span><span class="p">(</span><span class="n">well</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">tests</span><span class="o">=</span><span class="n">tests</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="n">keys</span><span class="p">,</span>
+                                  <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Well.to_canstrat"><a class="viewcode-back" href="../../api/welly.well.html#welly.Well.to_canstrat">[docs]</a>    <span class="k">def</span> <span class="nf">to_canstrat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">log</span><span class="p">,</span> <span class="n">lith_field</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">as_text</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Make a Canstrat DAT (aka ASCII) file.</span>
+
+<span class="sd">        TODO:</span>
+<span class="sd">            The data part should probably belong to striplog, and only the</span>
+<span class="sd">            header should be written by the well.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">           filename (str)</span>
+<span class="sd">           key (str)</span>
+<span class="sd">           log (str): the log name, should be 6 characters.</span>
+<span class="sd">           lith_field (str) the name of the lithology field in the striplog&#39;s</span>
+<span class="sd">               Primary component. Must match the Canstrat definitions.</span>
+<span class="sd">           filename (str)</span>
+<span class="sd">           as_text (bool): if you don&#39;t want to write a file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">filename</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">as_text</span><span class="p">):</span>
+                <span class="n">m</span> <span class="o">=</span> <span class="s2">&quot;You must provide a filename or set as_text to True.&quot;</span>
+                <span class="k">raise</span> <span class="n">WellError</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+
+        <span class="n">strip</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="n">strip</span> <span class="o">=</span> <span class="n">strip</span><span class="o">.</span><span class="n">fill</span><span class="p">()</span>  <span class="c1"># Default is to fill with &#39;null&#39; intervals.</span>
+
+        <span class="n">record</span> <span class="o">=</span> <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="p">[</span><span class="n">well_to_card_1</span><span class="p">(</span><span class="bp">self</span><span class="p">)],</span> <span class="mi">2</span><span class="p">:</span> <span class="p">[</span><span class="n">well_to_card_2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">)],</span>
+                  <span class="mi">8</span><span class="p">:</span> <span class="p">[],</span>
+                  <span class="mi">7</span><span class="p">:</span> <span class="p">[</span><span class="n">interval_to_card_7</span><span class="p">(</span><span class="n">iv</span><span class="p">,</span> <span class="n">lith_field</span><span class="p">)</span> <span class="k">for</span> <span class="n">iv</span> <span class="ow">in</span> <span class="n">strip</span><span class="p">]}</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">7</span><span class="p">]:</span>
+            <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">record</span><span class="p">[</span><span class="n">c</span><span class="p">]:</span>
+                <span class="n">result</span> <span class="o">+=</span> <span class="n">write_row</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">card</span><span class="o">=</span><span class="n">c</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="n">log</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">as_text</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">result</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="Well.data_as_matrix"><a class="viewcode-back" href="../../api/welly.well.html#welly.Well.data_as_matrix">[docs]</a>    <span class="k">def</span> <span class="nf">data_as_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">return_basis</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">basis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                       <span class="n">alias</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">stop</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                       <span class="n">window_length</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">window_step</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Provide a feature matrix, given a list of data items.</span>
+
+<span class="sd">        I think this will probably fail if there are striplogs in the data</span>
+<span class="sd">        dictionary for this well.</span>
+
+<span class="sd">        TODO:</span>
+<span class="sd">            Deal with striplogs and other data, if present.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            keys (list): List of the logs to export from the data dictionary.</span>
+<span class="sd">            return_basis (bool): Whether or not to return the basis that was</span>
+<span class="sd">                used.</span>
+<span class="sd">            basis (ndarray): The basis to use. Default is to survey all curves</span>
+<span class="sd">                to find a common basis.</span>
+<span class="sd">            alias (dict): A mapping of alias names to lists of mnemonics.</span>
+<span class="sd">                e.g. {&#39;density&#39;: [&#39;DEN&#39;, &#39;DENS&#39;]}</span>
+<span class="sd">            start (float): Optionally override the start of whatever basis</span>
+<span class="sd">                you find or (more likely) is surveyed.</span>
+<span class="sd">            stop (float): Optionally override the stop of whatever basis</span>
+<span class="sd">                you find or (more likely) is surveyed.</span>
+<span class="sd">            step (float): Override the step in the basis from survey_basis.</span>
+<span class="sd">            window_length (int): The number of samples to return around each sample.</span>
+<span class="sd">                This will provide one or more shifted versions of the features.</span>
+<span class="sd">            window_step (int): How much to step the offset versions.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            ndarray.</span>
+<span class="sd">            or</span>
+<span class="sd">            ndarray, ndarray if return_basis=True</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">keys</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">Curve</span><span class="p">)]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Only look at the alias list if keys were passed.</span>
+            <span class="k">if</span> <span class="n">alias</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">_keys</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">alias</span><span class="p">:</span>
+                        <span class="n">added</span> <span class="o">=</span> <span class="kc">False</span>
+                        <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">alias</span><span class="p">[</span><span class="n">k</span><span class="p">]:</span>
+                            <span class="k">if</span> <span class="n">a</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
+                                <span class="n">_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+                                <span class="n">added</span> <span class="o">=</span> <span class="kc">True</span>
+                                <span class="k">break</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="n">added</span><span class="p">:</span>
+                            <span class="n">_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+                <span class="n">keys</span> <span class="o">=</span> <span class="n">_keys</span>
+
+        <span class="k">if</span> <span class="n">basis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">basis</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">survey_basis</span><span class="p">(</span><span class="n">keys</span><span class="o">=</span><span class="n">keys</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="n">step</span><span class="p">)</span>
+
+        <span class="c1"># Get the data, or None is curve is missing.</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">]</span>
+
+        <span class="c1"># Now cast to the correct basis, and replace any missing curves with</span>
+        <span class="c1"># an empty Curve. The sklearn imputer will deal with it. We will change</span>
+        <span class="c1"># the elements in place.</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">d</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">to_basis</span><span class="p">(</span><span class="n">basis</span><span class="o">=</span><span class="n">basis</span><span class="p">)</span>
+                <span class="c1"># Allow user to override the start and stop from the survey.</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">start</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">stop</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
+                    <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">to_basis</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span>
+                    <span class="n">basis</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">basis</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Empty_like gives unpredictable results</span>
+                <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">Curve</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">basis</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="n">basis</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">window_length</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">d_new</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+                <span class="n">r</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">_rolling_window</span><span class="p">(</span><span class="n">window_length</span><span class="p">,</span> <span class="n">func1d</span><span class="o">=</span><span class="n">utils</span><span class="o">.</span><span class="n">null</span><span class="p">,</span>
+                                      <span class="n">step</span><span class="o">=</span><span class="n">window_step</span><span class="p">,</span> <span class="n">return_rolled</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="p">)</span>
+                <span class="n">d_new</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">d_new</span>
+
+        <span class="k">if</span> <span class="n">return_basis</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">basis</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">T</span></div>
+
+<div class="viewcode-block" id="Well.add_header_item"><a class="viewcode-back" href="../../api/welly.well.html#welly.Well.add_header_item">[docs]</a>    <span class="k">def</span> <span class="nf">add_header_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">descr</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            item (str): The item name to add. Requires to be present in</span>
+<span class="sd">                `las_fields` (e.g. well, uwi, null)</span>
+<span class="sd">            value (str/float/int): The value of the item to add</span>
+<span class="sd">            unit (str): Optional. The unit of the item to add</span>
+<span class="sd">            descr (str): Optional. The description of the item to add</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Nothing, works inplace.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">obj</span><span class="p">,</span> <span class="n">dic</span> <span class="ow">in</span> <span class="n">LAS_FIELDS</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">df_item</span> <span class="ow">in</span> <span class="n">dic</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="n">item</span><span class="p">:</span>
+                    <span class="c1"># create new row to add to header</span>
+                    <span class="n">new_row</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;original_mnemonic&#39;</span><span class="p">:</span> <span class="n">df_item</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                               <span class="s1">&#39;mnemonic&#39;</span><span class="p">:</span> <span class="n">df_item</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                               <span class="s1">&#39;unit&#39;</span><span class="p">:</span> <span class="n">unit</span><span class="p">,</span>
+                               <span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="n">value</span><span class="p">,</span>
+                               <span class="s1">&#39;descr&#39;</span><span class="p">:</span> <span class="n">descr</span><span class="p">,</span>
+                               <span class="s1">&#39;section&#39;</span><span class="p">:</span> <span class="n">obj</span><span class="p">}</span>
+
+                    <span class="n">new_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">new_row</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+                    <span class="c1"># Add new row to header. (df.append is deprecated.)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">header</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">,</span> <span class="n">new_df</span><span class="p">],</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Well.assign_categorical"><a class="viewcode-back" href="../../api/welly.well.html#welly.Well.assign_categorical">[docs]</a>    <span class="k">def</span> <span class="nf">assign_categorical</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mnemonics</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Assign the `category` dtype to the columns of the `curve.df` attribute.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            mnemonics (list): Mnemonics of the curves to be assigned as categorical</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Nothing, works inplace.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">mnemonic</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">mnemonic</span> <span class="ow">in</span> <span class="n">mnemonics</span><span class="p">:</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">mnemonic</span><span class="p">],</span> <span class="s1">&#39;df&#39;</span><span class="p">,</span>  <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">mnemonic</span><span class="p">]</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;category&quot;</span><span class="p">))</span></div></div>
+
+
+<span class="k">def</span> <span class="nf">_get_well_related_curve_params</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="n">remap</span><span class="p">,</span> <span class="n">funcs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the well related curve parameters from the header.</span>
+
+<span class="sd">    Remap and/or transform the parameters if `remap` dict or transform `funcs` are passed.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        header (pd.DataFrame): Header meta data.</span>
+<span class="sd">            See `las.from_las()` for description.</span>
+<span class="sd">        remap (dict): Optional. A dict of &#39;old&#39;: &#39;new&#39; LAS field names.</span>
+<span class="sd">        funcs (dict): Optional. A dict of &#39;las field&#39;: function() for</span>
+<span class="sd">            implementing a transform before loading. Can be a lambda.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        well_curve_params (dict): LAS parameters that belong to the well</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># retrieve well parameters from header</span>
+    <span class="n">well_curve_params</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="c1"># retrieve parameters from header and/or remap and transform if passed</span>
+    <span class="k">for</span> <span class="n">field</span><span class="p">,</span> <span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span> <span class="ow">in</span> <span class="n">LAS_FIELDS</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">well_curve_params</span><span class="p">[</span><span class="n">field</span><span class="p">]</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_header_item</span><span class="p">(</span><span class="n">header</span><span class="o">=</span><span class="n">header</span><span class="p">,</span>
+                                                         <span class="n">section</span><span class="o">=</span><span class="n">section</span><span class="p">,</span>
+                                                         <span class="n">item</span><span class="o">=</span><span class="n">item</span><span class="p">,</span>
+                                                         <span class="n">remap</span><span class="o">=</span><span class="n">remap</span><span class="p">,</span>
+                                                         <span class="n">funcs</span><span class="o">=</span><span class="n">funcs</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">well_curve_params</span>
+
+
+<span class="k">def</span> <span class="nf">_get_curve_params</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="n">dataset_name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the curve related LAS parameters from the header.</span>
+<span class="sd">    For every curve, get the &#39;mnemonic&#39;, &#39;unit&#39; and &#39;description&#39;.</span>
+<span class="sd">    Set the &#39;mnemonic&#39; as index and return the transposed pd.DataFrame to be</span>
+<span class="sd">    able to index on them through the columns.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        header (pd.DataFrame): Header meta data.</span>
+<span class="sd">            See `las.from_las()` for description.</span>
+<span class="sd">        dataset_name: The name of the dataset as found in the LAS file. Can be:</span>
+<span class="sd">            &#39;Curves&#39;, &#39;Log,&#39; &#39;Core&#39;, &#39;Inclinometry&#39;, &#39;Drilling&#39;, &#39;Tops&#39;, &#39;Test&#39;</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        curve_params (pd.DataFrame): LAS parameters that belong to the curve(s)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># retrieve curves mnemonics, units and descriptions from header</span>
+    <span class="n">curve_header</span> <span class="o">=</span> <span class="n">header</span><span class="p">[(</span><span class="n">header</span><span class="p">[</span><span class="s2">&quot;section&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">dataset_name</span><span class="p">)]</span>
+
+    <span class="n">curve_params</span> <span class="o">=</span> <span class="n">curve_header</span><span class="p">[[</span><span class="s1">&#39;mnemonic&#39;</span><span class="p">,</span> <span class="s1">&#39;unit&#39;</span><span class="p">,</span> <span class="s1">&#39;descr&#39;</span><span class="p">]]</span>
+
+    <span class="k">return</span> <span class="n">curve_params</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;mnemonic&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+
+
+<span class="k">def</span> <span class="nf">_convert_depth_index_units</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">unit_from</span><span class="p">,</span> <span class="n">unit_to</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert a depth index from and to meters and feet. Flip the depth index if</span>
+<span class="sd">    it is descending because it should be ascending (increasing in depth).</span>
+<span class="sd">    Return index as a pandas Index object.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        index (np.array or pd.Index): The index.</span>
+<span class="sd">        unit_from (str): The current index unit.</span>
+<span class="sd">        unit_to (str): The index unit to convert to (e.g. &#39;m&#39;, &#39;ft&#39;).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        index (np.array or pd.Index): The converted index</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">unit_to</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;m&#39;</span><span class="p">,</span> <span class="s1">&#39;f&#39;</span><span class="p">,</span> <span class="s1">&#39;ft&#39;</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Index must be &#39;m&#39; or &#39;ft&#39;, but was: </span><span class="si">{</span><span class="n">unit_to</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">unit_from</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;m&#39;</span> <span class="ow">or</span> <span class="n">unit_from</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="s2">&quot;f&quot;</span> <span class="ow">in</span> <span class="n">unit_to</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="n">index</span> <span class="o">*</span> <span class="mf">3.280839895</span>  <span class="c1"># convert to ft</span>
+    <span class="k">elif</span> <span class="p">(</span><span class="n">unit_from</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;f&#39;</span><span class="p">,</span> <span class="s1">&#39;ft&#39;</span><span class="p">]</span> <span class="ow">or</span> <span class="n">unit_from</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="s2">&quot;m&quot;</span> <span class="ow">in</span> <span class="n">unit_to</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="n">index</span> <span class="o">*</span> <span class="mf">0.3048000000012192</span>  <span class="c1"># convert to m</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">pass</span>  <span class="c1"># No conversion needed.</span>
+        
+    <span class="c1"># Flip the index if it is descending.</span>
+    <span class="k">if</span> <span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">index</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">):</span>
+            <span class="c1"># index is pandas index</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="n">index</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="n">index</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># index is np array</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">flipud</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">index</span>
+
+
+<span class="k">def</span> <span class="nf">_update_las_header</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="n">remap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">funcs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Helper function that takes a header object, remapping dictionaries and</span>
+<span class="sd">    transformer functions. Retrieves every header LAS item from the</span>
+<span class="sd">    dataframe, remaps and/or transforms the item and puts it back in a copy</span>
+<span class="sd">    of the header dataframe.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        header (pd.DataFrame): header meta data. See `las.from_las()` for</span>
+<span class="sd">            description.</span>
+<span class="sd">        remap (dict): Optional. A dict of &#39;old&#39;: &#39;new&#39; LAS field names.</span>
+<span class="sd">        funcs (dict): Optional. A dict of &#39;las field&#39;: function() for</span>
+<span class="sd">            implementing a transform before loading. Can be a lambda.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        updated_header (pd.DataFrame): header with remapped and/or</span>
+<span class="sd">            transformed items, if passed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">updated_header</span> <span class="o">=</span> <span class="n">header</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="c1"># loop over every header LAS field</span>
+    <span class="k">for</span> <span class="n">section</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">LAS_FIELDS</span><span class="p">[</span><span class="s1">&#39;header&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="c1"># remap or transform if remap/funcs is passed</span>
+        <span class="n">new_item_value</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_header_item</span><span class="p">(</span><span class="n">header</span><span class="o">=</span><span class="n">header</span><span class="p">,</span>
+                                               <span class="n">section</span><span class="o">=</span><span class="n">section</span><span class="p">,</span>
+                                               <span class="n">item</span><span class="o">=</span><span class="n">item</span><span class="p">,</span>
+                                               <span class="n">remap</span><span class="o">=</span><span class="n">remap</span><span class="p">,</span>
+                                               <span class="n">funcs</span><span class="o">=</span><span class="n">funcs</span><span class="p">)</span>
+        <span class="c1"># get row index of field</span>
+        <span class="n">row_index</span> <span class="o">=</span> <span class="n">header</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">header</span><span class="p">[</span><span class="s1">&#39;mnemonic&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">item</span><span class="p">]</span>
+
+        <span class="c1"># replace item with new item value</span>
+        <span class="n">updated_header</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">row_index</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_item_value</span>
+
+    <span class="k">return</span> <span class="n">updated_header</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The Welly Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

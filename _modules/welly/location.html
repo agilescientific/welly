@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>welly.location &mdash; welly  documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> welly
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../source/intro.html">Home</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/req.html">Requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/api_toc.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/indices.html">Index</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">welly</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+          <li><a href="../welly.html">welly</a> &raquo;</li>
+      <li>welly.location</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for welly.location</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Defines well location.</span>
+
+<span class="sd">:copyright: 2021 Agile Geoscience</span>
+<span class="sd">:license: Apache 2.0</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">io</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy.interpolate</span> <span class="kn">import</span> <span class="n">interp1d</span>
+<span class="kn">from</span> <span class="nn">scipy.interpolate</span> <span class="kn">import</span> <span class="n">splprep</span>
+<span class="kn">from</span> <span class="nn">scipy.interpolate</span> <span class="kn">import</span> <span class="n">splev</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">.fields</span> <span class="kn">import</span> <span class="n">las_fields</span>
+<span class="kn">from</span> <span class="nn">.fields</span> <span class="kn">import</span> <span class="n">dev_fields</span>
+<span class="kn">from</span> <span class="nn">.crs</span> <span class="kn">import</span> <span class="n">CRS</span>
+<span class="kn">from</span> <span class="nn">.tools</span> <span class="kn">import</span> <span class="n">compute_position_log</span>
+
+
+<div class="viewcode-block" id="Location"><a class="viewcode-back" href="../../api/welly.location.html#welly.Location">[docs]</a><span class="k">class</span> <span class="nc">Location</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Contains all location and spatial information.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">crs</span> <span class="o">=</span> <span class="n">CRS</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">params</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">params</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">params</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="ow">and</span> <span class="p">(</span><span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">k</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;crs&#39;</span><span class="p">:</span>
+                    <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;crs&#39;</span><span class="p">,</span> <span class="n">CRS</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
+                    <span class="k">continue</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">v_</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">))</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isinf</span><span class="p">(</span><span class="n">v_</span><span class="p">):</span>
+                        <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v_</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">v</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;None&#39;</span><span class="p">,</span> <span class="s1">&#39;none&#39;</span><span class="p">,</span> <span class="s1">&#39;NONE&#39;</span><span class="p">]:</span>
+                        <span class="n">v</span> <span class="o">=</span> <span class="kc">None</span>
+                    <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+
+        <span class="n">td</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                     <span class="s1">&#39;td&#39;</span><span class="p">,</span>
+                     <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;TDD&#39;</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;TDL&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+                     <span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">td</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">td</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">td</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="n">td</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">td</span> <span class="o">=</span> <span class="n">td</span>
+
+        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;deviation&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">deviation</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dev_new</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">dog</span> <span class="o">=</span> <span class="n">compute_position_log</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">deviation</span><span class="p">,</span> <span class="n">td</span><span class="o">=</span><span class="n">td</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="n">pos</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dogleg</span> <span class="o">=</span> <span class="n">dog</span>
+
+        <span class="k">return</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;Location(</span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Location.crs_from_epsg"><a class="viewcode-back" href="../../api/welly.location.html#welly.Location.crs_from_epsg">[docs]</a>    <span class="k">def</span> <span class="nf">crs_from_epsg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">epsg</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets the CRS using an EPSG code.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            epsg (int): The EPSG code.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">crs</span> <span class="o">=</span> <span class="n">CRS</span><span class="o">.</span><span class="n">from_epsg</span><span class="p">(</span><span class="n">epsg</span><span class="p">)</span>
+        <span class="k">return</span></div>
+
+<div class="viewcode-block" id="Location.crs_from_string"><a class="viewcode-back" href="../../api/welly.location.html#welly.Location.crs_from_string">[docs]</a>    <span class="k">def</span> <span class="nf">crs_from_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets the CRS using a PROJ4 string.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            string (int): The PROJ4 string, eg &#39;+init=epsg:4269 +no_defs&#39;.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">crs</span> <span class="o">=</span> <span class="n">CRS</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+        <span class="k">return</span></div>
+
+<div class="viewcode-block" id="Location.from_lasio"><a class="viewcode-back" href="../../api/welly.location.html#welly.Location.from_lasio">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_lasio</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">remap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">funcs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Make a Location object from a header object.</span>
+<span class="sd">        See `las.from_las()` for header object description.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            header (pd.DataFrame). Header meta data from LAS file</span>
+<span class="sd">            remap (dict): Optional. A dict of &#39;old&#39;: &#39;new&#39; LAS field names.</span>
+<span class="sd">            funcs (dict): Optional. A dict of &#39;las field&#39;: function() for</span>
+<span class="sd">                implementing a transform before loading. Can be a lambda.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Location. An instance of this class.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">funcs</span> <span class="o">=</span> <span class="n">funcs</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="n">funcs</span><span class="p">[</span><span class="s1">&#39;location&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span>
+        <span class="k">for</span> <span class="n">field</span><span class="p">,</span> <span class="p">(</span><span class="n">sect</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span> <span class="ow">in</span> <span class="n">las_fields</span><span class="p">[</span><span class="s1">&#39;location&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">params</span><span class="p">[</span><span class="n">field</span><span class="p">]</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_header_item</span><span class="p">(</span><span class="n">header</span><span class="p">,</span>
+                                                  <span class="n">section</span><span class="o">=</span><span class="n">sect</span><span class="p">,</span>
+                                                  <span class="n">item</span><span class="o">=</span><span class="n">item</span><span class="p">,</span>
+                                                  <span class="n">remap</span><span class="o">=</span><span class="n">remap</span><span class="p">,</span>
+                                                  <span class="n">funcs</span><span class="o">=</span><span class="n">funcs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">params</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Location.from_petrel"><a class="viewcode-back" href="../../api/welly.location.html#welly.Location.from_petrel">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_petrel</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span>
+                    <span class="n">fname</span><span class="p">,</span>
+                    <span class="n">recalc</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                    <span class="n">north</span><span class="o">=</span><span class="s1">&#39;grid&#39;</span><span class="p">,</span>
+                    <span class="n">columns</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                    <span class="n">update</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="o">**</span><span class="n">kwargs</span>
+                    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a location object from a Petrel `dev` file. Should contain the</span>
+<span class="sd">        (x, y), the CRS, the KB, and the position log.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            fname (str): The dev filename.</span>
+<span class="sd">            recalc (bool): Whether to recalculate the position log from the</span>
+<span class="sd">                deviation survey (if possible). Default: `False`.</span>
+<span class="sd">            north (str): Can be &#39;grid&#39; or &#39;true&#39;. This is only a preference;</span>
+<span class="sd">                if only one `AZIM` column is present, you&#39;re getting whatever</span>
+<span class="sd">                it is.</span>
+<span class="sd">            columns (array): The columns of the dev file holding the data. If</span>
+<span class="sd">                recalc is False (default), then this will be the indices of</span>
+<span class="sd">                (x, y, TVDSS), in that order and zero-indexed. Default in that</span>
+<span class="sd">                case: `[1, 2, 3]`. However, if `recalc` is True then this will</span>
+<span class="sd">                be the indices of the dev file columns giving (MD, INCL, AZIM),</span>
+<span class="sd">                in that order. In this case the default is `[0, 8, 10]` for</span>
+<span class="sd">                &#39;grid&#39; north, or `[0, 8, 7]` for &#39;true&#39; north.</span>
+<span class="sd">            update: This function makes some adjustments to the position or</span>
+<span class="sd">                deviation data, to account for the surface and TD. If you don&#39;t</span>
+<span class="sd">                want to change the data from the file, set to False. (The</span>
+<span class="sd">                Petrel file probably has absolute position, whereas `welly`</span>
+<span class="sd">                computes relative position, so the first row is always</span>
+<span class="sd">                (0, 0, 0). Also, `welly` always adds points for the 3D position</span>
+<span class="sd">                of TD and KB.)</span>
+<span class="sd">            **kwargs: passed to `welly.tools.compute_position_log`.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Location. An instance of this class.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s1">&#39;rt&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+
+        <span class="c1"># Get data from header.</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">field</span><span class="p">,</span> <span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">func</span><span class="p">)</span> <span class="ow">in</span> <span class="n">dev_fields</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span><span class="o">.</span><span class="n">groups</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+            <span class="n">params</span><span class="p">[</span><span class="n">field</span><span class="p">]</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+        <span class="c1"># Find end of header, which ends in row of &#39;=&#39; signs.</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">(</span><span class="n">text</span><span class="p">[</span><span class="n">text</span><span class="o">.</span><span class="n">rfind</span><span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="p">)</span><span class="o">+</span><span class="mi">2</span><span class="p">:])</span>
+
+        <span class="k">if</span> <span class="n">recalc</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">columns</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">10</span><span class="p">]</span> <span class="k">if</span> <span class="n">north</span> <span class="o">==</span> <span class="s1">&#39;grid&#39;</span> <span class="k">else</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">7</span><span class="p">]</span>
+            <span class="n">deviation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">genfromtxt</span><span class="p">(</span><span class="n">data</span><span class="p">)[:,</span> <span class="n">columns</span><span class="p">]</span>
+            <span class="n">dev_new</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">dog</span> <span class="o">=</span> <span class="n">compute_position_log</span><span class="p">(</span><span class="n">deviation</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">update</span><span class="p">:</span>
+                <span class="n">params</span><span class="p">[</span><span class="s1">&#39;deviation&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dev_new</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">params</span><span class="p">[</span><span class="s1">&#39;deviation&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">deviation</span>
+            <span class="n">params</span><span class="p">[</span><span class="s1">&#39;position&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pos</span>
+            <span class="n">params</span><span class="p">[</span><span class="s1">&#39;dogleg&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dog</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">columns</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+            <span class="n">position</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">genfromtxt</span><span class="p">(</span><span class="n">data</span><span class="p">)[:,</span> <span class="n">columns</span><span class="p">]</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">rel_pos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">],</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">],</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;kb&#39;</span><span class="p">]])</span>
+                <span class="n">pos_new</span> <span class="o">=</span> <span class="n">position</span> <span class="o">-</span> <span class="n">rel_pos</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="n">m</span> <span class="o">=</span> <span class="s2">&quot;The position log could not be adjusted to relative &quot;</span>
+                <span class="n">m</span> <span class="o">+=</span> <span class="s2">&quot;position; leaving it as-is. Take care to check it.&quot;</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+                <span class="n">pos_new</span> <span class="o">=</span> <span class="n">position</span>
+            <span class="k">if</span> <span class="n">update</span><span class="p">:</span>
+                <span class="n">params</span><span class="p">[</span><span class="s1">&#39;position&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pos_new</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">params</span><span class="p">[</span><span class="s1">&#39;position&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">position</span>
+
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">params</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Location.add_deviation"><a class="viewcode-back" href="../../api/welly.location.html#welly.Location.add_deviation">[docs]</a>    <span class="k">def</span> <span class="nf">add_deviation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                      <span class="n">deviation</span><span class="p">,</span>
+                      <span class="n">td</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                      <span class="n">method</span><span class="o">=</span><span class="s1">&#39;mc&#39;</span><span class="p">,</span>
+                      <span class="n">update_deviation</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                      <span class="n">azimuth_datum</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                      <span class="n">course_length</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
+                      <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a deviation survey to this instance, and try to compute a position</span>
+<span class="sd">        log from it. Acts in place, modifying the Location instance directly.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            deviation (array): The columns should be: MD, INCL, AZI.</span>
+<span class="sd">            td (Number): The TD of the well, if not the end of the deviation</span>
+<span class="sd">                survey you&#39;re passing.</span>
+<span class="sd">            method (str):</span>
+<span class="sd">                &#39;aa&#39;: average angle</span>
+<span class="sd">                &#39;bt&#39;: balanced tangential</span>
+<span class="sd">                &#39;mc&#39;: minimum curvature</span>
+<span class="sd">            update_deviation: This function makes some adjustments to the dev-</span>
+<span class="sd">                iation survey, to account for the surface and TD. If you do not</span>
+<span class="sd">                want to change the stored deviation survey, set to False.</span>
+<span class="sd">            azimuth_datum (float): The orientation of the azimuth datum,</span>
+<span class="sd">                relative to the y-axis.</span>
+<span class="sd">            course_length (float): The length over which to normalize the dogleg</span>
+<span class="sd">                severity. Typical values are 30 m or 100 ft. Use 1 for no normal-</span>
+<span class="sd">                ization.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None. Adds the position log to `well.location` in place.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dev_new</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">dog</span> <span class="o">=</span> <span class="n">compute_position_log</span><span class="p">(</span><span class="n">deviation</span><span class="p">,</span>
+                                                 <span class="n">td</span><span class="p">,</span>
+                                                 <span class="n">method</span><span class="p">,</span>
+                                                 <span class="n">azimuth_datum</span><span class="p">,</span>
+                                                 <span class="n">course_length</span><span class="p">,</span>
+                                                 <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">update_deviation</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">deviation</span> <span class="o">=</span> <span class="n">dev_new</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">deviation</span> <span class="o">=</span> <span class="n">deviation</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="n">pos</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dogleg</span> <span class="o">=</span> <span class="n">dog</span>
+
+        <span class="k">return</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">md</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The measured depth of the deviation survey.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            ndarray.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">deviation</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>  <span class="c1"># First column of deviation survey.</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">tvd</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The true vertical depth of the deviation survey.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            ndarray.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span>  <span class="c1"># Last column of position log.</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">md2tvd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Provides an transformation and interpolation function that converts</span>
+<span class="sd">        MD to TVD.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            kind (str): The kind of interpolation to do, e.g. &#39;linear&#39;,</span>
+<span class="sd">                &#39;cubic&#39;, &#39;nearest&#39;.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            function.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">position</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span>
+        <span class="k">return</span> <span class="n">interp1d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tvd</span><span class="p">,</span>
+                        <span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">,</span>
+                        <span class="n">assume_sorted</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                        <span class="n">fill_value</span><span class="o">=</span><span class="s2">&quot;extrapolate&quot;</span><span class="p">,</span>
+                        <span class="n">bounds_error</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">tvd2md</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Provides an transformation and interpolation function that converts</span>
+<span class="sd">        MD to TVD.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            kind (str): The kind of interpolation to do, e.g. &#39;linear&#39;,</span>
+<span class="sd">                &#39;cubic&#39;, &#39;nearest&#39;.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            function.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">position</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span>
+        <span class="k">return</span> <span class="n">interp1d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tvd</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">md</span><span class="p">,</span>
+                        <span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">,</span>
+                        <span class="n">assume_sorted</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                        <span class="n">fill_value</span><span class="o">=</span><span class="s2">&quot;extrapolate&quot;</span><span class="p">,</span>
+                        <span class="n">bounds_error</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Location.trajectory"><a class="viewcode-back" href="../../api/welly.location.html#welly.Location.trajectory">[docs]</a>    <span class="k">def</span> <span class="nf">trajectory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datum</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">elev</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">points</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get regularly sampled well trajectory. Assumes there is a position</span>
+<span class="sd">        log already, e.g. resulting from calling `add_deviation()` on a</span>
+<span class="sd">        deviation survey.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            datum (array-like): A 3-element array with adjustments to</span>
+<span class="sd">                (x, y, z). For example, the x-position, y-position, and KB of</span>
+<span class="sd">                the tophole location.</span>
+<span class="sd">            elev (bool): In general the (x, y, z) array of positions will have</span>
+<span class="sd">                z as TVD, which is positive down. If `elev` is True, positive</span>
+<span class="sd">                will be upwards.</span>
+<span class="sd">            points (int): The number of points in the trajectory.</span>
+<span class="sd">            kwargs: Will be passed to `scipy.interpolate.splprep()`.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            ndarray. An array with shape (`points` x 3) representing the well</span>
+<span class="sd">                trajectory. Columns are (x, y, z). </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">elev</span><span class="p">:</span>
+            <span class="c1"># First check that 3rd column is actually depth, not elevation.</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">pos</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">pos</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">pos</span> <span class="o">*=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">datum</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">pos</span> <span class="o">+=</span> <span class="n">datum</span>
+
+        <span class="k">if</span> <span class="n">pos</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">k</span> <span class="o">=</span> <span class="n">pos</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">k</span> <span class="o">=</span> <span class="mi">3</span>
+
+        <span class="c1"># Compute the spline and return as an array instead of as vectors.</span>
+        <span class="n">knees</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">splprep</span><span class="p">(</span><span class="n">pos</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">spline</span> <span class="o">=</span> <span class="n">splev</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">points</span><span class="p">),</span> <span class="n">knees</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">spline</span><span class="p">)</span><span class="o">.</span><span class="n">T</span></div>
+
+<div class="viewcode-block" id="Location.plot_3d"><a class="viewcode-back" href="../../api/welly.location.html#welly.Location.plot_3d">[docs]</a>    <span class="k">def</span> <span class="nf">plot_3d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Make a 3D plot of the well trajectory.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">return_ax</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">subplot_kw</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;projection&#39;</span><span class="p">:</span> <span class="s1">&#39;3d&#39;</span><span class="p">}</span>
+            <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">7</span><span class="p">),</span> <span class="n">subplot_kw</span><span class="o">=</span><span class="n">subplot_kw</span><span class="p">)</span>
+            <span class="n">return_ax</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">trajectory</span><span class="p">()</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.75</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;X position&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Y position&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">return_ax</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">ax</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span></div>
+
+<div class="viewcode-block" id="Location.plot_plan"><a class="viewcode-back" href="../../api/welly.location.html#welly.Location.plot_plan">[docs]</a>    <span class="k">def</span> <span class="nf">plot_plan</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Make a map-like plot of the well trajectory.</span>
+
+<span class="sd">        TODO</span>
+<span class="sd">        - Use cartopy or similar for this.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">rng_x</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span> <span class="o">-</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span>
+        <span class="n">rng_y</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])</span> <span class="o">-</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])</span>
+        <span class="n">max_pos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">([</span><span class="n">rng_x</span><span class="p">,</span> <span class="n">rng_y</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">max_pos</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="o">*</span><span class="n">rng_y</span><span class="o">/</span><span class="n">rng_x</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">10</span><span class="o">*</span><span class="n">rng_x</span><span class="o">/</span><span class="n">rng_y</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+
+        <span class="n">return_ax</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="n">figsize</span><span class="p">)</span>
+            <span class="n">return_ax</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">trajectory</span><span class="p">()[:,</span> <span class="p">:</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;X position&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Y position&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">return_ax</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">ax</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The Welly Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>welly.well module &mdash; welly  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Indices and tables" href="../source/indices.html" />
+    <link rel="prev" title="welly.utils module" href="welly.utils.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> welly
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../source/intro.html">Home</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../source/req.html">Requirements</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="api_toc.html">API</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="welly.html">welly package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="welly.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="welly.canstrat.html">welly.canstrat module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.canstrat_codes.html">welly.canstrat_codes module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.crs.html">welly.crs module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.curve.html">welly.curve module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.defaults.html">welly.defaults module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.fields.html">welly.fields module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.header.html">welly.header module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.las.html">welly.las module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.location.html">welly.location module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.plot.html">welly.plot module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.project.html">welly.project module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.quality.html">welly.quality module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.scales.html">welly.scales module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.synthetic.html">welly.synthetic module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.tools.html">welly.tools module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.utils.html">welly.utils module</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">welly.well module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="welly.html#module-welly">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../source/indices.html">Index</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">welly</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="api_toc.html">welly</a> &raquo;</li>
+          <li><a href="welly.html">welly package</a> &raquo;</li>
+      <li>welly.well module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/welly.well.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-welly.well">
+<span id="welly-well-module"></span><h1>welly.well module<a class="headerlink" href="#module-welly.well" title="Permalink to this headline"></a></h1>
+<p>Defines wells.</p>
+<dl class="field-list simple">
+<dt class="field-odd">copyright</dt>
+<dd class="field-odd"><p>2021 Agile Scientific</p>
+</dd>
+<dt class="field-even">license</dt>
+<dd class="field-even"><p>Apache 2.0</p>
+</dd>
+</dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="welly.well.Well">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">welly.well.</span></span><span class="sig-name descname"><span class="pre">Well</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/well.html#Well"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.well.Well" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Well contains everything about the well.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="welly.well.Well.add_curves_from_las">
+<span class="sig-name descname"><span class="pre">add_curves_from_las</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">funcs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/well.html#Well.add_curves_from_las"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.well.Well.add_curves_from_las" title="Permalink to this definition"></a></dt>
+<dd><p>Given a LAS file, add curves from it to the current well instance.
+Essentially just wraps <code class="docutils literal notranslate"><span class="pre">add_curves_from_lasio()</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fname</strong> (<em>str</em><em> or </em><em>list</em>) – The path(s) of the LAS file to read curves from</p></li>
+<li><p><strong>remap</strong> (<em>dict</em>) – Optional. A dict of ‘old’: ‘new’ LAS field names.</p></li>
+<li><p><strong>funcs</strong> (<em>dict</em>) – Optional. A dict of ‘las field’: function() for
+implementing a transform before loading. Can be a lambda.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None. Works in place.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="welly.well.Well.add_curves_from_lasio">
+<span class="sig-name descname"><span class="pre">add_curves_from_lasio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">las</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/well.html#Well.add_curves_from_lasio"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.well.Well.add_curves_from_lasio" title="Permalink to this definition"></a></dt>
+<dd><p>Given a LAS file, add curves from it to the current well instance.
+Essentially just wraps <code class="docutils literal notranslate"><span class="pre">add_curves_from_lasio()</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>las</strong> (<em>lasio.LASFile object</em>) – a lasio representation of a LAS file</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None. Works in place.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="welly.well.Well.add_header_item">
+<span class="sig-name descname"><span class="pre">add_header_item</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">descr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/well.html#Well.add_header_item"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.well.Well.add_header_item" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>item</strong> (<em>str</em>) – The item name to add. Requires to be present in
+<cite>las_fields</cite> (e.g. well, uwi, null)</p></li>
+<li><p><strong>value</strong> (<em>str/float/int</em>) – The value of the item to add</p></li>
+<li><p><strong>unit</strong> (<em>str</em>) – Optional. The unit of the item to add</p></li>
+<li><p><strong>descr</strong> (<em>str</em>) – Optional. The description of the item to add</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Nothing, works inplace.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="welly.well.Well.alias_has_multiple">
+<span class="sig-name descname"><span class="pre">alias_has_multiple</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mnemonic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/well.html#Well.alias_has_multiple"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.well.Well.alias_has_multiple" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="welly.well.Well.assign_categorical">
+<span class="sig-name descname"><span class="pre">assign_categorical</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mnemonics</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/well.html#Well.assign_categorical"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.well.Well.assign_categorical" title="Permalink to this definition"></a></dt>
+<dd><p>Assign the <cite>category</cite> dtype to the columns of the <cite>curve.df</cite> attribute.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>mnemonics</strong> (<em>list</em>) – Mnemonics of the curves to be assigned as categorical</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Nothing, works inplace.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="welly.well.Well.count_curves">
+<span class="sig-name descname"><span class="pre">count_curves</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/well.html#Well.count_curves"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.well.Well.count_curves" title="Permalink to this definition"></a></dt>
+<dd><p>Counts the number of curves in the well that will be selected with the
+given key list and the given alias dict. Used by Project’s curve table.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="welly.well.Well.coverage">
+<span class="sig-name descname"><span class="pre">coverage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/well.html#Well.coverage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.well.Well.coverage" title="Permalink to this definition"></a></dt>
+<dd><p>Plot the coverage of the curves in a well.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="welly.well.Well.data_as_matrix">
+<span class="sig-name descname"><span class="pre">data_as_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_basis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">window_step</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/well.html#Well.data_as_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.well.Well.data_as_matrix" title="Permalink to this definition"></a></dt>
+<dd><p>Provide a feature matrix, given a list of data items.</p>
+<p>I think this will probably fail if there are striplogs in the data
+dictionary for this well.</p>
+<div class="admonition-todo admonition" id="id1">
+<p class="admonition-title">Todo</p>
+<p>Deal with striplogs and other data, if present.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>keys</strong> (<em>list</em>) – List of the logs to export from the data dictionary.</p></li>
+<li><p><strong>return_basis</strong> (<em>bool</em>) – Whether or not to return the basis that was
+used.</p></li>
+<li><p><strong>basis</strong> (<em>ndarray</em>) – The basis to use. Default is to survey all curves
+to find a common basis.</p></li>
+<li><p><strong>alias</strong> (<em>dict</em>) – A mapping of alias names to lists of mnemonics.
+e.g. {‘density’: [‘DEN’, ‘DENS’]}</p></li>
+<li><p><strong>start</strong> (<em>float</em>) – Optionally override the start of whatever basis
+you find or (more likely) is surveyed.</p></li>
+<li><p><strong>stop</strong> (<em>float</em>) – Optionally override the stop of whatever basis
+you find or (more likely) is surveyed.</p></li>
+<li><p><strong>step</strong> (<em>float</em>) – Override the step in the basis from survey_basis.</p></li>
+<li><p><strong>window_length</strong> (<em>int</em>) – The number of samples to return around each sample.
+This will provide one or more shifted versions of the features.</p></li>
+<li><p><strong>window_step</strong> (<em>int</em>) – How much to step the offset versions.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>ndarray.
+or
+ndarray, ndarray if return_basis=True</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="welly.well.Well.df">
+<span class="sig-name descname"><span class="pre">df</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uwi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rename_aliased</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/well.html#Well.df"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.well.Well.df" title="Permalink to this definition"></a></dt>
+<dd><p>Return current curve data as a <code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code> object.</p>
+<p>Requires <cite>pandas</cite>.</p>
+<p>Everything has to have the same basis, because the depth
+is going to become the index of the DataFrame. If you don’t
+provide one, <code class="docutils literal notranslate"><span class="pre">welly</span></code> will make one using <code class="docutils literal notranslate"><span class="pre">survey_basis()</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>keys</strong> (<em>list</em>) – List of strings: the keys of the data items to
+survey, if not all of them.</p></li>
+<li><p><strong>basis</strong> (<em>array</em>) – A basis, if you want to enforce one, otherwise
+you’ll get the result of <code class="docutils literal notranslate"><span class="pre">survey_basis()</span></code>.</p></li>
+<li><p><strong>uwi</strong> (<em>bool</em>) – Whether to add a ‘UWI’ column.</p></li>
+<li><p><strong>alias</strong> (<em>dict</em>) – Alias dictionary.</p></li>
+<li><p><strong>rename_aliased</strong> (<em>bool</em>) – Whether to name the columns after the alias,
+i.e. the alias dictionary key, or after the curve mnemonic.
+Default is True, use the alias names.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>pandas.DataFrame.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="welly.well.Well.from_datasets">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_datasets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datasets</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">funcs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">req</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index_units</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/well.html#Well.from_datasets"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.well.Well.from_datasets" title="Permalink to this definition"></a></dt>
+<dd><p>Constructor. If you have a <cite>datasets</cite> object, this will create a well
+object from it. See <code class="xref py py-func docutils literal notranslate"><span class="pre">las.from_las()</span></code> for a description of a
+<cite>datasets</cite> object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>(</strong><strong>Dict</strong><strong>[</strong><strong>'&lt;name&gt;'</strong> (<em>datasets</em>) – pd.DataFrame]): Dictionary maps a
+dataset name (e.g. ‘Curves’ or ‘Header’) to a pd.DataFrame.</p></li>
+<li><p><strong>remap</strong> (<em>dict</em>) – Optional. A dict of ‘old’: ‘new’ LAS field names.</p></li>
+<li><p><strong>funcs</strong> (<em>dict</em>) – Optional. A dict of ‘las field’: function() for
+implementing a transform before loading. Can be a lambda.</p></li>
+<li><p><strong>data</strong> (<em>bool</em>) – Whether to load curves or not.</p></li>
+<li><p><strong>req</strong> (<em>list</em>) – An alias list, giving all required curves.</p></li>
+<li><p><strong>alias</strong> (<em>dict</em>) – An alias dictionary.</p></li>
+<li><p><strong>fname</strong> (<em>str</em>) – The filename, if you want to keep it.</p></li>
+<li><p><strong>index_units</strong> (<em>str</em>) – Optional. The unit of the index upon construction
+of the Curves (e.g. ‘m’ or ‘ft’). Will perform unit conversion
+if specified index unit is different than the existing index
+unit.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>well (welly.Well). The well object.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="welly.well.Well.from_df">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_df</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">units</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">req</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uwi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/well.html#Well.from_df"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.well.Well.from_df" title="Permalink to this definition"></a></dt>
+<dd><p>Constructor. If you have a pd.DataFrame with the time/depth index set as
+the <cite>pd.DataFrame</cite> index and the columns as the curve data, this makes
+a <cite>well</cite> object from it. The column name is taken as the respective
+curve mnemonic.</p>
+<p>Use this if you don’t have a header dataframe with meta data. If you do,
+please use <cite>Well.from_datasets()</cite></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> (<em>pd.DataFrame</em>) – Curve data.</p></li>
+<li><p><strong>units</strong> (<em>dict</em>) – Optional. Units of measurement of the curves in <cite>df</cite>.</p></li>
+<li><p><strong>req</strong> (<em>list</em>) – Optional. An alias list, giving all required curves.</p></li>
+<li><p><strong>uwi</strong> (<em>str</em>) – Unique Well Identifier (UWI)</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – Name</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>well. The well object.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="welly.well.Well.from_las">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_las</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">funcs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">req</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">printfname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/well.html#Well.from_las"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.well.Well.from_las" title="Permalink to this definition"></a></dt>
+<dd><p>Constructor. If you have a LAS file saved on disk, this creates a well
+object from it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fname</strong> (<em>str</em><em> or </em><em>pathlib.Path</em>) – The path of the LAS file, or a URL to
+one.</p></li>
+<li><p><strong>remap</strong> (<em>dict</em>) – Optional. A dict of ‘old’: ‘new’ LAS field names.</p></li>
+<li><p><strong>funcs</strong> (<em>dict</em>) – Optional. A dict of ‘las field’: function() for
+implementing a transform before loading. Can be a lambda.</p></li>
+<li><p><strong>data</strong> (<em>bool</em>) – Optional. Whether to load the data or only the header.</p></li>
+<li><p><strong>req</strong> (<em>list</em>) – Optional. An alias list, giving all required curves.</p></li>
+<li><p><strong>alias</strong> (<em>dict</em>) – Optional. An alias dictionary.</p></li>
+<li><p><strong>encoding</strong> (<em>str</em>) – Optional. the character encoding used when reading
+the LAS file in from disk.</p></li>
+<li><p><strong>printfname</strong> (<em>bool</em>) – Optional. prints filename before trying to load
+it, for debugging.</p></li>
+<li><p><strong>index</strong> (<em>str</em>) – Optional. Either “existing” (use the index as found in
+the LAS file) or “m”, “ft” to use lasio’s conversion of the
+relevant index unit.</p></li>
+<li><p><strong>kwargs</strong> – More keyword arguments are passed to <cite>lasio</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>well. The well object.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="welly.well.Well.from_lasio">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_lasio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">las</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">funcs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">req</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/well.html#Well.from_lasio"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.well.Well.from_lasio" title="Permalink to this definition"></a></dt>
+<dd><p>Constructor. If you already have the lasio object, then this makes a
+well object from it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>las</strong> (<em>lasio.LASFile object</em>) – a lasio representation of a LAS file.</p></li>
+<li><p><strong>remap</strong> (<em>dict</em>) – Optional. A dict of ‘old’: ‘new’ LAS field names.</p></li>
+<li><p><strong>funcs</strong> (<em>dict</em>) – Optional. A dict of ‘las field’: function() for
+implementing a transform before loading. Can be a lambda.</p></li>
+<li><p><strong>data</strong> (<em>bool</em>) – Whether to load curves or not.</p></li>
+<li><p><strong>req</strong> (<em>list</em>) – An alias list, giving all required curves.</p></li>
+<li><p><strong>alias</strong> (<em>dict</em>) – An alias dictionary.</p></li>
+<li><p><strong>fname</strong> (<em>str</em>) – The filename, if you want to keep it.</p></li>
+<li><p><strong>index</strong> (<em>str</em>) – Optional. Either “existing” (use the index as found in
+the LAS file) or “m”, “ft” to use lasio’s conversion of the
+relevant index unit.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>well (welly.Well). The well object.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="welly.well.Well.get_alias">
+<span class="sig-name descname"><span class="pre">get_alias</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mnemonic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/well.html#Well.get_alias"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.well.Well.get_alias" title="Permalink to this definition"></a></dt>
+<dd><p>Get the alias key that this mnemonic belongs to.</p>
+<p>Returns: str.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="welly.well.Well.get_curve">
+<span class="sig-name descname"><span class="pre">get_curve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mnemonic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/well.html#Well.get_curve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.well.Well.get_curve" title="Permalink to this definition"></a></dt>
+<dd><p>Wraps get_mnemonic.</p>
+<p>Instead of picking curves by name directly from the data dict, you
+can pick them up with this method, which takes account of the alias
+dict you pass it. If you do not pass an alias dict, then you get the
+curve you asked for, if it exists, or None. NB Wells do not have alias
+dicts, but Projects do.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mnemonic</strong> (<em>str</em>) – the name of the curve you want.</p></li>
+<li><p><strong>alias</strong> (<em>dict</em>) – an alias dictionary, mapping mnemonics to lists of
+mnemonics. e.g. {‘density’: [‘DEN’, ‘DENS’]}</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Curve.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="welly.well.Well.get_mnemonic">
+<span class="sig-name descname"><span class="pre">get_mnemonic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mnemonic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/well.html#Well.get_mnemonic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.well.Well.get_mnemonic" title="Permalink to this definition"></a></dt>
+<dd><p>Instead of picking curves by name directly from the data dict, you
+can pick them up with this method, which takes account of the alias
+dict you pass it. If you do not pass an alias dict, then you get the
+curve you asked for, if it exists, or None. NB Wells do not have alias
+dicts, but Projects do.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mnemonic</strong> (<em>str</em>) – the name of the curve you want.</p></li>
+<li><p><strong>alias</strong> (<em>dict</em>) – an alias dictionary, mapping mnemonics to lists of
+mnemonics. e.g. {‘density’: [‘DEN’, ‘DENS’]}</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>str.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="welly.well.Well.get_mnemonics_from_regex">
+<span class="sig-name descname"><span class="pre">get_mnemonics_from_regex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/well.html#Well.get_mnemonics_from_regex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.well.Well.get_mnemonics_from_regex" title="Permalink to this definition"></a></dt>
+<dd><p>Should probably integrate getting curves with regex, vs getting with
+aliases, even though mixing them is probably confusing. For now I can’t
+think of another use case for these wildcards, so I’ll just implement
+for the curve table and we can worry about a nice solution later if we
+ever come back to it.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="welly.well.Well.is_complete">
+<span class="sig-name descname"><span class="pre">is_complete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/well.html#Well.is_complete"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.well.Well.is_complete" title="Permalink to this definition"></a></dt>
+<dd><p>Returns False if the well does not have one or more of the keys in its
+data dictionary. Used by <code class="docutils literal notranslate"><span class="pre">project.data_to_matrix()</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="welly.well.Well.make_synthetic">
+<span class="sig-name descname"><span class="pre">make_synthetic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">srd</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v_repl_seismic</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v_repl_log</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/well.html#Well.make_synthetic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.well.Well.make_synthetic" title="Permalink to this definition"></a></dt>
+<dd><p>Early hack. Use with extreme caution.</p>
+<p>Hands-free. There’ll be a more granualr version in synthetic.py.</p>
+<p>Assumes DT is in µs/m and RHOB is kg/m3.</p>
+<p>There is no handling yet for TVD.</p>
+<p>The datum handling is probably sketchy.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="welly.well.Well.name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#welly.well.Well.name" title="Permalink to this definition"></a></dt>
+<dd><p>Property. Simply a shortcut to the well name from the header, or the
+empty string if there isn’t one.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="welly.well.Well.plot">
+<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">legend</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tracks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">track_titles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extents</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'td'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/well.html#Well.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.well.Well.plot" title="Permalink to this definition"></a></dt>
+<dd><p>Plot multiple tracks. Wrapping plot function from plot.py.
+By default only show the plot, not return the figure object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>legend</strong> (<em>striplog.legend</em>) – A legend instance.</p></li>
+<li><p><strong>tracks</strong> (<em>list</em>) – A list of strings and/or lists of strings. The
+tracks you want to plot from <code class="docutils literal notranslate"><span class="pre">data</span></code>. Optional, but you will
+usually want to give it.</p></li>
+<li><p><strong>track_titles</strong> (<em>list</em>) – Optional. A list of strings and/or lists of
+strings. The names to give the tracks, if you don’t want welly
+to guess.</p></li>
+<li><p><strong>alias</strong> (<em>dict</em>) – a dictionary mapping mnemonics to lists of mnemonics.</p></li>
+<li><p><strong>basis</strong> (<em>ndarray</em>) – Optional. The basis of the plot, if you don’t
+want welly to guess (probably the best idea).</p></li>
+<li><p><strong>extents</strong> (<em>str</em>) – What to use for the y limits:
+‘td’: plot 0 to TD.
+‘curves’: use a basis that accommodates all the curves.
+‘all’: use a basis that accommodates everything.
+(tuple): give the upper and lower explictly.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None. The plot is a side-effect.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="welly.well.Well.qc_curve_group">
+<span class="sig-name descname"><span class="pre">qc_curve_group</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tests</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/well.html#Well.qc_curve_group"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.well.Well.qc_curve_group" title="Permalink to this definition"></a></dt>
+<dd><p>Run tests on a cohort of curves. Wrapping functions from quality.py</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tests</strong> (<em>dict</em>) – a dictionary of tests, mapping mnemonics to lists of
+tests. Two special keys, <cite>all</cite> and <cite>each</cite> map tests to the set
+of all curves, and to each curve in the well, respectively.
+You only need <cite>all</cite> if the test involves multiple inputs, e.g.
+comparing one curve to another.</p></li>
+<li><p><strong>keys</strong> (<em>list</em>) – a list of the mnemonics to run the tests against.</p></li>
+<li><p><strong>alias</strong> (<em>dict</em>) – an alias dictionary, mapping mnemonics to lists of
+mnemonics. e.g. {‘density’: [‘DEN’, ‘DENS’]}</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>dict.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="welly.well.Well.qc_data">
+<span class="sig-name descname"><span class="pre">qc_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tests</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/well.html#Well.qc_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.well.Well.qc_data" title="Permalink to this definition"></a></dt>
+<dd><p>Run a series of tests against the data and return the corresponding
+results. Wrapping frunction from quality.py.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tests</strong> (<em>dict</em>) – a dictionary of tests, mapping mnemonics to lists of
+tests. Two special keys, <cite>all</cite> and <cite>each</cite> map tests to the set
+of all curves, and to each curve in the well, respectively.
+You only need <cite>all</cite> if the test involves multiple inputs, e.g.
+comparing one curve to another.</p></li>
+<li><p><strong>keys</strong> (<em>list</em>) – a list of the mnemonics to run the tests against.</p></li>
+<li><p><strong>alias</strong> (<em>dict</em>) – an alias dictionary, mapping mnemonics to lists of
+mnemonics. e.g. {‘density’: [‘DEN’, ‘DENS’]}</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list. The results. Stick to booleans (True = pass) or ints.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="welly.well.Well.qc_table_html">
+<span class="sig-name descname"><span class="pre">qc_table_html</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tests</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/well.html#Well.qc_table_html"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.well.Well.qc_table_html" title="Permalink to this definition"></a></dt>
+<dd><p>Makes a nice table out of <code class="docutils literal notranslate"><span class="pre">qc_data()</span></code> Wrapping function from quality.py.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>str. An HTML string for visualization in Jupyter notebook.
+Visualize through IPython.display.HTML(str)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="welly.well.Well.survey_basis">
+<span class="sig-name descname"><span class="pre">survey_basis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/well.html#Well.survey_basis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.well.Well.survey_basis" title="Permalink to this definition"></a></dt>
+<dd><p>Look at the basis of all the curves in <code class="docutils literal notranslate"><span class="pre">well.data</span></code> and return a
+basis with the minimum start, maximum depth, and minimum step.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>keys</strong> (<em>list</em>) – List of strings: the keys of the data items to
+survey, if not all of them.</p></li>
+<li><p><strong>alias</strong> (<em>dict</em>) – a dictionary mapping mnemonics to lists of mnemonics.</p></li>
+<li><p><strong>step</strong> (<em>float</em>) – a new step, if you want to change it.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>ndarray. The most complete common basis.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="welly.well.Well.to_canstrat">
+<span class="sig-name descname"><span class="pre">to_canstrat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lith_field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_text</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/well.html#Well.to_canstrat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.well.Well.to_canstrat" title="Permalink to this definition"></a></dt>
+<dd><p>Make a Canstrat DAT (aka ASCII) file.</p>
+<div class="admonition-todo admonition" id="id2">
+<p class="admonition-title">Todo</p>
+<p>The data part should probably belong to striplog, and only the
+header should be written by the well.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> (<em>str</em>) – </p></li>
+<li><p><strong>key</strong> (<em>str</em>) – </p></li>
+<li><p><strong>log</strong> (<em>str</em>) – the log name, should be 6 characters.</p></li>
+<li><p><strong>lith_field</strong> (<em>str</em>) – Primary component. Must match the Canstrat definitions.</p></li>
+<li><p><strong>filename</strong> – </p></li>
+<li><p><strong>as_text</strong> (<em>bool</em>) – if you don’t want to write a file.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="welly.well.Well.to_datasets">
+<span class="sig-name descname"><span class="pre">to_datasets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">null_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">999.25</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/well.html#Well.to_datasets"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.well.Well.to_datasets" title="Permalink to this definition"></a></dt>
+<dd><p>Unpack a well to datasets (a dict with pd.DataFrames)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="welly.well.Well.to_las">
+<span class="sig-name descname"><span class="pre">to_las</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">null_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">999.25</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/well.html#Well.to_las"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.well.Well.to_las" title="Permalink to this definition"></a></dt>
+<dd><p>Writes the current well instance as a LAS file. Essentially just wraps
+<code class="docutils literal notranslate"><span class="pre">to_lasio()</span></code>, but is more convenient for most purposes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fname</strong> (<em>str</em>) – The path of the LAS file to create.</p></li>
+<li><p><strong>basis</strong> (<em>ndarray</em>) – Optional. The basis to export the curves in. If
+you don’t specify one, it will survey all the curves with
+<code class="docutils literal notranslate"><span class="pre">survey_basis()</span></code>.</p></li>
+<li><p><strong>null_value</strong> (<em>float</em>) – Optional. numeric null value representation</p></li>
+<li><p><strong>keys</strong> (<em>list</em>) – List of strings: the keys of the data items to
+include, if not all of them. You can have nested lists, such
+as you might use for <code class="docutils literal notranslate"><span class="pre">tracks</span></code> in <code class="docutils literal notranslate"><span class="pre">well.plot()</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Other keyword Args are passed to <code class="docutils literal notranslate"><span class="pre">lasio.LASFile.write()</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None. Writes the file as a side-effect.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="welly.well.Well.to_lasio">
+<span class="sig-name descname"><span class="pre">to_lasio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">null_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">999.25</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/well.html#Well.to_lasio"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.well.Well.to_lasio" title="Permalink to this definition"></a></dt>
+<dd><p>Makes a lasio object from the current well.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>keys</strong> (<em>list</em>) – List of strings: the keys of the data items to
+include, if not all of them. You can have nested lists, such
+as you might use for <code class="docutils literal notranslate"><span class="pre">tracks</span></code> in <code class="docutils literal notranslate"><span class="pre">well.plot()</span></code>.</p></li>
+<li><p><strong>alias</strong> (<em>dict</em>) – Optional. A dictionary alias for the curve mnemonics.
+e.g. {‘density’: [‘DEN’, ‘DENS’]}</p></li>
+<li><p><strong>basis</strong> (<em>numpy.ndarray</em>) – Optional. The basis to export the curves in.
+If you don’t specify one, it will survey all the curves with
+<cite>survey_basis()`</cite>.</p></li>
+<li><p><strong>null_value</strong> (<em>float</em>) – Optional. The null value representation in the LAS file.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>las (lasio.LASFile). The lasio object representation of a LAS file.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="welly.well.Well.unify_basis">
+<span class="sig-name descname"><span class="pre">unify_basis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/well.html#Well.unify_basis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.well.Well.unify_basis" title="Permalink to this definition"></a></dt>
+<dd><p>Give every Curve in the well, or everything in the list of keys, the
+same basis. If you don’t provide a basis, welly will try to get one
+using <code class="docutils literal notranslate"><span class="pre">survey_basis()</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>keys</strong> (<em>list</em>) – List of strings: the keys of the data items to
+unify, if not all of them.</p></li>
+<li><p><strong>alias</strong> (<em>dict</em>) – an alias dictionary, mapping mnemonics to lists of
+mnemonics. e.g. {‘density’: [‘DEN’, ‘DENS’]}</p></li>
+<li><p><strong>basis</strong> (<em>ndarray</em>) – A basis: the regularly sampled depths at which
+you want the samples.</p></li>
+<li><p><strong>start</strong> (<em>float</em>) – Optionally override the start of whatever basis
+you provide or is surveyed.</p></li>
+<li><p><strong>stop</strong> (<em>float</em>) – Optionally override the stop of whatever basis
+you provide or is surveyed.</p></li>
+<li><p><strong>step</strong> (<em>float</em>) – Optionally override the step in the basis.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None. Works in place.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="welly.well.Well.uwi">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">uwi</span></span><a class="headerlink" href="#welly.well.Well.uwi" title="Permalink to this definition"></a></dt>
+<dd><p>Property. Simply a shortcut to the UWI from the header, or the
+empty string if there isn’t one.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="welly.well.WellError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">welly.well.</span></span><span class="sig-name descname"><span class="pre">WellError</span></span><a class="reference internal" href="../_modules/welly/well.html#WellError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.well.WellError" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Generic error class.</p>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="welly.utils.html" class="btn btn-neutral float-left" title="welly.utils module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../source/indices.html" class="btn btn-neutral float-right" title="Indices and tables" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The Welly Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

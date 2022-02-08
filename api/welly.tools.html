@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>welly.tools module &mdash; welly  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="welly.utils module" href="welly.utils.html" />
+    <link rel="prev" title="welly.synthetic module" href="welly.synthetic.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> welly
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../source/intro.html">Home</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../source/req.html">Requirements</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="api_toc.html">API</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="welly.html">welly package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="welly.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="welly.canstrat.html">welly.canstrat module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.canstrat_codes.html">welly.canstrat_codes module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.crs.html">welly.crs module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.curve.html">welly.curve module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.defaults.html">welly.defaults module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.fields.html">welly.fields module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.header.html">welly.header module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.las.html">welly.las module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.location.html">welly.location module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.plot.html">welly.plot module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.project.html">welly.project module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.quality.html">welly.quality module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.scales.html">welly.scales module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.synthetic.html">welly.synthetic module</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">welly.tools module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.utils.html">welly.utils module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.well.html">welly.well module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="welly.html#module-welly">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../source/indices.html">Index</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">welly</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="api_toc.html">welly</a> &raquo;</li>
+          <li><a href="welly.html">welly package</a> &raquo;</li>
+      <li>welly.tools module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/welly.tools.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-welly.tools">
+<span id="welly-tools-module"></span><h1>welly.tools module<a class="headerlink" href="#module-welly.tools" title="Permalink to this headline"></a></h1>
+<p>Some extra bits.</p>
+<dl class="field-list simple">
+<dt class="field-odd">copyright</dt>
+<dd class="field-odd"><p>2021 Agile Scientific</p>
+</dd>
+<dt class="field-even">license</dt>
+<dd class="field-even"><p>Apache 2.0</p>
+</dd>
+</dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.tools.compute_position_log">
+<span class="sig-prename descclassname"><span class="pre">welly.tools.</span></span><span class="sig-name descname"><span class="pre">compute_position_log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">deviation</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">td</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mc'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">azimuth_datum</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">course_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/tools.html#compute_position_log"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.tools.compute_position_log" title="Permalink to this definition"></a></dt>
+<dd><p>Use wellpathpy to return the required welly objects</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>deviation</strong> (<em>ndarray</em>) – A deviation survey with rows like MD, INC, AZI</p></li>
+<li><p><strong>td</strong> (<em>float</em>) – The TD of the well, if not the end of the deviation
+survey you’re passing.</p></li>
+<li><p><strong>method</strong> (<em>str</em>) – ‘mc’: minimum curvature
+‘aa’: average angle
+‘bt’: balanced tangential
+‘hi’: high tangential
+‘lo’: low tangential
+‘rc’: radius of curvature</p></li>
+<li><p><strong>azimuth_datum</strong> (<em>float</em>) – The orientation of the azimuth datum, relative
+to the y-axis.</p></li>
+<li><p><strong>course_length</strong> (<em>float</em>) – Default: 1. The length over which to normalize
+the dogleg severity. Typical values are 30 m or 100 ft. Use 1 for
+no normalization. Note: from v0.5, default will be 30.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>ndarray. A position log with rows like X-offset, Y-offset, Z-offset</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="welly.synthetic.html" class="btn btn-neutral float-left" title="welly.synthetic module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="welly.utils.html" class="btn btn-neutral float-right" title="welly.utils module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The Welly Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

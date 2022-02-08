@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>welly.scales module &mdash; welly  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="welly.synthetic module" href="welly.synthetic.html" />
+    <link rel="prev" title="welly.quality module" href="welly.quality.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> welly
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../source/intro.html">Home</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../source/req.html">Requirements</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="api_toc.html">API</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="welly.html">welly package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="welly.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="welly.canstrat.html">welly.canstrat module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.canstrat_codes.html">welly.canstrat_codes module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.crs.html">welly.crs module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.curve.html">welly.curve module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.defaults.html">welly.defaults module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.fields.html">welly.fields module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.header.html">welly.header module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.las.html">welly.las module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.location.html">welly.location module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.plot.html">welly.plot module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.project.html">welly.project module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.quality.html">welly.quality module</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">welly.scales module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.synthetic.html">welly.synthetic module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.tools.html">welly.tools module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.utils.html">welly.utils module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.well.html">welly.well module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="welly.html#module-welly">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../source/indices.html">Index</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">welly</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="api_toc.html">welly</a> &raquo;</li>
+          <li><a href="welly.html">welly package</a> &raquo;</li>
+      <li>welly.scales module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/welly.scales.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-welly.scales">
+<span id="welly-scales-module"></span><h1>welly.scales module<a class="headerlink" href="#module-welly.scales" title="Permalink to this headline"></a></h1>
+<p>Custom scales for matplotlib.</p>
+<dl class="field-list simple">
+<dt class="field-odd">copyright</dt>
+<dd class="field-odd"><p>2016 Joe Kington</p>
+</dd>
+</dl>
+<p>Note: For the two scales, I’ve set the bounds such that you can never go
+beyond a set range.  This gives “stretchy” panning when you reach the ends
+of a well.  Sometimes you’ll want it, sometimes you won’t. In a lot of cases
+(e.g. multiple wells or flattening on a marker, etc) you’ll want to be able
+to go beyond the limits of the well.  In that case, remove the
+“limit_range_for_scale” methods below (and BoundedScale entirely) and
+use an interpolation function that allows extrapolation beyond the limits
+of the input data.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="welly.scales.BoundedScale">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">welly.scales.</span></span><span class="sig-name descname"><span class="pre">BoundedScale</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/scales.html#BoundedScale"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.scales.BoundedScale" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">matplotlib.scale.LinearScale</span></code></p>
+<p>Linear scale with set bounds that can’t be exceeded. Gives a “stretchy”
+panning effect.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="welly.scales.BoundedScale.limit_range_for_scale">
+<span class="sig-name descname"><span class="pre">limit_range_for_scale</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vmin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vmax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minpos</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/scales.html#BoundedScale.limit_range_for_scale"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.scales.BoundedScale.limit_range_for_scale" title="Permalink to this definition"></a></dt>
+<dd><p>Return the range <em>vmin</em>, <em>vmax</em>, restricted to the
+domain supported by this scale (if any).</p>
+<p><em>minpos</em> should be the minimum positive value in the data.
+This is used by log scales to determine a minimum value.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="welly.scales.BoundedScale.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'bounded'</span></em><a class="headerlink" href="#welly.scales.BoundedScale.name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="welly.scales.PiecewiseLinearScale">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">welly.scales.</span></span><span class="sig-name descname"><span class="pre">PiecewiseLinearScale</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/scales.html#PiecewiseLinearScale"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.scales.PiecewiseLinearScale" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">matplotlib.scale.ScaleBase</span></code></p>
+<p>Scale based on a piecewise-linear transformation.  For example, this might
+be used to show ticks in two-way time alongside a well log plotted in
+measured depth using a time-depth curve.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="welly.scales.PiecewiseLinearScale.get_transform">
+<span class="sig-name descname"><span class="pre">get_transform</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/scales.html#PiecewiseLinearScale.get_transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.scales.PiecewiseLinearScale.get_transform" title="Permalink to this definition"></a></dt>
+<dd><p>Return the <cite>.Transform</cite> object associated with this scale.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="welly.scales.PiecewiseLinearScale.limit_range_for_scale">
+<span class="sig-name descname"><span class="pre">limit_range_for_scale</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vmin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vmax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minpos</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/scales.html#PiecewiseLinearScale.limit_range_for_scale"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.scales.PiecewiseLinearScale.limit_range_for_scale" title="Permalink to this definition"></a></dt>
+<dd><p>Return the range <em>vmin</em>, <em>vmax</em>, restricted to the
+domain supported by this scale (if any).</p>
+<p><em>minpos</em> should be the minimum positive value in the data.
+This is used by log scales to determine a minimum value.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="welly.scales.PiecewiseLinearScale.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'piecewise'</span></em><a class="headerlink" href="#welly.scales.PiecewiseLinearScale.name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="welly.scales.PiecewiseLinearScale.set_default_locators_and_formatters">
+<span class="sig-name descname"><span class="pre">set_default_locators_and_formatters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/scales.html#PiecewiseLinearScale.set_default_locators_and_formatters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.scales.PiecewiseLinearScale.set_default_locators_and_formatters" title="Permalink to this definition"></a></dt>
+<dd><p>Set the locators and formatters of <em>axis</em> to instances suitable for
+this scale.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="welly.scales.PiecewiseLinearTransform">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">welly.scales.</span></span><span class="sig-name descname"><span class="pre">PiecewiseLinearTransform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_from</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_to</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/scales.html#PiecewiseLinearTransform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.scales.PiecewiseLinearTransform" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">matplotlib.transforms.Transform</span></code></p>
+<p>Transform between two coordinate systems by interpolating between a
+pre-calculated set of points.  For example, transform between time and
+depth using an average velocity curve.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="welly.scales.PiecewiseLinearTransform.has_inverse">
+<span class="sig-name descname"><span class="pre">has_inverse</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#welly.scales.PiecewiseLinearTransform.has_inverse" title="Permalink to this definition"></a></dt>
+<dd><p>True if this transform has a corresponding inverse transform.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="welly.scales.PiecewiseLinearTransform.input_dims">
+<span class="sig-name descname"><span class="pre">input_dims</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#welly.scales.PiecewiseLinearTransform.input_dims" title="Permalink to this definition"></a></dt>
+<dd><p>The number of input dimensions of this transform.
+Must be overridden (with integers) in the subclass.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="welly.scales.PiecewiseLinearTransform.inverted">
+<span class="sig-name descname"><span class="pre">inverted</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/scales.html#PiecewiseLinearTransform.inverted"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.scales.PiecewiseLinearTransform.inverted" title="Permalink to this definition"></a></dt>
+<dd><p>Return the corresponding inverse transformation.</p>
+<p>It holds <code class="docutils literal notranslate"><span class="pre">x</span> <span class="pre">==</span> <span class="pre">self.inverted().transform(self.transform(x))</span></code>.</p>
+<p>The return value of this method should be treated as
+temporary.  An update to <em>self</em> does not cause a corresponding
+update to its inverted copy.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="welly.scales.PiecewiseLinearTransform.is_separable">
+<span class="sig-name descname"><span class="pre">is_separable</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#welly.scales.PiecewiseLinearTransform.is_separable" title="Permalink to this definition"></a></dt>
+<dd><p>True if this transform is separable in the x- and y- dimensions.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="welly.scales.PiecewiseLinearTransform.output_dims">
+<span class="sig-name descname"><span class="pre">output_dims</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#welly.scales.PiecewiseLinearTransform.output_dims" title="Permalink to this definition"></a></dt>
+<dd><p>The number of output dimensions of this transform.
+Must be overridden (with integers) in the subclass.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="welly.scales.PiecewiseLinearTransform.transform_non_affine">
+<span class="sig-name descname"><span class="pre">transform_non_affine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/scales.html#PiecewiseLinearTransform.transform_non_affine"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.scales.PiecewiseLinearTransform.transform_non_affine" title="Permalink to this definition"></a></dt>
+<dd><p>Apply only the non-affine part of this transformation.</p>
+<p><code class="docutils literal notranslate"><span class="pre">transform(values)</span></code> is always equivalent to
+<code class="docutils literal notranslate"><span class="pre">transform_affine(transform_non_affine(values))</span></code>.</p>
+<p>In non-affine transformations, this is generally equivalent to
+<code class="docutils literal notranslate"><span class="pre">transform(values)</span></code>.  In affine transformations, this is
+always a no-op.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>values</strong> (<em>array</em>) – The input values as NumPy array of length <a class="reference internal" href="#welly.scales.PiecewiseLinearTransform.input_dims" title="welly.scales.PiecewiseLinearTransform.input_dims"><code class="xref py py-attr docutils literal notranslate"><span class="pre">input_dims</span></code></a> or
+shape (N x <a class="reference internal" href="#welly.scales.PiecewiseLinearTransform.input_dims" title="welly.scales.PiecewiseLinearTransform.input_dims"><code class="xref py py-attr docutils literal notranslate"><span class="pre">input_dims</span></code></a>).</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The output values as NumPy array of length <a class="reference internal" href="#welly.scales.PiecewiseLinearTransform.input_dims" title="welly.scales.PiecewiseLinearTransform.input_dims"><code class="xref py py-attr docutils literal notranslate"><span class="pre">input_dims</span></code></a> or
+shape (N x <a class="reference internal" href="#welly.scales.PiecewiseLinearTransform.output_dims" title="welly.scales.PiecewiseLinearTransform.output_dims"><code class="xref py py-attr docutils literal notranslate"><span class="pre">output_dims</span></code></a>), depending on the input.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>array</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="welly.quality.html" class="btn btn-neutral float-left" title="welly.quality module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="welly.synthetic.html" class="btn btn-neutral float-right" title="welly.synthetic module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The Welly Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>welly.crs &mdash; welly  documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> welly
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../source/intro.html">Home</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/req.html">Requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/api_toc.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/indices.html">Index</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">welly</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+          <li><a href="../welly.html">welly</a> &raquo;</li>
+      <li>welly.crs</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for welly.crs</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">CRS functions. Modeled on fiona by Sean Gillies.</span>
+<span class="sd">https://github.com/Toblerity/Fiona</span>
+
+<span class="sd">This version...</span>
+<span class="sd">:copyright: 2021 Agile Scientific</span>
+<span class="sd">:license: Apache 2.0</span>
+
+<span class="sd">Original code...</span>
+<span class="sd">Copyright (c) 2007, Sean C. Gillies</span>
+<span class="sd">All rights reserved.</span>
+
+<span class="sd">Redistribution and use in source and binary forms, with or without</span>
+<span class="sd">modification, are permitted provided that the following conditions are met:</span>
+
+<span class="sd">    * Redistributions of source code must retain the above copyright</span>
+<span class="sd">      notice, this list of conditions and the following disclaimer.</span>
+<span class="sd">    * Redistributions in binary form must reproduce the above copyright</span>
+<span class="sd">      notice, this list of conditions and the following disclaimer in the</span>
+<span class="sd">      documentation and/or other materials provided with the distribution.</span>
+<span class="sd">    * Neither the name of Sean C. Gillies nor the names of</span>
+<span class="sd">      its contributors may be used to endorse or promote products derived from</span>
+<span class="sd">      this software without specific prior written permission.</span>
+
+<span class="sd">THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot;</span>
+<span class="sd">AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE</span>
+<span class="sd">IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE</span>
+<span class="sd">ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE</span>
+<span class="sd">LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR</span>
+<span class="sd">CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF</span>
+<span class="sd">SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS</span>
+<span class="sd">INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN</span>
+<span class="sd">CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)</span>
+<span class="sd">ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE</span>
+<span class="sd">POSSIBILITY OF SUCH DAMAGE.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="c1"># Accessing collections abstact classes from collections</span>
+    <span class="c1"># has been deprecated since Python 3.3</span>
+    <span class="kn">import</span> <span class="nn">collections.abc</span> <span class="k">as</span> <span class="nn">collections_abc</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">collections</span> <span class="k">as</span> <span class="nn">collections_abc</span>
+
+
+<div class="viewcode-block" id="CRS"><a class="viewcode-back" href="../../api/welly.crs.html#welly.CRS">[docs]</a><span class="k">class</span> <span class="nc">CRS</span><span class="p">(</span><span class="n">collections_abc</span><span class="o">.</span><span class="n">MutableMapping</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Use the object dict.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__delitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;returns simple dict representation of the mapping&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;echoes class, id, &amp; reproducible representation in the REPL&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="s1">&#39;CRS(</span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span>
+
+<div class="viewcode-block" id="CRS.from_string"><a class="viewcode-back" href="../../api/welly.crs.html#welly.CRS.from_string">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_string</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">prjs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Turn a PROJ.4 string into a mapping of parameters. Bare parameters</span>
+<span class="sd">        like &quot;+no_defs&quot; are given a value of ``True``. All keys are checked</span>
+<span class="sd">        against the ``all_proj_keys`` list.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            prjs (str): A PROJ4 string.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="k">pass</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">v</span>
+
+        <span class="n">parts</span> <span class="o">=</span> <span class="p">[</span><span class="n">o</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s1">&#39;+&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">prjs</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()]</span>
+
+        <span class="n">items</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">kv</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">kv</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="p">(</span><span class="n">kv</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">parse</span><span class="p">(</span><span class="n">kv</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span> <span class="ow">or</span> <span class="p">(</span><span class="n">kv</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="kc">True</span><span class="p">),</span>
+            <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">parts</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">({</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">items</span> <span class="k">if</span> <span class="s1">&#39;+&#39;</span><span class="o">+</span><span class="n">k</span> <span class="ow">in</span> <span class="n">PROJ4_PARAMS</span><span class="o">.</span><span class="n">keys</span><span class="p">()})</span></div>
+
+<div class="viewcode-block" id="CRS.from_epsg"><a class="viewcode-back" href="../../api/welly.crs.html#welly.CRS.from_epsg">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_epsg</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">code</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Given an integer code, returns an EPSG-like mapping.</span>
+<span class="sd">        Note: the input code is not validated against an EPSG database.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">code</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;EPSG codes are positive integers&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">({</span><span class="s1">&#39;init&#39;</span><span class="p">:</span> <span class="s2">&quot;epsg:</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">code</span><span class="p">),</span> <span class="s1">&#39;no_defs&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span>
+
+<div class="viewcode-block" id="CRS.to_string"><a class="viewcode-back" href="../../api/welly.crs.html#welly.CRS.to_string">[docs]</a>    <span class="k">def</span> <span class="nf">to_string</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Turn a CRS dict into a PROJ.4 string. Mapping keys are tested against</span>
+<span class="sd">        ``all_proj_keys`` list. Values of ``True`` are omitted, leaving the key</span>
+<span class="sd">        bare: {&#39;no_defs&#39;: True} -&gt; &quot;+no_defs&quot; and items where the value is</span>
+<span class="sd">        otherwise not a str, int, or float are omitted.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            crs: A CRS dict as used in Location.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str. The string representation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">def</span> <span class="nf">filt</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+            <span class="k">return</span> <span class="s1">&#39;+&#39;</span><span class="o">+</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">PROJ4_PARAMS</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span>
+
+        <span class="n">items</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="n">filt</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">())):</span>
+            <span class="n">items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="s2">&quot;+&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                    <span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">filter</span><span class="p">(</span>
+                        <span class="k">lambda</span> <span class="n">y</span><span class="p">:</span> <span class="p">(</span><span class="n">y</span> <span class="ow">or</span> <span class="n">y</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="n">y</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">,</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)))))</span>
+        <span class="k">return</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">items</span><span class="p">)</span></div></div>
+
+<span class="c1"># All of Proj4 params from...</span>
+<span class="c1"># http://trac.osgeo.org/proj/wiki/GenParms</span>
+<span class="n">PROJ4_PARAMS</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;+K&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+M&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+R&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+R_A&#39;</span><span class="p">:</span> <span class="s1">&#39;Compute radius such that the area of the sphere is the same as the area of the ellipsoid&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+R_V&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+R_a&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+R_g&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+R_h&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+R_lat_a&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+R_lat_g&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+W&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+a&#39;</span><span class="p">:</span> <span class="s1">&#39;Semimajor radius of the ellipsoid axis&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+alpha&#39;</span><span class="p">:</span> <span class="s1">&#39;? Used with Oblique Mercator and possibly a few others&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+axis&#39;</span><span class="p">:</span> <span class="s1">&#39;Axis orientation (new in 4.8.0)&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+azi&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+b&#39;</span><span class="p">:</span> <span class="s1">&#39;Semiminor radius of the ellipsoid axis&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+belgium&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+beta&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+czech&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+datum&#39;</span><span class="p">:</span> <span class="s1">&#39;Datum name (see `proj -ld`)&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+e&#39;</span><span class="p">:</span> <span class="s1">&#39;Eccentricity of the ellipsoid = sqrt(1 - b^2/a^2) = sqrt( f*(2-f) )&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+ellps&#39;</span><span class="p">:</span> <span class="s1">&#39;Ellipsoid name (see `proj -le`)&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+es&#39;</span><span class="p">:</span> <span class="s1">&#39;Eccentricity of the ellipsoid squared&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+f&#39;</span><span class="p">:</span> <span class="s1">&#39;Flattening of the ellipsoid (often presented as an inverse, e.g. 1/298)&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+gamma&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+geoc&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+guam&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+h&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+init&#39;</span><span class="p">:</span> <span class="s1">&#39;Initialize from a named CRS&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+k&#39;</span><span class="p">:</span> <span class="s1">&#39;Scaling factor (old name)&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+k_0&#39;</span><span class="p">:</span> <span class="s1">&#39;Scaling factor (new name)&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+lat_0&#39;</span><span class="p">:</span> <span class="s1">&#39;Latitude of origin&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+lat_1&#39;</span><span class="p">:</span> <span class="s1">&#39;Latitude of first standard parallel&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+lat_2&#39;</span><span class="p">:</span> <span class="s1">&#39;Latitude of second standard parallel&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+lat_b&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+lat_t&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+lat_ts&#39;</span><span class="p">:</span> <span class="s1">&#39;Latitude of true scale&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+lon_0&#39;</span><span class="p">:</span> <span class="s1">&#39;Central meridian&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+lon_1&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+lon_2&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+lon_wrap&#39;</span><span class="p">:</span> <span class="s1">&#39;Center longitude to use for wrapping (see below)&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+lonc&#39;</span><span class="p">:</span> <span class="s1">&#39;? Longitude used with Oblique Mercator and possibly a few others&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+lsat&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+m&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+n&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+nadgrids&#39;</span><span class="p">:</span> <span class="s1">&#39;Filename of NTv2 grid file to use for datum transforms (see below)&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+no_cut&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+no_defs&#39;</span><span class="p">:</span> <span class="s2">&quot;Don&#39;t use the /usr/share/proj/proj_def.dat defaults file&quot;</span><span class="p">,</span>
+                <span class="s1">&#39;+no_off&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+no_rot&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+ns&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+o_alpha&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+o_lat_1&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+o_lat_2&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+o_lat_c&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+o_lat_p&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+o_lon_1&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+o_lon_2&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+o_lon_c&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+o_lon_p&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+o_proj&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+over&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+p&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+path&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+pm&#39;</span><span class="p">:</span> <span class="s1">&#39;Alternate prime meridian (typically a city name, see below)&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+proj&#39;</span><span class="p">:</span> <span class="s1">&#39;Projection name (see `proj -l`)&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+q&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+rf&#39;</span><span class="p">:</span> <span class="s1">&#39;Reciprocal of the ellipsoid flattening term (e.g. 298)&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+rot&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+s&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+south&#39;</span><span class="p">:</span> <span class="s1">&#39;Denotes southern hemisphere UTM zone&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+sym&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+t&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+theta&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+tilt&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+to_meter&#39;</span><span class="p">:</span> <span class="s1">&#39;Multiplier to convert map units to 1.0m&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+towgs84&#39;</span><span class="p">:</span> <span class="s1">&#39;3 or 7 term datum transform parameters (see below)&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+units&#39;</span><span class="p">:</span> <span class="s1">&#39;meters, US survey feet, etc.&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+vopt&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+vto_meter&#39;</span><span class="p">:</span> <span class="s1">&#39;vertical conversion to meters.&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+vunits&#39;</span><span class="p">:</span> <span class="s1">&#39;vertical units.&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+westo&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+x_0&#39;</span><span class="p">:</span> <span class="s1">&#39;False easting&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+y_0&#39;</span><span class="p">:</span> <span class="s1">&#39;False northing&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;+zone&#39;</span><span class="p">:</span> <span class="s1">&#39;UTM zone&#39;</span>
+                <span class="p">}</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The Welly Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

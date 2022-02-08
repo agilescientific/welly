@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>welly.utils module &mdash; welly  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="welly.well module" href="welly.well.html" />
+    <link rel="prev" title="welly.tools module" href="welly.tools.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> welly
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../source/intro.html">Home</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../source/req.html">Requirements</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="api_toc.html">API</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="welly.html">welly package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="welly.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="welly.canstrat.html">welly.canstrat module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.canstrat_codes.html">welly.canstrat_codes module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.crs.html">welly.crs module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.curve.html">welly.curve module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.defaults.html">welly.defaults module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.fields.html">welly.fields module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.header.html">welly.header module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.las.html">welly.las module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.location.html">welly.location module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.plot.html">welly.plot module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.project.html">welly.project module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.quality.html">welly.quality module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.scales.html">welly.scales module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.synthetic.html">welly.synthetic module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.tools.html">welly.tools module</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">welly.utils module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.well.html">welly.well module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="welly.html#module-welly">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../source/indices.html">Index</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">welly</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="api_toc.html">welly</a> &raquo;</li>
+          <li><a href="welly.html">welly package</a> &raquo;</li>
+      <li>welly.utils module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/welly.utils.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-welly.utils">
+<span id="welly-utils-module"></span><h1>welly.utils module<a class="headerlink" href="#module-welly.utils" title="Permalink to this headline"></a></h1>
+<p>Utility functions for welly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">copyright</dt>
+<dd class="field-odd"><p>2021 Agile Scientific</p>
+</dd>
+<dt class="field-even">license</dt>
+<dd class="field-even"><p>Apache 2.0</p>
+</dd>
+</dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="welly.utils.Linker">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">welly.utils.</span></span><span class="sig-name descname"><span class="pre">Linker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/utils.html#Linker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.utils.Linker" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Keeps y-limits of a sequence of axes in sync when panning/zooming.</p>
+<p>By Joe Kington</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="welly.utils.Linker.link">
+<span class="sig-name descname"><span class="pre">link</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/utils.html#Linker.link"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.utils.Linker.link" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="welly.utils.Linker.rescale">
+<span class="sig-name descname"><span class="pre">rescale</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/utils.html#Linker.rescale"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.utils.Linker.rescale" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="welly.utils.Linker.unlink">
+<span class="sig-name descname"><span class="pre">unlink</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/utils.html#Linker.unlink"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.utils.Linker.unlink" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.utils.are_close">
+<span class="sig-prename descclassname"><span class="pre">welly.utils.</span></span><span class="sig-name descname"><span class="pre">are_close</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/utils.html#are_close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.utils.are_close" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.utils.aspect">
+<span class="sig-prename descclassname"><span class="pre">welly.utils.</span></span><span class="sig-name descname"><span class="pre">aspect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/utils.html#aspect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.utils.aspect" title="Permalink to this definition"></a></dt>
+<dd><p>Aspect like 2:1 is shape like <a href="#id1"><span class="problematic" id="id2">|</span></a>___ (twice as wide as high).</p>
+<p>This function returns the WIDTH per unit height.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.utils.bbox">
+<span class="sig-prename descclassname"><span class="pre">welly.utils.</span></span><span class="sig-name descname"><span class="pre">bbox</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/utils.html#bbox"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.utils.bbox" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.utils.dd2dms">
+<span class="sig-prename descclassname"><span class="pre">welly.utils.</span></span><span class="sig-name descname"><span class="pre">dd2dms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dd</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/utils.html#dd2dms"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.utils.dd2dms" title="Permalink to this definition"></a></dt>
+<dd><p>Decimal degrees to DMS.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dd</strong> (<em>float</em>) – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>tuple. Degrees, minutes, and seconds.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.utils.deprecated">
+<span class="sig-prename descclassname"><span class="pre">welly.utils.</span></span><span class="sig-name descname"><span class="pre">deprecated</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instructions</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/utils.html#deprecated"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.utils.deprecated" title="Permalink to this definition"></a></dt>
+<dd><p>Flags a method as deprecated. This decorator can be used to mark functions
+as deprecated. It will result in a warning being emitted when the function
+is used.
+:param instructions: A human-friendly string of instructions, such</p>
+<blockquote>
+<div><p>as: ‘Please migrate to add_proxy() ASAP.’</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The decorated function.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.utils.dms2dd">
+<span class="sig-prename descclassname"><span class="pre">welly.utils.</span></span><span class="sig-name descname"><span class="pre">dms2dd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dms</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/utils.html#dms2dd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.utils.dms2dd" title="Permalink to this definition"></a></dt>
+<dd><p>DMS to decimal degrees.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dms</strong> (<em>list</em>) – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>float.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.utils.extrapolate">
+<span class="sig-prename descclassname"><span class="pre">welly.utils.</span></span><span class="sig-name descname"><span class="pre">extrapolate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/utils.html#extrapolate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.utils.extrapolate" title="Permalink to this definition"></a></dt>
+<dd><p>From <code class="docutils literal notranslate"><span class="pre">bruges</span></code></p>
+<p>Extrapolate up and down an array from the first and last non-NaN samples.</p>
+<p>E.g. Continue the first and last non-NaN values of a log up and down.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.utils.find_edges">
+<span class="sig-prename descclassname"><span class="pre">welly.utils.</span></span><span class="sig-name descname"><span class="pre">find_edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/utils.html#find_edges"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.utils.find_edges" title="Permalink to this definition"></a></dt>
+<dd><p>Return two arrays: one of the changes, and one of the values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Two ndarrays, tops and values.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.utils.find_file">
+<span class="sig-prename descclassname"><span class="pre">welly.utils.</span></span><span class="sig-name descname"><span class="pre">find_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/utils.html#find_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.utils.find_file" title="Permalink to this definition"></a></dt>
+<dd><p>A bit like grep. Finds a pattern, looking in path. Returns the filename.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.utils.find_nearest">
+<span class="sig-prename descclassname"><span class="pre">welly.utils.</span></span><span class="sig-name descname"><span class="pre">find_nearest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/utils.html#find_nearest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.utils.find_nearest" title="Permalink to this definition"></a></dt>
+<dd><p>Find the array value, or index of the array value, closest to some given
+value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>a</strong> (<em>ndarray</em>) – </p></li>
+<li><p><strong>value</strong> (<em>float</em>) – </p></li>
+<li><p><strong>index</strong> (<em>bool</em>) – whether to return the index instead of the array value.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>float. The array value (or index, as int) nearest the specified value.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.utils.find_previous">
+<span class="sig-prename descclassname"><span class="pre">welly.utils.</span></span><span class="sig-name descname"><span class="pre">find_previous</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_distance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/utils.html#find_previous"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.utils.find_previous" title="Permalink to this definition"></a></dt>
+<dd><p>Find the nearest array value, or index of the array value, before some
+given value. Optionally also return the fractional distance of the given
+value from that previous value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>a</strong> (<em>ndarray</em>) – </p></li>
+<li><p><strong>value</strong> (<em>float</em>) – </p></li>
+<li><p><strong>index</strong> (<em>bool</em>) – whether to return the index instead of the array value.
+Default: False.</p></li>
+<li><p><strong>return_distance</strong> (<em>bool</em>) – whether to return the fractional distance from
+the nearest value to the specified value. Default: False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>float. The array value (or index, as int) before the specified value.</dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">return_distance==True</span></code> then a tuple is returned, where the
+second value is the distance.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.utils.fix_ticks">
+<span class="sig-prename descclassname"><span class="pre">welly.utils.</span></span><span class="sig-name descname"><span class="pre">fix_ticks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/utils.html#fix_ticks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.utils.fix_ticks" title="Permalink to this definition"></a></dt>
+<dd><p>Center ticklabels and hide any outside axes limits.</p>
+<p>By Joe Kington</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.utils.flatten_list">
+<span class="sig-prename descclassname"><span class="pre">welly.utils.</span></span><span class="sig-name descname"><span class="pre">flatten_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">L</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/utils.html#flatten_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.utils.flatten_list" title="Permalink to this definition"></a></dt>
+<dd><p>Flattens a list. For example:</p>
+<blockquote>
+<div><p>&gt;&gt; flatten_list([1, 2, [3, 4], [5, [6, 7]]])
+[1, 2, 3, 4, 5, 6, 7]</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.utils.get_columns_decimal_formatter">
+<span class="sig-prename descclassname"><span class="pre">welly.utils.</span></span><span class="sig-name descname"><span class="pre">get_columns_decimal_formatter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">null_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/utils.html#get_columns_decimal_formatter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.utils.get_columns_decimal_formatter" title="Permalink to this definition"></a></dt>
+<dd><p>Get the column decimal point formatter from the two-dimensional numpy.ndarray.
+Get the number of decimal points from columns with numerical values (float or int).
+Take the highest number of decimal points of the column values.
+The dictionary maps the column order of occurrence to the numerical formatter function.
+If a column has no numerical values, don’t create a mapping for that column in the dictionary.</p>
+<p class="rubric">Example</p>
+<dl>
+<dt>Input np.ndarray:</dt><dd><ul class="simple">
+<li><p>1st column values: most occurring 2 decimal points</p></li>
+<li><p>2nd column values: most occurring 5 decimal points</p></li>
+<li><p>3rd column values: most occurring 10 decimal points</p></li>
+</ul>
+</dd>
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>column_fmt = {</dt><dd><p>0 : ‘%.2f’,
+1 : ‘%.5f’,
+2 : ‘%.10f’</p>
+</dd>
+</dl>
+<p>}</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>numpy.ndarray</em>) – two-dimensional array with floats and/or ints (columns and rows).</p></li>
+<li><p><strong>null_value</strong> (<em>float</em>) – Optional. A float that represents null/NaN in the column values from which we do not take
+the number of decimals.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Mapping of order of column occurrence to most occurring decimal point formatting function</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>column_fmt (dict)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.utils.get_header_item">
+<span class="sig-prename descclassname"><span class="pre">welly.utils.</span></span><span class="sig-name descname"><span class="pre">get_header_item</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">header</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">section</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">item</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attrib</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'value'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">funcs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/utils.html#get_header_item"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.utils.get_header_item" title="Permalink to this definition"></a></dt>
+<dd><p>Grabs a header item from a header pd.DataFrame and optionally renames and
+transforms it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>header</strong> (<em>pd.DataFrame</em>) – Header from LAS file parsed to tabular form.
+See <cite>las.from_las()</cite> for more information.</p></li>
+<li><p><strong>section</strong> (<em>str</em>) – The LAS section to grab from, eg <code class="docutils literal notranslate"><span class="pre">well</span></code></p></li>
+<li><p><strong>item</strong> (<em>str</em>) – The item in the LAS section to grab from, eg <code class="docutils literal notranslate"><span class="pre">name</span></code></p></li>
+<li><p><strong>attrib</strong> (<em>str</em>) – The attribute of the item to grab, eg <code class="docutils literal notranslate"><span class="pre">value</span></code></p></li>
+<li><p><strong>default</strong> (<em>str</em>) – What to return instead.</p></li>
+<li><p><strong>remap</strong> (<em>dict</em>) – Optional. A dict of ‘old’: ‘new’ LAS field names.</p></li>
+<li><p><strong>funcs</strong> (<em>dict</em>) – Optional. A dict of ‘las field’: function() for
+implementing a transform before loading. Can be a lambda.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The requested, optionally transformed, item.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.utils.get_lines">
+<span class="sig-prename descclassname"><span class="pre">welly.utils.</span></span><span class="sig-name descname"><span class="pre">get_lines</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">handle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/utils.html#get_lines"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.utils.get_lines" title="Permalink to this definition"></a></dt>
+<dd><p>Get zero-indexed line from an open file-like.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.utils.get_number_of_decimal_points">
+<span class="sig-prename descclassname"><span class="pre">welly.utils.</span></span><span class="sig-name descname"><span class="pre">get_number_of_decimal_points</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/utils.html#get_number_of_decimal_points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.utils.get_number_of_decimal_points" title="Permalink to this definition"></a></dt>
+<dd><p>Get the number of decimal points from a numeric value (float or int).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>value</strong> (<em>float</em><em> or </em><em>int</em>) – Numeric value</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Number of decimal points if value is of type float or int, otherwise return None.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>n_decimals (int)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.utils.get_step_from_array">
+<span class="sig-prename descclassname"><span class="pre">welly.utils.</span></span><span class="sig-name descname"><span class="pre">get_step_from_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/utils.html#get_step_from_array"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.utils.get_step_from_array" title="Permalink to this definition"></a></dt>
+<dd><p>Gets the ‘step’ or increment of the array. Requires numeric values in array</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>arr</strong> (<em>np.array</em>) – The array</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Float. If the index is numeric and equally sampled
+0. If the index is numeric and not equally sampled
+None. If the index is not numeric</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.utils.hex_is_dark">
+<span class="sig-prename descclassname"><span class="pre">welly.utils.</span></span><span class="sig-name descname"><span class="pre">hex_is_dark</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hexx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">percent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/utils.html#hex_is_dark"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.utils.hex_is_dark" title="Permalink to this definition"></a></dt>
+<dd><p>Function to decide if a hex colour is dark.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>hexx</strong> (<em>str</em>) – A hexadecimal colour, starting with ‘#’.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The colour’s brightness is less than the given percent.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.utils.hex_to_rgb">
+<span class="sig-prename descclassname"><span class="pre">welly.utils.</span></span><span class="sig-name descname"><span class="pre">hex_to_rgb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hexx</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/utils.html#hex_to_rgb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.utils.hex_to_rgb" title="Permalink to this definition"></a></dt>
+<dd><p>Utility function to convert hex to (r,g,b) triples.
+<a class="reference external" href="http://ageo.co/1CFxXpO">http://ageo.co/1CFxXpO</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>hexx</strong> (<em>str</em>) – A hexadecimal colour, starting with ‘#’.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The equivalent RGB triple, in the range 0 to 255.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.utils.linear">
+<span class="sig-prename descclassname"><span class="pre">welly.utils.</span></span><span class="sig-name descname"><span class="pre">linear</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">u</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/utils.html#linear"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.utils.linear" title="Permalink to this definition"></a></dt>
+<dd><p>Linear interpolation.
+:param u:
+:type u: float
+:param v:
+:type v: float
+:param d: the relative distance between the two to return.
+:type d: float</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>float. The interpolated value.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.utils.list_and_add">
+<span class="sig-prename descclassname"><span class="pre">welly.utils.</span></span><span class="sig-name descname"><span class="pre">list_and_add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/utils.html#list_and_add"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.utils.list_and_add" title="Permalink to this definition"></a></dt>
+<dd><p>Concatenate anything into a list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>a</strong> – the first thing</p></li>
+<li><p><strong>b</strong> – the second thing</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list. All the things in a list.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.utils.moving_average">
+<span class="sig-prename descclassname"><span class="pre">welly.utils.</span></span><span class="sig-name descname"><span class="pre">moving_average</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'valid'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/utils.html#moving_average"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.utils.moving_average" title="Permalink to this definition"></a></dt>
+<dd><p>From <code class="docutils literal notranslate"><span class="pre">bruges</span></code></p>
+<p>Computes the mean in a moving window. Naive implementation.</p>
+<p class="rubric">Example</p>
+<p>&gt;&gt; test = np.array([1,9,9,9,9,9,9,2,3,9,2,2,3,1,1,1,1,3,4,9,9,9,8,3])
+&gt;&gt; moving_average(test, 7, mode=’same’)
+[ 4.42857143,  5.57142857,  6.71428571,  7.85714286,  8.        ,
+7.14285714,  7.14285714,  6.14285714,  5.14285714,  4.28571429,
+3.14285714,  3.        ,  2.71428571,  1.57142857,  1.71428571,
+2.        ,  2.85714286,  4.        ,  5.14285714,  6.14285714,
+6.42857143,  6.42857143,  6.28571429,  5.42857143]</p>
+<div class="admonition-todo admonition" id="id3">
+<p class="admonition-title">Todo</p>
+<p>Other types of average.</p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.utils.moving_avg_conv">
+<span class="sig-prename descclassname"><span class="pre">welly.utils.</span></span><span class="sig-name descname"><span class="pre">moving_avg_conv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/utils.html#moving_avg_conv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.utils.moving_avg_conv" title="Permalink to this definition"></a></dt>
+<dd><p>From <code class="docutils literal notranslate"><span class="pre">bruges</span></code></p>
+<p>Moving average via convolution. Seems slower than naive.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.utils.nan_idx">
+<span class="sig-prename descclassname"><span class="pre">welly.utils.</span></span><span class="sig-name descname"><span class="pre">nan_idx</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/utils.html#nan_idx"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.utils.nan_idx" title="Permalink to this definition"></a></dt>
+<dd><p>Helper to handle indices and logical indices of NaNs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>y</strong> (<em>ndarray</em>) – 1D array with possible NaNs</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>nans, logical indices of NaNs
+index, a function, with signature indices= index(logical_indices),</p>
+<blockquote>
+<div><p>to convert logical indices of NaNs to ‘equivalent’ indices</p>
+</div></blockquote>
+</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<p>&gt;&gt; # linear interpolation of NaNs
+&gt;&gt; nans, x = nan_helper(y)
+&gt;&gt; y[nans] = np.interp(x(nans), x(~nans), y[~nans])</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.utils.normalize">
+<span class="sig-prename descclassname"><span class="pre">welly.utils.</span></span><span class="sig-name descname"><span class="pre">normalize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_min</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/utils.html#normalize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.utils.normalize" title="Permalink to this definition"></a></dt>
+<dd><p>From <code class="docutils literal notranslate"><span class="pre">bruges</span></code></p>
+<p>Normalize an array to [0,1] or to arbitrary new min and max.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>a</strong> (<em>ndarray</em>) – </p></li>
+<li><p><strong>new_min</strong> (<em>float</em>) – the new min, default 0.</p></li>
+<li><p><strong>new_max</strong> (<em>float</em>) – the new max, default 1.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>ndarray. The normalized array.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.utils.null">
+<span class="sig-prename descclassname"><span class="pre">welly.utils.</span></span><span class="sig-name descname"><span class="pre">null</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/utils.html#null"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.utils.null" title="Permalink to this definition"></a></dt>
+<dd><p>Null function. Used for default in functions that can apply a user-
+supplied function to data before returning.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.utils.null_default">
+<span class="sig-prename descclassname"><span class="pre">welly.utils.</span></span><span class="sig-name descname"><span class="pre">null_default</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/utils.html#null_default"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.utils.null_default" title="Permalink to this definition"></a></dt>
+<dd><p>Null function. Used for default in functions that can apply a user-
+supplied function to data before returning.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.utils.parabolic">
+<span class="sig-prename descclassname"><span class="pre">welly.utils.</span></span><span class="sig-name descname"><span class="pre">parabolic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/utils.html#parabolic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.utils.parabolic" title="Permalink to this definition"></a></dt>
+<dd><p>Interpolation. From ageobot, from somewhere else.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.utils.ricker">
+<span class="sig-prename descclassname"><span class="pre">welly.utils.</span></span><span class="sig-name descname"><span class="pre">ricker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/utils.html#ricker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.utils.ricker" title="Permalink to this definition"></a></dt>
+<dd><p>A Ricker wavelet.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>f</strong> (<em>float</em>) – frequency in Haz, e.g. 25 Hz.</p></li>
+<li><p><strong>length</strong> (<em>float</em>) – Length in s, e.g. 0.128.</p></li>
+<li><p><strong>dt</strong> (<em>float</em>) – sample interval in s, e.g. 0.001.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>tuple. time basis, amplitude values.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.utils.rms">
+<span class="sig-prename descclassname"><span class="pre">welly.utils.</span></span><span class="sig-name descname"><span class="pre">rms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/utils.html#rms"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.utils.rms" title="Permalink to this definition"></a></dt>
+<dd><p>From <code class="docutils literal notranslate"><span class="pre">bruges</span></code></p>
+<p>Calculates the RMS of an array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>a</strong> – An array.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The RMS of the array.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.utils.round_to_n">
+<span class="sig-prename descclassname"><span class="pre">welly.utils.</span></span><span class="sig-name descname"><span class="pre">round_to_n</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/utils.html#round_to_n"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.utils.round_to_n" title="Permalink to this definition"></a></dt>
+<dd><p>Round to sig figs</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.utils.sharey">
+<span class="sig-prename descclassname"><span class="pre">welly.utils.</span></span><span class="sig-name descname"><span class="pre">sharey</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/utils.html#sharey"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.utils.sharey" title="Permalink to this definition"></a></dt>
+<dd><p>Shared axes limits without shared locators, ticks, etc.</p>
+<p>By Joe Kington</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.utils.skip">
+<span class="sig-prename descclassname"><span class="pre">welly.utils.</span></span><span class="sig-name descname"><span class="pre">skip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/utils.html#skip"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.utils.skip" title="Permalink to this definition"></a></dt>
+<dd><p>Always returns None.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.utils.text_colour_for_hex">
+<span class="sig-prename descclassname"><span class="pre">welly.utils.</span></span><span class="sig-name descname"><span class="pre">text_colour_for_hex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hexx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">percent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dark</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'#000000'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">light</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'#ffffff'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/utils.html#text_colour_for_hex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.utils.text_colour_for_hex" title="Permalink to this definition"></a></dt>
+<dd><p>Function to decide what colour to use for a given hex colour.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>hexx</strong> (<em>str</em>) – A hexadecimal colour, starting with ‘#’.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The colour’s brightness is less than the given percent.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.utils.to_filename">
+<span class="sig-prename descclassname"><span class="pre">welly.utils.</span></span><span class="sig-name descname"><span class="pre">to_filename</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/utils.html#to_filename"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.utils.to_filename" title="Permalink to this definition"></a></dt>
+<dd><p>Convert string/pathlib.Path to string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>str/pathlib.Path</em>) – filename</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>filename</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.utils.top_and_tail">
+<span class="sig-prename descclassname"><span class="pre">welly.utils.</span></span><span class="sig-name descname"><span class="pre">top_and_tail</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/utils.html#top_and_tail"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.utils.top_and_tail" title="Permalink to this definition"></a></dt>
+<dd><p>Remove the NaNs from the top and tail (only) of a well log.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>a</strong> (<em>ndarray</em>) – An array.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The top and tailed array.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.utils.unsharey">
+<span class="sig-prename descclassname"><span class="pre">welly.utils.</span></span><span class="sig-name descname"><span class="pre">unsharey</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/utils.html#unsharey"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.utils.unsharey" title="Permalink to this definition"></a></dt>
+<dd><p>Remove sharing from an axes.</p>
+<p>By Joe Kington</p>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="welly.tools.html" class="btn btn-neutral float-left" title="welly.tools module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="welly.well.html" class="btn btn-neutral float-right" title="welly.well module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The Welly Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

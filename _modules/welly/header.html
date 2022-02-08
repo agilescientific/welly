@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>welly.header &mdash; welly  documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> welly
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../source/intro.html">Home</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/req.html">Requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/api_toc.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/indices.html">Index</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">welly</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+          <li><a href="../welly.html">welly</a> &raquo;</li>
+      <li>welly.header</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for welly.header</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Defines well headers.</span>
+
+<span class="sd">:copyright: 2021 Agile Scientific</span>
+<span class="sd">:license: Apache 2.0</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">csv</span>
+
+<span class="kn">from</span> <span class="nn">.fields</span> <span class="kn">import</span> <span class="n">las_fields</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">utils</span>
+
+
+<div class="viewcode-block" id="Header"><a class="viewcode-back" href="../../api/welly.header.html#welly.Header">[docs]</a><span class="k">class</span> <span class="nc">Header</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The well metadata or header information.</span>
+
+<span class="sd">    Not the same as an LAS header, but we might get info from there.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generic initializer.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">params</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">params</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;uwi&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">params</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="ow">and</span> <span class="n">v</span><span class="p">:</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;uwi&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uwi</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">uwi</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span>
+        <span class="k">return</span>
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+<div class="viewcode-block" id="Header.from_lasio"><a class="viewcode-back" href="../../api/welly.header.html#welly.Header.from_lasio">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_lasio</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">remap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">funcs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Assumes we&#39;re starting with a lasio object, l.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            header (pd.DataFrame): Header data from las file</span>
+<span class="sd">            remap (dict): Optional. A dict of &#39;old&#39;: &#39;new&#39; LAS field names.</span>
+<span class="sd">            funcs (dict): Optional. A dict of &#39;las field&#39;: function() for</span>
+<span class="sd">                implementing a transform before loading. Can be a lambda.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">field</span><span class="p">,</span> <span class="p">(</span><span class="n">sect</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span> <span class="ow">in</span> <span class="n">las_fields</span><span class="p">[</span><span class="s1">&#39;header&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">params</span><span class="p">[</span><span class="n">field</span><span class="p">]</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_header_item</span><span class="p">(</span><span class="n">header</span><span class="p">,</span>
+                                                  <span class="n">sect</span><span class="p">,</span>
+                                                  <span class="n">item</span><span class="p">,</span>
+                                                  <span class="n">remap</span><span class="o">=</span><span class="n">remap</span><span class="p">,</span>
+                                                  <span class="n">funcs</span><span class="o">=</span><span class="n">funcs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">params</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Header.from_csv"><a class="viewcode-back" href="../../api/welly.header.html#welly.Header.from_csv">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_csv</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">csv_file</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Not implemented. Will provide a route from CSV file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">param_dict</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">DictReader</span><span class="p">(</span><span class="n">csv_file</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">param_dict</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The Welly Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>welly.tools &mdash; welly  documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> welly
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../source/intro.html">Home</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/req.html">Requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/api_toc.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/indices.html">Index</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">welly</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+          <li><a href="../welly.html">welly</a> &raquo;</li>
+      <li>welly.tools</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for welly.tools</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Some extra bits.</span>
+
+<span class="sd">:copyright: 2021 Agile Scientific</span>
+<span class="sd">:license: Apache 2.0</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">wellpathpy</span> <span class="k">as</span> <span class="nn">wp</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+
+
+<div class="viewcode-block" id="compute_position_log"><a class="viewcode-back" href="../../api/welly.tools.html#welly.tools.compute_position_log">[docs]</a><span class="k">def</span> <span class="nf">compute_position_log</span><span class="p">(</span><span class="n">deviation</span><span class="p">,</span>
+                         <span class="n">td</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                         <span class="n">method</span><span class="o">=</span><span class="s1">&#39;mc&#39;</span><span class="p">,</span>
+                         <span class="n">azimuth_datum</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                         <span class="n">course_length</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                         <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Use wellpathpy to return the required welly objects</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        deviation (ndarray): A deviation survey with rows like MD, INC, AZI</span>
+<span class="sd">        td (float): The TD of the well, if not the end of the deviation</span>
+<span class="sd">            survey you&#39;re passing.</span>
+<span class="sd">        method (str):</span>
+<span class="sd">            &#39;mc&#39;: minimum curvature</span>
+<span class="sd">            &#39;aa&#39;: average angle</span>
+<span class="sd">            &#39;bt&#39;: balanced tangential</span>
+<span class="sd">            &#39;hi&#39;: high tangential</span>
+<span class="sd">            &#39;lo&#39;: low tangential</span>
+<span class="sd">            &#39;rc&#39;: radius of curvature</span>
+<span class="sd">        azimuth_datum (float): The orientation of the azimuth datum, relative</span>
+<span class="sd">            to the y-axis.</span>
+<span class="sd">        course_length (float): Default: 1. The length over which to normalize</span>
+<span class="sd">            the dogleg severity. Typical values are 30 m or 100 ft. Use 1 for</span>
+<span class="sd">            no normalization. Note: from v0.5, default will be 30.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        ndarray. A position log with rows like X-offset, Y-offset, Z-offset</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">deviation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asanyarray</span><span class="p">(</span><span class="n">deviation</span><span class="p">)</span>
+
+    <span class="c1"># Adjust to TD.</span>
+    <span class="k">if</span> <span class="n">td</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">last_row</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">deviation</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:])</span>
+        <span class="n">last_row</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">td</span>
+        <span class="n">deviation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">deviation</span><span class="p">,</span> <span class="n">last_row</span><span class="p">])</span>
+
+    <span class="c1"># Adjust to surface if necessary.</span>
+    <span class="k">if</span> <span class="n">deviation</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">deviation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]),</span> <span class="n">deviation</span><span class="p">])</span>
+
+    <span class="c1"># Adjust to azimuth_datum.</span>
+    <span class="n">deviation</span> <span class="o">+=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">azimuth_datum</span><span class="p">]</span>
+
+    <span class="c1"># Make wellpathpy deviation object.</span>
+    <span class="n">dev</span> <span class="o">=</span> <span class="n">wp</span><span class="o">.</span><span class="n">deviation</span><span class="p">(</span><span class="o">*</span><span class="n">deviation</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+
+    <span class="c1"># Compute position log.</span>
+    <span class="n">methods</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;mc&#39;</span><span class="p">:</span> <span class="n">dev</span><span class="o">.</span><span class="n">minimum_curvature</span><span class="p">(</span><span class="n">course_length</span><span class="p">),</span>
+        <span class="s1">&#39;rc&#39;</span><span class="p">:</span> <span class="n">dev</span><span class="o">.</span><span class="n">radius_curvature</span><span class="p">(),</span>
+        <span class="s1">&#39;aa&#39;</span><span class="p">:</span> <span class="n">dev</span><span class="o">.</span><span class="n">tan_method</span><span class="p">(),</span>
+        <span class="s1">&#39;bt&#39;</span><span class="p">:</span> <span class="n">dev</span><span class="o">.</span><span class="n">tan_method</span><span class="p">(</span><span class="n">choice</span><span class="o">=</span><span class="s1">&#39;bal&#39;</span><span class="p">),</span>
+        <span class="s1">&#39;hi&#39;</span><span class="p">:</span> <span class="n">dev</span><span class="o">.</span><span class="n">tan_method</span><span class="p">(</span><span class="n">choice</span><span class="o">=</span><span class="s1">&#39;high&#39;</span><span class="p">),</span>
+        <span class="s1">&#39;lo&#39;</span><span class="p">:</span> <span class="n">dev</span><span class="o">.</span><span class="n">tan_method</span><span class="p">(</span><span class="n">choice</span><span class="o">=</span><span class="s1">&#39;low&#39;</span><span class="p">),</span>
+    <span class="p">}</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="n">methods</span><span class="p">[</span><span class="n">method</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;Unknown choice of method: </span><span class="si">{}</span><span class="s1">. &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">method</span><span class="p">)</span>
+        <span class="n">msg</span> <span class="o">+=</span> <span class="s1">&#39;Method must be one of mc, aa, bt, hi, lo, or rc.&#39;</span>
+        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="c1"># Convert to welly formats.</span>
+    <span class="c1"># deviation = np.hstack((dev.md, dev.inc, dev.azi))</span>
+    <span class="n">position</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">pos</span><span class="o">.</span><span class="n">easting</span><span class="p">,</span> <span class="n">pos</span><span class="o">.</span><span class="n">northing</span><span class="p">,</span> <span class="n">pos</span><span class="o">.</span><span class="n">depth</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">dogleg</span> <span class="o">=</span> <span class="n">dev</span><span class="o">.</span><span class="n">minimum_curvature</span><span class="p">(</span><span class="n">course_length</span><span class="o">=</span><span class="n">course_length</span><span class="p">)</span><span class="o">.</span><span class="n">dls</span>
+
+    <span class="k">return</span> <span class="n">deviation</span><span class="p">,</span> <span class="n">position</span><span class="p">,</span> <span class="n">dogleg</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The Welly Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

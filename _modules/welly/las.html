@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>welly.las &mdash; welly  documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> welly
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../source/intro.html">Home</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/req.html">Requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/api_toc.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/indices.html">Index</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">welly</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+          <li><a href="../welly.html">welly</a> &raquo;</li>
+      <li>welly.las</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for welly.las</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Module for reading and writing to and from LAS files</span>
+
+<span class="sd">:copyright: 2021 Agile Scientific</span>
+<span class="sd">:license: Apache 2.0</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">reduce</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">StringIO</span>
+<span class="kn">from</span> <span class="nn">urllib</span> <span class="kn">import</span> <span class="n">error</span><span class="p">,</span> <span class="n">request</span>
+
+<span class="kn">import</span> <span class="nn">lasio</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">lasio</span> <span class="kn">import</span> <span class="n">HeaderItem</span><span class="p">,</span> <span class="n">CurveItem</span><span class="p">,</span> <span class="n">SectionItems</span>
+<span class="kn">from</span> <span class="nn">pandas._config.config</span> <span class="kn">import</span> <span class="n">OptionError</span>
+
+<span class="kn">from</span> <span class="nn">welly.curve</span> <span class="kn">import</span> <span class="n">Curve</span>
+<span class="kn">from</span> <span class="nn">welly</span> <span class="kn">import</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">welly.fields</span> <span class="kn">import</span> <span class="n">curve_sections</span><span class="p">,</span> <span class="n">other_sections</span><span class="p">,</span> <span class="n">header_sections</span>
+<span class="kn">from</span> <span class="nn">welly.utils</span> <span class="kn">import</span> <span class="n">get_columns_decimal_formatter</span><span class="p">,</span> <span class="n">get_step_from_array</span>
+<span class="kn">from</span> <span class="nn">.fields</span> <span class="kn">import</span> <span class="n">las_fields</span> <span class="k">as</span> <span class="n">LAS_FIELDS</span>
+
+<span class="c1"># the lasio header item dictionary contains the fields from which we will parse</span>
+<span class="c1"># the LASFile header metadata</span>
+<span class="n">header_item</span> <span class="o">=</span> <span class="n">HeaderItem</span><span class="p">()</span><span class="o">.</span><span class="vm">__dict__</span>
+
+<span class="c1"># the lasio curve item dictionary contains the fields from which we will parse</span>
+<span class="c1"># the LASFile curve header metadata</span>
+<span class="n">curve_item</span> <span class="o">=</span> <span class="n">CurveItem</span><span class="p">()</span><span class="o">.</span><span class="vm">__dict__</span>
+
+<span class="c1"># set pandas precision higher to not automatically round the curve data</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s1">&#39;precision&#39;</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="k">except</span><span class="p">:</span>
+    <span class="c1"># python &gt;= 3.8</span>
+    <span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s1">&#39;display.precision&#39;</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="from_las"><a class="viewcode-back" href="../../api/welly.las.html#welly.las.from_las">[docs]</a><span class="k">def</span> <span class="nf">from_las</span><span class="p">(</span><span class="n">file_ref</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Read a LAS file with lasio and parse every LAS section to a dataset that</span>
+<span class="sd">    consists of two pd.DataFrames:</span>
+<span class="sd">        1. curve data</span>
+<span class="sd">        2. header metadata</span>
+
+<span class="sd">    Only LAS 1.2 and 2.0 are currently supported. LAS 3.0 will be supported</span>
+<span class="sd">    when lasio LAS 3.0 work in progress is completed:</span>
+<span class="sd">    https://github.com/kinverarity1/lasio/issues/5.</span>
+
+<span class="sd">    The design of this reader already accommodates for LAS 3.0 functionality</span>
+<span class="sd">    where one `lasio.LASFile` can contain multiple 1D, 2D or 3D dataset</span>
+<span class="sd">    entries, instead of only 1D data and 1 dataset in LAS 1.2 and LAS 2.0.</span>
+
+<span class="sd">    Also see:</span>
+<span class="sd">    - lasio documentation:</span>
+<span class="sd">       https://lasio.readthedocs.io/en/latest/header-section.html#tutorial</span>
+<span class="sd">    - LAS 3.0 file specification:</span>
+<span class="sd">       https://www.cwls.org/wp-content/uploads/2014/09/LAS_3_File_Structure.pdf</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        file_ref (file-like object, str): either a filename, an open file</span>
+<span class="sd">            object, or a string containing the contents of a LAS file.</span>
+<span class="sd">        **kwargs: The additional keyword arguments are propagated to the lasio</span>
+<span class="sd">                  reader so you can use when reading in a LAS file.</span>
+<span class="sd">                  Find the routines of the keyword possibilities here:</span>
+<span class="sd">                    * :func:`lasio.reader.open_with_codecs` -</span>
+<span class="sd">                        manage issues relate to character encodings.</span>
+<span class="sd">                    * :meth:`lasio.LASFile.read` -</span>
+<span class="sd">                        control how NULL values and errors are handled during</span>
+<span class="sd">                        parsing.</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        datasets (Dict[&#39;&lt;name&gt;&#39;: pd.DataFrame]): Dictionary maps a</span>
+<span class="sd">            dataset name (e.g. &#39;Curves&#39;) or &#39;Header&#39; to a pd.DataFrame.</span>
+
+<span class="sd">    Description of datasets object:</span>
+
+<span class="sd">    datasets = {</span>
+<span class="sd">        &#39;Curves&#39;:   data,   # for LAS 1.2 &amp; LAS 2.0</span>
+<span class="sd">        &#39;ASCII&#39;:    data,   # for LAS 3.0</span>
+<span class="sd">        &#39;Drilling&#39;: data,   # for LAS 3.0</span>
+<span class="sd">        &#39;Core[1]&#39;:  data,   # for LAS 3.0 - Run 1</span>
+<span class="sd">        &#39;Core[2]&#39;:  data,   # for LAS 3.0 - Run 2</span>
+<span class="sd">        &#39;Header&#39;:   header, # for all (LAS 1.2, LAS 2.0, LAS 3.0)</span>
+<span class="sd">    }</span>
+
+<span class="sd">    Where:</span>
+<span class="sd">        data (pd.DataFrame):   where:</span>
+<span class="sd">                                - every row represents a data index.</span>
+<span class="sd">                                - every column represents a data variable.</span>
+<span class="sd">                                  Column name is the data variable mnemonic.</span>
+<span class="sd">        header (pd.DataFrame): where:</span>
+<span class="sd">                                - every row represents a line read from LAS</span>
+<span class="sd">                                  file and columns.</span>
+<span class="sd">                                - column 1-5 - directly parsed from the</span>
+<span class="sd">                                               HeaderItem.__dict__:</span>
+<span class="sd">                                    &#39;original_mnemonic&#39; - original mmnemonic</span>
+<span class="sd">                                    &#39;mnemonic&#39; - mnemonic</span>
+<span class="sd">                                    &#39;unit&#39; - unit</span>
+<span class="sd">                                    &#39;value&#39; - value</span>
+<span class="sd">                                    &#39;descr&#39; - description</span>
+<span class="sd">                                - column 6 - is added as a LAS section</span>
+<span class="sd">                                             identifier:</span>
+<span class="sd">                                    &#39;section&#39; (str) - LAS Section name the</span>
+<span class="sd">                                    line from the LAS file belongs to (e.g.</span>
+<span class="sd">                                    ~Curves)</span>
+<span class="sd">    Example</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt; datasets = from_las(path)</span>
+
+<span class="sd">    &gt;&gt; datasets[&#39;Curves&#39;]</span>
+<span class="sd">         DEPT    CALI     FACIES</span>
+<span class="sd">    0    1.0     2.4438   0</span>
+<span class="sd">    1    1.5     2.4438   1</span>
+<span class="sd">    2    2.0     2.4438   2</span>
+
+<span class="sd">    &gt;&gt; datasets[&#39;Header&#39;]</span>
+<span class="sd">        original_mnemonic   mnemonic unit  value    descr         section</span>
+<span class="sd">    0   VERS                VERS           2.0                    Version</span>
+<span class="sd">    1   WRAP                WRAP           YES                    Version</span>
+<span class="sd">    0   STRT                STRT     M     1.0668   START DEPTH   Well</span>
+<span class="sd">    1   STOP                STOP     M     1.524    STOP DEPTH    Well</span>
+<span class="sd">    2   STEP                STEP     M     0.1524   STEP          Well</span>
+<span class="sd">    3   NULL                NULL           -999.25  NULL VALUE    Well</span>
+<span class="sd">    4   COMP                COMP           Energy.C COMPANY       Well</span>
+<span class="sd">    5   WELL                WELL                    WELL          Well</span>
+<span class="sd">    6   UWI                 UWI                     WELL          Well</span>
+<span class="sd">    7   FLD                 FLD                     FIELD         Well</span>
+<span class="sd">    0   DEPT                DEPT     m              DEPTH         Curves</span>
+<span class="sd">    1   CALI                CALI     in             Caliper       Curves</span>
+<span class="sd">    2   FACIES              FACIES                  Facies        Curves</span>
+<span class="sd">    2   EREF                EREF:1   M     100.0    Elevation     Parameter</span>
+<span class="sd">    0                       UNKNOWN                 Comment       Other</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Read las file with lasio.</span>
+    <span class="n">las</span> <span class="o">=</span> <span class="n">lasio</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">file_ref</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="c1"># Parse lasio.LASFile object to datasets dictionary.</span>
+    <span class="n">datasets</span> <span class="o">=</span> <span class="n">from_lasio</span><span class="p">(</span><span class="n">las</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">datasets</span></div>
+
+
+<div class="viewcode-block" id="from_lasio"><a class="viewcode-back" href="../../api/welly.las.html#welly.las.from_lasio">[docs]</a><span class="k">def</span> <span class="nf">from_lasio</span><span class="p">(</span><span class="n">las</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates a datasets dictionary object from a `lasio.LASFile`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        las (lasio.LASFile): `LASFile` constructed through `lasio.read()`</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        datasets = {&#39;Curves&#39;: (data, header)}</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># get las format version</span>
+    <span class="n">version</span> <span class="o">=</span> <span class="n">get_las_version</span><span class="p">(</span><span class="n">las</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">version</span> <span class="o">==</span> <span class="mf">2.0</span> <span class="ow">or</span> <span class="n">version</span> <span class="o">==</span> <span class="mf">1.2</span><span class="p">:</span>
+        <span class="n">datasets</span> <span class="o">=</span> <span class="n">from_las_2_or_older</span><span class="p">(</span><span class="n">las</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">m</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Warning, LAS version </span><span class="si">{</span><span class="n">version</span><span class="si">}</span><span class="s2"> not yet supported. &quot;</span> \
+                <span class="sa">f</span><span class="s2">&quot;Attempting to use LAS 1.2 and 2.0 parsing logic for LAS 3.0.&quot;</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+            <span class="n">datasets</span> <span class="o">=</span> <span class="n">from_las_2_or_older</span><span class="p">(</span><span class="n">las</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;LAS version </span><span class="si">{</span><span class="n">version</span><span class="si">}</span><span class="s2"> not yet supported.&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">datasets</span></div>
+
+
+<div class="viewcode-block" id="from_las_2_or_older"><a class="viewcode-back" href="../../api/welly.las.html#welly.las.from_las_2_or_older">[docs]</a><span class="k">def</span> <span class="nf">from_las_2_or_older</span><span class="p">(</span><span class="n">las</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parse `lasio.LASFile` to two `pd.DataFrames`. The &#39;Header&#39; and &#39;Curves&#39;</span>
+<span class="sd">    section translate both to a `pd.DataFrame`.</span>
+
+<span class="sd">    Requires: LASFile version 1.2 or 2.0.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        las (lasio.LASFile): `LASFile` constructed through `lasio.read()`</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        datasets (Dict[&#39;&lt;name&gt;&#39;: pd.DataFrame]): Dictionary maps a</span>
+<span class="sd">            dataset name (e.g. &#39;Curves&#39;) or &#39;Header&#39; to a pd.DataFrame.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">datasets</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="c1"># construct df to parse header sections to</span>
+    <span class="n">header</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+
+    <span class="c1"># parse header from LASFile to df</span>
+    <span class="k">for</span> <span class="n">section</span><span class="p">,</span> <span class="n">item_list</span> <span class="ow">in</span> <span class="n">las</span><span class="o">.</span><span class="n">sections</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="c1"># skip section if item list is empty and not an `Other` section</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">item_list</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item_list</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">continue</span>
+
+        <span class="c1"># section contains `SectionItem` instance(s)</span>
+        <span class="k">elif</span> <span class="n">section</span><span class="o">.</span><span class="n">casefold</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">casefold</span><span class="p">()</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">header_sections</span><span class="p">]:</span>
+            <span class="c1"># construct df for LAS section</span>
+            <span class="n">df_section</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span><span class="n">i</span><span class="o">.</span><span class="vm">__dict__</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">las</span><span class="o">.</span><span class="n">sections</span><span class="p">[</span><span class="n">section</span><span class="p">]])</span>
+            <span class="c1"># append section name as a separate column</span>
+            <span class="n">df_section</span><span class="p">[</span><span class="s1">&#39;section&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">section</span>
+            <span class="c1"># concat metadata to header df</span>
+            <span class="n">header</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">header</span><span class="p">,</span> <span class="n">df_section</span><span class="p">])</span>
+
+            <span class="c1"># section is also contains `CurveItem` instance(s)</span>
+            <span class="k">if</span> <span class="n">section</span><span class="o">.</span><span class="n">casefold</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">casefold</span><span class="p">()</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">curve_sections</span><span class="p">]:</span>
+                <span class="c1"># get and append data df to datasets</span>
+                <span class="n">datasets</span><span class="p">[</span><span class="n">section</span><span class="p">]</span> <span class="o">=</span> <span class="n">_get_curve_las_df</span><span class="p">(</span><span class="n">las</span><span class="p">,</span> <span class="n">section</span><span class="p">)</span>
+
+        <span class="c1"># section contains only `CurveItem` instance(s)</span>
+        <span class="k">elif</span> <span class="n">section</span><span class="o">.</span><span class="n">casefold</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">casefold</span><span class="p">()</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">curve_sections</span><span class="p">]:</span>
+            <span class="c1"># get and append data df to datasets</span>
+            <span class="n">datasets</span><span class="p">[</span><span class="n">section</span><span class="p">]</span> <span class="o">=</span> <span class="n">_get_curve_las_df</span><span class="p">(</span><span class="n">las</span><span class="p">,</span> <span class="n">section</span><span class="p">)</span>
+
+        <span class="c1"># section is a string instance</span>
+        <span class="k">elif</span> <span class="n">section</span><span class="o">.</span><span class="n">casefold</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">casefold</span><span class="p">()</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">other_sections</span><span class="p">]:</span>
+            <span class="c1"># fill other section in descr key of header item dictionary</span>
+            <span class="n">header_item</span><span class="p">[</span><span class="s1">&#39;descr&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">item_list</span>
+            <span class="c1"># construct dataframe for &#39;Other&#39; section</span>
+            <span class="n">df_section</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">header_item</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="c1"># append section name as separate column</span>
+            <span class="n">df_section</span><span class="p">[</span><span class="s1">&#39;section&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">section</span>
+            <span class="c1"># concat to header df</span>
+            <span class="n">header</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">header</span><span class="p">,</span> <span class="n">df_section</span><span class="p">])</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">m</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Section was not recognized and not parsed: </span><span class="si">{</span><span class="n">section</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+
+    <span class="n">header</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s1">&#39;data&#39;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">header</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">datasets</span><span class="p">[</span><span class="s1">&#39;Header&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">header</span>
+
+    <span class="k">return</span> <span class="n">datasets</span></div>
+
+
+<div class="viewcode-block" id="datasets_to_las"><a class="viewcode-back" href="../../api/welly.las.html#welly.las.datasets_to_las">[docs]</a><span class="k">def</span> <span class="nf">datasets_to_las</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">datasets</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Write datasets to a LAS file on disk.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        path (Str): Path to write LAS file to</span>
+<span class="sd">        datasets (Dict[&#39;&lt;name&gt;&#39;: pd.DataFrame]): Dictionary maps a</span>
+<span class="sd">            dataset name (e.g. &#39;Curves&#39;) or &#39;Header&#39; to a pd.DataFrame.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Nothing, only writes in-memory object to disk as .las</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># ensure path is working on every dev set-up</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">to_filename</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+    <span class="c1"># instantiate new LASFile to parse data &amp; header to</span>
+    <span class="n">las</span> <span class="o">=</span> <span class="n">lasio</span><span class="o">.</span><span class="n">LASFile</span><span class="p">()</span>
+
+    <span class="c1"># set header df as variable to later retrieve curve meta data from</span>
+    <span class="n">header</span> <span class="o">=</span> <span class="n">datasets</span><span class="p">[</span><span class="s1">&#39;Header&#39;</span><span class="p">]</span>
+
+    <span class="c1"># unpack datasets</span>
+    <span class="k">for</span> <span class="n">dataset_name</span><span class="p">,</span> <span class="n">df</span> <span class="ow">in</span> <span class="n">datasets</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+
+        <span class="c1"># dataset is the header</span>
+        <span class="k">if</span> <span class="n">dataset_name</span> <span class="o">==</span> <span class="s1">&#39;Header&#39;</span><span class="p">:</span>
+            <span class="c1"># parse header pd.DataFrame to LASFile</span>
+            <span class="k">for</span> <span class="n">section_name</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">section</span><span class="o">.</span><span class="n">values</span><span class="p">):</span>
+                <span class="c1"># get header section df</span>
+                <span class="n">df_section</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">section</span> <span class="o">==</span> <span class="n">section_name</span><span class="p">]</span>
+
+                <span class="k">if</span> <span class="n">section_name</span> <span class="o">==</span> <span class="s1">&#39;Curves&#39;</span><span class="p">:</span>
+                    <span class="c1"># curves header items are handled in curve data loop</span>
+                    <span class="k">pass</span>
+
+                <span class="k">elif</span> <span class="n">section_name</span> <span class="o">==</span> <span class="s1">&#39;Version&#39;</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">df_section</span><span class="p">[</span><span class="n">df_section</span><span class="o">.</span><span class="n">original_mnemonic</span> <span class="o">==</span> <span class="s1">&#39;VERS&#39;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">las</span><span class="o">.</span><span class="n">version</span><span class="o">.</span><span class="n">VERS</span> <span class="o">=</span> <span class="n">df_section</span><span class="p">[</span><span class="n">df_section</span><span class="o">.</span><span class="n">original_mnemonic</span> <span class="o">==</span> <span class="s1">&#39;VERS&#39;</span><span class="p">][</span><span class="s1">&#39;value&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">df_section</span><span class="p">[</span><span class="n">df_section</span><span class="o">.</span><span class="n">original_mnemonic</span> <span class="o">==</span> <span class="s1">&#39;WRAP&#39;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">las</span><span class="o">.</span><span class="n">version</span><span class="o">.</span><span class="n">WRAP</span> <span class="o">=</span> <span class="n">df_section</span><span class="p">[</span><span class="n">df_section</span><span class="o">.</span><span class="n">original_mnemonic</span> <span class="o">==</span> <span class="s1">&#39;WRAP&#39;</span><span class="p">][</span><span class="s1">&#39;value&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">df_section</span><span class="p">[</span><span class="n">df_section</span><span class="o">.</span><span class="n">original_mnemonic</span> <span class="o">==</span> <span class="s1">&#39;DLM&#39;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">las</span><span class="o">.</span><span class="n">version</span><span class="o">.</span><span class="n">DLM</span> <span class="o">=</span> <span class="n">df_section</span><span class="p">[</span><span class="n">df_section</span><span class="o">.</span><span class="n">original_mnemonic</span> <span class="o">==</span> <span class="s1">&#39;DLM&#39;</span><span class="p">][</span><span class="s1">&#39;value&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+                <span class="k">elif</span> <span class="n">section_name</span> <span class="o">==</span> <span class="s1">&#39;Well&#39;</span><span class="p">:</span>
+                    <span class="n">las</span><span class="o">.</span><span class="n">sections</span><span class="p">[</span><span class="s2">&quot;Well&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">SectionItems</span><span class="p">(</span>
+                        <span class="p">[</span><span class="n">HeaderItem</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">original_mnemonic</span><span class="p">,</span>
+                                    <span class="n">r</span><span class="o">.</span><span class="n">unit</span><span class="p">,</span>
+                                    <span class="n">r</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                                    <span class="n">r</span><span class="o">.</span><span class="n">descr</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">df_section</span><span class="o">.</span><span class="n">iterrows</span><span class="p">()])</span>
+
+                <span class="k">elif</span> <span class="n">section_name</span> <span class="o">==</span> <span class="s1">&#39;Parameter&#39;</span><span class="p">:</span>
+                    <span class="n">las</span><span class="o">.</span><span class="n">sections</span><span class="p">[</span><span class="s2">&quot;Parameter&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">SectionItems</span><span class="p">(</span>
+                        <span class="p">[</span><span class="n">HeaderItem</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">original_mnemonic</span><span class="p">,</span>
+                                    <span class="n">r</span><span class="o">.</span><span class="n">unit</span><span class="p">,</span>
+                                    <span class="n">r</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                                    <span class="n">r</span><span class="o">.</span><span class="n">descr</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">df_section</span><span class="o">.</span><span class="n">iterrows</span><span class="p">()])</span>
+
+                <span class="k">elif</span> <span class="n">section_name</span> <span class="o">==</span> <span class="s1">&#39;Other&#39;</span><span class="p">:</span>
+                    <span class="n">las</span><span class="o">.</span><span class="n">sections</span><span class="p">[</span><span class="s2">&quot;Other&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_section</span><span class="p">[</span><span class="s1">&#39;descr&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">m</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;LAS Section was not recognized: &#39;</span><span class="si">{</span><span class="n">section_name</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+                    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+
+        <span class="c1"># dataset contains curve data</span>
+        <span class="k">if</span> <span class="n">dataset_name</span> <span class="ow">in</span> <span class="n">curve_sections</span><span class="p">:</span>
+            <span class="n">header_curves</span> <span class="o">=</span> <span class="n">header</span><span class="p">[</span><span class="n">header</span><span class="o">.</span><span class="n">section</span> <span class="o">==</span> <span class="n">dataset_name</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">header_row</span> <span class="ow">in</span> <span class="n">header_curves</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">header_row</span><span class="o">.</span><span class="n">mnemonic</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+                    <span class="n">curve_data</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">header_row</span><span class="o">.</span><span class="n">mnemonic</span><span class="p">]</span>
+                    <span class="n">las</span><span class="o">.</span><span class="n">append_curve</span><span class="p">(</span><span class="n">mnemonic</span><span class="o">=</span><span class="n">header_row</span><span class="o">.</span><span class="n">mnemonic</span><span class="p">,</span>
+                                     <span class="n">data</span><span class="o">=</span><span class="n">curve_data</span><span class="p">,</span>
+                                     <span class="n">unit</span><span class="o">=</span><span class="n">header_row</span><span class="o">.</span><span class="n">unit</span><span class="p">,</span>
+                                     <span class="n">descr</span><span class="o">=</span><span class="n">header_row</span><span class="o">.</span><span class="n">descr</span><span class="p">,</span>
+                                     <span class="n">value</span><span class="o">=</span><span class="n">header_row</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="c1"># numeric null value representation from the header (e.g. # -9999)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">null_value</span> <span class="o">=</span> <span class="n">header</span><span class="p">[</span><span class="n">header</span><span class="o">.</span><span class="n">original_mnemonic</span> <span class="o">==</span> <span class="s1">&#39;NULL&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+        <span class="n">null_value</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1"># las.write defaults to %.5 decimal points. We want to retain the</span>
+    <span class="c1"># number of decimals. We first construct a column formatter based</span>
+    <span class="c1"># on the max number of decimal points found in each curve.</span>
+    <span class="k">if</span> <span class="s1">&#39;column_fmt&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;column_fmt&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_columns_decimal_formatter</span><span class="p">(</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">las</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">null_value</span><span class="o">=</span><span class="n">null_value</span><span class="p">)</span>
+
+    <span class="c1"># write file to disk</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">las</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="to_lasio"><a class="viewcode-back" href="../../api/welly.las.html#welly.las.to_lasio">[docs]</a><span class="k">def</span> <span class="nf">to_lasio</span><span class="p">(</span><span class="n">well</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">basis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">null_value</span><span class="o">=-</span><span class="mf">999.25</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Constructor. If you have a `well` object, this will create a</span>
+<span class="sd">    `lasio.LASFile` object from it.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        keys (list): List of strings: the keys of the data items to</span>
+<span class="sd">            include, if not all of them. You can have nested lists, such</span>
+<span class="sd">            as you might use for ``tracks`` in ``well.plot()``.</span>
+<span class="sd">        alias (dict): Optional. A dictionary alias for the curve mnemonics.</span>
+<span class="sd">                e.g. {&#39;density&#39;: [&#39;DEN&#39;, &#39;DENS&#39;]}</span>
+<span class="sd">        basis (numpy.ndarray): Optional. The basis to export the curves in.</span>
+<span class="sd">            If you don&#39;t specify one, it will survey all the curves with</span>
+<span class="sd">            `survey_basis()``.</span>
+<span class="sd">        null_value (float): Optional. The null value representation in the</span>
+<span class="sd">            LAS file.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        las (lasio.LASFile). The lasio object representation of a LAS file.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Create an empty lasio object.</span>
+    <span class="n">l</span> <span class="o">=</span> <span class="n">lasio</span><span class="o">.</span><span class="n">LASFile</span><span class="p">()</span>
+    <span class="n">l</span><span class="o">.</span><span class="n">well</span><span class="o">.</span><span class="n">DATE</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">today</span><span class="p">())</span>
+    <span class="n">l</span><span class="o">.</span><span class="n">well</span><span class="p">[</span><span class="s2">&quot;NULL&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">null_value</span>
+
+    <span class="c1"># Deal with header.</span>
+    <span class="k">for</span> <span class="n">obj</span><span class="p">,</span> <span class="n">dic</span> <span class="ow">in</span> <span class="n">LAS_FIELDS</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">obj</span> <span class="o">==</span> <span class="s1">&#39;header&#39;</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">attr</span><span class="p">,</span> <span class="p">(</span><span class="n">sect</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span> <span class="ow">in</span> <span class="n">dic</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">df_header</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">well</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span>
+                <span class="c1"># get item value from header dataframe</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="n">df_header</span><span class="p">[</span><span class="n">df_header</span><span class="o">.</span><span class="n">mnemonic</span> <span class="o">==</span> <span class="n">item</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="c1"># set item value on LASFile instance</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="nb">getattr</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">sect</span><span class="p">)[</span><span class="n">item</span><span class="p">]</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
+                <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                    <span class="n">h</span> <span class="o">=</span> <span class="n">lasio</span><span class="o">.</span><span class="n">HeaderItem</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+                    <span class="nb">getattr</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">sect</span><span class="p">)[</span><span class="n">item</span><span class="p">]</span> <span class="o">=</span> <span class="n">h</span>
+        <span class="k">elif</span> <span class="n">obj</span> <span class="o">==</span> <span class="s1">&#39;location&#39;</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">attr</span><span class="p">,</span> <span class="p">(</span><span class="n">sect</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span> <span class="ow">in</span> <span class="n">dic</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">well</span><span class="p">,</span> <span class="n">obj</span><span class="p">),</span> <span class="n">attr</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="nb">getattr</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">sect</span><span class="p">)[</span><span class="n">item</span><span class="p">]</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
+                <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                    <span class="n">h</span> <span class="o">=</span> <span class="n">lasio</span><span class="o">.</span><span class="n">HeaderItem</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+                    <span class="nb">getattr</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">sect</span><span class="p">)[</span><span class="n">item</span><span class="p">]</span> <span class="o">=</span> <span class="n">h</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+    <span class="c1"># Clear curves from header portion.</span>
+    <span class="n">l</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s1">&#39;Curves&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1"># put all curve dfs in a list</span>
+    <span class="n">dfs</span> <span class="o">=</span> <span class="p">[</span><span class="n">curve</span><span class="o">.</span><span class="n">df</span> <span class="k">for</span> <span class="n">curve</span> <span class="ow">in</span> <span class="n">well</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
+
+    <span class="c1"># Deal with data if available</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dfs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="c1"># merge all curve dfs to one df</span>
+        <span class="n">df_merged</span> <span class="o">=</span> <span class="n">reduce</span><span class="p">(</span><span class="k">lambda</span> <span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">left</span><span class="p">,</span>
+                                                        <span class="n">right</span><span class="p">,</span>
+                                                        <span class="n">left_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                                        <span class="n">right_index</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="n">dfs</span><span class="p">)</span>
+
+        <span class="c1"># get the mnemonics to select</span>
+        <span class="n">keys</span> <span class="o">=</span> <span class="n">well</span><span class="o">.</span><span class="n">_get_curve_mnemonics</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">)</span>
+
+        <span class="n">df_merged</span> <span class="o">=</span> <span class="n">df_merged</span><span class="p">[</span><span class="n">keys</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">basis</span><span class="p">:</span>
+            <span class="n">df_merged</span> <span class="o">=</span> <span class="n">df_merged</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="n">basis</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">l</span><span class="o">.</span><span class="n">add_curve</span><span class="p">(</span><span class="s1">&#39;DEPT&#39;</span><span class="p">,</span> <span class="n">df_merged</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Please provide an index.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Add meta from basis.</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">well</span><span class="p">,</span> <span class="s1">&#39;STRT&#39;</span><span class="p">,</span> <span class="n">df_merged</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">well</span><span class="p">,</span> <span class="s1">&#39;STOP&#39;</span><span class="p">,</span> <span class="n">df_merged</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">well</span><span class="p">,</span> <span class="s1">&#39;STEP&#39;</span><span class="p">,</span> <span class="n">get_step_from_array</span><span class="p">(</span><span class="n">df_merged</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="p">))</span>
+
+    <span class="c1"># Add data entities.</span>
+    <span class="n">other</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+    <span class="n">keys</span> <span class="o">=</span> <span class="n">well</span><span class="o">.</span><span class="n">_get_curve_mnemonics</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+        <span class="c1"># select curve from well</span>
+        <span class="n">curve</span> <span class="o">=</span> <span class="n">well</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">curve</span><span class="p">,</span> <span class="n">Curve</span><span class="p">):</span>
+            <span class="c1"># iterate over columns for 2D curve data</span>
+            <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">curve</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="c1"># take the series, reindex it and transform to np.array</span>
+                    <span class="n">new_data</span> <span class="o">=</span> <span class="n">curve</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="n">basis</span><span class="p">)</span><span class="o">.</span><span class="n">values</span>
+                    <span class="n">descr</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">curve</span><span class="p">,</span> <span class="s1">&#39;description&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+                    <span class="n">l</span><span class="o">.</span><span class="n">add_curve</span><span class="p">(</span><span class="n">mnemonic</span><span class="o">=</span><span class="n">key</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span>
+                                <span class="n">data</span><span class="o">=</span><span class="n">new_data</span><span class="p">,</span>
+                                <span class="n">unit</span><span class="o">=</span><span class="n">curve</span><span class="o">.</span><span class="n">units</span><span class="p">,</span>
+                                <span class="n">descr</span><span class="o">=</span><span class="n">descr</span><span class="p">)</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="c1"># appending curve failed, add to OTHER section</span>
+                    <span class="n">other</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">upper</span><span class="p">())</span> <span class="o">+</span> <span class="n">curve</span><span class="o">.</span><span class="n">to_csv</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+    <span class="c1"># Write OTHER, if any.</span>
+    <span class="k">if</span> <span class="n">other</span><span class="p">:</span>
+        <span class="n">l</span><span class="o">.</span><span class="n">other</span> <span class="o">=</span> <span class="n">other</span>
+
+    <span class="k">return</span> <span class="n">l</span></div>
+
+
+<div class="viewcode-block" id="file_from_url"><a class="viewcode-back" href="../../api/welly.las.html#welly.las.file_from_url">[docs]</a><span class="k">def</span> <span class="nf">file_from_url</span><span class="p">(</span><span class="n">url</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Retrieve a file from an HTTPS URL and return it as an in-memory stream</span>
+<span class="sd">    for text.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        url (str): URL to file.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        text_file (StringIO): an in-memory stream for text.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">text_file</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="n">url</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span>
+    <span class="k">except</span> <span class="n">error</span><span class="o">.</span><span class="n">HTTPError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Could not retrieve url: &#39;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">text_file</span></div>
+
+
+<div class="viewcode-block" id="get_las_version"><a class="viewcode-back" href="../../api/welly.las.html#welly.las.get_las_version">[docs]</a><span class="k">def</span> <span class="nf">get_las_version</span><span class="p">(</span><span class="n">las</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the LAS file format version from an in-memory lasio.LAFile object.</span>
+
+<span class="sd">    There are 3 possible versions (https://www.cwls.org/products/):</span>
+<span class="sd">        - LAS 1.2</span>
+<span class="sd">        - LAS 2.0</span>
+<span class="sd">        - LAS 3.0</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        las (lasio.LASFile): An in-memory lasio.LASFile object</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        version (float): LAS format version</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">version</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">las</span><span class="o">.</span><span class="n">version</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">version</span></div>
+
+
+<span class="k">def</span> <span class="nf">_get_curve_las_df</span><span class="p">(</span><span class="n">las</span><span class="p">,</span> <span class="n">section</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># construct df</span>
+    <span class="n">df_section</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span><span class="n">i</span><span class="o">.</span><span class="vm">__dict__</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">las</span><span class="o">.</span><span class="n">sections</span><span class="p">[</span><span class="n">section</span><span class="p">]])</span>
+
+    <span class="k">if</span> <span class="n">df_section</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># parse curve data to separate df</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">df_section</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span><span class="o">.</span><span class="n">transpose</span><span class="p">(),</span>
+                            <span class="n">columns</span><span class="o">=</span><span class="n">df_section</span><span class="o">.</span><span class="n">mnemonic</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+
+        <span class="c1"># all curves are parsed as strings if there is a string</span>
+        <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="n">column</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="s1">&#39;O&#39;</span><span class="p">:</span>
+                <span class="c1"># replace string null values with np.nan</span>
+                <span class="n">data</span><span class="p">[</span><span class="n">column</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">column</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
+                    <span class="nb">str</span><span class="p">(</span><span class="n">las</span><span class="o">.</span><span class="n">well</span><span class="p">[</span><span class="s2">&quot;NULL&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+                <span class="n">data</span><span class="p">[</span><span class="n">column</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">column</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
+                    <span class="nb">str</span><span class="p">(</span><span class="n">las</span><span class="o">.</span><span class="n">well</span><span class="p">[</span><span class="s2">&quot;NULL&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;.0&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="c1"># try to convert numeric curve values to floats</span>
+                    <span class="n">data</span><span class="p">[</span><span class="n">column</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">column</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                    <span class="k">pass</span>
+        <span class="k">return</span> <span class="n">data</span>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The Welly Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

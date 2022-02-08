@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>welly.plot module &mdash; welly  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="welly.project module" href="welly.project.html" />
+    <link rel="prev" title="welly.location module" href="welly.location.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> welly
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../source/intro.html">Home</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../source/req.html">Requirements</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="api_toc.html">API</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="welly.html">welly package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="welly.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="welly.canstrat.html">welly.canstrat module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.canstrat_codes.html">welly.canstrat_codes module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.crs.html">welly.crs module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.curve.html">welly.curve module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.defaults.html">welly.defaults module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.fields.html">welly.fields module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.header.html">welly.header module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.las.html">welly.las module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.location.html">welly.location module</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">welly.plot module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.project.html">welly.project module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.quality.html">welly.quality module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.scales.html">welly.scales module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.synthetic.html">welly.synthetic module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.tools.html">welly.tools module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.utils.html">welly.utils module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.well.html">welly.well module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="welly.html#module-welly">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../source/indices.html">Index</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">welly</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="api_toc.html">welly</a> &raquo;</li>
+          <li><a href="welly.html">welly package</a> &raquo;</li>
+      <li>welly.plot module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/welly.plot.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-welly.plot">
+<span id="welly-plot-module"></span><h1>welly.plot module<a class="headerlink" href="#module-welly.plot" title="Permalink to this headline"></a></h1>
+<p>Module for plotting projects, wells and curves</p>
+<dl class="field-list simple">
+<dt class="field-odd">copyright</dt>
+<dd class="field-odd"><p>2021 Agile Scientific</p>
+</dd>
+<dt class="field-even">license</dt>
+<dd class="field-even"><p>Apache 2.0</p>
+</dd>
+</dl>
+<dl class="py exception">
+<dt class="sig sig-object py" id="welly.plot.WellPlotError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">welly.plot.</span></span><span class="sig-name descname"><span class="pre">WellPlotError</span></span><a class="reference internal" href="../_modules/welly/plot.html#WellPlotError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.plot.WellPlotError" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Generic error class.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.plot.plot_2d_curve">
+<span class="sig-prename descclassname"><span class="pre">welly.plot.</span></span><span class="sig-name descname"><span class="pre">plot_2d_curve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">curve</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aspect</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">60</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_curve</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ticks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(1,</span> <span class="pre">10)</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/plot.html#plot_2d_curve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.plot.plot_2d_curve" title="Permalink to this definition"></a></dt>
+<dd><p>Plot a 2D curve.
+:param curve: Curve object
+:type curve: welly.curve.Curve
+:param ax: A matplotlib axis.
+:type ax: ax
+:param width: The width of the image.
+:type width: int
+:param aspect: The aspect ratio (not quantitative at all).
+:type aspect: int
+:param cmap: The colourmap to use.
+:type cmap: str
+:param plot_curve: Whether to plot the curve as well.
+:type plot_curve: bool
+:param ticks: The tick interval on the y-axis.
+:type ticks: tuple</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>ax. If you passed in an ax, otherwise None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.plot.plot_curve">
+<span class="sig-prename descclassname"><span class="pre">welly.plot.</span></span><span class="sig-name descname"><span class="pre">plot_curve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">curve</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">legend</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/plot.html#plot_curve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.plot.plot_curve" title="Permalink to this definition"></a></dt>
+<dd><p>Plot a curve.
+:param curve: Curve object
+:type curve: welly.curve.Curve
+:param ax: A matplotlib axis.
+:type ax: ax
+:param legend: A legend. Optional. Should contain kwargs for ax.set().
+:type legend: striplog.legend
+:param kwargs: Arguments for <code class="docutils literal notranslate"><span class="pre">ax.plot()</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>ax. If you passed in an ax, otherwise the figure.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.plot.plot_depth_track_well">
+<span class="sig-prename descclassname"><span class="pre">welly.plot.</span></span><span class="sig-name descname"><span class="pre">plot_depth_track_well</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">well</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'MD'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tick_spacing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/plot.html#plot_depth_track_well"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.plot.plot_depth_track_well" title="Permalink to this definition"></a></dt>
+<dd><p>Depth track plotting for well.
+:param well: Well object.
+:type well: welly.well.Well
+:param ax: A matplotlib axis.
+:type ax: ax
+:param md: The measured depths of the track.
+:type md: ndarray
+:param kind: The kind of track to plot.
+:type kind: str</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>ax.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.plot.plot_kde_curve">
+<span class="sig-prename descclassname"><span class="pre">welly.plot.</span></span><span class="sig-name descname"><span class="pre">plot_kde_curve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">curve</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/plot.html#plot_kde_curve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.plot.plot_kde_curve" title="Permalink to this definition"></a></dt>
+<dd><p>Plot a KDE for the curve. Very nice summary of KDEs:
+<a class="reference external" href="https://jakevdp.github.io/blog/2013/12/01/kernel-density-estimation/">https://jakevdp.github.io/blog/2013/12/01/kernel-density-estimation/</a>
+:param curve: Curve object
+:type curve: welly.curve.Curve
+:param ax: Optional matplotlib (MPL) axis to plot into. Returned.
+:type ax: axis
+:param amax: Optional max value to permit.
+:type amax: float
+:param amin: Optional min value to permit.
+:type amin: float
+:param label: What to put on the y-axis. Defaults to curve name.
+:type label: string</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>depending on what you ask for. The returned plot is
+a KDE plot for the curve.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>None, axis, figure</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.plot.plot_kdes_project">
+<span class="sig-prename descclassname"><span class="pre">welly.plot.</span></span><span class="sig-name descname"><span class="pre">plot_kdes_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mnemonic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uwi_regex</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/plot.html#plot_kdes_project"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.plot.plot_kdes_project" title="Permalink to this definition"></a></dt>
+<dd><p>Plot KDEs for all curves with the given name.
+:param project: Project object
+:type project: welly.project.Project
+:param menemonic: the name of the curve to look for.
+:type menemonic: str
+:param alias: a welly alias dictionary. e.g. {‘density’: [‘DEN’, ‘DENS’]}
+:type alias: dict
+:param uwi_regex: a regex pattern. Only this part of the UWI will be displayed</p>
+<blockquote>
+<div><p>on the plot of KDEs.</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None or figure.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.plot.plot_map_project">
+<span class="sig-prename descclassname"><span class="pre">welly.plot.</span></span><span class="sig-name descname"><span class="pre">plot_map_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fields</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('x',</span> <span class="pre">'y')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/plot.html#plot_map_project"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.plot.plot_map_project" title="Permalink to this definition"></a></dt>
+<dd><p>Plot a map of the wells in the project.
+:param project: Project object
+:type project: welly.project.Project
+:param fields: The two fields of the <cite>location</cite> object to use</p>
+<blockquote>
+<div><p>as the x and y coordinates. Default: <cite>(‘x’, ‘y’)</cite></p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ax</strong> (<em>matplotlib.axes.Axes</em>) – An axes object to plot into. Will be
+returned. If you don’t pass one, we’ll create one and give
+back the <cite>fig</cite> that it’s in.</p></li>
+<li><p><strong>label</strong> (<em>str</em>) – The field of the <cite>Well.header</cite> object to use as the label.
+Default: <cite>Well.header.name</cite>.</p></li>
+<li><p><strong>width</strong> (<em>float</em>) – The width, in inches, of the plot. Default: 6 in.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>matplotlib.figure.Figure, or matplotlib.axes.Axes if you passed in</dt><dd><p>an axes object as <cite>ax</cite>.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.plot.plot_well">
+<span class="sig-prename descclassname"><span class="pre">welly.plot.</span></span><span class="sig-name descname"><span class="pre">plot_well</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">well</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">legend</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tracks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">track_titles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extents</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'td'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/plot.html#plot_well"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.plot.plot_well" title="Permalink to this definition"></a></dt>
+<dd><p>Plot multiple tracks.
+:param well: Well object.
+:type well: welly.well.Well
+:param legend: A legend instance.
+:type legend: striplog.legend
+:param tracks: A list of strings and/or lists of strings. The</p>
+<blockquote>
+<div><p>tracks you want to plot from <code class="docutils literal notranslate"><span class="pre">data</span></code>. Optional, but you will
+usually want to give it.</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>track_titles</strong> (<em>list</em>) – Optional. A list of strings and/or lists of
+strings. The names to give the tracks, if you don’t want welly
+to guess.</p></li>
+<li><p><strong>alias</strong> (<em>dict</em>) – a dictionary mapping mnemonics to lists of mnemonics.
+e.g. {‘density’: [‘DEN’, ‘DENS’]}</p></li>
+<li><p><strong>basis</strong> (<em>ndarray</em>) – Optional. The basis of the plot, if you don’t
+want welly to guess (probably the best idea).</p></li>
+<li><p><strong>extents</strong> (<em>str</em>) – What to use for the y limits:
+‘td’ — plot 0 to TD.
+‘curves’ — use a basis that accommodates all the curves.
+‘all’ — use a basis that accommodates everything.
+(tuple) — give the upper and lower explictly.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None. The plot is a side-effect.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="welly.location.html" class="btn btn-neutral float-left" title="welly.location module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="welly.project.html" class="btn btn-neutral float-right" title="welly.project module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The Welly Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

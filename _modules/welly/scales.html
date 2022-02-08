@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>welly.scales &mdash; welly  documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> welly
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../source/intro.html">Home</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/req.html">Requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/api_toc.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/indices.html">Index</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">welly</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+          <li><a href="../welly.html">welly</a> &raquo;</li>
+      <li>welly.scales</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for welly.scales</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Custom scales for matplotlib.</span>
+
+<span class="sd">:copyright: 2016 Joe Kington</span>
+
+<span class="sd">Note: For the two scales, I&#39;ve set the bounds such that you can never go</span>
+<span class="sd">beyond a set range.  This gives &quot;stretchy&quot; panning when you reach the ends</span>
+<span class="sd">of a well.  Sometimes you&#39;ll want it, sometimes you won&#39;t. In a lot of cases</span>
+<span class="sd">(e.g. multiple wells or flattening on a marker, etc) you&#39;ll want to be able</span>
+<span class="sd">to go beyond the limits of the well.  In that case, remove the</span>
+<span class="sd">&quot;limit_range_for_scale&quot; methods below (and BoundedScale entirely) and</span>
+<span class="sd">use an interpolation function that allows extrapolation beyond the limits</span>
+<span class="sd">of the input data.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.scale</span> <span class="k">as</span> <span class="nn">mscale</span>
+<span class="kn">import</span> <span class="nn">matplotlib.ticker</span> <span class="k">as</span> <span class="nn">mticker</span>
+<span class="kn">from</span> <span class="nn">matplotlib.transforms</span> <span class="kn">import</span> <span class="n">Transform</span>
+
+
+<div class="viewcode-block" id="PiecewiseLinearTransform"><a class="viewcode-back" href="../../api/welly.scales.html#welly.scales.PiecewiseLinearTransform">[docs]</a><span class="k">class</span> <span class="nc">PiecewiseLinearTransform</span><span class="p">(</span><span class="n">Transform</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Transform between two coordinate systems by interpolating between a</span>
+<span class="sd">    pre-calculated set of points.  For example, transform between time and</span>
+<span class="sd">    depth using an average velocity curve.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">input_dims</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">output_dims</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">is_separable</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">has_inverse</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x_from</span><span class="p">,</span> <span class="n">y_to</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xpoints</span> <span class="o">=</span> <span class="n">x_from</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ypoints</span> <span class="o">=</span> <span class="n">y_to</span>
+        <span class="n">Transform</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+<div class="viewcode-block" id="PiecewiseLinearTransform.transform_non_affine"><a class="viewcode-back" href="../../api/welly.scales.html#welly.scales.PiecewiseLinearTransform.transform_non_affine">[docs]</a>    <span class="k">def</span> <span class="nf">transform_non_affine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">xpoints</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ypoints</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PiecewiseLinearTransform.inverted"><a class="viewcode-back" href="../../api/welly.scales.html#welly.scales.PiecewiseLinearTransform.inverted">[docs]</a>    <span class="k">def</span> <span class="nf">inverted</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)(</span><span class="bp">self</span><span class="o">.</span><span class="n">ypoints</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">xpoints</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="PiecewiseLinearScale"><a class="viewcode-back" href="../../api/welly.scales.html#welly.scales.PiecewiseLinearScale">[docs]</a><span class="k">class</span> <span class="nc">PiecewiseLinearScale</span><span class="p">(</span><span class="n">mscale</span><span class="o">.</span><span class="n">ScaleBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Scale based on a piecewise-linear transformation.  For example, this might</span>
+<span class="sd">    be used to show ticks in two-way time alongside a well log plotted in</span>
+<span class="sd">    measured depth using a time-depth curve.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;piecewise&#39;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">y</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;x and y must be specified for a piecewise scale&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xpoints</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ypoints</span> <span class="o">=</span> <span class="n">y</span>
+        <span class="c1"># mscale.ScaleBase.__init__(self)</span>
+
+<div class="viewcode-block" id="PiecewiseLinearScale.get_transform"><a class="viewcode-back" href="../../api/welly.scales.html#welly.scales.PiecewiseLinearScale.get_transform">[docs]</a>    <span class="k">def</span> <span class="nf">get_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">PiecewiseLinearTransform</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xpoints</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ypoints</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PiecewiseLinearScale.set_default_locators_and_formatters"><a class="viewcode-back" href="../../api/welly.scales.html#welly.scales.PiecewiseLinearScale.set_default_locators_and_formatters">[docs]</a>    <span class="k">def</span> <span class="nf">set_default_locators_and_formatters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="p">):</span>
+        <span class="n">axis</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">major_formatter</span><span class="o">=</span><span class="n">mticker</span><span class="o">.</span><span class="n">ScalarFormatter</span><span class="p">(),</span>
+                 <span class="n">major_locator</span><span class="o">=</span><span class="n">mticker</span><span class="o">.</span><span class="n">AutoLocator</span><span class="p">(),</span>
+                 <span class="n">minor_locator</span><span class="o">=</span><span class="n">mticker</span><span class="o">.</span><span class="n">AutoMinorLocator</span><span class="p">(),</span>
+                 <span class="n">minor_formatter</span><span class="o">=</span><span class="n">mticker</span><span class="o">.</span><span class="n">NullFormatter</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="PiecewiseLinearScale.limit_range_for_scale"><a class="viewcode-back" href="../../api/welly.scales.html#welly.scales.PiecewiseLinearScale.limit_range_for_scale">[docs]</a>    <span class="k">def</span> <span class="nf">limit_range_for_scale</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="p">,</span> <span class="n">minpos</span><span class="p">):</span>
+        <span class="n">inverted</span> <span class="o">=</span> <span class="n">vmin</span> <span class="o">&gt;</span> <span class="n">vmax</span>
+        <span class="k">if</span> <span class="n">inverted</span><span class="p">:</span>
+            <span class="n">vmax</span><span class="p">,</span> <span class="n">vmin</span> <span class="o">=</span> <span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span>
+        <span class="n">vmin</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">vmin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">xpoints</span><span class="o">.</span><span class="n">min</span><span class="p">())</span>
+        <span class="n">vmax</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">vmax</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">xpoints</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+        <span class="k">if</span> <span class="n">inverted</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">vmax</span><span class="p">,</span> <span class="n">vmin</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span></div></div>
+
+
+<div class="viewcode-block" id="BoundedScale"><a class="viewcode-back" href="../../api/welly.scales.html#welly.scales.BoundedScale">[docs]</a><span class="k">class</span> <span class="nc">BoundedScale</span><span class="p">(</span><span class="n">mscale</span><span class="o">.</span><span class="n">LinearScale</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Linear scale with set bounds that can&#39;t be exceeded. Gives a &quot;stretchy&quot;</span>
+<span class="sd">    panning effect.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;bounded&#39;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vmin</span> <span class="o">=</span> <span class="n">vmin</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vmax</span> <span class="o">=</span> <span class="n">vmax</span>
+        <span class="n">mscale</span><span class="o">.</span><span class="n">LinearScale</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span>
+
+<div class="viewcode-block" id="BoundedScale.limit_range_for_scale"><a class="viewcode-back" href="../../api/welly.scales.html#welly.scales.BoundedScale.limit_range_for_scale">[docs]</a>    <span class="k">def</span> <span class="nf">limit_range_for_scale</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="p">,</span> <span class="n">minpos</span><span class="p">):</span>
+        <span class="n">inverted</span> <span class="o">=</span> <span class="n">vmin</span> <span class="o">&gt;</span> <span class="n">vmax</span>
+        <span class="k">if</span> <span class="n">inverted</span><span class="p">:</span>
+            <span class="n">vmax</span><span class="p">,</span> <span class="n">vmin</span> <span class="o">=</span> <span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span>
+        <span class="n">vmin</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">vmin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">vmin</span><span class="p">)</span>
+        <span class="n">vmax</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">vmax</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">vmax</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">inverted</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">vmax</span><span class="p">,</span> <span class="n">vmin</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span></div></div>
+
+
+<span class="n">mscale</span><span class="o">.</span><span class="n">register_scale</span><span class="p">(</span><span class="n">PiecewiseLinearScale</span><span class="p">)</span>
+<span class="n">mscale</span><span class="o">.</span><span class="n">register_scale</span><span class="p">(</span><span class="n">BoundedScale</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The Welly Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

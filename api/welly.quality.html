@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>welly.quality module &mdash; welly  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="welly.scales module" href="welly.scales.html" />
+    <link rel="prev" title="welly.project module" href="welly.project.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> welly
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../source/intro.html">Home</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../source/req.html">Requirements</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="api_toc.html">API</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="welly.html">welly package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="welly.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="welly.canstrat.html">welly.canstrat module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.canstrat_codes.html">welly.canstrat_codes module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.crs.html">welly.crs module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.curve.html">welly.curve module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.defaults.html">welly.defaults module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.fields.html">welly.fields module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.header.html">welly.header module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.las.html">welly.las module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.location.html">welly.location module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.plot.html">welly.plot module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.project.html">welly.project module</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">welly.quality module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.scales.html">welly.scales module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.synthetic.html">welly.synthetic module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.tools.html">welly.tools module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.utils.html">welly.utils module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="welly.well.html">welly.well module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="welly.html#module-welly">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../source/indices.html">Index</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">welly</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="api_toc.html">welly</a> &raquo;</li>
+          <li><a href="welly.html">welly package</a> &raquo;</li>
+      <li>welly.quality module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/welly.quality.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-welly.quality">
+<span id="welly-quality-module"></span><h1>welly.quality module<a class="headerlink" href="#module-welly.quality" title="Permalink to this headline"></a></h1>
+<p>Quality functions for welly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">copyright</dt>
+<dd class="field-odd"><p>2021 Agile Scientific</p>
+</dd>
+<dt class="field-even">license</dt>
+<dd class="field-even"><p>Apache 2.0</p>
+</dd>
+</dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.quality.all_above">
+<span class="sig-prename descclassname"><span class="pre">welly.quality.</span></span><span class="sig-name descname"><span class="pre">all_above</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/quality.html#all_above"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.quality.all_above" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.quality.all_below">
+<span class="sig-prename descclassname"><span class="pre">welly.quality.</span></span><span class="sig-name descname"><span class="pre">all_below</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/quality.html#all_below"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.quality.all_below" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.quality.all_between">
+<span class="sig-prename descclassname"><span class="pre">welly.quality.</span></span><span class="sig-name descname"><span class="pre">all_between</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lower</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upper</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/quality.html#all_between"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.quality.all_between" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.quality.all_positive">
+<span class="sig-prename descclassname"><span class="pre">welly.quality.</span></span><span class="sig-name descname"><span class="pre">all_positive</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">curve</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/quality.html#all_positive"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.quality.all_positive" title="Permalink to this definition"></a></dt>
+<dd><p>Define it this way to avoid NaN problem.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.quality.check_units">
+<span class="sig-prename descclassname"><span class="pre">welly.quality.</span></span><span class="sig-name descname"><span class="pre">check_units</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">list_of_units</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/quality.html#check_units"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.quality.check_units" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.quality.count_spikes">
+<span class="sig-prename descclassname"><span class="pre">welly.quality.</span></span><span class="sig-name descname"><span class="pre">count_spikes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">curve</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/quality.html#count_spikes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.quality.count_spikes" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.quality.fraction_not_nans">
+<span class="sig-prename descclassname"><span class="pre">welly.quality.</span></span><span class="sig-name descname"><span class="pre">fraction_not_nans</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">curve</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/quality.html#fraction_not_nans"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.quality.fraction_not_nans" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the fraction of the curve extents that are good (non-nan data).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.quality.fraction_not_zeros">
+<span class="sig-prename descclassname"><span class="pre">welly.quality.</span></span><span class="sig-name descname"><span class="pre">fraction_not_zeros</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">curve</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/quality.html#fraction_not_zeros"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.quality.fraction_not_zeros" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the fraction of the curve extents that are not zeros.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.quality.fraction_within_range">
+<span class="sig-prename descclassname"><span class="pre">welly.quality.</span></span><span class="sig-name descname"><span class="pre">fraction_within_range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xmin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xmax</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/quality.html#fraction_within_range"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.quality.fraction_within_range" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.quality.mean_above">
+<span class="sig-prename descclassname"><span class="pre">welly.quality.</span></span><span class="sig-name descname"><span class="pre">mean_above</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/quality.html#mean_above"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.quality.mean_above" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.quality.mean_below">
+<span class="sig-prename descclassname"><span class="pre">welly.quality.</span></span><span class="sig-name descname"><span class="pre">mean_below</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/quality.html#mean_below"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.quality.mean_below" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.quality.mean_between">
+<span class="sig-prename descclassname"><span class="pre">welly.quality.</span></span><span class="sig-name descname"><span class="pre">mean_between</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lower</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upper</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/quality.html#mean_between"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.quality.mean_between" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.quality.no_flat">
+<span class="sig-prename descclassname"><span class="pre">welly.quality.</span></span><span class="sig-name descname"><span class="pre">no_flat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">curve</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/quality.html#no_flat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.quality.no_flat" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.quality.no_gaps">
+<span class="sig-prename descclassname"><span class="pre">welly.quality.</span></span><span class="sig-name descname"><span class="pre">no_gaps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">curve</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/quality.html#no_gaps"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.quality.no_gaps" title="Permalink to this definition"></a></dt>
+<dd><p>Check for gaps, after ignoring any NaNs at the top and bottom.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.quality.no_monotonic">
+<span class="sig-prename descclassname"><span class="pre">welly.quality.</span></span><span class="sig-name descname"><span class="pre">no_monotonic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">curve</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/quality.html#no_monotonic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.quality.no_monotonic" title="Permalink to this definition"></a></dt>
+<dd><p>no_flat on the differences of the curve</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.quality.no_nans">
+<span class="sig-prename descclassname"><span class="pre">welly.quality.</span></span><span class="sig-name descname"><span class="pre">no_nans</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">curve</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/quality.html#no_nans"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.quality.no_nans" title="Permalink to this definition"></a></dt>
+<dd><p>Check for NaNs anywhere at all in the curve, even the top or bottom.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.quality.no_similarities">
+<span class="sig-prename descclassname"><span class="pre">welly.quality.</span></span><span class="sig-name descname"><span class="pre">no_similarities</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">well</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/quality.html#no_similarities"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.quality.no_similarities" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.quality.no_spikes">
+<span class="sig-prename descclassname"><span class="pre">welly.quality.</span></span><span class="sig-name descname"><span class="pre">no_spikes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tolerance</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/quality.html#no_spikes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.quality.no_spikes" title="Permalink to this definition"></a></dt>
+<dd><p>Arg <code class="docutils literal notranslate"><span class="pre">tolerance</span></code> is the number of spiky samples allowed.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.quality.not_empty">
+<span class="sig-prename descclassname"><span class="pre">welly.quality.</span></span><span class="sig-name descname"><span class="pre">not_empty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">curve</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/quality.html#not_empty"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.quality.not_empty" title="Permalink to this definition"></a></dt>
+<dd><p>If curve.df is not empty, return True.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.quality.qc_curve_group_well">
+<span class="sig-prename descclassname"><span class="pre">welly.quality.</span></span><span class="sig-name descname"><span class="pre">qc_curve_group_well</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">well</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tests</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/quality.html#qc_curve_group_well"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.quality.qc_curve_group_well" title="Permalink to this definition"></a></dt>
+<dd><p>Run tests on a cohort of curves.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>well</strong> (<a class="reference internal" href="welly.well.html#welly.well.Well" title="welly.well.Well"><em>welly.well.Well</em></a>) – Well object.</p></li>
+<li><p><strong>tests</strong> (<em>dict</em>) – a dictionary of tests, mapping mnemonics to lists of
+tests. Two special keys, <cite>all</cite> and <cite>each</cite> map tests to the set
+of all curves, and to each curve in the well, respectively.
+You only need <cite>all</cite> if the test involves multiple inputs, e.g.
+comparing one curve to another. See example in tests/test_quality.py</p></li>
+<li><p><strong>keys</strong> (<em>list</em>) – a list of the mnemonics to run the tests against.</p></li>
+<li><p><strong>alias</strong> (<em>dict</em>) – an alias dictionary, mapping mnemonics to lists of
+mnemonics. e.g. {‘density’: [‘DEN’, ‘DENS’]}</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>dict. Test results for all the curves.</dt><dd><p>{curve_name0: {test0: test_result0, …}, …}</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.quality.qc_data_well">
+<span class="sig-prename descclassname"><span class="pre">welly.quality.</span></span><span class="sig-name descname"><span class="pre">qc_data_well</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">well</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tests</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/quality.html#qc_data_well"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.quality.qc_data_well" title="Permalink to this definition"></a></dt>
+<dd><p>Run a series of tests against the data and return the corresponding
+results.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tests</strong> (<em>dict</em>) – a dictionary of tests, mapping mnemonics to lists of
+tests. Two special keys, <cite>all</cite> and <cite>each</cite> map tests to the set
+of all curves, and to each curve in the well, respectively.
+You only need <cite>all</cite> if the test involves multiple inputs, e.g.
+comparing one curve to another. See example in tests/test_quality.py</p></li>
+<li><p><strong>keys</strong> (<em>list</em>) – a list of the mnemonics to run the tests against.</p></li>
+<li><p><strong>alias</strong> (<em>dict</em>) – an alias dictionary, mapping mnemonics to lists of
+mnemonics. e.g. {‘density’: [‘DEN’, ‘DENS’]}</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>dict. The results. Stick to booleans (True = pass) or ints.</dt><dd><p>({curve_name: {test_name: test_result}}</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.quality.qc_table_html_well">
+<span class="sig-prename descclassname"><span class="pre">welly.quality.</span></span><span class="sig-name descname"><span class="pre">qc_table_html_well</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">well</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tests</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/quality.html#qc_table_html_well"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.quality.qc_table_html_well" title="Permalink to this definition"></a></dt>
+<dd><p>Makes a nice table out of <code class="docutils literal notranslate"><span class="pre">qc_data()</span></code>
+:param well: Well object.
+:type well: welly.well.Well
+:param tests: a dictionary of tests, mapping mnemonics to lists of</p>
+<blockquote>
+<div><p>tests. Two special keys, <cite>all</cite> and <cite>each</cite> map tests to the set
+of all curves, and to each curve in the well, respectively.
+You only need <cite>all</cite> if the test involves multiple inputs, e.g.
+comparing one curve to another. See example in tests/test_quality.py</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>keys</strong> (<em>list</em>) – a list of the mnemonics to run the tests against.</p></li>
+<li><p><strong>alias</strong> (<em>dict</em>) – an alias dictionary, mapping mnemonics to lists of
+mnemonics. e.g. {‘density’: [‘DEN’, ‘DENS’]}</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>str. An HTML string for visualization in Jupyter notebook.</dt><dd><p>Visualize through IPython.display.HTML(str)</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.quality.qflag_curve">
+<span class="sig-prename descclassname"><span class="pre">welly.quality.</span></span><span class="sig-name descname"><span class="pre">qflag_curve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">curve</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tests</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/quality.html#qflag_curve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.quality.qflag_curve" title="Permalink to this definition"></a></dt>
+<dd><p>Run a test and return the corresponding results on a sample-by-sample
+basis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>curve</strong> (<a class="reference internal" href="welly.curve.html#welly.curve.Curve" title="welly.curve.Curve"><em>welly.curve.Curve</em></a>) – Curve object.</p></li>
+<li><p><strong>tests</strong> (<em>list</em>) – a list of functions.</p></li>
+<li><p><strong>alias</strong> (<em>dict</em>) – a dictionary mapping mnemonics to lists of mnemonics.
+e.g. {‘density’: [‘DEN’, ‘DENS’]}</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>dict. The results. Stick to booleans (True = pass) or ints.</dt><dd><p>{test_name: test_result}</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.quality.qflags_curve">
+<span class="sig-prename descclassname"><span class="pre">welly.quality.</span></span><span class="sig-name descname"><span class="pre">qflags_curve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">curve</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tests</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/quality.html#qflags_curve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.quality.qflags_curve" title="Permalink to this definition"></a></dt>
+<dd><p>Run a series of tests and return the corresponding results.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>curve</strong> (<a class="reference internal" href="welly.curve.html#welly.curve.Curve" title="welly.curve.Curve"><em>welly.curve.Curve</em></a>) – Curve object.</p></li>
+<li><p><strong>tests</strong> (<em>list</em>) – a list of functions.</p></li>
+<li><p><strong>alias</strong> (<em>dict</em>) – a dictionary mapping mnemonics to lists of mnemonics.
+e.g. {‘density’: [‘DEN’, ‘DENS’]}</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>dict. The results. Stick to booleans (True = pass) or ints.</dt><dd><p>{test_name: test_result}</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.quality.quality_curve">
+<span class="sig-prename descclassname"><span class="pre">welly.quality.</span></span><span class="sig-name descname"><span class="pre">quality_curve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">curve</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tests</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/quality.html#quality_curve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.quality.quality_curve" title="Permalink to this definition"></a></dt>
+<dd><p>Run a series of tests and return the corresponding results.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>curve</strong> (<a class="reference internal" href="welly.curve.html#welly.curve.Curve" title="welly.curve.Curve"><em>welly.curve.Curve</em></a>) – Curve object.</p></li>
+<li><p><strong>tests</strong> (<em>list</em>) – a list of functions.</p></li>
+<li><p><strong>alias</strong> (<em>dict</em>) – a dictionary mapping mnemonics to lists of mnemonics.
+e.g. {‘density’: [‘DEN’, ‘DENS’]}</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>dict. The results. Stick to booleans (True = pass) or ints.</dt><dd><p>{test_name: test_result}</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.quality.quality_score_curve">
+<span class="sig-prename descclassname"><span class="pre">welly.quality.</span></span><span class="sig-name descname"><span class="pre">quality_score_curve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">curve</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tests</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/quality.html#quality_score_curve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.quality.quality_score_curve" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>Run a series of tests and return the normalized score.</dt><dd><p>1.0:   Passed all tests.
+(0-1): Passed a fraction of tests.
+0.0:   Passed no tests.
+-1.0:  Took no tests.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>curve</strong> (<a class="reference internal" href="welly.curve.html#welly.curve.Curve" title="welly.curve.Curve"><em>welly.curve.Curve</em></a>) – Curve object.</p></li>
+<li><p><strong>tests</strong> (<em>list</em>) – a list of functions.</p></li>
+<li><p><strong>alias</strong> (<em>dict</em>) – a dictionary mapping mnemonics to lists of mnemonics.
+e.g. {‘density’: [‘DEN’, ‘DENS’]}</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>float. The fraction of tests passed, or -1 for ‘took no tests’.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="welly.quality.spike_locations">
+<span class="sig-prename descclassname"><span class="pre">welly.quality.</span></span><span class="sig-name descname"><span class="pre">spike_locations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">curve</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/welly/quality.html#spike_locations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#welly.quality.spike_locations" title="Permalink to this definition"></a></dt>
+<dd><p>Return the indicies of the spikes.</p>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="welly.project.html" class="btn btn-neutral float-left" title="welly.project module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="welly.scales.html" class="btn btn-neutral float-right" title="welly.scales module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The Welly Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

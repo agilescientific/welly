@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>welly.quality &mdash; welly  documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> welly
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Table of Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../source/intro.html">Home</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/req.html">Requirements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/api_toc.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/indices.html">Index</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">welly</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+          <li><a href="../welly.html">welly</a> &raquo;</li>
+      <li>welly.quality</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for welly.quality</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Quality functions for welly.</span>
+
+<span class="sd">:copyright: 2021 Agile Scientific</span>
+<span class="sd">:license: Apache 2.0</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy.spatial.distance</span> <span class="kn">import</span> <span class="n">pdist</span><span class="p">,</span> <span class="n">squareform</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">utils</span>
+
+
+<div class="viewcode-block" id="qc_curve_group_well"><a class="viewcode-back" href="../../api/welly.quality.html#welly.quality.qc_curve_group_well">[docs]</a><span class="k">def</span> <span class="nf">qc_curve_group_well</span><span class="p">(</span><span class="n">well</span><span class="p">,</span> <span class="n">tests</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Run tests on a cohort of curves.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        well (welly.well.Well): Well object.</span>
+<span class="sd">        tests (dict): a dictionary of tests, mapping mnemonics to lists of</span>
+<span class="sd">            tests. Two special keys, `all` and `each` map tests to the set</span>
+<span class="sd">            of all curves, and to each curve in the well, respectively.</span>
+<span class="sd">            You only need `all` if the test involves multiple inputs, e.g.</span>
+<span class="sd">            comparing one curve to another. See example in tests/test_quality.py</span>
+<span class="sd">        keys (list): a list of the mnemonics to run the tests against.</span>
+<span class="sd">        alias (dict): an alias dictionary, mapping mnemonics to lists of</span>
+<span class="sd">            mnemonics. e.g. {&#39;density&#39;: [&#39;DEN&#39;, &#39;DENS&#39;]}</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict. Test results for all the curves.</span>
+<span class="sd">            {curve_name0: {test0: test_result0, ...}, ...}</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">keys</span> <span class="o">=</span> <span class="n">well</span><span class="o">.</span><span class="n">_get_curve_mnemonics</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">keys</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{}</span>
+
+    <span class="n">all_tests</span> <span class="o">=</span> <span class="n">tests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">tests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;All&#39;</span><span class="p">,</span> <span class="n">tests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;ALL&#39;</span><span class="p">,</span> <span class="p">[])))</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="n">test</span><span class="o">.</span><span class="vm">__name__</span><span class="p">:</span> <span class="n">test</span><span class="p">(</span><span class="n">well</span><span class="p">,</span> <span class="n">keys</span><span class="p">,</span> <span class="n">alias</span><span class="p">)</span> <span class="k">for</span> <span class="n">test</span> <span class="ow">in</span> <span class="n">all_tests</span><span class="p">}</span>
+
+    <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">keys</span><span class="p">):</span>
+        <span class="n">this</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">test</span><span class="p">,</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">this</span><span class="p">[</span><span class="n">test</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">results</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">this</span>
+    <span class="k">return</span> <span class="n">results</span></div>
+
+
+<div class="viewcode-block" id="qc_data_well"><a class="viewcode-back" href="../../api/welly.quality.html#welly.quality.qc_data_well">[docs]</a><span class="k">def</span> <span class="nf">qc_data_well</span><span class="p">(</span><span class="n">well</span><span class="p">,</span> <span class="n">tests</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Run a series of tests against the data and return the corresponding</span>
+<span class="sd">    results.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        tests (dict): a dictionary of tests, mapping mnemonics to lists of</span>
+<span class="sd">            tests. Two special keys, `all` and `each` map tests to the set</span>
+<span class="sd">            of all curves, and to each curve in the well, respectively.</span>
+<span class="sd">            You only need `all` if the test involves multiple inputs, e.g.</span>
+<span class="sd">            comparing one curve to another. See example in tests/test_quality.py</span>
+<span class="sd">        keys (list): a list of the mnemonics to run the tests against.</span>
+<span class="sd">        alias (dict): an alias dictionary, mapping mnemonics to lists of</span>
+<span class="sd">            mnemonics. e.g. {&#39;density&#39;: [&#39;DEN&#39;, &#39;DENS&#39;]}</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict. The results. Stick to booleans (True = pass) or ints.</span>
+<span class="sd">            ({curve_name: {test_name: test_result}}</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">keys</span> <span class="o">=</span> <span class="n">well</span><span class="o">.</span><span class="n">_get_curve_mnemonics</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">,</span> <span class="n">curves_only</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">well</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">k</span><span class="p">)</span><span class="o">.</span><span class="n">quality</span><span class="p">(</span><span class="n">tests</span><span class="p">,</span> <span class="n">alias</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">}</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">qc_curve_group_well</span><span class="p">(</span><span class="n">well</span><span class="o">=</span><span class="n">well</span><span class="p">,</span> <span class="n">tests</span><span class="o">=</span><span class="n">tests</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="n">keys</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">m</span><span class="p">,</span> <span class="n">results</span> <span class="ow">in</span> <span class="n">r</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">s</span><span class="p">:</span>
+            <span class="n">results</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="n">m</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">r</span></div>
+
+
+<div class="viewcode-block" id="qc_table_html_well"><a class="viewcode-back" href="../../api/welly.quality.html#welly.quality.qc_table_html_well">[docs]</a><span class="k">def</span> <span class="nf">qc_table_html_well</span><span class="p">(</span><span class="n">well</span><span class="p">,</span> <span class="n">tests</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Makes a nice table out of ``qc_data()``</span>
+<span class="sd">    Args:</span>
+<span class="sd">        well (welly.well.Well): Well object.</span>
+<span class="sd">        tests (dict): a dictionary of tests, mapping mnemonics to lists of</span>
+<span class="sd">            tests. Two special keys, `all` and `each` map tests to the set</span>
+<span class="sd">            of all curves, and to each curve in the well, respectively.</span>
+<span class="sd">            You only need `all` if the test involves multiple inputs, e.g.</span>
+<span class="sd">            comparing one curve to another. See example in tests/test_quality.py</span>
+<span class="sd">        keys (list): a list of the mnemonics to run the tests against.</span>
+<span class="sd">        alias (dict): an alias dictionary, mapping mnemonics to lists of</span>
+<span class="sd">            mnemonics. e.g. {&#39;density&#39;: [&#39;DEN&#39;, &#39;DENS&#39;]}</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str. An HTML string for visualization in Jupyter notebook.</span>
+<span class="sd">            Visualize through IPython.display.HTML(str)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">qc_data_well</span><span class="p">(</span><span class="n">well</span><span class="o">=</span><span class="n">well</span><span class="p">,</span> <span class="n">tests</span><span class="o">=</span><span class="n">tests</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="n">keys</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">)</span>
+    <span class="n">all_tests</span> <span class="o">=</span> <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
+    <span class="n">tests</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">utils</span><span class="o">.</span><span class="n">flatten_list</span><span class="p">(</span><span class="n">all_tests</span><span class="p">)))</span>
+
+    <span class="c1"># Header row.</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="s1">&#39;&lt;/th&gt;&lt;th&gt;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;Curve&#39;</span><span class="p">,</span> <span class="s1">&#39;Passed&#39;</span><span class="p">,</span> <span class="s1">&#39;Score&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">tests</span><span class="p">)</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="s1">&#39;&lt;tr&gt;&lt;th&gt;</span><span class="si">{}</span><span class="s1">&lt;/th&gt;&lt;/tr&gt;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+
+    <span class="n">styles</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="kc">True</span><span class="p">:</span> <span class="s2">&quot;#CCEECC&quot;</span><span class="p">,</span>  <span class="c1"># Green</span>
+        <span class="kc">False</span><span class="p">:</span> <span class="s2">&quot;#FFCCCC&quot;</span><span class="p">,</span>  <span class="c1"># Red</span>
+    <span class="p">}</span>
+
+    <span class="c1"># Quality results.</span>
+    <span class="k">for</span> <span class="n">curve</span><span class="p">,</span> <span class="n">results</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+
+        <span class="k">if</span> <span class="n">results</span><span class="p">:</span>
+            <span class="n">norm_score</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">norm_score</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+        <span class="n">rows</span> <span class="o">+=</span> <span class="s1">&#39;&lt;tr&gt;&lt;th&gt;</span><span class="si">{}</span><span class="s1">&lt;/th&gt;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">curve</span><span class="p">)</span>
+        <span class="n">rows</span> <span class="o">+=</span> <span class="s1">&#39;&lt;td&gt;</span><span class="si">{}</span><span class="s1"> / </span><span class="si">{}</span><span class="s1">&lt;/td&gt;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">values</span><span class="p">()),</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">))</span>
+        <span class="n">rows</span> <span class="o">+=</span> <span class="s1">&#39;&lt;td&gt;</span><span class="si">{:.3f}</span><span class="s1">&lt;/td&gt;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">norm_score</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">test</span> <span class="ow">in</span> <span class="n">tests</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+            <span class="n">style</span> <span class="o">=</span> <span class="n">styles</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="s2">&quot;#EEEEEE&quot;</span><span class="p">)</span>
+            <span class="n">rows</span> <span class="o">+=</span> <span class="s1">&#39;&lt;td style=&quot;background-color:</span><span class="si">{}</span><span class="s1">;&quot;&gt;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">style</span><span class="p">)</span>
+            <span class="n">rows</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">&lt;/td&gt;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+        <span class="n">rows</span> <span class="o">+=</span> <span class="s1">&#39;&lt;/tr&gt;&#39;</span>
+
+    <span class="n">html</span> <span class="o">=</span> <span class="s1">&#39;&lt;table&gt;</span><span class="si">{}</span><span class="s1">&lt;/table&gt;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">html</span></div>
+
+
+<div class="viewcode-block" id="quality_curve"><a class="viewcode-back" href="../../api/welly.quality.html#welly.quality.quality_curve">[docs]</a><span class="k">def</span> <span class="nf">quality_curve</span><span class="p">(</span><span class="n">curve</span><span class="p">,</span> <span class="n">tests</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Run a series of tests and return the corresponding results.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        curve (welly.curve.Curve): Curve object.</span>
+<span class="sd">        tests (list): a list of functions.</span>
+<span class="sd">        alias (dict): a dictionary mapping mnemonics to lists of mnemonics.</span>
+<span class="sd">            e.g. {&#39;density&#39;: [&#39;DEN&#39;, &#39;DENS&#39;]}</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict. The results. Stick to booleans (True = pass) or ints.</span>
+<span class="sd">            {test_name: test_result}</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Gather the test s.</span>
+    <span class="c1"># First, anything called &#39;all&#39;, &#39;All&#39;, or &#39;ALL&#39;.</span>
+    <span class="c1"># Second, anything with the name of the curve we&#39;re in now.</span>
+    <span class="c1"># Third, anything that the alias list has for this curve.</span>
+    <span class="c1"># (This requires a reverse look-up so it&#39;s a bit messy.)</span>
+    <span class="n">this_tests</span> <span class="o">=</span> \
+        <span class="n">tests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;each&#39;</span><span class="p">,</span> <span class="p">[])</span> <span class="o">+</span> <span class="n">tests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Each&#39;</span><span class="p">,</span> <span class="p">[])</span> <span class="o">+</span> <span class="n">tests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;EACH&#39;</span><span class="p">,</span> <span class="p">[])</span> \
+        <span class="o">+</span> <span class="n">tests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">curve</span><span class="o">.</span><span class="n">mnemonic</span><span class="p">,</span> <span class="p">[])</span> \
+        <span class="o">+</span> <span class="n">utils</span><span class="o">.</span><span class="n">flatten_list</span><span class="p">([</span><span class="n">tests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">curve</span><span class="o">.</span><span class="n">get_alias</span><span class="p">(</span><span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">)])</span>
+    <span class="n">this_tests</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">this_tests</span><span class="p">)</span>
+
+    <span class="c1"># If we explicitly set zero tests for a particular key, then this</span>
+    <span class="c1"># overrides the &#39;all&#39; and &#39;alias&#39; tests.</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">tests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">curve</span><span class="o">.</span><span class="n">mnemonic</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">this_tests</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">return</span> <span class="p">{</span><span class="n">test</span><span class="o">.</span><span class="vm">__name__</span><span class="p">:</span> <span class="n">test</span><span class="p">(</span><span class="n">curve</span><span class="p">)</span> <span class="k">for</span> <span class="n">test</span> <span class="ow">in</span> <span class="n">this_tests</span><span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="quality_score_curve"><a class="viewcode-back" href="../../api/welly.quality.html#welly.quality.quality_score_curve">[docs]</a><span class="k">def</span> <span class="nf">quality_score_curve</span><span class="p">(</span><span class="n">curve</span><span class="p">,</span> <span class="n">tests</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Run a series of tests and return the normalized score.</span>
+<span class="sd">        1.0:   Passed all tests.</span>
+<span class="sd">        (0-1): Passed a fraction of tests.</span>
+<span class="sd">        0.0:   Passed no tests.</span>
+<span class="sd">        -1.0:  Took no tests.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        curve (welly.curve.Curve): Curve object.</span>
+<span class="sd">        tests (list): a list of functions.</span>
+<span class="sd">        alias (dict): a dictionary mapping mnemonics to lists of mnemonics.</span>
+<span class="sd">            e.g. {&#39;density&#39;: [&#39;DEN&#39;, &#39;DENS&#39;]}</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        float. The fraction of tests passed, or -1 for &#39;took no tests&#39;.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="n">quality_curve</span><span class="p">(</span><span class="n">curve</span><span class="o">=</span><span class="n">curve</span><span class="p">,</span> <span class="n">tests</span><span class="o">=</span><span class="n">tests</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">results</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">results</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+    <span class="k">return</span> <span class="o">-</span><span class="mi">1</span></div>
+
+
+<div class="viewcode-block" id="qflag_curve"><a class="viewcode-back" href="../../api/welly.quality.html#welly.quality.qflag_curve">[docs]</a><span class="k">def</span> <span class="nf">qflag_curve</span><span class="p">(</span><span class="n">curve</span><span class="p">,</span> <span class="n">tests</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Run a test and return the corresponding results on a sample-by-sample</span>
+<span class="sd">    basis.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        curve (welly.curve.Curve): Curve object.</span>
+<span class="sd">        tests (list): a list of functions.</span>
+<span class="sd">        alias (dict): a dictionary mapping mnemonics to lists of mnemonics.</span>
+<span class="sd">            e.g. {&#39;density&#39;: [&#39;DEN&#39;, &#39;DENS&#39;]}</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict. The results. Stick to booleans (True = pass) or ints.</span>
+<span class="sd">            {test_name: test_result}</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Gather the tests.</span>
+    <span class="c1"># First, anything called &#39;all&#39;, &#39;All&#39;, or &#39;ALL&#39;.</span>
+    <span class="c1"># Second, anything with the name of the curve we&#39;re in now.</span>
+    <span class="c1"># Third, anything that the alias list has for this curve.</span>
+    <span class="c1"># (This requires a reverse look-up so it&#39;s a bit messy.)</span>
+    <span class="n">this_tests</span> <span class="o">=</span> \
+        <span class="n">tests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;each&#39;</span><span class="p">,</span> <span class="p">[])</span> <span class="o">+</span> <span class="n">tests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Each&#39;</span><span class="p">,</span> <span class="p">[])</span> <span class="o">+</span> <span class="n">tests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;EACH&#39;</span><span class="p">,</span> <span class="p">[])</span> \
+        <span class="o">+</span> <span class="n">tests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">curve</span><span class="o">.</span><span class="n">mnemonic</span><span class="p">,</span> <span class="p">[])</span> \
+        <span class="o">+</span> <span class="n">utils</span><span class="o">.</span><span class="n">flatten_list</span><span class="p">([</span><span class="n">tests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">curve</span><span class="o">.</span><span class="n">get_alias</span><span class="p">(</span><span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">)])</span>
+    <span class="n">this_tests</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">this_tests</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">{</span><span class="n">test</span><span class="o">.</span><span class="vm">__name__</span><span class="p">:</span> <span class="n">test</span><span class="p">(</span><span class="n">curve</span><span class="p">)</span> <span class="k">for</span> <span class="n">test</span> <span class="ow">in</span> <span class="n">this_tests</span><span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="qflags_curve"><a class="viewcode-back" href="../../api/welly.quality.html#welly.quality.qflags_curve">[docs]</a><span class="k">def</span> <span class="nf">qflags_curve</span><span class="p">(</span><span class="n">curve</span><span class="p">,</span> <span class="n">tests</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Run a series of tests and return the corresponding results.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        curve (welly.curve.Curve): Curve object.</span>
+<span class="sd">        tests (list): a list of functions.</span>
+<span class="sd">        alias (dict): a dictionary mapping mnemonics to lists of mnemonics.</span>
+<span class="sd">            e.g. {&#39;density&#39;: [&#39;DEN&#39;, &#39;DENS&#39;]}</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict. The results. Stick to booleans (True = pass) or ints.</span>
+<span class="sd">            {test_name: test_result}</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Gather the tests.</span>
+    <span class="c1"># First, anything called &#39;all&#39;, &#39;All&#39;, or &#39;ALL&#39;.</span>
+    <span class="c1"># Second, anything with the name of the curve we&#39;re in now.</span>
+    <span class="c1"># Third, anything that the alias list has for this curve.</span>
+    <span class="c1"># (This requires a reverse look-up so it&#39;s a bit messy.)</span>
+    <span class="n">this_tests</span> <span class="o">=</span> \
+        <span class="n">tests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;each&#39;</span><span class="p">,</span> <span class="p">[])</span> <span class="o">+</span> <span class="n">tests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Each&#39;</span><span class="p">,</span> <span class="p">[])</span> <span class="o">+</span> <span class="n">tests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;EACH&#39;</span><span class="p">,</span> <span class="p">[])</span> \
+        <span class="o">+</span> <span class="n">tests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">curve</span><span class="o">.</span><span class="n">mnemonic</span><span class="p">,</span> <span class="p">[])</span> \
+        <span class="o">+</span> <span class="n">utils</span><span class="o">.</span><span class="n">flatten_list</span><span class="p">([</span><span class="n">tests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">curve</span><span class="o">.</span><span class="n">get_alias</span><span class="p">(</span><span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">)])</span>
+    <span class="n">this_tests</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">this_tests</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">{</span><span class="n">test</span><span class="o">.</span><span class="vm">__name__</span><span class="p">:</span> <span class="n">test</span><span class="p">(</span><span class="n">curve</span><span class="p">)</span> <span class="k">for</span> <span class="n">test</span> <span class="ow">in</span> <span class="n">this_tests</span><span class="p">}</span></div>
+
+
+<span class="c1"># All</span>
+<span class="c1"># Runs on multiple curves</span>
+<div class="viewcode-block" id="no_similarities"><a class="viewcode-back" href="../../api/welly.quality.html#welly.quality.no_similarities">[docs]</a><span class="k">def</span> <span class="nf">no_similarities</span><span class="p">(</span><span class="n">well</span><span class="p">,</span> <span class="n">keys</span><span class="p">,</span> <span class="n">alias</span><span class="p">):</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">well</span><span class="o">.</span><span class="n">data_as_matrix</span><span class="p">(</span><span class="n">keys</span><span class="o">=</span><span class="n">keys</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">)</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">squareform</span><span class="p">(</span><span class="n">pdist</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="s1">&#39;hamming&#39;</span><span class="p">))</span>
+    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">&gt;</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">keys</span><span class="p">)</span> <span class="o">-</span> <span class="mf">1.5</span><span class="p">))</span></div>
+
+
+<span class="c1"># Each</span>
+<span class="c1"># Single curve</span>
+<div class="viewcode-block" id="not_empty"><a class="viewcode-back" href="../../api/welly.quality.html#welly.quality.not_empty">[docs]</a><span class="k">def</span> <span class="nf">not_empty</span><span class="p">(</span><span class="n">curve</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    If curve.df is not empty, return True.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="ow">not</span> <span class="n">curve</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">empty</span></div>
+
+
+<div class="viewcode-block" id="all_positive"><a class="viewcode-back" href="../../api/welly.quality.html#welly.quality.all_positive">[docs]</a><span class="k">def</span> <span class="nf">all_positive</span><span class="p">(</span><span class="n">curve</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Define it this way to avoid NaN problem.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmin</span><span class="p">(</span><span class="n">curve</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">values</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span>
+    <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">result</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="no_nans"><a class="viewcode-back" href="../../api/welly.quality.html#welly.quality.no_nans">[docs]</a><span class="k">def</span> <span class="nf">no_nans</span><span class="p">(</span><span class="n">curve</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check for NaNs anywhere at all in the curve, even the top or bottom.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">number_of_nan</span> <span class="o">=</span> <span class="n">curve</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">isnull</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="k">return</span> <span class="ow">not</span> <span class="nb">bool</span><span class="p">(</span><span class="n">number_of_nan</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="no_gaps"><a class="viewcode-back" href="../../api/welly.quality.html#welly.quality.no_gaps">[docs]</a><span class="k">def</span> <span class="nf">no_gaps</span><span class="p">(</span><span class="n">curve</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check for gaps, after ignoring any NaNs at the top and bottom.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">tnt</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">top_and_tail</span><span class="p">(</span><span class="n">curve</span><span class="o">.</span><span class="n">as_numpy</span><span class="p">())</span>
+    <span class="k">return</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">tnt</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="no_flat"><a class="viewcode-back" href="../../api/welly.quality.html#welly.quality.no_flat">[docs]</a><span class="k">def</span> <span class="nf">no_flat</span><span class="p">(</span><span class="n">curve</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">consecutive</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">stepsize</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">!=</span> <span class="n">stepsize</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">curve_value</span> <span class="o">=</span> <span class="n">curve</span><span class="o">.</span><span class="n">as_numpy</span><span class="p">()</span>
+    <span class="n">tolerance</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">curve_value</span><span class="o">.</span><span class="n">size</span> <span class="o">//</span> <span class="mi">100</span><span class="p">)</span>
+    <span class="n">zeros</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">curve_value</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">tolerated</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span><span class="o">.</span><span class="n">size</span> <span class="o">&lt;</span> <span class="n">tolerance</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">consecutive</span><span class="p">(</span><span class="n">zeros</span><span class="p">)]</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">tolerated</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="no_monotonic"><a class="viewcode-back" href="../../api/welly.quality.html#welly.quality.no_monotonic">[docs]</a><span class="k">def</span> <span class="nf">no_monotonic</span><span class="p">(</span><span class="n">curve</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;no_flat on the differences of the curve&quot;&quot;&quot;</span>
+    <span class="n">curve_diff</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">curve</span><span class="p">)</span>
+    <span class="n">curve_diff</span><span class="o">.</span><span class="n">df</span> <span class="o">=</span> <span class="n">curve</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">diff</span><span class="p">()</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+
+    <span class="k">return</span> <span class="n">no_flat</span><span class="p">(</span><span class="n">curve_diff</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="all_above"><a class="viewcode-back" href="../../api/welly.quality.html#welly.quality.all_above">[docs]</a><span class="k">def</span> <span class="nf">all_above</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">all_above</span><span class="p">(</span><span class="n">curve</span><span class="p">):</span>
+        <span class="n">curve_data</span> <span class="o">=</span> <span class="n">curve</span><span class="o">.</span><span class="n">as_numpy</span><span class="p">()</span>
+        <span class="k">return</span> <span class="nb">all</span><span class="p">(</span><span class="n">curve_data</span><span class="p">[</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">curve_data</span><span class="p">)]</span> <span class="o">&gt;</span> <span class="n">value</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">all_above</span></div>
+
+
+<div class="viewcode-block" id="all_below"><a class="viewcode-back" href="../../api/welly.quality.html#welly.quality.all_below">[docs]</a><span class="k">def</span> <span class="nf">all_below</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">all_below</span><span class="p">(</span><span class="n">curve</span><span class="p">):</span>
+        <span class="n">curve_data</span> <span class="o">=</span> <span class="n">curve</span><span class="o">.</span><span class="n">as_numpy</span><span class="p">()</span>
+        <span class="k">return</span> <span class="nb">all</span><span class="p">(</span><span class="n">curve_data</span><span class="p">[</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">curve_data</span><span class="p">)]</span> <span class="o">&lt;</span> <span class="n">value</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">all_below</span></div>
+
+
+<div class="viewcode-block" id="all_between"><a class="viewcode-back" href="../../api/welly.quality.html#welly.quality.all_between">[docs]</a><span class="k">def</span> <span class="nf">all_between</span><span class="p">(</span><span class="n">lower</span><span class="p">,</span> <span class="n">upper</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">all_between</span><span class="p">(</span><span class="n">curve</span><span class="p">):</span>
+        <span class="n">curve_data</span> <span class="o">=</span> <span class="n">curve</span><span class="o">.</span><span class="n">as_numpy</span><span class="p">()</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="nb">all</span><span class="p">(</span><span class="n">lower</span> <span class="o">&lt;</span> <span class="n">curve_data</span><span class="p">[</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">curve_data</span><span class="p">)])</span>
+        <span class="n">u</span> <span class="o">=</span> <span class="nb">all</span><span class="p">(</span><span class="n">upper</span> <span class="o">&gt;</span> <span class="n">curve_data</span><span class="p">[</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">curve_data</span><span class="p">)])</span>
+        <span class="k">return</span> <span class="n">l</span> <span class="ow">and</span> <span class="n">u</span>
+
+    <span class="k">return</span> <span class="n">all_between</span></div>
+
+
+<div class="viewcode-block" id="mean_above"><a class="viewcode-back" href="../../api/welly.quality.html#welly.quality.mean_above">[docs]</a><span class="k">def</span> <span class="nf">mean_above</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">mean_above</span><span class="p">(</span><span class="n">curve</span><span class="p">):</span>
+        <span class="n">curve_data</span> <span class="o">=</span> <span class="n">curve</span><span class="o">.</span><span class="n">as_numpy</span><span class="p">()</span>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">curve_data</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">value</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">mean_above</span></div>
+
+
+<div class="viewcode-block" id="mean_below"><a class="viewcode-back" href="../../api/welly.quality.html#welly.quality.mean_below">[docs]</a><span class="k">def</span> <span class="nf">mean_below</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">mean_below</span><span class="p">(</span><span class="n">curve</span><span class="p">):</span>
+        <span class="n">curve_data</span> <span class="o">=</span> <span class="n">curve</span><span class="o">.</span><span class="n">as_numpy</span><span class="p">()</span>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">curve_data</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">value</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">mean_below</span></div>
+
+
+<div class="viewcode-block" id="mean_between"><a class="viewcode-back" href="../../api/welly.quality.html#welly.quality.mean_between">[docs]</a><span class="k">def</span> <span class="nf">mean_between</span><span class="p">(</span><span class="n">lower</span><span class="p">,</span> <span class="n">upper</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">mean_between</span><span class="p">(</span><span class="n">curve</span><span class="p">):</span>
+        <span class="n">curve_data</span> <span class="o">=</span> <span class="n">curve</span><span class="o">.</span><span class="n">as_numpy</span><span class="p">()</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="n">lower</span> <span class="o">&lt;</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">curve_data</span><span class="p">)</span>
+        <span class="n">u</span> <span class="o">=</span> <span class="n">upper</span> <span class="o">&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">curve_data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">l</span> <span class="ow">and</span> <span class="n">u</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">mean_between</span></div>
+
+
+<div class="viewcode-block" id="check_units"><a class="viewcode-back" href="../../api/welly.quality.html#welly.quality.check_units">[docs]</a><span class="k">def</span> <span class="nf">check_units</span><span class="p">(</span><span class="n">list_of_units</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">check_units</span><span class="p">(</span><span class="n">curve</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">curve</span><span class="o">.</span><span class="n">units</span> <span class="ow">in</span> <span class="n">list_of_units</span>
+
+    <span class="k">return</span> <span class="n">check_units</span></div>
+
+
+<div class="viewcode-block" id="no_spikes"><a class="viewcode-back" href="../../api/welly.quality.html#welly.quality.no_spikes">[docs]</a><span class="k">def</span> <span class="nf">no_spikes</span><span class="p">(</span><span class="n">tolerance</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Arg ``tolerance`` is the number of spiky samples allowed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">no_spikes</span><span class="p">(</span><span class="n">curve</span><span class="p">):</span>
+        <span class="n">diff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">curve</span><span class="o">.</span><span class="n">as_numpy</span><span class="p">()</span> <span class="o">-</span> <span class="n">curve</span><span class="o">.</span><span class="n">despike</span><span class="p">()</span><span class="o">.</span><span class="n">as_numpy</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">diff</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">tolerance</span>
+
+    <span class="k">return</span> <span class="n">no_spikes</span></div>
+
+
+<div class="viewcode-block" id="fraction_not_nans"><a class="viewcode-back" href="../../api/welly.quality.html#welly.quality.fraction_not_nans">[docs]</a><span class="k">def</span> <span class="nf">fraction_not_nans</span><span class="p">(</span><span class="n">curve</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the fraction of the curve extents that are good (non-nan data).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">curve</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">curve</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="fm">__len__</span><span class="p">()</span> <span class="o">*</span> <span class="n">curve</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="fm">__len__</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="fraction_not_zeros"><a class="viewcode-back" href="../../api/welly.quality.html#welly.quality.fraction_not_zeros">[docs]</a><span class="k">def</span> <span class="nf">fraction_not_zeros</span><span class="p">(</span><span class="n">curve</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the fraction of the curve extents that are not zeros.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">curve</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">values</span><span class="p">)</span> <span class="o">/</span> <span class="n">curve</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="fm">__len__</span><span class="p">()</span> <span class="o">*</span> <span class="n">curve</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="fm">__len__</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="fraction_within_range"><a class="viewcode-back" href="../../api/welly.quality.html#welly.quality.fraction_within_range">[docs]</a><span class="k">def</span> <span class="nf">fraction_within_range</span><span class="p">(</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">fraction_within_range</span><span class="p">(</span><span class="n">curve</span><span class="p">):</span>
+        <span class="n">curve_data</span> <span class="o">=</span> <span class="n">curve</span><span class="o">.</span><span class="n">as_numpy</span><span class="p">()</span>
+        <span class="n">nsamps</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">curve_data</span><span class="p">)</span>
+        <span class="n">finite</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">curve_data</span><span class="p">)</span>
+        <span class="n">greaterthan_max</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">finite</span> <span class="o">&gt;</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">finite</span><span class="p">))</span>
+        <span class="n">lessthan_min</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">finite</span> <span class="o">&lt;</span> <span class="n">xmin</span><span class="p">,</span> <span class="n">finite</span><span class="p">))</span>
+        <span class="k">return</span> <span class="mi">1</span> <span class="o">-</span> <span class="p">((</span><span class="n">greaterthan_max</span> <span class="o">+</span> <span class="n">lessthan_min</span><span class="p">)</span> <span class="o">/</span> <span class="n">nsamps</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">fraction_within_range</span></div>
+
+
+<div class="viewcode-block" id="count_spikes"><a class="viewcode-back" href="../../api/welly.quality.html#welly.quality.count_spikes">[docs]</a><span class="k">def</span> <span class="nf">count_spikes</span><span class="p">(</span><span class="n">curve</span><span class="p">):</span>
+    <span class="n">diff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">curve</span><span class="o">.</span><span class="n">as_numpy</span><span class="p">()</span> <span class="o">-</span> <span class="n">curve</span><span class="o">.</span><span class="n">despike</span><span class="p">()</span><span class="o">.</span><span class="n">as_numpy</span><span class="p">())</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">diff</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="spike_locations"><a class="viewcode-back" href="../../api/welly.quality.html#welly.quality.spike_locations">[docs]</a><span class="k">def</span> <span class="nf">spike_locations</span><span class="p">(</span><span class="n">curve</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the indicies of the spikes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, The Welly Authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
