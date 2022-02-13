@@ -1,6 +1,6 @@
 # Contributing
 
-### 🙌 Thank you for considering contributing to `welly`!
+## 🙌 Thank you for considering contributing to `welly`!
 
 There are several important ways you can help; here are some examples:
 
@@ -12,7 +12,7 @@ There are several important ways you can help; here are some examples:
 
 ## Code of conduct
 
-We're fortunate to be part of a large professional community that conducts itself with mutual respect and consideration for others. Agile's [Code of Conduct](https://github.com/agile-geoscience/corporate/blob/main/CODE_OF_CONDUCT.md) is part of protecting these features for everyone, everywhere. Please read it.
+We're fortunate to be part of a large professional community that conducts itself with mutual respect and consideration for others. Agile's [Code of Conduct](https://github.com/agile-geoscience/community/blob/main/CODE_OF_CONDUCT.md) is part of protecting these features for everyone, everywhere. Please read it.
 
 
 ## Authorship

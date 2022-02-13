@@ -1,4 +1,4 @@
-# CHANGES.md
+# CHANGES
 
 ## 0.5.0, coming in February 2022
 
@@ -17,7 +17,7 @@
 - You can now optionally pass any of `start`, `stop` and `step` to `Well.unify_basis()`. These settings will override the basis you provide, or the basis that `welly` discovers using `Well.survey_basis()`. I added an example of using this to the `tutorial/02_Curves.iynb` tutorial notebook.
 - Relatedly, if you pass any of `start`, `stop` and `step` to `Curve.to_basis()` it will _override_ the basis you give it, if you give it one.
 - Welly now uses [`wellpathpy`](https://github.com/Zabamund/wellpathpy) to convert deviation data into a position log. The API has not changed, but position logs can now be calculated with the high and low tangential methods as well.
-- Dogleg severity is still given in radians, but can be normalized per 'course length', where course length is a parameter you can pass. **Future warning:** from v0.5.0, dogleg severity will be passed in degrees and course length will be 30 by default. 
+- Dogleg severity is still given in radians, but can be normalized per 'course length', where course length is a parameter you can pass. **Future warning:** from v0.5.0, dogleg severity will be passed in degrees and course length will be 30 by default.
 
 
 ## 0.4.9, 29 January 2021

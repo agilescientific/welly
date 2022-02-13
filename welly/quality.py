@@ -79,7 +79,8 @@ def qc_data_well(well, tests, keys=None, alias=None):
 
 def qc_table_html_well(well, tests, keys=None, alias=None):
     """
-    Makes a nice table out of ``qc_data()``
+    Makes a nice table out of ``qc_data()``.
+
     Args:
         well (welly.well.Well): Well object.
         tests (dict): a dictionary of tests, mapping mnemonics to lists of
@@ -167,10 +168,11 @@ def quality_curve(curve, tests, alias=None):
 def quality_score_curve(curve, tests, alias=None):
     """
     Run a series of tests and return the normalized score.
-        1.0:   Passed all tests.
-        (0-1): Passed a fraction of tests.
-        0.0:   Passed no tests.
-        -1.0:  Took no tests.
+
+        - 1.0:   Passed all tests.
+        - (0-1): Passed a fraction of tests.
+        - 0.0:   Passed no tests.
+        - -1.0:  Took no tests.
 
     Args:
         curve (welly.curve.Curve): Curve object.
@@ -411,4 +413,3 @@ def spike_locations(curve):
     Return the indicies of the spikes.
     """
     return
-

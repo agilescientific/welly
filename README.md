@@ -1,13 +1,12 @@
 ![Welly banner](https://www.dropbox.com/s/a8jg7zomi4wgolb/welly_banner.png?raw=1)
 
-[![Travis build](https://img.shields.io/travis/agile-geoscience/welly.svg)](https://travis-ci.org/agile-geoscience/welly]
-[![PyPI status](https://img.shields.io/pypi/status/welly.svg)](https://pypi.org/project/welly//)
+[![Run tests](https://github.com/agile-geoscience/welly/actions/workflows/run-tests.yml/badge.svg)](https://github.com/agile-geoscience/welly/actions/workflows/run-tests.yml)
+[![Build docs](https://github.com/agile-geoscience/welly/actions/workflows/build-docs.yml/badge.svg)](https://github.com/agile-geoscience/welly/actions/workflows/build-docs.yml)
+[![PyPI version](https://img.shields.io/pypi/v/welly.svg)](https://pypi.python.org/pypi/welly/)
 [![PyPI versions](https://img.shields.io/pypi/pyversions/welly.svg)](https://pypi.org/project/welly//)
 [![PyPI license](https://img.shields.io/pypi/l/welly.svg)](https://pypi.org/project/welly/)
 
 **Welly is a family of classes to facilitate the loading, processing, and analysis of subsurface wells and well data, such as striplogs, formation tops, well log curves, and synthetic seismograms.**
-
-Welly is a family of classes to facilitate the loading, processing, and analysis of subsurface wells and well data, such as striplogs, formation tops, well log curves, and synthetic seismograms.
 
 
 ## Installation
@@ -30,6 +29,11 @@ gr.plot()          # ...with some superpowers!
 ```
 
 Next, check out the tutorial notebooks.
+
+
+## Documentation
+
+[The `welly` documentation](https://code.agilescientific.com/welly) is a work in progress, but for the first time in an age, it exists!
 
 
 ## Philosophy

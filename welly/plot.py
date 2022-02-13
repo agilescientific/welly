@@ -27,6 +27,7 @@ def plot_kdes_project(project,
                       uwi_regex=None):
     """
     Plot KDEs for all curves with the given name.
+
     Args:
         project (welly.project.Project): Project object
         menemonic (str): the name of the curve to look for.
@@ -78,6 +79,7 @@ def plot_map_project(project,
                      width=6):
     """
     Plot a map of the wells in the project.
+
     Args:
         project (welly.project.Project): Project object
         fields (list): The two fields of the `location` object to use
@@ -88,6 +90,7 @@ def plot_map_project(project,
         label (str): The field of the `Well.header` object to use as the label.
             Default: `Well.header.name`.
         width (float): The width, in inches, of the plot. Default: 6 in.
+
     Returns:
         matplotlib.figure.Figure, or matplotlib.axes.Axes if you passed in
             an axes object as `ax`.
@@ -117,11 +120,13 @@ def plot_depth_track_well(well,
                           tick_spacing=100):
     """
     Depth track plotting for well.
+
     Args:
         well (welly.well.Well): Well object.
         ax (ax): A matplotlib axis.
         md (ndarray): The measured depths of the track.
         kind (str): The kind of track to plot.
+
     Returns:
         ax.
     """
@@ -138,7 +143,7 @@ def plot_depth_track_well(well,
     for sp in ax.spines.values():
         sp.set_color('gray')
 
-    if ax.get_subplotspec().is_first_col():
+    if ax.is_first_col():
         pad = -10
         ax.spines['left'].set_color('none')
         ax.yaxis.set_ticks_position('right')
@@ -174,6 +179,7 @@ def plot_well(well,
               **kwargs):
     """
     Plot multiple tracks.
+
     Args:
         well (welly.well.Well): Well object.
         legend (striplog.legend): A legend instance.
@@ -192,6 +198,7 @@ def plot_well(well,
             'curves' — use a basis that accommodates all the curves.
             'all' — use a basis that accommodates everything.
             (tuple) — give the upper and lower explictly.
+
     Returns:
         None. The plot is a side-effect.
     """
@@ -338,6 +345,7 @@ def plot_2d_curve(curve,
                   **kwargs):
     """
     Plot a 2D curve.
+
     Args:
         curve (welly.curve.Curve): Curve object
         ax (ax): A matplotlib axis.
@@ -426,7 +434,7 @@ def plot_2d_curve(curve,
     ax.get_yaxis().set_tick_params(which='both', direction='out')
     plt.tight_layout()
     return ax
-    
+
 
 def plot_curve(curve,
                ax=None,
@@ -434,11 +442,13 @@ def plot_curve(curve,
                **kwargs):
     """
     Plot a curve.
+
     Args:
         curve (welly.curve.Curve): Curve object
         ax (ax): A matplotlib axis.
         legend (striplog.legend): A legend. Optional. Should contain kwargs for ax.set().
         kwargs: Arguments for ``ax.plot()``
+
     Returns:
         ax. If you passed in an ax, otherwise the figure.
     """
@@ -491,7 +501,7 @@ def plot_curve(curve,
 
     ax.set_ylim([curve.stop, curve.start])
     ax.grid('on', color='k', alpha=0.33, lw=0.33, linestyle='-')
-    
+
     return ax
 
 
@@ -503,6 +513,7 @@ def plot_kde_curve(curve,
     """
     Plot a KDE for the curve. Very nice summary of KDEs:
     https://jakevdp.github.io/blog/2013/12/01/kernel-density-estimation/
+    
     Args:
         curve (welly.curve.Curve): Curve object
         ax (axis): Optional matplotlib (MPL) axis to plot into. Returned.

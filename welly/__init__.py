@@ -21,11 +21,12 @@ def read_las(path, **kwargs):
     Just wraps `Project.from_las()`. Creates a `Project` from a .LAS file.
 
     Args:
-        path (str): path/url where LAS is located. *.las to load all files in dir
-        **kwargs (): See Project.from_las() for addictional arguments
+        path (str): path or URL where LAS is located. `*.las` to load all files
+            in dir
+        **kwargs (): See `Project.from_las()`` for addictional arguments
 
     Returns:
-        Project. The Project object.
+        welly.Project. The Project object.
     """
     return Project.from_las(path, **kwargs)
 

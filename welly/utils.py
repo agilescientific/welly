@@ -1,8 +1,8 @@
 """
 Utility functions for welly.
 
-:copyright: 2021 Agile Scientific
-:license: Apache 2.0
+Copyright: 2021 Agile Scientific
+Licence: Apache 2.0
 """
 import decimal
 import functools
@@ -17,7 +17,7 @@ import numpy as np
 
 from welly.fields import las_objects
 
-# most common numeric null values representation in LAS files
+# Most common numeric null values representation in LAS files.
 NULL_VALUES = [9999.25, -9999.25, -9999, 9999, 999.25, -999.25]
 
 
@@ -26,9 +26,11 @@ def deprecated(instructions):
     Flags a method as deprecated. This decorator can be used to mark functions
     as deprecated. It will result in a warning being emitted when the function
     is used.
+
     Args:
         instructions (str): A human-friendly string of instructions, such
             as: 'Please migrate to add_proxy() ASAP.'
+
     Returns:
         The decorated function.
     """
@@ -62,7 +64,7 @@ def bbox(points):
 def aspect(points):
     """
     Aspect like 2:1 is shape like |___ (twice as wide as high).
-    
+
     This function returns the WIDTH per unit height.
     """
     (minx, miny), (maxx, maxy) = bbox(points)
@@ -262,6 +264,7 @@ def parabolic(f, x):
 def linear(u, v, d):
     """
     Linear interpolation.
+
     Args:
         u (float)
         v (float)
@@ -382,8 +385,8 @@ def moving_average(a, length, mode='valid'):
     Computes the mean in a moving window. Naive implementation.
 
     Example:
-        >> test = np.array([1,9,9,9,9,9,9,2,3,9,2,2,3,1,1,1,1,3,4,9,9,9,8,3])
-        >> moving_average(test, 7, mode='same')
+        >>> test = np.array([1,9,9,9,9,9,9,2,3,9,2,2,3,1,1,1,1,3,4,9,9,9,8,3])
+        >>> moving_average(test, 7, mode='same')
         [ 4.42857143,  5.57142857,  6.71428571,  7.85714286,  8.        ,
         7.14285714,  7.14285714,  6.14285714,  5.14285714,  4.28571429,
         3.14285714,  3.        ,  2.71428571,  1.57142857,  1.71428571,
@@ -433,7 +436,8 @@ def moving_avg_conv(a, length):
 
 
 def nan_idx(y):
-    """Helper to handle indices and logical indices of NaNs.
+    """
+    Helper to handle indices and logical indices of NaNs.
 
     Args:
         y (ndarray): 1D array with possible NaNs
@@ -472,6 +476,7 @@ def top_and_tail(a):
 
     Args:
         a (ndarray): An array.
+
     Returns:
         ndarray: The top and tailed array.
     """
@@ -624,7 +629,9 @@ def get_columns_decimal_formatter(data, null_value=None):
     If a column has no numerical values, don't create a mapping for that column in the dictionary.
 
     Example:
+
         Input np.ndarray:
+
             - 1st column values: most occurring 2 decimal points
             - 2nd column values: most occurring 5 decimal points
             - 3rd column values: most occurring 10 decimal points

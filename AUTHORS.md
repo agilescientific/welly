@@ -1,6 +1,6 @@
-Authors
+# Authors
 
-The following people have constributed to the project (in alphabetical order):
+The following people have contributed to the project (in alphabetical order):
 
 - [Evan Bianco](https://github.com/EvanBianco), Agile Scientific, Canada
 - [Jesper Dramsch](https://github.com/JesperDramsch), Edinburgh, UK

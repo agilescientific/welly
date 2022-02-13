@@ -140,7 +140,7 @@ def well_to_card_1(well):
 def well_to_card_2(well, key):
     """
     Args:
-        well (Well)
+        well (welly.Well): Well object.
         key (str): The key of the predicted Striplog in `well.data`.
 
     Returns:

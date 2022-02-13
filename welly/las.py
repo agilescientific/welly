@@ -42,96 +42,100 @@ def from_las(file_ref, **kwargs):
     """
     Read a LAS file with lasio and parse every LAS section to a dataset that
     consists of two pd.DataFrames:
+
         1. curve data
         2. header metadata
 
     Only LAS 1.2 and 2.0 are currently supported. LAS 3.0 will be supported
     when lasio LAS 3.0 work in progress is completed:
-    https://github.com/kinverarity1/lasio/issues/5.
+
+        - https://github.com/kinverarity1/lasio/issues/5.
 
     The design of this reader already accommodates for LAS 3.0 functionality
     where one `lasio.LASFile` can contain multiple 1D, 2D or 3D dataset
     entries, instead of only 1D data and 1 dataset in LAS 1.2 and LAS 2.0.
 
     Also see:
-    - lasio documentation:
-       https://lasio.readthedocs.io/en/latest/header-section.html#tutorial
-    - LAS 3.0 file specification:
-       https://www.cwls.org/wp-content/uploads/2014/09/LAS_3_File_Structure.pdf
+
+        - lasio documentation: https://lasio.readthedocs.io/en/latest/header-section.html#tutorial
+        - LAS 3.0 file specification: https://www.cwls.org/wp-content/uploads/2014/09/LAS_3_File_Structure.pdf
 
     Args:
         file_ref (file-like object, str): either a filename, an open file
             object, or a string containing the contents of a LAS file.
         **kwargs: The additional keyword arguments are propagated to the lasio
-                  reader so you can use when reading in a LAS file.
-                  Find the routines of the keyword possibilities here:
-                    * :func:`lasio.reader.open_with_codecs` -
-                        manage issues relate to character encodings.
-                    * :meth:`lasio.LASFile.read` -
-                        control how NULL values and errors are handled during
-                        parsing.
+            reader so you can use when reading in a LAS file.
+            Find the routines of the keyword possibilities here:
+
+            * ``lasio.reader.open_with_codecs`` -
+                manage issues relate to character encodings.
+            * ``lasio.LASFile.read`` -
+                control how NULL values and errors are handled during
+                parsing.
+
     Returns:
         datasets (Dict['<name>': pd.DataFrame]): Dictionary maps a
             dataset name (e.g. 'Curves') or 'Header' to a pd.DataFrame.
 
     Description of datasets object:
 
-    datasets = {
-        'Curves':   data,   # for LAS 1.2 & LAS 2.0
-        'ASCII':    data,   # for LAS 3.0
-        'Drilling': data,   # for LAS 3.0
-        'Core[1]':  data,   # for LAS 3.0 - Run 1
-        'Core[2]':  data,   # for LAS 3.0 - Run 2
-        'Header':   header, # for all (LAS 1.2, LAS 2.0, LAS 3.0)
-    }
+        datasets = {
+            'Curves':   data,   # for LAS 1.2 & LAS 2.0
+            'ASCII':    data,   # for LAS 3.0
+            'Drilling': data,   # for LAS 3.0
+            'Core[1]':  data,   # for LAS 3.0 - Run 1
+            'Core[2]':  data,   # for LAS 3.0 - Run 2
+            'Header':   header, # for all (LAS 1.2, LAS 2.0, LAS 3.0)
+        }
 
     Where:
         data (pd.DataFrame):   where:
-                                - every row represents a data index.
-                                - every column represents a data variable.
-                                  Column name is the data variable mnemonic.
+
+            - every row represents a data index.
+            - every column represents a data variable.
+              Column name is the data variable mnemonic.
+
         header (pd.DataFrame): where:
-                                - every row represents a line read from LAS
-                                  file and columns.
-                                - column 1-5 - directly parsed from the
-                                               HeaderItem.__dict__:
-                                    'original_mnemonic' - original mmnemonic
-                                    'mnemonic' - mnemonic
-                                    'unit' - unit
-                                    'value' - value
-                                    'descr' - description
-                                - column 6 - is added as a LAS section
-                                             identifier:
-                                    'section' (str) - LAS Section name the
-                                    line from the LAS file belongs to (e.g.
-                                    ~Curves)
-    Example
-    --------
-    >> datasets = from_las(path)
 
-    >> datasets['Curves']
-         DEPT    CALI     FACIES
-    0    1.0     2.4438   0
-    1    1.5     2.4438   1
-    2    2.0     2.4438   2
+            - every row represents a line read from LAS
+              file and columns.
+            - column 1-5 - directly parsed from the
+                           HeaderItem.__dict__:
+                'original_mnemonic' - original mmnemonic
+                'mnemonic' - mnemonic
+                'unit' - unit
+                'value' - value
+                'descr' - description
+            - column 6 - is added as a LAS section
+                         identifier:
+                'section' (str) - LAS Section name the
+                line from the LAS file belongs to (e.g.
+                ~Curves)
 
-    >> datasets['Header']
-        original_mnemonic   mnemonic unit  value    descr         section
-    0   VERS                VERS           2.0                    Version
-    1   WRAP                WRAP           YES                    Version
-    0   STRT                STRT     M     1.0668   START DEPTH   Well
-    1   STOP                STOP     M     1.524    STOP DEPTH    Well
-    2   STEP                STEP     M     0.1524   STEP          Well
-    3   NULL                NULL           -999.25  NULL VALUE    Well
-    4   COMP                COMP           Energy.C COMPANY       Well
-    5   WELL                WELL                    WELL          Well
-    6   UWI                 UWI                     WELL          Well
-    7   FLD                 FLD                     FIELD         Well
-    0   DEPT                DEPT     m              DEPTH         Curves
-    1   CALI                CALI     in             Caliper       Curves
-    2   FACIES              FACIES                  Facies        Curves
-    2   EREF                EREF:1   M     100.0    Elevation     Parameter
-    0                       UNKNOWN                 Comment       Other
+    Example:
+        >>> datasets = from_las(path)
+        >>> datasets['Curves']
+             DEPT    CALI     FACIES
+        0    1.0     2.4438   0
+        1    1.5     2.4438   1
+        2    2.0     2.4438   2
+        >>> datasets['Header']
+            original_mnemonic   mnemonic unit  value    descr         section
+        0   VERS                VERS           2.0                    Version
+        1   WRAP                WRAP           YES                    Version
+        0   STRT                STRT     M     1.0668   START DEPTH   Well
+        1   STOP                STOP     M     1.524    STOP DEPTH    Well
+        2   STEP                STEP     M     0.1524   STEP          Well
+        3   NULL                NULL           -999.25  NULL VALUE    Well
+        4   COMP                COMP           Energy.C COMPANY       Well
+        5   WELL                WELL                    WELL          Well
+        6   UWI                 UWI                     WELL          Well
+        7   FLD                 FLD                     FIELD         Well
+        0   DEPT                DEPT     m              DEPTH         Curves
+        1   CALI                CALI     in             Caliper       Curves
+        2   FACIES              FACIES                  Facies        Curves
+        2   EREF                EREF:1   M     100.0    Elevation     Parameter
+        0                       UNKNOWN                 Comment       Other
     """
     # Read las file with lasio.
     las = lasio.read(file_ref, **kwargs)
@@ -387,18 +391,20 @@ def to_lasio(well, keys=None, alias=None, basis=None, null_value=-999.25):
     # Clear curves from header portion.
     l.header['Curves'] = []
 
-    # put all curve dfs in a list
-    dfs = [curve.df for curve in well.data.values()]
+    # Put all curve dfs in a list, if possible.
+    # TODO: This needs to handle striplogs as well, but striplogs
+    # do not have a .df attribute.
+    dfs = [curve.df for curve in well.data.values() if isinstance(curve, Curve)]
 
-    # Deal with data if available
+    # Deal with data if available:
     if len(dfs) > 0:
-        # merge all curve dfs to one df
+        # Merge all curve dfs to one df.
         df_merged = reduce(lambda left, right: pd.merge(left,
                                                         right,
                                                         left_index=True,
                                                         right_index=True), dfs)
 
-        # get the mnemonics to select
+        # Get the mnemonics to select.
         keys = well._get_curve_mnemonics(keys, alias=alias)
 
         df_merged = df_merged[keys]
@@ -472,6 +478,7 @@ def get_las_version(las):
     Get the LAS file format version from an in-memory lasio.LAFile object.
 
     There are 3 possible versions (https://www.cwls.org/products/):
+
         - LAS 1.2
         - LAS 2.0
         - LAS 3.0
@@ -489,7 +496,7 @@ def get_las_version(las):
 
 def _get_curve_las_df(las, section):
     """
-
+    Get the curve dataframe.
     """
     # construct df
     df_section = pd.DataFrame([i.__dict__ for i in las.sections[section]])
@@ -515,4 +522,3 @@ def _get_curve_las_df(las, section):
                 except ValueError:
                     pass
         return data
-

@@ -21,6 +21,7 @@ from . import utils
 class Curve(object):
     """
     Curve object that can hold 1D and 2D categorical/numerical curve data.
+    
     Args:
         data (ndarray, Iterable, dict, or pd.DataFrame):
             1D/2D/3D curve numerical or categorical data. Dict can contain
@@ -60,8 +61,9 @@ class Curve(object):
             Company that executed logging operations.
         units (str): Optional.
             Units of the curve measurements.
-        Returns:
-            curve (welly.Curve): The curve object.
+
+    Returns:
+        curve (welly.Curve): The curve object.
     """
     def __init__(self,
                  data, *,
@@ -117,7 +119,7 @@ class Curve(object):
 
     def __getitem__(self, index):
         """
-        Index into pd.DataFrame that holds the curve data
+        Index into pd.DataFrame that holds the curve data.
         """
         curve = copy.deepcopy(self)
         setattr(curve, 'df', self.df[index])
@@ -125,7 +127,7 @@ class Curve(object):
 
     def __add__(self, other):
         """
-        Add curve data in pd.DataFrame with ``other``
+        Add curve data in pd.DataFrame with ``other``.
         """
         curve = copy.deepcopy(self)
         if isinstance(other, Curve):
@@ -138,7 +140,7 @@ class Curve(object):
 
     def __sub__(self, other):
         """
-        Subtract curve data in pd.DataFrame with ``other``
+        Subtract curve data in pd.DataFrame with ``other``.
         """
         curve = copy.deepcopy(self)
         if isinstance(other, Curve):
@@ -151,7 +153,7 @@ class Curve(object):
 
     def __mul__(self, other):
         """
-        Multiply curve data in pd.DataFrame by ``other``
+        Multiply curve data in pd.DataFrame by ``other``.
         """
         curve = copy.deepcopy(self)
         if isinstance(other, Curve):
@@ -164,7 +166,7 @@ class Curve(object):
 
     def __pow__(self, other):
         """
-        Exponentiate curve data in pd.DataFrame by ``other``
+        Exponentiate curve data in pd.DataFrame by ``other``.
         """
         curve = copy.deepcopy(self)
         if isinstance(other, Curve):
@@ -177,7 +179,7 @@ class Curve(object):
 
     def __truediv__(self, other):
         """
-        Divide curve data in pd.DataFrame by ``other``
+        Divide curve data in pd.DataFrame by ``other``.
         """
         curve = copy.deepcopy(self)
         if isinstance(other, Curve):
@@ -190,7 +192,7 @@ class Curve(object):
 
     def __floordiv__(self, other):
         """
-        Floor-divide curve data in pd.DataFrame by ``other``
+        Floor-divide curve data in pd.DataFrame by ``other``.
         """
         curve = copy.deepcopy(self)
         if isinstance(other, Curve):
@@ -203,7 +205,7 @@ class Curve(object):
 
     def __mod__(self, other):
         """
-        Modulo curve data in pd.DataFrame by ``other``
+        Modulo curve data in pd.DataFrame by ``other``.
         """
         curve = copy.deepcopy(self)
         if isinstance(other, Curve):
@@ -216,7 +218,7 @@ class Curve(object):
 
     def __len__(self):
         """
-        Return length of the pd.DataFrame
+        Return length of the pd.DataFrame.
         """
         return len(self.df)
 
@@ -375,6 +377,7 @@ class Curve(object):
         The increment of the index. Requires a numeric index.
         We keep track of this property because step (STEP) is a required field
         in a LAS file.
+
         Returns:
             Float. If the index is numeric and equally sampled
             0. If the index is numeric and not equally sampled
@@ -440,6 +443,12 @@ class Curve(object):
     def get_stats(self):
         """
         Return basic statistics about the curve.
+
+        Args:
+            No arguents.
+
+        Retuns:
+            dict. The statistics.
         """
         stats = {}
         stats['samples'] = self.shape[0]
@@ -457,6 +466,9 @@ class Curve(object):
         Args:
             alias (dict): a dictionary mapping mnemonics to lists of mnemonics.
                 e.g. {'density': ['DEN', 'DENS']}
+
+        Returns:
+            list. The alias list.
         """
         alias = alias or {}
 
@@ -523,6 +535,8 @@ class Curve(object):
 
     def despike(self, window_length=33, samples=True, z=2):
         """
+        Despiking filter.
+
         Args:
             window_length (int): window length in samples. Default 33
                 (or 5 m for most curves sampled at 0.1524 m intervals).
@@ -581,7 +595,9 @@ class Curve(object):
                 **kwargs):
         """
         Plot a 2D curve. Wrapping plot function from plot.py.
+
         By default only show the plot, not return the figure object.
+
         Args:
             ax (ax): A matplotlib axis.
             width (int): The width of the image.
@@ -606,10 +622,12 @@ class Curve(object):
         """
         Plot a curve. Wrapping plot function from plot.py.
         By default only show the plot, not return the figure object.
+
         Args:
             ax (ax): A matplotlib axis.
             legend (striplog.legend): A legend. Optional. Should contain kwargs for ax.set().
             kwargs: Arguments for ``ax.plot()``
+
         Returns:
             ax. If you passed in an ax, otherwise None.
         """
@@ -627,12 +645,15 @@ class Curve(object):
         Plot a KDE for the curve. Very nice summary of KDEs:
         https://jakevdp.github.io/blog/2013/12/01/kernel-density-estimation/
         Wrapping plot function from plot.py.
+
         By default only show the plot, not return the figure object.
+
         Args:
             ax (axis): Optional matplotlib (MPL) axis to plot into. Returned.
             amax (float): Optional max value to permit.
             amin (float): Optional min value to permit.
             label (string): What to put on the y-axis. Defaults to curve name.
+
         Returns:
             None, axis, figure: depending on what you ask for.
         """
@@ -645,11 +666,14 @@ class Curve(object):
     def quality(self, tests, alias=None):
         """
         Run a series of tests and return the corresponding results.
+
         Wrapping function from quality.py
+
         Args:
             tests (list): a list of functions.
             alias (dict): a dictionary mapping mnemonics to lists of mnemonics.
                 e.g. {'density': ['DEN', 'DENS']}
+
         Returns:
             list. The results. Stick to booleans (True = pass) or ints.
         """
@@ -664,16 +688,20 @@ class Curve(object):
 
     def quality_score(self, tests, alias=None):
         """
-        Wrapping function from quality.py
-        Run a series of tests and return the normalized score.
-            1.0:   Passed all tests.
-            (0-1): Passed a fraction of tests.
-            0.0:   Passed no tests.
-            -1.0:  Took no tests.
+        Wrapping function from quality.py.
+
+        Run a series of tests and return the normalized score:
+
+            - 1.0:   Passed all tests.
+            - (0-1): Passed a fraction of tests.
+            - 0.0:   Passed no tests.
+            - -1.0:  Took no tests.
+
         Args:
             tests (list): a list of functions.
             alias (dict): a dictionary mapping mnemonics to lists of mnemonics.
                 e.g. {'density': ['DEN', 'DENS']}
+
         Returns:
             float. The fraction of tests passed, or -1 for 'took no tests'.
         """
@@ -684,11 +712,13 @@ class Curve(object):
     def qflag(self, tests, alias=None):
         """
         Run a test and return the corresponding results on a sample-by-sample
-        basis. Wrapping function from quality.py
+        basis. Wrapping function from quality.py.
+
         Args:
             tests (list): a list of functions.
             alias (dict): a dictionary mapping mnemonics to lists of mnemonics.
                 e.g. {'density': ['DEN', 'DENS']}
+
         Returns:
             list. The results. Stick to booleans (True = pass) or ints.
         """
@@ -704,7 +734,8 @@ class Curve(object):
     def qflags(self, tests, alias=None):
         """
         Run a series of tests and return the corresponding results.
-        Wrapping function from quality.py
+        Wrapping function from quality.py.
+
         Args:
             tests (list): a list of functions.
             alias (dict): a dictionary mapping mnemonics to lists of mnemonics.
@@ -727,11 +758,13 @@ class Curve(object):
         If the passed depth/time doesn't exist in the index, interpolate or
         pick the nearest, depending on the passed method. Default is linear
         interpolation.
+
         Args:
             index_value (float or list of floats): value or values to read from Curve
             index_name (str): Name of the index (e.g. 'DEPTH', 'MD', 'TWT')
             method (str): Optional. Method of interpolation:
                 {'linear',  'pad'/'ffill', 'backfill'/'bfill', 'nearest'}
+
         Returns:
             read_value (float or ndarray): The curve value(s) that was read at
                 the provided index value(s).
@@ -813,7 +846,7 @@ class Curve(object):
         # category data type or a string in data defaults to 'nearest'
         if self.df.dtypes[0] == 'category' or self.df.applymap(type).eq(str).any()[0]:
             interp_kind = 'nearest'
-            
+
         new_curve = copy.deepcopy(self)
 
         if basis is None:
@@ -859,9 +892,12 @@ class Curve(object):
         """
         Make a new curve in a new basis, given an existing one. Wraps
         ``to_basis()``.
+
         Pass in a curve or the basis of a curve.
+
         Args:
             basis (ndarray): A basis, but can also be a Curve instance.
+
         Returns:
             Curve. The current instance in the new basis.
         """
@@ -882,6 +918,7 @@ class Curve(object):
               function=None):
         """
         Block a log based on number of bins, or on cutoffs.
+
         Args:
             cutoffs (array): the values at which to create the blocks. Pass
                 a single number, or an array-like of multiple values. If you
@@ -895,7 +932,8 @@ class Curve(object):
                 or the left bin edge. Default behavior is `right==False`
                 indicating that the interval does not include the right edge.
             function (function): transform the log with a reducing function,
-                such as np.mean.
+                such as `np.mean`.
+
         Returns:
             Curve.
         """
