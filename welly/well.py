@@ -555,7 +555,7 @@ class Well(object):
 
     def df(self,
            keys=None,
-           basis=None,
+        #    basis=None,
            uwi=False,
            alias=None,
            rename_aliased=True):
@@ -581,16 +581,19 @@ class Well(object):
 
         Returns:
             pandas.DataFrame.
+
+        TODO:
+            Restore the ``basis`` argument.
         """
         keys = self._get_curve_mnemonics(keys, alias=alias)
 
         data = {k: self.get_curve(k, alias=alias).df for k in keys}
 
-        if basis is None:
-            basis = self.survey_basis(keys=keys, alias=alias)
-        if basis is None:
-            m = "No basis was provided and welly could not retrieve common basis."
-            raise WellError(m)
+        # if basis is None:
+        #     basis = self.survey_basis(keys=keys, alias=alias)
+        # if basis is None:
+        #     m = "No basis was provided and welly could not retrieve common basis."
+        #     raise WellError(m)
 
         df = pd.concat(list(data.values()), axis=1)
 
@@ -1096,29 +1099,15 @@ class Well(object):
 
         if keys is None:
             keys = [k for k, v in self.data.items() if isinstance(v, Curve)]
-        else:
-            # Only look at the alias list if keys were passed.
-            if alias is not None:
-                _keys = []
-                for k in keys:
-                    if k in alias:
-                        added = False
-                        for a in alias[k]:
-                            if a in self.data:
-                                _keys.append(a)
-                                added = True
-                                break
-                        if not added:
-                            _keys.append(k)
-                    else:
-                        _keys.append(k)
-                keys = _keys
+
+        if alias is None:
+            alias = {}
 
         if basis is None:
             basis = self.survey_basis(keys=keys, step=step)
 
         # Get the data, or None is curve is missing.
-        data = [self.data.get(k) for k in keys]
+        data = [self.get_curve(k, alias=alias) for k in keys]
 
         # Now cast to the correct basis, and replace any missing curves with
         # an empty Curve. We will change the elements in place.
@@ -1142,10 +1131,14 @@ class Well(object):
 
         if window_length is not None:
             d_new = []
-            for d in data:
+            keys_new = []
+
+            for k, d in zip(keys, data):
                 r = d._rolling_window(window_length, func1d=window_func,
-                                      step=window_step, return_rolled=False, )
+                                      step=window_step, return_rolled=False,)
                 d_new.append(r.T)
+                keys_new.append(k)
+
             data = d_new
 
         # Now we have a list of Curves, but potentially some of them are ndarrays at this point.
