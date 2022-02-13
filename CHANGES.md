@@ -1,4 +1,4 @@
-# CHANGES
+# Changelog
 
 ## 0.5.0, coming in February 2022
 
