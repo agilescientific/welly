@@ -1,7 +1,7 @@
 # Keep out of change control.
 docs/_notebooks
 _version.py
-tutorial/.ipynb_checkpoints
+.ipynb_checkpoints
 .vscode
 
 # Mac
