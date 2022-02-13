@@ -499,7 +499,6 @@ class Curve(object):
     def _rolling_window(self, window_length, func1d, step=1, return_rolled=False):
         """
         Private function. Smoother for other smoothing/conditioning functions.
-        Treat Curve data as numpy array.
 
         Args:
             window_length (int): the window length.
@@ -858,8 +857,14 @@ class Curve(object):
             new_stop = basis[-1] if stop is None else stop
             new_step = (basis[1] - basis[0]) if step is None else step
 
-        steps = np.ceil((new_stop - new_start) / new_step)
-        basis = np.linspace(new_start, new_stop, int(steps) + 1, endpoint=True)
+        # Ensure the stop point makes sense.
+        if new_start == start:
+            new_stop = new_start + (new_stop // new_step) * new_step
+
+
+        # Potentially tricky issues here with FP imprecision, hence np.round.
+        steps = np.round((new_stop - new_start) / new_step, 0)
+        basis = np.linspace(new_start, new_stop, int(steps) + 1)
 
         if undefined is None:
             undefined = np.nan
