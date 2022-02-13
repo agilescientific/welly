@@ -1,0 +1,1357 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="welly package" href="../welly.html" /><link rel="prev" title="Quick start" href="Quick_start.html" />
+
+    <link rel="shortcut icon" href="../_static/favicon.ico"/><meta name="generator" content="sphinx-4.4.0, furo 2022.01.02"/>
+        <title>Wells - welly documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=df49af52631e7917044a9c21a57f7b83170a6dd0" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=fade93df149f7c5fedb3ff897f799dc7d283b420" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  body[data-theme="dark"] {
+    --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+  }
+  @media (prefers-color-scheme: dark) {
+    body:not([data-theme="light"]) {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+  }
+</style></head>
+  <body>
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path stroke="none" d="M0 0h24v24H0z" />
+      <line x1="4" y1="6" x2="20" y2="6" />
+      <line x1="10" y1="12" x2="20" y2="12" />
+      <line x1="6" y1="18" x2="20" y2="18" />
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">welly  documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand centered" href="../index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="../_static/welly_simple_alpha.png" alt="Logo"/>
+  </div>
+  
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">User guide</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Quick_start.html">Quick start</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Wells</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../welly.html">welly package</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Other resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development.html">Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../authors.html">Authors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Project links</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://pypi.org/project/welly/">PyPI releases</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/agile-geoscience/welly">Code in GitHub</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/agile-geoscience/welly/issues">Issue tracker</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://code.agilescientific.com/community">Community guidelines</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://code.agilescientific.com">Agile's software</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.agilescientific.com">Agile's website</a></li>
+</ul>
+
+</div>
+</div>
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <section class="tex2jax_ignore mathjax_ignore" id="wells">
+<h1>Wells<a class="headerlink" href="#wells" title="Permalink to this headline">¶</a></h1>
+<p><strong>Wells are one of the fundamental objects in <code class="docutils literal notranslate"><span class="pre">welly</span></code>.</strong></p>
+<p><code class="docutils literal notranslate"><span class="pre">Well</span></code> objects include collections of <code class="docutils literal notranslate"><span class="pre">Curve</span></code> objects. Multiple <code class="docutils literal notranslate"><span class="pre">Well</span></code> objects can be stored in a <code class="docutils literal notranslate"><span class="pre">Project</span></code>.</p>
+<p>On this page, we take a closer look at the <code class="docutils literal notranslate"><span class="pre">Well</span></code>.</p>
+<p>First, some preliminaries…</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="kn">import</span> <span class="nn">welly</span>
+<span class="n">welly</span><span class="o">.</span><span class="n">__version__</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>'0.1.dev1+g212e99f'
+</pre></div>
+</div>
+</div>
+</div>
+<section id="load-a-well-from-las">
+<h2>Load a well from LAS<a class="headerlink" href="#load-a-well-from-las" title="Permalink to this headline">¶</a></h2>
+<p>In the Quick Start guide you saw how to quickly create a Project from a well with:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">welly</span>
+<span class="n">project</span> <span class="o">=</span> <span class="n">welly</span><span class="o">.</span><span class="n">from_las</span><span class="p">(</span><span class="s1">'path/to/well.las'</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>A <code class="docutils literal notranslate"><span class="pre">welly.Project</span></code> is a collection of <code class="docutils literal notranslate"><span class="pre">welly.Well</span></code> objects. But if you only have a single well, you may not need a Project; a Well object on its own will do. Then you could do this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">well</span><span class="p">,</span> <span class="o">=</span> <span class="n">welly</span><span class="o">.</span><span class="n">from_las</span><span class="p">(</span><span class="s1">'path/to/well.las'</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The presence of the comma after <code class="docutils literal notranslate"><span class="pre">well</span></code> unpacks the single item into the <code class="docutils literal notranslate"><span class="pre">welly</span></code> variable. (This is a Python trick, it’s not a Welly thing.)</p>
+<p>Alternatively, you can use the <code class="docutils literal notranslate"><span class="pre">Well.from_las()</span></code> method to load a well by passing a filename as a <code class="docutils literal notranslate"><span class="pre">str</span></code>. This is really just a wrapper for <code class="docutils literal notranslate"><span class="pre">lasio</span></code> but instantiates a <code class="docutils literal notranslate"><span class="pre">Header</span></code>, <code class="docutils literal notranslate"><span class="pre">Curve</span></code>s, etc.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">welly</span> <span class="kn">import</span> <span class="n">Well</span>
+
+<span class="n">p129</span> <span class="o">=</span> <span class="n">Well</span><span class="o">.</span><span class="n">from_las</span><span class="p">(</span><span class="s1">'https://geocomp.s3.amazonaws.com/data/P-129.LAS'</span><span class="p">)</span>
+<span class="n">p129</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div class="table-wrapper"><table><tr><th colspan="2" style="text-align:center;">Kennetcook #2<br/><small>Long = 63* 45'24.460  W</small></th></tr><tr><td><strong>crs</strong></td><td>CRS({})</td></tr><tr><td><strong>location</strong></td><td>Lat = 45* 12' 34.237" N</td></tr><tr><td><strong>country</strong></td><td>CA</td></tr><tr><td><strong>province</strong></td><td>Nova Scotia</td></tr><tr><td><strong>latitude</strong></td><td></td></tr><tr><td><strong>longitude</strong></td><td></td></tr><tr><td><strong>datum</strong></td><td></td></tr><tr><td><strong>section</strong></td><td>45.20 Deg N</td></tr><tr><td><strong>range</strong></td><td>PD 176</td></tr><tr><td><strong>township</strong></td><td>63.75 Deg W</td></tr><tr><td><strong>ekb</strong></td><td>94.8</td></tr><tr><td><strong>egl</strong></td><td>90.3</td></tr><tr><td><strong>gl</strong></td><td>90.3</td></tr><tr><td><strong>tdd</strong></td><td>1935.0</td></tr><tr><td><strong>tdl</strong></td><td>1935.0</td></tr><tr><td><strong>td</strong></td><td>None</td></tr><tr><td><strong>data</strong></td><td>CALI, DPHI_DOL, DPHI_LIM, DPHI_SAN, DRHO, DT, DTS, GR, HCAL, NPHI_DOL, NPHI_LIM, NPHI_SAN, PEF, RHOB, RLA1, RLA2, RLA3, RLA4, RLA5, RM_HRLT, RT_HRLT, RXOZ, RXO_HRLT, SP</td></tr></table></div></div></div>
+</div>
+<p>There are a lot of problems here:</p>
+<ul class="simple">
+<li><p>The Location is not stored correctly, with latitude stored in Location and Longitude stored in UWI (that’s why it appears in the title row of this view).</p></li>
+<li><p>There’s less accurate Lat and Lon information stored in Section and Township; we should get rid of those.</p></li>
+<li><p>There’s no UWI, KB or TD, all of which would be useful to populate.</p></li>
+</ul>
+<p>We can fix all this by ‘remapping’ some fields. This is done with a dictionary that maps a well’s field to its location in the LAS file. For example, we can use the Well field (‘Kennetcook #2’) to as the UWI in our well with a mapping like: <code class="docutils literal notranslate"><span class="pre">{'UWI':</span> <span class="pre">'WELL'}</span></code>. We can remove a bad item such as the Section name, by mapping to <code class="docutils literal notranslate"><span class="pre">None</span></code>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">remap</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">'UWI'</span><span class="p">:</span> <span class="s1">'LIC'</span><span class="p">,</span>  <span class="c1"># Commonly used unique name; not a true UWI.</span>
+    <span class="s1">'KB'</span><span class="p">:</span> <span class="s1">'EKB'</span><span class="p">,</span>
+    <span class="s1">'TD'</span><span class="p">:</span> <span class="s1">'TDD'</span><span class="p">,</span>  <span class="c1"># Driller's TD.</span>
+    <span class="s1">'LATI'</span><span class="p">:</span> <span class="s1">'LOC'</span><span class="p">,</span>
+    <span class="s1">'LONG'</span><span class="p">:</span> <span class="s1">'UWI'</span><span class="p">,</span>
+    <span class="s1">'SECT'</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="s1">'TOWN'</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="s1">'LOC'</span><span class="p">:</span> <span class="kc">None</span>
+<span class="p">}</span>
+
+<span class="n">p129</span> <span class="o">=</span> <span class="n">Well</span><span class="o">.</span><span class="n">from_las</span><span class="p">(</span><span class="s1">'https://geocomp.s3.amazonaws.com/data/P-129.LAS'</span><span class="p">,</span> <span class="n">remap</span><span class="o">=</span><span class="n">remap</span><span class="p">)</span>
+<span class="n">p129</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div class="table-wrapper"><table><tr><th colspan="2" style="text-align:center;">Kennetcook #2<br/><small>P-129</small></th></tr><tr><td><strong>crs</strong></td><td>CRS({})</td></tr><tr><td><strong>country</strong></td><td>CA</td></tr><tr><td><strong>province</strong></td><td>Nova Scotia</td></tr><tr><td><strong>latitude</strong></td><td>Lat = 45* 12' 34.237" N</td></tr><tr><td><strong>longitude</strong></td><td>Long = 63* 45'24.460  W</td></tr><tr><td><strong>datum</strong></td><td></td></tr><tr><td><strong>range</strong></td><td>PD 176</td></tr><tr><td><strong>ekb</strong></td><td>94.8</td></tr><tr><td><strong>egl</strong></td><td>90.3</td></tr><tr><td><strong>kb</strong></td><td>94.8</td></tr><tr><td><strong>gl</strong></td><td>90.3</td></tr><tr><td><strong>td</strong></td><td>1935.0</td></tr><tr><td><strong>tdd</strong></td><td>1935.0</td></tr><tr><td><strong>tdl</strong></td><td>1935.0</td></tr><tr><td><strong>data</strong></td><td>CALI, DPHI_DOL, DPHI_LIM, DPHI_SAN, DRHO, DT, DTS, GR, HCAL, NPHI_DOL, NPHI_LIM, NPHI_SAN, PEF, RHOB, RLA1, RLA2, RLA3, RLA4, RLA5, RM_HRLT, RT_HRLT, RXOZ, RXO_HRLT, SP</td></tr></table></div></div></div>
+</div>
+<p>That’s better!</p>
+<p>Later on, we’ll look at how we can go a step further, extracting the more accurate</p>
+</section>
+<section id="well-header">
+<h2>Well header<a class="headerlink" href="#well-header" title="Permalink to this headline">¶</a></h2>
+<p>Metadata about the well is stored in its <code class="docutils literal notranslate"><span class="pre">header</span></code> attribute:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">p129</span><span class="o">.</span><span class="n">header</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<div class="table-wrapper"><table border="1" class="dataframe">
+<thead>
+<tr style="text-align: right;">
+<th></th>
+<th>original_mnemonic</th>
+<th>mnemonic</th>
+<th>unit</th>
+<th>value</th>
+<th>descr</th>
+<th>section</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th>0</th>
+<td>VERS</td>
+<td>VERS</td>
+<td></td>
+<td>2.0</td>
+<td></td>
+<td>Version</td>
+</tr>
+<tr>
+<th>1</th>
+<td>WRAP</td>
+<td>WRAP</td>
+<td></td>
+<td>YES</td>
+<td></td>
+<td>Version</td>
+</tr>
+<tr>
+<th>2</th>
+<td>STRT</td>
+<td>STRT</td>
+<td>M</td>
+<td>1.0668</td>
+<td>START DEPTH</td>
+<td>Well</td>
+</tr>
+<tr>
+<th>3</th>
+<td>STOP</td>
+<td>STOP</td>
+<td>M</td>
+<td>1939.1376</td>
+<td>STOP DEPTH</td>
+<td>Well</td>
+</tr>
+<tr>
+<th>4</th>
+<td>STEP</td>
+<td>STEP</td>
+<td>M</td>
+<td>0.1524</td>
+<td>STEP</td>
+<td>Well</td>
+</tr>
+<tr>
+<th>...</th>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr>
+<th>137</th>
+<td>TLI</td>
+<td>TLI</td>
+<td>M</td>
+<td>280.0</td>
+<td>Top Log Interval</td>
+<td>Parameter</td>
+</tr>
+<tr>
+<th>138</th>
+<td>UWID</td>
+<td>UWID</td>
+<td></td>
+<td></td>
+<td>Unique Well Identification Number</td>
+<td>Parameter</td>
+</tr>
+<tr>
+<th>139</th>
+<td>WN</td>
+<td>WN</td>
+<td></td>
+<td>Kennetcook #2</td>
+<td>Well Name</td>
+<td>Parameter</td>
+</tr>
+<tr>
+<th>140</th>
+<td>EPD</td>
+<td>EPD</td>
+<td>M</td>
+<td>90.300003</td>
+<td>Elevation of Permanent Datum above Mean Sea Level</td>
+<td>Parameter</td>
+</tr>
+<tr>
+<th>141</th>
+<td></td>
+<td>UNKNOWN</td>
+<td></td>
+<td></td>
+<td></td>
+<td>Other</td>
+</tr>
+</tbody>
+</table></div>
+<p>142 rows × 6 columns</p>
+</div></div></div>
+</div>
+<section id="important-note">
+<h3>Important note<a class="headerlink" href="#important-note" title="Permalink to this headline">¶</a></h3>
+<p>At present, the well’s <code class="docutils literal notranslate"><span class="pre">header</span></code> contains a DataFrame with the entire LAS file header.</p>
+<p>In a future release, only the well information from the <strong>WELL</strong> part of the file will be stored in the well’s header. (The Params data goes into the <code class="docutils literal notranslate"><span class="pre">well.location</span></code> attribute, and the Curve data goes into Welly’s <code class="docutils literal notranslate"><span class="pre">Curve</span></code> objects.)</p>
+</section>
+</section>
+<section id="well-location">
+<h2>Well location<a class="headerlink" href="#well-location" title="Permalink to this headline">¶</a></h2>
+<p>The well’s <code class="docutils literal notranslate"><span class="pre">location</span></code> contains the location info from <strong>PARAMS</strong>, and will also store the well’s 3D positional information, if available.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">p129</span><span class="o">.</span><span class="n">location</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Location({'position': None, 'crs': CRS({}), 'country': 'CA', 'province': 'Nova Scotia', 'latitude': 'Lat = 45* 12\' 34.237" N', 'longitude': "Long = 63* 45'24.460  W", 'datum': '', 'range': 'PD 176', 'ekb': 94.8, 'egl': 90.3, 'kb': 94.8, 'gl': 90.3, 'td': 1935.0, 'tdd': 1935.0, 'tdl': 1935.0, 'deviation': None})
+</pre></div>
+</div>
+</div>
+</div>
+<p>The CRS for this well is missing; we can add one if we know it:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">p129</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">crs</span> <span class="o">=</span> <span class="n">welly</span><span class="o">.</span><span class="n">CRS</span><span class="o">.</span><span class="n">from_epsg</span><span class="p">(</span><span class="mi">2038</span><span class="p">)</span>
+
+<span class="n">p129</span><span class="o">.</span><span class="n">location</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Location({'position': None, 'crs': CRS({'init': 'epsg:2038', 'no_defs': True}), 'country': 'CA', 'province': 'Nova Scotia', 'latitude': 'Lat = 45* 12\' 34.237" N', 'longitude': "Long = 63* 45'24.460  W", 'datum': '', 'range': 'PD 176', 'ekb': 94.8, 'egl': 90.3, 'kb': 94.8, 'gl': 90.3, 'td': 1935.0, 'tdd': 1935.0, 'tdl': 1935.0, 'deviation': None})
+</pre></div>
+</div>
+</div>
+</div>
+<p>Right now there’s no position log — we need to load a deviation survey.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">p129</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">position</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="add-deviation-data-to-a-well">
+<h2>Add deviation data to a well<a class="headerlink" href="#add-deviation-data-to-a-well" title="Permalink to this headline">¶</a></h2>
+<p>Let’s load another well:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">welly</span> <span class="kn">import</span> <span class="n">Well</span>
+
+<span class="n">p130</span> <span class="o">=</span> <span class="n">Well</span><span class="o">.</span><span class="n">from_las</span><span class="p">(</span><span class="s1">'https://geocomp.s3.amazonaws.com/data/P-130.LAS'</span><span class="p">)</span>
+
+<span class="n">dev</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="s1">'https://geocomp.s3.amazonaws.com/data/P-130_deviation_survey.csv'</span><span class="p">,</span>
+                 <span class="n">delimiter</span><span class="o">=</span><span class="s1">','</span><span class="p">,</span> <span class="n">skiprows</span><span class="o">=</span><span class="mi">1</span>
+                <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The columns are MD, inclination, azimuth, and TVD.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dev</span><span class="p">[:</span><span class="mi">5</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[ 18. ,   0.3,   0. ,  18. ],
+       [ 38. ,   0.5,   0. ,  38. ],
+       [ 57. ,   1.5,   0. ,  57. ],
+       [ 84. ,   1.8,   0. ,  84. ],
+       [104. ,   0.5,   0. , 104. ]])
+</pre></div>
+</div>
+</div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">add_deviation</span></code> wants only MD, inclination and azimuth, in that order. Given an array like that, it computes a position log.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">p130</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">add_deviation</span><span class="p">(</span><span class="n">dev</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">3</span><span class="p">],</span> <span class="n">td</span><span class="o">=</span><span class="mf">2618.3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The columns in the position log are <em>x</em> offset, <em>y</em> offset, and TVD.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">p130</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">position</span><span class="p">[:</span><span class="mi">5</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[0.00000000e+00, 0.00000000e+00, 0.00000000e+00],
+       [0.00000000e+00, 4.71237821e-02, 1.79999178e+01],
+       [0.00000000e+00, 1.86748917e-01, 3.79994202e+01],
+       [0.00000000e+00, 5.18340431e-01, 5.69962853e+01],
+       [0.00000000e+00, 1.29577626e+00, 8.39850594e+01]])
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">p130</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">trajectory</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[ 6.45933639e-01,  3.47023772e-01, -1.65395432e-02],
+       [ 5.90396925e-01,  3.28218888e-01, -2.63643779e+00],
+       [ 5.36457735e-01,  3.11968468e-01, -5.25632568e+00],
+       ...,
+       [-3.68094384e+00,  3.97484953e+01, -2.61112780e+03],
+       [-3.68832058e+00,  3.96833189e+01, -2.61374906e+03],
+       [-3.69619567e+00,  3.96172858e+01, -2.61637033e+03]])
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">p130</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">plot_plan</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/Wells_25_0.png" src="../_images/Wells_25_0.png"/>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">p130</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">plot_3d</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/Wells_26_0.png" src="../_images/Wells_26_0.png"/>
+</div>
+</div>
+</section>
+<section id="quick-plot">
+<h2>Quick plot<a class="headerlink" href="#quick-plot" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">welly</span></code> produces <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code> plots easily… but they aren’t all that pretty. You can pass in an Axes object as <code class="docutils literal notranslate"><span class="pre">ax</span></code>, and you can embellish the plots by adding more <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code> commands.</p>
+<p>First, let’s do the simplest thing possible:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">p130</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/Wells_28_0.png" src="../_images/Wells_28_0.png"/>
+</div>
+</div>
+<p>Since we have a position log, it’s worth plotting TVD as well (though it’s almost the same as MD in this well).</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tracks</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'MD'</span><span class="p">,</span> <span class="s1">'GR'</span><span class="p">,</span> <span class="s1">'RHOB'</span><span class="p">,</span> <span class="p">[</span><span class="s1">'M2R1'</span><span class="p">,</span> <span class="s1">'M2R9'</span><span class="p">],</span> <span class="s1">'TVD'</span><span class="p">]</span>
+
+<span class="n">p130</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">tracks</span><span class="o">=</span><span class="n">tracks</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/Wells_30_0.png" src="../_images/Wells_30_0.png"/>
+</div>
+</div>
+<p>You can control the plotting style, but it requires a <code class="docutils literal notranslate"><span class="pre">striplog.Legend</span></code>. We find the easiest way to build one is with a CSV-like text string:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">striplog</span> <span class="kn">import</span> <span class="n">Legend</span>
+
+<span class="n">curve_legend_csv</span> <span class="o">=</span> <span class="s2">"""curve mnemonic, colour,    lw,  ls,    xlim, xscale</span>
+<span class="s2">                      GR,             #ff0000,   1.0,  -, "0,200", linear</span>
+<span class="s2">                      RHOB,           gray,      1.0, --,        , linear</span>
+<span class="s2">                      M2R9,           darkgreen, 1.0,  -,        , log</span>
+<span class="s2">                      M2R1,           lightgreen,1.0,  -,        , log</span>
+<span class="s2">"""</span>
+<span class="n">legend</span> <span class="o">=</span> <span class="n">Legend</span><span class="o">.</span><span class="n">from_csv</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">curve_legend_csv</span><span class="p">)</span>
+
+<span class="n">tracks</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'MD'</span><span class="p">,</span> <span class="s1">'GR'</span><span class="p">,</span> <span class="s1">'RHOB'</span><span class="p">,</span> <span class="p">[</span><span class="s1">'M2R1'</span><span class="p">,</span> <span class="s1">'M2R9'</span><span class="p">],</span> <span class="s1">'TVD'</span><span class="p">]</span>
+
+<span class="n">p130</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">tracks</span><span class="o">=</span><span class="n">tracks</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="n">legend</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/Wells_32_0.png" src="../_images/Wells_32_0.png"/>
+</div>
+</div>
+</section>
+<section id="export-curves-to-data-matrix">
+<h2>Export curves to data matrix<a class="headerlink" href="#export-curves-to-data-matrix" title="Permalink to this headline">¶</a></h2>
+<p>Make a NumPy array out of the Curves in the well:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">p130</span><span class="o">.</span><span class="n">data_as_matrix</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/opt/hostedtoolcache/Python/3.10.2/x64/lib/python3.10/site-packages/welly/well.py:1095: UserWarning: In the next release, return_meta will be True by default. Set it to False to suppress this message. Set it to True to start using this feature now.
+  warnings.warn(message)
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[nan, nan, nan, ..., nan, nan, nan],
+       [nan, nan, nan, ..., nan, nan, nan],
+       [nan, nan, nan, ..., nan, nan, nan],
+       ...,
+       [nan, nan, nan, ..., nan, nan, nan],
+       [nan, nan, nan, ..., nan, nan, nan],
+       [nan, nan, nan, ..., nan, nan, nan]])
+</pre></div>
+</div>
+</div>
+</div>
+<p>You can use aliases here, and it’s helpful to know which curve is which. You can also start and stop at new depths, to cut out the NaNs:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">alias</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'Gamma'</span><span class="p">:</span> <span class="p">[</span><span class="s1">'GRC'</span><span class="p">,</span> <span class="s1">'GR'</span><span class="p">,</span> <span class="s1">'GRX'</span><span class="p">],</span>
+         <span class="s1">'Density'</span><span class="p">:</span> <span class="p">[</span><span class="s1">'RHOZ'</span><span class="p">,</span> <span class="s1">'RHOB'</span><span class="p">],</span>
+        <span class="p">}</span>
+
+<span class="n">X</span><span class="p">,</span> <span class="n">depth</span><span class="p">,</span> <span class="n">features</span> <span class="o">=</span> <span class="n">p130</span><span class="o">.</span><span class="n">data_as_matrix</span><span class="p">(</span><span class="n">keys</span><span class="o">=</span><span class="p">[</span><span class="s1">'Gamma'</span><span class="p">,</span> <span class="s1">'Density'</span><span class="p">,</span> <span class="s1">'DT'</span><span class="p">],</span>
+                                         <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">,</span>
+                                         <span class="n">start</span><span class="o">=</span><span class="mi">1200</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                                         <span class="n">return_meta</span><span class="o">=</span><span class="kc">True</span>
+                                        <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">X</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(1424, 3)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">depth</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([1200., 1201., 1202., ..., 2621., 2622., 2623.])
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">features</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>['Gamma', 'Density', 'DT']
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="export-curves-to-pandas">
+<h2>Export curves to pandas<a class="headerlink" href="#export-curves-to-pandas" title="Permalink to this headline">¶</a></h2>
+<p>You can always get the curve data as a DataFrame. The depth will be the index:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">p130</span><span class="o">.</span><span class="n">df</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<div class="table-wrapper"><table border="1" class="dataframe">
+<thead>
+<tr style="text-align: right;">
+<th></th>
+<th>CALI</th>
+<th>DT</th>
+<th>NPHI_SAN</th>
+<th>NPHI_LIM</th>
+<th>NPHI_DOL</th>
+<th>DPHI_LIM</th>
+<th>DPHI_SAN</th>
+<th>DPHI_DOL</th>
+<th>M2R9</th>
+<th>M2R6</th>
+<th>M2R3</th>
+<th>M2R2</th>
+<th>M2R1</th>
+<th>GR</th>
+<th>SP</th>
+<th>PEF</th>
+<th>DRHO</th>
+<th>RHOB</th>
+</tr>
+<tr>
+<th>DEPT</th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th>20.1</th>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr>
+<th>20.2</th>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr>
+<th>20.3</th>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr>
+<th>20.4</th>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr>
+<th>20.5</th>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+</tbody>
+</table></div>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df</span><span class="o">.</span><span class="n">GR</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;AxesSubplot:xlabel='DEPT'&gt;
+</pre></div>
+</div>
+<img alt="../_images/Wells_43_1.png" src="../_images/Wells_43_1.png"/>
+</div>
+</div>
+<p>To get the UWI of the well as well, e.g. if you want to combine multiple wells:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">p130</span><span class="o">.</span><span class="n">df</span><span class="p">(</span><span class="n">uwi</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<div class="table-wrapper"><table border="1" class="dataframe">
+<thead>
+<tr style="text-align: right;">
+<th></th>
+<th></th>
+<th>CALI</th>
+<th>DT</th>
+<th>NPHI_SAN</th>
+<th>NPHI_LIM</th>
+<th>NPHI_DOL</th>
+<th>DPHI_LIM</th>
+<th>DPHI_SAN</th>
+<th>DPHI_DOL</th>
+<th>M2R9</th>
+<th>M2R6</th>
+<th>M2R3</th>
+<th>M2R2</th>
+<th>M2R1</th>
+<th>GR</th>
+<th>SP</th>
+<th>PEF</th>
+<th>DRHO</th>
+<th>RHOB</th>
+</tr>
+<tr>
+<th>UWI</th>
+<th>DEPT</th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th rowspan="5" valign="top">100/N14A/11E05</th>
+<th>20.1</th>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr>
+<th>20.2</th>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr>
+<th>20.3</th>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr>
+<th>20.4</th>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr>
+<th>20.5</th>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+</tbody>
+</table></div>
+</div></div></div>
+</div>
+<p>If you have several wells, you can also use <code class="docutils literal notranslate"><span class="pre">welly.Project.df()</span></code> to do the concatenation for you.</p>
+<p>Note that you can also use aliases with the DataFrame creation, or create a new ‘basis’ (depth in this case):</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'CALI'</span><span class="p">,</span> <span class="s1">'Gamma'</span><span class="p">,</span> <span class="s1">'Density'</span><span class="p">]</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">p130</span><span class="o">.</span><span class="n">df</span><span class="p">(</span><span class="n">keys</span><span class="o">=</span><span class="n">keys</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">,</span> <span class="n">rename_aliased</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<div class="table-wrapper"><table border="1" class="dataframe">
+<thead>
+<tr style="text-align: right;">
+<th></th>
+<th>CALI</th>
+<th>Gamma</th>
+<th>Density</th>
+</tr>
+<tr>
+<th>DEPT</th>
+<th></th>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th>20.1</th>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr>
+<th>20.2</th>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr>
+<th>20.3</th>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr>
+<th>20.4</th>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr>
+<th>20.5</th>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+</tbody>
+</table></div>
+</div></div></div>
+</div>
+</section>
+<section id="make-an-empty-well">
+<h2>Make an ‘empty’ well<a class="headerlink" href="#make-an-empty-well" title="Permalink to this headline">¶</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">welly</span>
+
+<span class="n">w</span> <span class="o">=</span> <span class="n">welly</span><span class="o">.</span><span class="n">Well</span><span class="p">()</span>
+
+<span class="n">w</span><span class="o">.</span><span class="n">header</span>  <span class="c1"># is empty</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<div class="table-wrapper"><table border="1" class="dataframe">
+<thead>
+<tr style="text-align: right;">
+<th></th>
+<th>original_mnemonic</th>
+<th>mnemonic</th>
+<th>unit</th>
+<th>value</th>
+<th>descr</th>
+<th>section</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table></div>
+</div></div></div>
+</div>
+<p>We can set the <strong>UWI</strong> and <strong>name</strong> of a well directly on the well object, but these are the only attributes of the well we can set in this way.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">w</span><span class="o">.</span><span class="n">uwi</span> <span class="o">=</span> <span class="s1">'foo'</span>
+<span class="n">w</span><span class="o">.</span><span class="n">uwi</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>'foo'
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">w</span><span class="o">.</span><span class="n">header</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<div class="table-wrapper"><table border="1" class="dataframe">
+<thead>
+<tr style="text-align: right;">
+<th></th>
+<th>original_mnemonic</th>
+<th>mnemonic</th>
+<th>unit</th>
+<th>value</th>
+<th>descr</th>
+<th>section</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th>0</th>
+<td>UWI</td>
+<td>UWI</td>
+<td>None</td>
+<td>foo</td>
+<td>None</td>
+<td>header</td>
+</tr>
+</tbody>
+</table></div>
+</div></div></div>
+</div>
+<hr class="docutils"/>
+<p>© 2022 Agile Scientific, CC BY</p>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="../welly.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">welly package</div>
+              </div>
+              <svg><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="Quick_start.html">
+              <svg><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Quick start</div>
+                
+              </div>
+            </a>
+        </div>
+
+        <div class="related-information">
+              Copyright &#169; 2022, The Welly Authors |
+          Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+          <a href="https://github.com/pradyunsg/furo">Furo theme</a>.
+            | <a class="muted-link" href="../_sources/_notebooks/Wells.ipynb.txt"
+               rel="nofollow">
+              Show Source
+            </a>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            Contents
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Wells</a><ul>
+<li><a class="reference internal" href="#load-a-well-from-las">Load a well from LAS</a></li>
+<li><a class="reference internal" href="#well-header">Well header</a><ul>
+<li><a class="reference internal" href="#important-note">Important note</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#well-location">Well location</a></li>
+<li><a class="reference internal" href="#add-deviation-data-to-a-well">Add deviation data to a well</a></li>
+<li><a class="reference internal" href="#quick-plot">Quick plot</a></li>
+<li><a class="reference internal" href="#export-curves-to-data-matrix">Export curves to data matrix</a></li>
+<li><a class="reference internal" href="#export-curves-to-pandas">Export curves to pandas</a></li>
+<li><a class="reference internal" href="#make-an-empty-well">Make an ‘empty’ well</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/scripts/furo.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    </body>
+</html>

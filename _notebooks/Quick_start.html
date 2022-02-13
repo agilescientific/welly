@@ -1,0 +1,1474 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Wells" href="Wells.html" /><link rel="prev" title="Installation" href="../installation.html" />
+
+    <link rel="shortcut icon" href="../_static/favicon.ico"/><meta name="generator" content="sphinx-4.4.0, furo 2022.01.02"/>
+        <title>Quick start - welly documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=df49af52631e7917044a9c21a57f7b83170a6dd0" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=fade93df149f7c5fedb3ff897f799dc7d283b420" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  body[data-theme="dark"] {
+    --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+  }
+  @media (prefers-color-scheme: dark) {
+    body:not([data-theme="light"]) {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+  }
+</style></head>
+  <body>
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path stroke="none" d="M0 0h24v24H0z" />
+      <line x1="4" y1="6" x2="20" y2="6" />
+      <line x1="10" y1="12" x2="20" y2="12" />
+      <line x1="6" y1="18" x2="20" y2="18" />
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">welly  documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand centered" href="../index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="../_static/welly_simple_alpha.png" alt="Logo"/>
+  </div>
+  
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">User guide</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Quick start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Wells.html">Wells</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../welly.html">welly package</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Other resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development.html">Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../authors.html">Authors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Project links</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://pypi.org/project/welly/">PyPI releases</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/agile-geoscience/welly">Code in GitHub</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/agile-geoscience/welly/issues">Issue tracker</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://code.agilescientific.com/community">Community guidelines</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://code.agilescientific.com">Agile's software</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.agilescientific.com">Agile's website</a></li>
+</ul>
+
+</div>
+</div>
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <section class="tex2jax_ignore mathjax_ignore" id="quick-start">
+<h1>Quick start<a class="headerlink" href="#quick-start" title="Permalink to this headline">¶</a></h1>
+<p>Welcome to the <strong>Quick start</strong> guide! This should help you get started using <code class="docutils literal notranslate"><span class="pre">welly</span></code>.</p>
+<p>First some preliminaries…</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="kn">import</span> <span class="nn">welly</span>
+<span class="n">welly</span><span class="o">.</span><span class="n">__version__</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>'0.1.dev1+g212e99f'
+</pre></div>
+</div>
+</div>
+</div>
+<section id="create-a-project-from-las">
+<h2>Create a project from LAS<a class="headerlink" href="#create-a-project-from-las" title="Permalink to this headline">¶</a></h2>
+<p>Use the <code class="docutils literal notranslate"><span class="pre">read_las()</span></code> function to load a well by passing a single filename, a POSIX-style path with wildcards (e.g. <code class="docutils literal notranslate"><span class="pre">'file_*.las'</span></code>) or URL as a <code class="docutils literal notranslate"><span class="pre">str</span></code>.</p>
+<p>This creates a project containing one (or more, depending on the wildcard) wells.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">project</span> <span class="o">=</span> <span class="n">welly</span><span class="o">.</span><span class="n">read_las</span><span class="p">(</span><span class="s1">'https://geocomp.s3.amazonaws.com/data/P-129.LAS'</span><span class="p">)</span>
+
+<span class="n">project</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0it [00:00, ?it/s]
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>1it [00:02,  2.36s/it]
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>1it [00:02,  2.36s/it]
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+<div class="output text_html"><div class="table-wrapper"><table><tr><th>Index</th><th>UWI</th><th>Data</th><th>Curves</th></tr><tr><td>0</td><td><strong>Long = 63* 45'24.460  W</strong></td><td>24 curves</td><td>CALI, HCAL, PEF, DT, DTS, DPHI_SAN, DPHI_LIM, DPHI_DOL, NPHI_SAN, NPHI_LIM, NPHI_DOL, RLA5, RLA3, RLA4, RLA1, RLA2, RXOZ, RXO_HRLT, RT_HRLT, RM_HRLT, DRHO, RHOB, GR, SP</td></tr></table></div></div></div>
+</div>
+<p>Clearly there are some issues with this well. Have a look at the <a class="reference internal" href="Wells.html"><span class="doc std std-doc">Well object docs</span></a> to see how to fix them.</p>
+<p>You can index into a project to get at a single well.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">well</span> <span class="o">=</span> <span class="n">project</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="n">well</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div class="table-wrapper"><table><tr><th colspan="2" style="text-align:center;">Kennetcook #2<br/><small>Long = 63* 45'24.460  W</small></th></tr><tr><td><strong>crs</strong></td><td>CRS({})</td></tr><tr><td><strong>location</strong></td><td>Lat = 45* 12' 34.237" N</td></tr><tr><td><strong>country</strong></td><td>CA</td></tr><tr><td><strong>province</strong></td><td>Nova Scotia</td></tr><tr><td><strong>latitude</strong></td><td></td></tr><tr><td><strong>longitude</strong></td><td></td></tr><tr><td><strong>datum</strong></td><td></td></tr><tr><td><strong>section</strong></td><td>45.20 Deg N</td></tr><tr><td><strong>range</strong></td><td>PD 176</td></tr><tr><td><strong>township</strong></td><td>63.75 Deg W</td></tr><tr><td><strong>ekb</strong></td><td>94.8</td></tr><tr><td><strong>egl</strong></td><td>90.3</td></tr><tr><td><strong>gl</strong></td><td>90.3</td></tr><tr><td><strong>tdd</strong></td><td>1935.0</td></tr><tr><td><strong>tdl</strong></td><td>1935.0</td></tr><tr><td><strong>td</strong></td><td>None</td></tr><tr><td><strong>data</strong></td><td>CALI, DPHI_DOL, DPHI_LIM, DPHI_SAN, DRHO, DT, DTS, GR, HCAL, NPHI_DOL, NPHI_LIM, NPHI_SAN, PEF, RHOB, RLA1, RLA2, RLA3, RLA4, RLA5, RM_HRLT, RT_HRLT, RXOZ, RXO_HRLT, SP</td></tr></table></div></div></div>
+</div>
+<p>The well’s <code class="docutils literal notranslate"><span class="pre">header</span></code> contains the well information from the <strong>WELL</strong> part of the file.</p>
+<p><strong>PLEASE NOTE</strong> The <code class="docutils literal notranslate"><span class="pre">header</span></code> attribute is under active development and will change in the next release of <code class="docutils literal notranslate"><span class="pre">welly</span></code>. We will make it more natural to find basic information about the well, without having to know how to read an LAS file.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">well</span><span class="o">.</span><span class="n">header</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<div class="table-wrapper"><table border="1" class="dataframe">
+<thead>
+<tr style="text-align: right;">
+<th></th>
+<th>original_mnemonic</th>
+<th>mnemonic</th>
+<th>unit</th>
+<th>value</th>
+<th>descr</th>
+<th>section</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th>0</th>
+<td>VERS</td>
+<td>VERS</td>
+<td></td>
+<td>2.0</td>
+<td></td>
+<td>Version</td>
+</tr>
+<tr>
+<th>1</th>
+<td>WRAP</td>
+<td>WRAP</td>
+<td></td>
+<td>YES</td>
+<td></td>
+<td>Version</td>
+</tr>
+<tr>
+<th>2</th>
+<td>STRT</td>
+<td>STRT</td>
+<td>M</td>
+<td>1.0668</td>
+<td>START DEPTH</td>
+<td>Well</td>
+</tr>
+<tr>
+<th>3</th>
+<td>STOP</td>
+<td>STOP</td>
+<td>M</td>
+<td>1939.1376</td>
+<td>STOP DEPTH</td>
+<td>Well</td>
+</tr>
+<tr>
+<th>4</th>
+<td>STEP</td>
+<td>STEP</td>
+<td>M</td>
+<td>0.1524</td>
+<td>STEP</td>
+<td>Well</td>
+</tr>
+<tr>
+<th>...</th>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr>
+<th>137</th>
+<td>TLI</td>
+<td>TLI</td>
+<td>M</td>
+<td>280.0</td>
+<td>Top Log Interval</td>
+<td>Parameter</td>
+</tr>
+<tr>
+<th>138</th>
+<td>UWID</td>
+<td>UWID</td>
+<td></td>
+<td></td>
+<td>Unique Well Identification Number</td>
+<td>Parameter</td>
+</tr>
+<tr>
+<th>139</th>
+<td>WN</td>
+<td>WN</td>
+<td></td>
+<td>Kennetcook #2</td>
+<td>Well Name</td>
+<td>Parameter</td>
+</tr>
+<tr>
+<th>140</th>
+<td>EPD</td>
+<td>EPD</td>
+<td>M</td>
+<td>90.300003</td>
+<td>Elevation of Permanent Datum above Mean Sea Level</td>
+<td>Parameter</td>
+</tr>
+<tr>
+<th>141</th>
+<td></td>
+<td>UNKNOWN</td>
+<td></td>
+<td></td>
+<td></td>
+<td>Other</td>
+</tr>
+</tbody>
+</table></div>
+<p>142 rows × 6 columns</p>
+</div></div></div>
+</div>
+<p>The well’s <code class="docutils literal notranslate"><span class="pre">location</span></code> contains the location info from <strong>PARAMS</strong>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">well</span><span class="o">.</span><span class="n">location</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Location({'position': None, 'crs': CRS({}), 'location': 'Lat = 45* 12\' 34.237" N', 'country': 'CA', 'province': 'Nova Scotia', 'latitude': '', 'longitude': '', 'datum': '', 'section': '45.20 Deg N', 'range': 'PD 176', 'township': '63.75 Deg W', 'ekb': 94.8, 'egl': 90.3, 'gl': 90.3, 'tdd': 1935.0, 'tdl': 1935.0, 'td': None, 'deviation': None})
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="basic-plots">
+<h2>Basic plots<a class="headerlink" href="#basic-plots" title="Permalink to this headline">¶</a></h2>
+<p>Welly produces simple <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code> plots. You can add your own Matplotlib code to build on them.</p>
+<p>Let’s plot some important logs. We can put two logs in the same track, as shown, and add depth tracks:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tracks</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'MD'</span><span class="p">,</span> <span class="s1">'CALI'</span><span class="p">,</span> <span class="s1">'GR'</span><span class="p">,</span> <span class="s1">'SP'</span><span class="p">,</span> <span class="s1">'RHOB'</span><span class="p">,</span> <span class="p">[</span><span class="s1">'DT'</span><span class="p">,</span> <span class="s1">'DTS'</span><span class="p">],</span> <span class="s1">'MD'</span><span class="p">]</span>
+
+<span class="n">well</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">tracks</span><span class="o">=</span><span class="n">tracks</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/Quick_start_11_0.png" src="../_images/Quick_start_11_0.png"/>
+</div>
+</div>
+</section>
+<section id="curve-data">
+<h2>Curve data<a class="headerlink" href="#curve-data" title="Permalink to this headline">¶</a></h2>
+<p>The well curves are stored in <code class="docutils literal notranslate"><span class="pre">well.data</span></code>, which is a dictionary mapping mnemonic to <code class="docutils literal notranslate"><span class="pre">welly.Curve</span></code> object:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">well</span><span class="o">.</span><span class="n">data</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{'CALI': Curve(mnemonic=CALI, units=in, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
+ 'HCAL': Curve(mnemonic=HCAL, units=in, start=1.0668, stop=1939.1376, step=0.1524, count=[2139]),
+ 'PEF': Curve(mnemonic=PEF, units=, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
+ 'DT': Curve(mnemonic=DT, units=us/ft, start=1.0668, stop=1939.1376, step=0.1524, count=[10850]),
+ 'DTS': Curve(mnemonic=DTS, units=us/ft, start=1.0668, stop=1939.1376, step=0.1524, count=[10850]),
+ 'DPHI_SAN': Curve(mnemonic=DPHI_SAN, units=m3/m3, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
+ 'DPHI_LIM': Curve(mnemonic=DPHI_LIM, units=m3/m3, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
+ 'DPHI_DOL': Curve(mnemonic=DPHI_DOL, units=m3/m3, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
+ 'NPHI_SAN': Curve(mnemonic=NPHI_SAN, units=m3/m3, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
+ 'NPHI_LIM': Curve(mnemonic=NPHI_LIM, units=m3/m3, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
+ 'NPHI_DOL': Curve(mnemonic=NPHI_DOL, units=m3/m3, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
+ 'RLA5': Curve(mnemonic=RLA5, units=ohm.m, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
+ 'RLA3': Curve(mnemonic=RLA3, units=ohm.m, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
+ 'RLA4': Curve(mnemonic=RLA4, units=ohm.m, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
+ 'RLA1': Curve(mnemonic=RLA1, units=ohm.m, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
+ 'RLA2': Curve(mnemonic=RLA2, units=ohm.m, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
+ 'RXOZ': Curve(mnemonic=RXOZ, units=ohm.m, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
+ 'RXO_HRLT': Curve(mnemonic=RXO_HRLT, units=ohm.m, start=1.0668, stop=1939.1376, step=0.1524, count=[2139]),
+ 'RT_HRLT': Curve(mnemonic=RT_HRLT, units=ohm.m, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
+ 'RM_HRLT': Curve(mnemonic=RM_HRLT, units=ohm.m, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
+ 'DRHO': Curve(mnemonic=DRHO, units=g/cm3, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
+ 'RHOB': Curve(mnemonic=RHOB, units=g/cm3, start=1.0668, stop=1939.1376, step=0.1524, count=[12707]),
+ 'GR': Curve(mnemonic=GR, units=gAPI, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
+ 'SP': Curve(mnemonic=SP, units=mV, start=1.0668, stop=1939.1376, step=0.1524, count=[12718])}
+</pre></div>
+</div>
+</div>
+</div>
+<p>Let’s assign <code class="docutils literal notranslate"><span class="pre">gr</span></code> to the gamma-ray log so we can inspect it more easily:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gr</span> <span class="o">=</span> <span class="n">well</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">'GR'</span><span class="p">]</span>
+
+<span class="n">gr</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div class="table-wrapper"><table><tr><th colspan="2" style="text-align:center;">GR [gAPI]</th></tr><tr><td colspan="2" style="text-align:center;">1.0668 : 1939.1376 : 0.1524</td></tr><tr><td><strong>index_units</strong></td><td>m</td></tr><tr><td><strong>code</strong></td><td>None</td></tr><tr><td><strong>description</strong></td><td>Gamma-Ray</td></tr><tr><td><strong>log_type</strong></td><td>None</td></tr><tr><td><strong>api</strong></td><td>None</td></tr><tr><td><strong>date</strong></td><td>10-Oct-2007</td></tr><tr><td><strong>null</strong></td><td>-999.25</td></tr><tr><td><strong>run</strong></td><td>1</td></tr><tr><td><strong>service_company</strong></td><td>Schlumberger</td></tr><tr><td><strong>_alias</strong></td><td>GR</td></tr><tr><th colspan="2" style="border-top: 2px solid #000; text-align:center;"><strong>Stats</strong></th></tr><tr><td><strong>samples (NaNs)</strong></td><td>12718 (0)</td></tr><tr><td><strong><sub>min</sub> mean <sup>max</sup></strong></td><td><sub>3.89</sub> 78.986 <sup>267.94</sup></td></tr><tr><th style="border-top: 2px solid #000;">Depth</th><th style="border-top: 2px solid #000;">Value</th></tr><tr><td>1.0668</td><td>46.6987</td></tr><tr><td>1.2192</td><td>46.6987</td></tr><tr><td>1.3716</td><td>46.6987</td></tr><tr><td>⋮</td><td>⋮</td></tr><tr><td>1938.8328</td><td>92.2462</td></tr><tr><td>1938.9852</td><td>92.2462</td></tr><tr><td>1939.1376</td><td>92.2462</td></tr></table></div></div></div>
+</div>
+<p>It’s often helpful to make a quick plot:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gr</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;AxesSubplot:title={'center':'GR'}, xlabel='gAPI'&gt;
+</pre></div>
+</div>
+<img alt="../_images/Quick_start_17_1.png" src="../_images/Quick_start_17_1.png"/>
+</div>
+</div>
+</section>
+<section id="curve-data-as-a-pandas-dataframe">
+<h2>Curve data as a <code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code><a class="headerlink" href="#curve-data-as-a-pandas-dataframe" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">df</span></code> attribute (attributes are like ordinary variables; they do not have parentheses after them) of a single curve is a dataframe:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gr</span><span class="o">.</span><span class="n">df</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<div class="table-wrapper"><table border="1" class="dataframe">
+<thead>
+<tr style="text-align: right;">
+<th></th>
+<th>GR</th>
+</tr>
+<tr>
+<th>DEPT</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th>1.0668</th>
+<td>46.69865036</td>
+</tr>
+<tr>
+<th>1.2192</th>
+<td>46.69865036</td>
+</tr>
+<tr>
+<th>1.3716</th>
+<td>46.69865036</td>
+</tr>
+<tr>
+<th>1.5240</th>
+<td>46.69865036</td>
+</tr>
+<tr>
+<th>1.6764</th>
+<td>46.69865036</td>
+</tr>
+<tr>
+<th>...</th>
+<td>...</td>
+</tr>
+<tr>
+<th>1938.5280</th>
+<td>92.24622345</td>
+</tr>
+<tr>
+<th>1938.6804</th>
+<td>92.24622345</td>
+</tr>
+<tr>
+<th>1938.8328</th>
+<td>92.24622345</td>
+</tr>
+<tr>
+<th>1938.9852</th>
+<td>92.24622345</td>
+</tr>
+<tr>
+<th>1939.1376</th>
+<td>92.24622345</td>
+</tr>
+</tbody>
+</table></div>
+<p>12718 rows × 1 columns</p>
+</div></div></div>
+</div>
+<p>And you can get at all of the well data in a similar way, except that this is a <strong>method</strong> not an attribute.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">well</span><span class="o">.</span><span class="n">df</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<div class="table-wrapper"><table border="1" class="dataframe">
+<thead>
+<tr style="text-align: right;">
+<th></th>
+<th>CALI</th>
+<th>HCAL</th>
+<th>PEF</th>
+<th>DT</th>
+<th>DTS</th>
+<th>DPHI_SAN</th>
+<th>DPHI_LIM</th>
+<th>DPHI_DOL</th>
+<th>NPHI_SAN</th>
+<th>NPHI_LIM</th>
+<th>...</th>
+<th>RLA1</th>
+<th>RLA2</th>
+<th>RXOZ</th>
+<th>RXO_HRLT</th>
+<th>RT_HRLT</th>
+<th>RM_HRLT</th>
+<th>DRHO</th>
+<th>RHOB</th>
+<th>GR</th>
+<th>SP</th>
+</tr>
+<tr>
+<th>DEPT</th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th>1.0668</th>
+<td>2.4438154697</td>
+<td>4.3912849426</td>
+<td>3.5864000320</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>0.1574800014</td>
+<td>0.1984400004</td>
+<td>0.2590999901</td>
+<td>0.4650999904</td>
+<td>0.3364700079</td>
+<td>...</td>
+<td>0.0320999995</td>
+<td>0.0279399995</td>
+<td>0.0576100014</td>
+<td>0.0255800001</td>
+<td>0.0255800001</td>
+<td>0.0550099984</td>
+<td>0.1942329407</td>
+<td>2.3901498318</td>
+<td>46.69865036</td>
+<td>120.1250</td>
+</tr>
+<tr>
+<th>1.2192</th>
+<td>2.4438154697</td>
+<td>4.3912849426</td>
+<td>3.5864000320</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>0.1574800014</td>
+<td>0.1984400004</td>
+<td>0.2590999901</td>
+<td>0.4650999904</td>
+<td>0.3364700079</td>
+<td>...</td>
+<td>0.0320999995</td>
+<td>0.0279399995</td>
+<td>0.0576100014</td>
+<td>0.0255800001</td>
+<td>0.0255800001</td>
+<td>0.0550099984</td>
+<td>0.1942329407</td>
+<td>2.3901498318</td>
+<td>46.69865036</td>
+<td>120.1250</td>
+</tr>
+<tr>
+<th>1.3716</th>
+<td>2.4438154697</td>
+<td>4.3912849426</td>
+<td>3.5864000320</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>0.1574800014</td>
+<td>0.1984400004</td>
+<td>0.2590999901</td>
+<td>0.4650999904</td>
+<td>0.3364700079</td>
+<td>...</td>
+<td>0.0320999995</td>
+<td>0.0279399995</td>
+<td>0.0576100014</td>
+<td>0.0255800001</td>
+<td>0.0255800001</td>
+<td>0.0550099984</td>
+<td>0.1942329407</td>
+<td>2.3901498318</td>
+<td>46.69865036</td>
+<td>120.1250</td>
+</tr>
+<tr>
+<th>1.5240</th>
+<td>2.4438154697</td>
+<td>4.3912849426</td>
+<td>3.5864000320</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>0.1574800014</td>
+<td>0.1984400004</td>
+<td>0.2590999901</td>
+<td>0.4650999904</td>
+<td>0.3364700079</td>
+<td>...</td>
+<td>0.0320999995</td>
+<td>0.0279399995</td>
+<td>0.0576100014</td>
+<td>0.0255800001</td>
+<td>0.0255800001</td>
+<td>0.0550099984</td>
+<td>0.1942329407</td>
+<td>2.3901498318</td>
+<td>46.69865036</td>
+<td>120.1250</td>
+</tr>
+<tr>
+<th>1.6764</th>
+<td>2.4438154697</td>
+<td>4.3912849426</td>
+<td>3.5864000320</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>0.1574800014</td>
+<td>0.1984400004</td>
+<td>0.2590999901</td>
+<td>0.4650999904</td>
+<td>0.3364700079</td>
+<td>...</td>
+<td>0.0320999995</td>
+<td>0.0279399995</td>
+<td>0.0576100014</td>
+<td>0.0255800001</td>
+<td>0.0255800001</td>
+<td>0.0550099984</td>
+<td>0.1942329407</td>
+<td>2.3901498318</td>
+<td>46.69865036</td>
+<td>120.1250</td>
+</tr>
+<tr>
+<th>...</th>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr>
+<th>1938.5280</th>
+<td>2.4202680588</td>
+<td>NaN</td>
+<td>2.2369799614</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>0.5464199781</td>
+<td>585.9415283200</td>
+<td>541.6757202100</td>
+<td>0.1283400059</td>
+<td>0.0841699988</td>
+<td>...</td>
+<td>274.0264892600</td>
+<td>663.1040649400</td>
+<td>7.1023502350</td>
+<td>NaN</td>
+<td>7.3863301277</td>
+<td>0.0272899996</td>
+<td>0.0613951497</td>
+<td>NaN</td>
+<td>92.24622345</td>
+<td>73.4375</td>
+</tr>
+<tr>
+<th>1938.6804</th>
+<td>2.4202680588</td>
+<td>NaN</td>
+<td>2.2369799614</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>0.5464199781</td>
+<td>585.9415283200</td>
+<td>541.6757202100</td>
+<td>0.1283400059</td>
+<td>0.0841699988</td>
+<td>...</td>
+<td>274.0264892600</td>
+<td>663.1040649400</td>
+<td>7.1022100449</td>
+<td>NaN</td>
+<td>7.3860998154</td>
+<td>0.0272899996</td>
+<td>0.0613951497</td>
+<td>NaN</td>
+<td>92.24622345</td>
+<td>73.6875</td>
+</tr>
+<tr>
+<th>1938.8328</th>
+<td>2.4202680588</td>
+<td>NaN</td>
+<td>2.2369799614</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>0.5464199781</td>
+<td>585.9415283200</td>
+<td>541.6757202100</td>
+<td>0.1283400059</td>
+<td>0.0841699988</td>
+<td>...</td>
+<td>274.0264892600</td>
+<td>663.1040649400</td>
+<td>7.0968699455</td>
+<td>NaN</td>
+<td>7.3806500435</td>
+<td>0.0272899996</td>
+<td>0.0613951497</td>
+<td>NaN</td>
+<td>92.24622345</td>
+<td>73.0000</td>
+</tr>
+<tr>
+<th>1938.9852</th>
+<td>2.4202680588</td>
+<td>NaN</td>
+<td>2.2369799614</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>0.5464199781</td>
+<td>585.9415283200</td>
+<td>541.6757202100</td>
+<td>0.1283400059</td>
+<td>0.0841699988</td>
+<td>...</td>
+<td>274.0264892600</td>
+<td>663.1040649400</td>
+<td>7.0391001701</td>
+<td>NaN</td>
+<td>7.3211698532</td>
+<td>0.0272899996</td>
+<td>0.0613951497</td>
+<td>NaN</td>
+<td>92.24622345</td>
+<td>73.9375</td>
+</tr>
+<tr>
+<th>1939.1376</th>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>...</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+</tbody>
+</table></div>
+<p>12718 rows × 24 columns</p>
+</div></div></div>
+</div>
+<p>It has to be a method because we can pass in extra options like aliases.</p>
+</section>
+<section id="curve-aliases">
+<h2>Curve aliases<a class="headerlink" href="#curve-aliases" title="Permalink to this headline">¶</a></h2>
+<p>We can make a dictionary mapping alias names (what we want to call curves) to a list of mnemonics (what they are actually called). The list of mnemonics is <em>ordered</em>, and this order expresses your preference. So, for example, in the alias dictionary below, the <strong>GR</strong> log will be used in preference to the <strong>GAM</strong> log.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">alias</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">"Gamma"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"GR"</span><span class="p">,</span> <span class="s2">"GAM"</span><span class="p">,</span> <span class="s2">"GRC"</span><span class="p">,</span> <span class="s2">"SGR"</span><span class="p">,</span> <span class="s2">"NGT"</span><span class="p">],</span>
+    <span class="s2">"Density"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"RHOZ"</span><span class="p">,</span> <span class="s2">"RHOB"</span><span class="p">,</span> <span class="s2">"DEN"</span><span class="p">,</span> <span class="s2">"RHOZ"</span><span class="p">],</span>
+    <span class="s2">"Sonic"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"DT"</span><span class="p">,</span> <span class="s2">"AC"</span><span class="p">,</span> <span class="s2">"DTP"</span><span class="p">,</span> <span class="s2">"DT4P"</span><span class="p">],</span>
+    <span class="s2">"Caliper"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"CAL"</span><span class="p">,</span> <span class="s2">"CALI"</span><span class="p">,</span> <span class="s2">"CALS"</span><span class="p">,</span> <span class="s2">"C1"</span><span class="p">],</span>
+    <span class="s1">'Porosity SS'</span><span class="p">:</span> <span class="p">[</span><span class="s1">'NPSS'</span><span class="p">,</span> <span class="s1">'DPSS'</span><span class="p">],</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Lots of methods in <code class="docutils literal notranslate"><span class="pre">welly</span></code> take an alias. Welly will use the alias dictionary to decide what to show.</p>
+<p>Here, the <code class="docutils literal notranslate"><span class="pre">keys</span></code> argument narrows down the columns to include in the dataframe.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">well</span><span class="o">.</span><span class="n">df</span><span class="p">(</span><span class="n">keys</span><span class="o">=</span><span class="p">[</span><span class="s1">'Gamma'</span><span class="p">,</span> <span class="s1">'Density'</span><span class="p">,</span> <span class="s1">'Sonic'</span><span class="p">,</span> <span class="s1">'DTS'</span><span class="p">],</span> <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<div class="table-wrapper"><table border="1" class="dataframe">
+<thead>
+<tr style="text-align: right;">
+<th></th>
+<th>Gamma</th>
+<th>Density</th>
+<th>Sonic</th>
+<th>DTS</th>
+</tr>
+<tr>
+<th>DEPT</th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th>1.0668</th>
+<td>46.69865036</td>
+<td>2.3901498318</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr>
+<th>1.2192</th>
+<td>46.69865036</td>
+<td>2.3901498318</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr>
+<th>1.3716</th>
+<td>46.69865036</td>
+<td>2.3901498318</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr>
+<th>1.5240</th>
+<td>46.69865036</td>
+<td>2.3901498318</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr>
+<th>1.6764</th>
+<td>46.69865036</td>
+<td>2.3901498318</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr>
+<th>...</th>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr>
+<th>1938.5280</th>
+<td>92.24622345</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr>
+<th>1938.6804</th>
+<td>92.24622345</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr>
+<th>1938.8328</th>
+<td>92.24622345</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr>
+<th>1938.9852</th>
+<td>92.24622345</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+<tr>
+<th>1939.1376</th>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+</tbody>
+</table></div>
+<p>12718 rows × 4 columns</p>
+</div></div></div>
+</div>
+<p>There are a lot of NaNs there, but if we just wanted to see the middle of the well, we can pass in a <code class="docutils literal notranslate"><span class="pre">basis</span></code> to narrow it down (and even resample the data if we want).</p>
+<p>Let’s look at 1000 to 1500 m, resampled to 1 m sample interval:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">basis</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">1501</span><span class="p">)</span>
+
+<span class="n">well</span><span class="o">.</span><span class="n">df</span><span class="p">(</span><span class="n">keys</span><span class="o">=</span><span class="p">[</span><span class="s1">'Gamma'</span><span class="p">,</span> <span class="s1">'Density'</span><span class="p">,</span> <span class="s1">'Sonic'</span><span class="p">,</span> <span class="s1">'DTS'</span><span class="p">],</span> <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">,</span> <span class="n">basis</span><span class="o">=</span><span class="n">basis</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<div class="table-wrapper"><table border="1" class="dataframe">
+<thead>
+<tr style="text-align: right;">
+<th></th>
+<th>Gamma</th>
+<th>Density</th>
+<th>Sonic</th>
+<th>DTS</th>
+</tr>
+<tr>
+<th>DEPT</th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th>1000.0</th>
+<td>109.4141766008</td>
+<td>2.6799457361</td>
+<td>64.2276356014</td>
+<td>106.9954482717</td>
+</tr>
+<tr>
+<th>1001.0</th>
+<td>97.9911234089</td>
+<td>2.6556390146</td>
+<td>66.5059106783</td>
+<td>114.9005662249</td>
+</tr>
+<tr>
+<th>1002.0</th>
+<td>121.8829895962</td>
+<td>2.7326798533</td>
+<td>72.6423786195</td>
+<td>128.5069715885</td>
+</tr>
+<tr>
+<th>1003.0</th>
+<td>116.8162654985</td>
+<td>2.7270846667</td>
+<td>67.0266704008</td>
+<td>114.4374434938</td>
+</tr>
+<tr>
+<th>1004.0</th>
+<td>104.1488654040</td>
+<td>2.7105148702</td>
+<td>66.5885520597</td>
+<td>112.6149668241</td>
+</tr>
+<tr>
+<th>...</th>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr>
+<th>1496.0</th>
+<td>48.4150835474</td>
+<td>2.5053586284</td>
+<td>57.5187979772</td>
+<td>91.2555331735</td>
+</tr>
+<tr>
+<th>1497.0</th>
+<td>35.7518339679</td>
+<td>2.2265663635</td>
+<td>59.8886118010</td>
+<td>98.4930620567</td>
+</tr>
+<tr>
+<th>1498.0</th>
+<td>43.7772705495</td>
+<td>2.3508678784</td>
+<td>59.2961889052</td>
+<td>99.9149563203</td>
+</tr>
+<tr>
+<th>1499.0</th>
+<td>36.5637318164</td>
+<td>2.3360053329</td>
+<td>63.2269721143</td>
+<td>98.0971322843</td>
+</tr>
+<tr>
+<th>1500.0</th>
+<td>64.5593145777</td>
+<td>2.6044978626</td>
+<td>53.9417406514</td>
+<td>89.4845678370</td>
+</tr>
+</tbody>
+</table></div>
+<p>501 rows × 4 columns</p>
+</div></div></div>
+</div>
+</section>
+<section id="curve-quality">
+<h2>Curve quality<a class="headerlink" href="#curve-quality" title="Permalink to this headline">¶</a></h2>
+<p>We can check the quality of curves with a dictionary of tests. There are some predefined tests in the <code class="docutils literal notranslate"><span class="pre">welly.quality</span></code> module, but you can write your own functions and pass them in instead (the function should take a curve as its argument, and return <code class="docutils literal notranslate"><span class="pre">True</span></code> if the test passed).</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">welly.quality</span> <span class="k">as</span> <span class="nn">q</span>
+
+<span class="n">tests</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">'Each'</span><span class="p">:</span> <span class="p">[</span>
+        <span class="n">q</span><span class="o">.</span><span class="n">no_flat</span><span class="p">,</span>
+        <span class="n">q</span><span class="o">.</span><span class="n">no_monotonic</span><span class="p">,</span>
+        <span class="n">q</span><span class="o">.</span><span class="n">no_gaps</span><span class="p">,</span>
+    <span class="p">],</span>
+    <span class="s1">'Gamma'</span><span class="p">:</span> <span class="p">[</span>
+        <span class="n">q</span><span class="o">.</span><span class="n">all_positive</span><span class="p">,</span>
+        <span class="n">q</span><span class="o">.</span><span class="n">all_below</span><span class="p">(</span><span class="mi">450</span><span class="p">),</span>
+        <span class="n">q</span><span class="o">.</span><span class="n">check_units</span><span class="p">([</span><span class="s1">'API'</span><span class="p">,</span> <span class="s1">'GAPI'</span><span class="p">]),</span>
+    <span class="p">],</span>
+    <span class="s1">'DT'</span><span class="p">:</span> <span class="p">[</span>
+        <span class="n">q</span><span class="o">.</span><span class="n">all_positive</span><span class="p">,</span>
+    <span class="p">],</span>
+    <span class="s1">'Sonic'</span><span class="p">:</span> <span class="p">[</span>
+        <span class="n">q</span><span class="o">.</span><span class="n">all_between</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10000</span><span class="p">),</span>  <span class="c1"># 1333 to 5000 m/s</span>
+        <span class="n">q</span><span class="o">.</span><span class="n">no_spikes</span><span class="p">(</span><span class="mi">10</span><span class="p">),</span>          <span class="c1"># 10 spikes allowed</span>
+    <span class="p">],</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">passed</span> <span class="o">=</span> <span class="n">well</span><span class="o">.</span><span class="n">qc_data</span><span class="p">(</span><span class="n">tests</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>This returns a dictionary of curves in which the values are dictionaries of <strong>test name: test result</strong> pairs.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">passed</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{'CALI': {'no_flat': False, 'no_monotonic': False, 'no_gaps': True},
+ 'HCAL': {'no_flat': False, 'no_monotonic': False, 'no_gaps': True},
+ 'PEF': {'no_flat': False, 'no_monotonic': False, 'no_gaps': True},
+ 'DT': {'no_flat': True,
+  'no_monotonic': True,
+  'no_gaps': True,
+  'all_positive': True,
+  'all_between': True,
+  'no_spikes': False},
+ 'DTS': {'no_flat': True, 'no_monotonic': True, 'no_gaps': True},
+ 'DPHI_SAN': {'no_flat': False, 'no_monotonic': False, 'no_gaps': True},
+ 'DPHI_LIM': {'no_flat': False, 'no_monotonic': False, 'no_gaps': True},
+ 'DPHI_DOL': {'no_flat': False, 'no_monotonic': False, 'no_gaps': True},
+ 'NPHI_SAN': {'no_flat': False, 'no_monotonic': False, 'no_gaps': True},
+ 'NPHI_LIM': {'no_flat': False, 'no_monotonic': False, 'no_gaps': True},
+ 'NPHI_DOL': {'no_flat': False, 'no_monotonic': False, 'no_gaps': True},
+ 'RLA5': {'no_flat': False, 'no_monotonic': False, 'no_gaps': True},
+ 'RLA3': {'no_flat': False, 'no_monotonic': False, 'no_gaps': True},
+ 'RLA4': {'no_flat': False, 'no_monotonic': False, 'no_gaps': True},
+ 'RLA1': {'no_flat': False, 'no_monotonic': False, 'no_gaps': True},
+ 'RLA2': {'no_flat': False, 'no_monotonic': False, 'no_gaps': True},
+ 'RXOZ': {'no_flat': False, 'no_monotonic': False, 'no_gaps': True},
+ 'RXO_HRLT': {'no_flat': False, 'no_monotonic': False, 'no_gaps': True},
+ 'RT_HRLT': {'no_flat': False, 'no_monotonic': False, 'no_gaps': True},
+ 'RM_HRLT': {'no_flat': False, 'no_monotonic': False, 'no_gaps': True},
+ 'DRHO': {'no_flat': False, 'no_monotonic': False, 'no_gaps': True},
+ 'RHOB': {'no_flat': False, 'no_monotonic': False, 'no_gaps': True},
+ 'GR': {'no_flat': False,
+  'no_monotonic': False,
+  'no_gaps': True,
+  'all_positive': True,
+  'all_below': True,
+  'check_units': False},
+ 'SP': {'no_flat': False, 'no_monotonic': False, 'no_gaps': True}}
+</pre></div>
+</div>
+</div>
+</div>
+<p>There’s also an HTML table for rendering in Notebooks:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">HTML</span>
+
+<span class="n">html</span> <span class="o">=</span> <span class="n">well</span><span class="o">.</span><span class="n">qc_table_html</span><span class="p">(</span><span class="n">tests</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">)</span>
+<span class="n">HTML</span><span class="p">(</span><span class="n">html</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div class="table-wrapper"><table><tr><th>Curve</th><th>Passed</th><th>Score</th><th>all_between</th><th>all_below</th><th>no_flat</th><th>check_units</th><th>no_gaps</th><th>no_monotonic</th><th>no_spikes</th><th>all_positive</th></tr><tr><th>CALI</th><td>1 / 3</td><td>0.333</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td></tr><tr><th>HCAL</th><td>1 / 3</td><td>0.333</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td></tr><tr><th>PEF</th><td>1 / 3</td><td>0.333</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td></tr><tr><th>DT</th><td>5 / 6</td><td>0.833</td><td style="background-color:#CCEECC;">True</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td><td style="background-color:#CCEECC;">True</td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#CCEECC;">True</td></tr><tr><th>DTS</th><td>3 / 3</td><td>1.000</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td><td style="background-color:#CCEECC;">True</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td></tr><tr><th>DPHI_SAN</th><td>1 / 3</td><td>0.333</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td></tr><tr><th>DPHI_LIM</th><td>1 / 3</td><td>0.333</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td></tr><tr><th>DPHI_DOL</th><td>1 / 3</td><td>0.333</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td></tr><tr><th>NPHI_SAN</th><td>1 / 3</td><td>0.333</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td></tr><tr><th>NPHI_LIM</th><td>1 / 3</td><td>0.333</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td></tr><tr><th>NPHI_DOL</th><td>1 / 3</td><td>0.333</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td></tr><tr><th>RLA5</th><td>1 / 3</td><td>0.333</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td></tr><tr><th>RLA3</th><td>1 / 3</td><td>0.333</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td></tr><tr><th>RLA4</th><td>1 / 3</td><td>0.333</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td></tr><tr><th>RLA1</th><td>1 / 3</td><td>0.333</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td></tr><tr><th>RLA2</th><td>1 / 3</td><td>0.333</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td></tr><tr><th>RXOZ</th><td>1 / 3</td><td>0.333</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td></tr><tr><th>RXO_HRLT</th><td>1 / 3</td><td>0.333</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td></tr><tr><th>RT_HRLT</th><td>1 / 3</td><td>0.333</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td></tr><tr><th>RM_HRLT</th><td>1 / 3</td><td>0.333</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td></tr><tr><th>DRHO</th><td>1 / 3</td><td>0.333</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td></tr><tr><th>RHOB</th><td>1 / 3</td><td>0.333</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td></tr><tr><th>GR</th><td>3 / 6</td><td>0.500</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#CCEECC;">True</td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td></tr><tr><th>SP</th><td>1 / 3</td><td>0.333</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td></tr></table></div></div></div>
+</div>
+</section>
+<section id="add-a-striplog">
+<h2>Add a striplog<a class="headerlink" href="#add-a-striplog" title="Permalink to this headline">¶</a></h2>
+<p>In principle, Welly can hold data from anywhere. Let’s add data from another source. <a class="reference external" href="https://code.agilescientific.com/striplog">Striplog</a> can create a geological log from an image or a CSV. Let’s try it:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">striplog</span> <span class="kn">import</span> <span class="n">Legend</span><span class="p">,</span> <span class="n">Striplog</span>
+
+<span class="n">legend</span> <span class="o">=</span> <span class="n">Legend</span><span class="o">.</span><span class="n">builtin</span><span class="p">(</span><span class="s1">'NSDOE'</span><span class="p">)</span>
+<span class="n">strip</span> <span class="o">=</span> <span class="n">Striplog</span><span class="o">.</span><span class="n">from_image</span><span class="p">(</span><span class="s1">'https://geocomp.s3.amazonaws.com/data/P-129_280_1935.png'</span><span class="p">,</span> <span class="mi">280</span><span class="p">,</span> <span class="mi">1935</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="n">legend</span><span class="p">)</span>
+<span class="n">strip</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/Quick_start_37_0.png" src="../_images/Quick_start_37_0.png"/>
+</div>
+</div>
+<p>Add this to the well data:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">well</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">'strip'</span><span class="p">]</span> <span class="o">=</span> <span class="n">strip</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tracks</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'MD'</span><span class="p">,</span> <span class="s1">'strip'</span><span class="p">,</span> <span class="s1">'GR'</span><span class="p">,</span> <span class="s1">'RHOB'</span><span class="p">,</span> <span class="p">[</span><span class="s1">'DT'</span><span class="p">,</span> <span class="s1">'DTS'</span><span class="p">],</span> <span class="s1">'MD'</span><span class="p">]</span>
+
+<span class="n">well</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">tracks</span><span class="o">=</span><span class="n">tracks</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/Quick_start_40_0.png" src="../_images/Quick_start_40_0.png"/>
+</div>
+</div>
+</section>
+<section id="write-a-las-file">
+<h2>Write a LAS file<a class="headerlink" href="#write-a-las-file" title="Permalink to this headline">¶</a></h2>
+<p>At any point, you can write out a new LAS file.</p>
+<p>Let’s write a new file with only the DT and DTS logs, and a different NULL value to the original:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">well</span><span class="o">.</span><span class="n">to_las</span><span class="p">(</span><span class="s1">'out.las'</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="p">[</span><span class="s1">'DT'</span><span class="p">,</span> <span class="s1">'DTS'</span><span class="p">],</span> <span class="n">null_value</span><span class="o">=-</span><span class="mf">111.111</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>You can perform a shell command in Jupyter Notebooks by putting a <code class="docutils literal notranslate"><span class="pre">!</span></code> before the command. So on Linux, here’s how we can check the new file exists:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>ls -l out.las
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>-rw-r--r-- 1 runner docker 434247 Feb 13 19:20 out.las
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>head -12 out.las
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>~Version ---------------------------------------------------
+VERS.   2.0 : CWLS log ASCII Standard -VERSION 2.0
+WRAP.    NO : One line per depth step
+DLM . SPACE : Column Data Section Delimiter
+~Well ------------------------------------------------------
+STRT  .m                     1.0668 : START DEPTH
+STOP  .m                  1939.1376 : STOP DEPTH
+STEP  .m                    0.15240 : STEP
+NULL  .                    -111.111 : NULL VALUE
+COMP  . Elmworth Energy Corporation : COMPANY
+WELL  .               Kennetcook #2 : WELL
+FLD   .               Windsor Block : FIELD
+</pre></div>
+</div>
+</div>
+</div>
+<hr class="docutils"/>
+<p>© 2022 Agile Scientific, CC BY</p>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="Wells.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Wells</div>
+              </div>
+              <svg><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="../installation.html">
+              <svg><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Installation</div>
+                
+              </div>
+            </a>
+        </div>
+
+        <div class="related-information">
+              Copyright &#169; 2022, The Welly Authors |
+          Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+          <a href="https://github.com/pradyunsg/furo">Furo theme</a>.
+            | <a class="muted-link" href="../_sources/_notebooks/Quick_start.ipynb.txt"
+               rel="nofollow">
+              Show Source
+            </a>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            Contents
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Quick start</a><ul>
+<li><a class="reference internal" href="#create-a-project-from-las">Create a project from LAS</a></li>
+<li><a class="reference internal" href="#basic-plots">Basic plots</a></li>
+<li><a class="reference internal" href="#curve-data">Curve data</a></li>
+<li><a class="reference internal" href="#curve-data-as-a-pandas-dataframe">Curve data as a <code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a></li>
+<li><a class="reference internal" href="#curve-aliases">Curve aliases</a></li>
+<li><a class="reference internal" href="#curve-quality">Curve quality</a></li>
+<li><a class="reference internal" href="#add-a-striplog">Add a striplog</a></li>
+<li><a class="reference internal" href="#write-a-las-file">Write a LAS file</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/scripts/furo.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    </body>
+</html>

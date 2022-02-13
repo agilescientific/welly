@@ -162,6 +162,8 @@
   <p class="caption" role="heading"><span class="caption-text">User guide</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_notebooks/Quick_start.html">Quick start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_notebooks/Wells.html">Wells</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API reference</span></p>
 <ul>
@@ -219,9 +221,11 @@
 <div class="line"><code class="docutils literal notranslate"><span class="pre">welly</span></code> facilitates the loading, processing, and analysis of subsurface wells and well data, such as striplogs, formation tops, well log curves, and synthetic seismograms.</div>
 </div>
 </div></blockquote>
-<p>Welly runs on Python 3.6+ with no other dependencies. It is licensed under a business-friendly Apache 2.0 license.</p>
-<section id="getting-started">
-<h2>Getting started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">welly</span></code> runs on Python 3.6+ and builds on various other libraries, including <cite>pandas</cite> and <cite>matplotlib</cite>. It is licensed under a business-friendly Apache 2.0 license. Please consider supporting this open source project!</p>
+<section id="quick-start">
+<h2>Quick start<a class="headerlink" href="#quick-start" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+</div>
 <p>To install <code class="docutils literal notranslate"><span class="pre">welly</span></code>, simply:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">welly</span>
 </pre></div>
@@ -244,6 +248,28 @@
 <p class="caption" role="heading"><span class="caption-text">User guide</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_notebooks/Quick_start.html">Quick start</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="_notebooks/Quick_start.html#create-a-project-from-las">Create a project from LAS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_notebooks/Quick_start.html#basic-plots">Basic plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_notebooks/Quick_start.html#curve-data">Curve data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_notebooks/Quick_start.html#curve-data-as-a-pandas-dataframe">Curve data as a <code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="_notebooks/Quick_start.html#curve-aliases">Curve aliases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_notebooks/Quick_start.html#curve-quality">Curve quality</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_notebooks/Quick_start.html#add-a-striplog">Add a striplog</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_notebooks/Quick_start.html#write-a-las-file">Write a LAS file</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="_notebooks/Wells.html">Wells</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="_notebooks/Wells.html#load-a-well-from-las">Load a well from LAS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_notebooks/Wells.html#well-header">Well header</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_notebooks/Wells.html#well-location">Well location</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_notebooks/Wells.html#add-deviation-data-to-a-well">Add deviation data to a well</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_notebooks/Wells.html#quick-plot">Quick plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_notebooks/Wells.html#export-curves-to-data-matrix">Export curves to data matrix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_notebooks/Wells.html#export-curves-to-pandas">Export curves to pandas</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_notebooks/Wells.html#make-an-empty-well">Make an ‘empty’ well</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </section>
@@ -282,40 +308,11 @@
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">Other resources</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="development.html">Development</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="development.html#installation">Installation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="development.html#contributing">Contributing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="development.html#testing">Testing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="development.html#building-the-package">Building the package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="development.html#building-the-docs">Building the docs</a></li>
-<li class="toctree-l2"><a class="reference internal" href="development.html#continuous-integration">Continuous integration</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="contributing.html#thank-you-for-considering-contributing-to-welly">🙌 Thank you for considering contributing to <code class="docutils literal notranslate"><span class="pre">welly</span></code>!</a></li>
-<li class="toctree-l2"><a class="reference internal" href="contributing.html#code-of-conduct">Code of conduct</a></li>
-<li class="toctree-l2"><a class="reference internal" href="contributing.html#authorship">Authorship</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="development.html">Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="authors.html">Authors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
-<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#coming-in-february-2022">0.5.0, coming in February 2022</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#june-2021">0.4.10, 22 June 2021</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#january-2021">0.4.9, 29 January 2021</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#december-2020">0.4.8, 11 December 2020</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#june-2020">0.4.7, 6 June 2020</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#may-2020">0.4.6, 7 May 2020</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#november-2019">0.4.5, 14 November 2019</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#october-2019">0.4.4, 22 October 2019</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#id1">0.4.3, October 2019</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#april-2019">0.4.2, April 2019</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#november-2018">0.4.1, 24 November 2018</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#id2">0.4.0, 20 November 2018</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#march-2018">0.3.5, 20 March 2018</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#november-2017">0.3.4, 15 November 2017</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
 </ul>
 </div>
 </section>
@@ -350,8 +347,7 @@
 
         <div class="related-information">
               Copyright &#169; 2022, The Welly Authors |
-          Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
-          <a href="https://github.com/pradyunsg/furo">Furo theme</a>.
+          <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> | Created using Sphinx & Furo
             | <a class="muted-link" href="_sources/index.rst.txt"
                rel="nofollow">
               Show Source

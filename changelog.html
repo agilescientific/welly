@@ -162,6 +162,8 @@
   <p class="caption" role="heading"><span class="caption-text">User guide</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_notebooks/Quick_start.html">Quick start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_notebooks/Wells.html">Wells</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API reference</span></p>
 <ul>
@@ -211,15 +213,16 @@
         <article role="main">
           <section class="tex2jax_ignore mathjax_ignore" id="changelog">
 <h1>Changelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h1>
-<section id="coming-in-february-2022">
-<h2>0.5.0, coming in February 2022<a class="headerlink" href="#coming-in-february-2022" title="Permalink to this headline">¶</a></h2>
+<section id="february-2022">
+<h2>0.5.0, 14 February 2022<a class="headerlink" href="#february-2022" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p>Major change: Everything in <code class="docutils literal notranslate"><span class="pre">welly</span></code> is now much closer to <code class="docutils literal notranslate"><span class="pre">pandas</span></code>. Chiefly, <code class="docutils literal notranslate"><span class="pre">Curve</span></code> objects are now represented by wrapped <code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code> objects (note: not <code class="docutils literal notranslate"><span class="pre">Series</span></code> as you might expect, so they can be two-dimensional). They were previously subclassed NumPy <code class="docutils literal notranslate"><span class="pre">ndarray</span></code> objects, so while we’ve tried to preserve as much of it as possible, expect some changes to the <code class="docutils literal notranslate"><span class="pre">Curve</span></code> API. Please let us know if there’s something you miss, it can probably be implemented. Many thanks to the developers that made this happen.</p></li>
-<li><p>Major change: the <code class="docutils literal notranslate"><span class="pre">Curve</span></code> object can no longer be instantiated with <code class="docutils literal notranslate"><span class="pre">basis</span></code> and <code class="docutils literal notranslate"><span class="pre">params</span></code>, please instead use <code class="docutils literal notranslate"><span class="pre">index</span></code></p></li>
+<li><p>Major change: Everything in <code class="docutils literal notranslate"><span class="pre">welly</span></code> is now much closer to <code class="docutils literal notranslate"><span class="pre">pandas</span></code>. Chiefly, <code class="docutils literal notranslate"><span class="pre">Curve</span></code> objects are now represented by wrapped <code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code> objects (note: not <code class="docutils literal notranslate"><span class="pre">Series</span></code> as you might expect, so they can be two-dimensional). They were previously subclassed NumPy <code class="docutils literal notranslate"><span class="pre">ndarray</span></code> objects, so while we’ve tried to preserve as much of the API as possible, expect some changes. Please let us know if there’s something you miss, it can probably be implemented. Many thanks to the developers that made this happen, especially Patrick Reinhard and Wenting Xiong in the Netherlands.</p></li>
 <li><p>Major change: as previously indicated, the default behaviour is now to load the depth curve in its original units. That is: <code class="docutils literal notranslate"><span class="pre">welly</span></code> no longer converts everything to metres. Use <code class="docutils literal notranslate"><span class="pre">index='metres'</span></code> in <code class="docutils literal notranslate"><span class="pre">from_las()</span></code> to get the old behaviour.</p></li>
-<li><p>You can now create a project with <code class="docutils literal notranslate"><span class="pre">welly.read_las('path/to/*.las')</span></code>. Note: this always gives you a project, even if it only contains a single well.</p></li>
+<li><p>Major change: the <code class="docutils literal notranslate"><span class="pre">Well</span></code> object’s header, <code class="docutils literal notranslate"><span class="pre">well.header</span></code>, is currently a large <code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code> containing everything from the LAS file’s header. In the next minor release, we will restore something more like the original header object. We welcome opinions on how this should work.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">Curve</span></code> object should be instantiated with <code class="docutils literal notranslate"><span class="pre">index</span></code> instead of <code class="docutils literal notranslate"><span class="pre">basis</span></code>.</p></li>
+<li><p>You can now create a project with <code class="docutils literal notranslate"><span class="pre">welly.read_las('path/to/*.las')</span></code>. Note: this always gives you a project, even if it only contains a single well. You can get the single well from a path like <code class="docutils literal notranslate"><span class="pre">'data/myfile.las'</span></code> with a singleton assignment like <code class="docutils literal notranslate"><span class="pre">well,</span> <span class="pre">=</span> <span class="pre">welly.read_las('data/myfile.las')</span></code>.</p></li>
 <li><p>As previously indicated, dogleg severity is now given in units of degrees per course length.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">kwargs</span></code> are passed to <code class="docutils literal notranslate"><span class="pre">lasio</span></code> in <code class="docutils literal notranslate"><span class="pre">read_las()</span></code>, <code class="docutils literal notranslate"><span class="pre">Well.from_las()</span></code> and <code class="docutils literal notranslate"><span class="pre">Project.from_las()</span></code>, so you can add things like <code class="docutils literal notranslate"><span class="pre">ignore_header_errors=True</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">kwargs</span></code> are passed to <code class="docutils literal notranslate"><span class="pre">lasio</span></code> in <code class="docutils literal notranslate"><span class="pre">read_las()</span></code>, <code class="docutils literal notranslate"><span class="pre">Well.from_las()</span></code> and <code class="docutils literal notranslate"><span class="pre">Project.from_las()</span></code>, so you can add things like <code class="docutils literal notranslate"><span class="pre">ignore_header_errors=True</span></code>. See <a class="reference external" href="https://lasio.readthedocs.io/en/latest/">the Lasio documentation</a> for more on these options.</p></li>
 </ul>
 </section>
 <section id="june-2021">
@@ -353,8 +356,7 @@
 
         <div class="related-information">
               Copyright &#169; 2022, The Welly Authors |
-          Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
-          <a href="https://github.com/pradyunsg/furo">Furo theme</a>.
+          <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> | Created using Sphinx & Furo
             | <a class="muted-link" href="_sources/changelog.md.txt"
                rel="nofollow">
               Show Source
@@ -376,7 +378,7 @@
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Changelog</a><ul>
-<li><a class="reference internal" href="#coming-in-february-2022">0.5.0, coming in February 2022</a></li>
+<li><a class="reference internal" href="#february-2022">0.5.0, 14 February 2022</a></li>
 <li><a class="reference internal" href="#june-2021">0.4.10, 22 June 2021</a></li>
 <li><a class="reference internal" href="#january-2021">0.4.9, 29 January 2021</a></li>
 <li><a class="reference internal" href="#december-2020">0.4.8, 11 December 2020</a></li>
