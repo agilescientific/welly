@@ -7,9 +7,9 @@ Defines wells.
 from __future__ import division
 
 import re
+import warnings
 
 import numpy as np
-
 import pandas as pd
 from pandas.api.types import is_object_dtype
 
@@ -1037,9 +1037,19 @@ class Well(object):
                 f.write(result)
             return None
 
-    def data_as_matrix(self, keys=None, return_basis=False, basis=None,
-                       alias=None, start=None, stop=None, step=None,
-                       window_length=None, window_step=1, ):
+    def data_as_matrix(self,
+                       keys=None,
+                       return_meta=None,
+                       return_basis=False,
+                       basis=None,
+                       alias=None,
+                       start=None,
+                       stop=None,
+                       step=None,
+                       window_length=None,
+                       window_step=1,
+                       window_func=None,
+                       ):
         """
         Provide a feature matrix, given a list of data items.
 
@@ -1051,6 +1061,8 @@ class Well(object):
 
         Args:
             keys (list): List of the logs to export from the data dictionary.
+            return_meta (bool): Whether or not to return the basis and the keys
+                (feature names). In a future release, this will be the default.
             return_basis (bool): Whether or not to return the basis that was
                 used.
             basis (ndarray): The basis to use. Default is to survey all curves
@@ -1065,12 +1077,23 @@ class Well(object):
             window_length (int): The number of samples to return around each sample.
                 This will provide one or more shifted versions of the features.
             window_step (int): How much to step the offset versions.
+            window_func (function): A function to apply to the window. The
+                default is the identity function f(x) = x, which is the
+                same as shifting the data. Passing np.mean would smooth the
+                data.
 
         Returns:
             ndarray.
             or
             ndarray, ndarray if return_basis=True
         """
+        if return_meta is None:
+            message = "In the next release, return_meta will be True by default."
+            message += " Set it to False to suppress this message."
+            message += " Set it to True to start using this feature now."
+            warnings.warn(message)
+            return_meta = False
+
         if keys is None:
             keys = [k for k, v in self.data.items() if isinstance(v, Curve)]
         else:
@@ -1098,31 +1121,46 @@ class Well(object):
         data = [self.data.get(k) for k in keys]
 
         # Now cast to the correct basis, and replace any missing curves with
-        # an empty Curve. The sklearn imputer will deal with it. We will change
-        # the elements in place.
+        # an empty Curve. We will change the elements in place.
         for i, d in enumerate(data):
             if d is not None:
-                data[i] = d.to_basis(basis=basis)
                 # Allow user to override the start and stop from the survey.
-                if (start is not None) or (stop is not None):
-                    data[i] = data[i].to_basis(start, stop, step)
-                    basis = data[i].basis
+                if (start is not None) or (stop is not None) or (step is not None):
+                    data[i] = d.to_basis(start=start, stop=stop, step=step)
+                else:
+                    data[i] = d.to_basis(basis=basis)
+
             else:
                 # Empty_like gives unpredictable results
                 data[i] = Curve(np.full(basis.shape, np.nan), index=basis)
 
+        # Safest way to get the current basis.
+        basis = data[i].basis
+
+        if window_func is None:
+            window_func = utils.null
+
         if window_length is not None:
             d_new = []
             for d in data:
-                r = d._rolling_window(window_length, func1d=utils.null,
+                r = d._rolling_window(window_length, func1d=window_func,
                                       step=window_step, return_rolled=False, )
                 d_new.append(r.T)
             data = d_new
 
+        # Now we have a list of Curves, but potentially some of them are ndarrays at this point.
+        # It's all a bit confusing...
+        data_final = []
+        for d in data:
+            data_final.append(d.as_numpy() if isinstance(d, Curve) else d)
+
+        if return_meta:
+            return np.vstack(data_final).T, basis, keys
+
         if return_basis:
-            return np.vstack(data).T, basis
+            return np.vstack(data_final).T, basis
         else:
-            return np.vstack(data).T
+            return np.vstack(data_final).T
 
     def add_header_item(self, item, value, unit=None, descr=None):
         """
