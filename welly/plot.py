@@ -143,13 +143,13 @@ def plot_depth_track_well(well,
     for sp in ax.spines.values():
         sp.set_color('gray')
 
-    if ax.is_first_col():
+    if ax.get_subplotspec().is_first_col():
         pad = -10
         ax.spines['left'].set_color('none')
         ax.yaxis.set_ticks_position('right')
         for label in ax.get_yticklabels():
             label.set_horizontalalignment('right')
-    elif ax.is_last_col():
+    elif ax.get_subplotspec().is_last_col():
         pad = -10
         ax.spines['right'].set_color('none')
         ax.yaxis.set_ticks_position('left')

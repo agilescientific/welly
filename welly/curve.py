@@ -859,7 +859,7 @@ class Curve(object):
 
         # Ensure the stop point makes sense.
         if new_start == start:
-            new_stop = new_start + (new_stop // new_step) * new_step
+            new_stop = new_start + ((new_stop-new_start) // new_step) * new_step
 
 
         # Potentially tricky issues here with FP imprecision, hence np.round.

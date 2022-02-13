@@ -13,8 +13,12 @@ Welly: Splash About in Well Data
 
 ``welly`` runs on Python 3.6+ and builds on various other libraries, including `pandas` and `matplotlib`. It is licensed under a business-friendly Apache 2.0 license. Please consider supporting this open source project!
 
-Getting started
----------------
+
+Quick start
+-----------
+
+.. toctree::
+    :caption: Quick start
 
 To install ``welly``, simply::
 

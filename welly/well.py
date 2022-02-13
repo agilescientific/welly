@@ -555,7 +555,7 @@ class Well(object):
 
     def df(self,
            keys=None,
-        #    basis=None,
+           basis=None,
            uwi=False,
            alias=None,
            rename_aliased=True):
@@ -581,19 +581,17 @@ class Well(object):
 
         Returns:
             pandas.DataFrame.
-
-        TODO:
-            Restore the ``basis`` argument.
         """
         keys = self._get_curve_mnemonics(keys, alias=alias)
 
-        data = {k: self.get_curve(k, alias=alias).df for k in keys}
+        if basis is None:
+            basis = self.survey_basis(keys=keys, alias=alias)
+        if basis is None:
+            m = "No basis was provided and welly could not retrieve common basis."
+            raise WellError(m)
 
-        # if basis is None:
-        #     basis = self.survey_basis(keys=keys, alias=alias)
-        # if basis is None:
-        #     m = "No basis was provided and welly could not retrieve common basis."
-        #     raise WellError(m)
+        data = {k: self.get_curve(k, alias=alias).to_basis(basis).df
+                for k in keys}
 
         df = pd.concat(list(data.values()), axis=1)
 

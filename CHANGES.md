@@ -1,13 +1,14 @@
 # Changelog
 
-## 0.5.0, coming in February 2022
+## 0.5.0, 14 February 2022
 
-- Major change: Everything in `welly` is now much closer to `pandas`. Chiefly, `Curve` objects are now represented by wrapped `pandas.DataFrame` objects (note: not `Series` as you might expect, so they can be two-dimensional). They were previously subclassed NumPy `ndarray` objects, so while we've tried to preserve as much of it as possible, expect some changes to the `Curve` API. Please let us know if there's something you miss, it can probably be implemented. Many thanks to the developers that made this happen.
-- Major change: the `Curve` object can no longer be instantiated with `basis` and `params`, please instead use `index`
+- Major change: Everything in `welly` is now much closer to `pandas`. Chiefly, `Curve` objects are now represented by wrapped `pandas.DataFrame` objects (note: not `Series` as you might expect, so they can be two-dimensional). They were previously subclassed NumPy `ndarray` objects, so while we've tried to preserve as much of the API as possible, expect some changes. Please let us know if there's something you miss, it can probably be implemented. Many thanks to the developers that made this happen, especially Patrick Reinhard and Wenting Xiong in the Netherlands.
 - Major change: as previously indicated, the default behaviour is now to load the depth curve in its original units. That is: `welly` no longer converts everything to metres. Use `index='metres'` in `from_las()` to get the old behaviour.
-- You can now create a project with `welly.read_las('path/to/*.las')`. Note: this always gives you a project, even if it only contains a single well.
+- Major change: the `Well` object's header, `well.header`, is currently a large `pandas.DataFrame` containing everything from the LAS file's header. In the next minor release, we will restore something more like the original header object. We welcome opinions on how this should work.
+- The `Curve` object should be instantiated with `index` instead of `basis`.
+- You can now create a project with `welly.read_las('path/to/*.las')`. Note: this always gives you a project, even if it only contains a single well. You can get the single well from a path like `'data/myfile.las'` with a singleton assignment like `well, = welly.read_las('data/myfile.las')`.
 - As previously indicated, dogleg severity is now given in units of degrees per course length.
-- `kwargs` are passed to `lasio` in `read_las()`, `Well.from_las()` and `Project.from_las()`, so you can add things like `ignore_header_errors=True`.
+- `kwargs` are passed to `lasio` in `read_las()`, `Well.from_las()` and `Project.from_las()`, so you can add things like `ignore_header_errors=True`. See [the Lasio documentation](https://lasio.readthedocs.io/en/latest/) for more on these options.
 
 
 ## 0.4.10, 22 June 2021
