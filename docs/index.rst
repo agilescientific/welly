@@ -9,7 +9,7 @@
 Welly: Splash About in Well Data
 ================================
 
-    | ``welly`` is a family of classes to facilitate the loading, processing, and analysis of subsurface wells and well data, such as striplogs, formation tops, well log curves, and synthetic seismograms.**
+    | ``welly`` is a family of classes to facilitate the loading, processing, and analysis of subsurface wells and well data, such as striplogs, formation tops, well log curves, and synthetic seismograms.
 
 User guide
 ----------
