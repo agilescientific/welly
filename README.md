@@ -6,7 +6,7 @@
 [![PyPI versions](https://img.shields.io/pypi/pyversions/welly.svg)](https://pypi.org/project/welly//)
 [![PyPI license](https://img.shields.io/pypi/l/welly.svg)](https://pypi.org/project/welly/)
 
-**Welly is a family of classes to facilitate the loading, processing, and analysis of subsurface wells and well data, such as striplogs, formation tops, well log curves, and synthetic seismograms.**
+**`welly` facilitates the loading, processing, and analysis of subsurface wells and well data, such as striplogs, formation tops, well log curves, and synthetic seismograms.**
 
 
 ## Installation
@@ -33,7 +33,12 @@ Next, check out the tutorial notebooks.
 
 ## Documentation
 
-[The `welly` documentation](https://code.agilescientific.com/welly) is a work in progress, but for the first time in an age, it exists!
+[The `welly` documentation](https://code.agilescientific.com/welly) is a work in progress.
+
+
+## Contributing
+
+Please see [`CONTRIBUTING.md`](https://github.com/agile-geoscience/redflag/blob/main/CONTRIBUTING.md).
 
 
 ## Philosophy
@@ -47,30 +52,3 @@ engineering data, striplogs, synthetics, and so on. This is where `welly` comes 
 
 `welly` uses `lasio` for data I/O, but hides much of it from the user. We recommend you look at 
 both projects before deciding if you need the 'well-level' functionality that `welly` provides.
-
-
-## Contributing
-
-Please see [`CONTRIBUTING.md`](https://github.com/agile-geoscience/redflag/blob/main/CONTRIBUTING.md).
-
-
-## Testing
-
-Use `pip install .tests` to install the testing dependencies (`pytest`, `pytest-cov` and `pytest-mpl`). Then run tests with:
-
-    python run_tests.py
-
-
-## Building
-
-This repo uses PEP 517-style packaging. [Read more about this](https://setuptools.pypa.io/en/latest/build_meta.html) and [about Python packaging in general](https://packaging.python.org/en/latest/tutorials/packaging-projects/).
-
-Building the project requires `build`, so first:
-
-    pip install build
-
-Then to build `welly` locally:
-
-    python -m build
-
-This builds both `.tar.gz` and `.whl` files, either of which you can install with `pip`.
