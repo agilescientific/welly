@@ -162,20 +162,26 @@
   <p class="caption" role="heading"><span class="caption-text">User guide</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="development.html">Development</a></li>
-<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="authors.html">Authors</a></li>
-<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
-<li class="toctree-l1"><a class="reference internal" href="changelog.html">CHANGES</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API reference</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="welly.html">welly package</a></li>
 </ul>
+<p class="caption" role="heading"><span class="caption-text">Other resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="development.html">Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="authors.html">Authors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+</ul>
 <p class="caption" role="heading"><span class="caption-text">Project links</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/agile-geoscience/welly">GitHub repository</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pypi.org/project/welly/">PyPI releases</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/agile-geoscience/welly">Code in GitHub</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/agile-geoscience/welly/issues">Issue tracker</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://code.agilescientific.com/community">Community guidelines</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://code.agilescientific.com">Agile's software</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://www.agilescientific.com">Agile's website</a></li>
 </ul>
 
@@ -210,49 +216,34 @@
 <h1>Welly: Splash About in Well Data<a class="headerlink" href="#welly-splash-about-in-well-data" title="Permalink to this headline">¶</a></h1>
 <blockquote>
 <div><div class="line-block">
-<div class="line"><code class="docutils literal notranslate"><span class="pre">welly</span></code> is a family of classes to facilitate the loading, processing, and analysis of subsurface wells and well data, such as striplogs, formation tops, well log curves, and synthetic seismograms.</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">welly</span></code> facilitates the loading, processing, and analysis of subsurface wells and well data, such as striplogs, formation tops, well log curves, and synthetic seismograms.</div>
 </div>
 </div></blockquote>
+<p>Welly runs on Python 3.6+ with no other dependencies. It is licensed under a business-friendly Apache 2.0 license.</p>
+<section id="getting-started">
+<h2>Getting started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h2>
+<p>To install <code class="docutils literal notranslate"><span class="pre">welly</span></code>, simply:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">welly</span>
+</pre></div>
+</div>
+<p>To load some wells from LAS files:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">welly</span>
+<span class="n">project</span> <span class="o">=</span> <span class="n">welly</span><span class="o">.</span><span class="n">read_las</span><span class="p">(</span><span class="s2">"path/to/well_*.las"</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The project is a collection of well objects, each of which contains well logs. Plot the gamma-ray like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gr</span> <span class="o">=</span> <span class="n">project</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">'GR'</span><span class="p">]</span>
+<span class="n">gr</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Carry on exploring with the user guide below.</p>
+</section>
 <section id="user-guide">
 <h2>User guide<a class="headerlink" href="#user-guide" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">User guide</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="development.html">Development</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="development.html#installation">Installation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="development.html#contributing">Contributing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="development.html#testing">Testing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="development.html#building-the-package">Building the package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="development.html#building-the-docs">Building the docs</a></li>
-<li class="toctree-l2"><a class="reference internal" href="development.html#continuous-integration">Continuous integration</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="contributing.html#thank-you-for-considering-contributing-to-welly">🙌 Thank you for considering contributing to <code class="docutils literal notranslate"><span class="pre">welly</span></code>!</a></li>
-<li class="toctree-l2"><a class="reference internal" href="contributing.html#code-of-conduct">Code of conduct</a></li>
-<li class="toctree-l2"><a class="reference internal" href="contributing.html#authorship">Authorship</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="authors.html">Authors</a></li>
-<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
-<li class="toctree-l1"><a class="reference internal" href="changelog.html">CHANGES</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#coming-in-february-2022">0.5.0, coming in February 2022</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#june-2021">0.4.10, 22 June 2021</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#january-2021">0.4.9, 29 January 2021</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#december-2020">0.4.8, 11 December 2020</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#june-2020">0.4.7, 6 June 2020</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#may-2020">0.4.6, 7 May 2020</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#november-2019">0.4.5, 14 November 2019</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#october-2019">0.4.4, 22 October 2019</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#id1">0.4.3, October 2019</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#april-2019">0.4.2, April 2019</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#november-2018">0.4.1, 24 November 2018</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#id2">0.4.0, 20 November 2018</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#march-2018">0.3.5, 20 March 2018</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#november-2017">0.3.4, 15 November 2017</a></li>
-</ul>
-</li>
 </ul>
 </div>
 </section>
@@ -281,6 +272,48 @@
 <li class="toctree-l2"><a class="reference internal" href="welly.html#module-welly.utils">welly.utils module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="welly.html#module-welly.well">welly.well module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="welly.html#module-welly">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="other-resources">
+<h2>Other resources<a class="headerlink" href="#other-resources" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Other resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="development.html">Development</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="development.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="development.html#contributing">Contributing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="development.html#testing">Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="development.html#building-the-package">Building the package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="development.html#building-the-docs">Building the docs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="development.html#continuous-integration">Continuous integration</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="contributing.html#thank-you-for-considering-contributing-to-welly">🙌 Thank you for considering contributing to <code class="docutils literal notranslate"><span class="pre">welly</span></code>!</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contributing.html#code-of-conduct">Code of conduct</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contributing.html#authorship">Authorship</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="authors.html">Authors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#coming-in-february-2022">0.5.0, coming in February 2022</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#june-2021">0.4.10, 22 June 2021</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#january-2021">0.4.9, 29 January 2021</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#december-2020">0.4.8, 11 December 2020</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#june-2020">0.4.7, 6 June 2020</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#may-2020">0.4.6, 7 May 2020</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#november-2019">0.4.5, 14 November 2019</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#october-2019">0.4.4, 22 October 2019</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id1">0.4.3, October 2019</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#april-2019">0.4.2, April 2019</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#november-2018">0.4.1, 24 November 2018</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id2">0.4.0, 20 November 2018</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#march-2018">0.3.5, 20 March 2018</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#november-2017">0.3.4, 15 November 2017</a></li>
 </ul>
 </li>
 </ul>
