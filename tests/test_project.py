@@ -91,7 +91,7 @@ def test_filter_wells_by_data(project):
     """
     String should raise a warning. Should be an iterable
     """
-    with pytest.warns(DeprecationWarning):
+    with pytest.warns():
         project.filter_wells_by_data('string')
 
 

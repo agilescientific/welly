@@ -861,7 +861,6 @@ class Curve(object):
         if new_start == start:
             new_stop = new_start + ((new_stop-new_start) // new_step) * new_step
 
-
         # Potentially tricky issues here with FP imprecision, hence np.round.
         steps = np.round((new_stop - new_start) / new_step, 0)
         basis = np.linspace(new_start, new_stop, int(steps) + 1)

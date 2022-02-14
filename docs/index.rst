@@ -47,6 +47,7 @@ User guide
     installation
     _notebooks/Quick_start.ipynb
     _notebooks/Wells.ipynb
+    _notebooks/Curves.ipynb
 
 
 API reference
