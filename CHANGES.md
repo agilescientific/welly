@@ -8,7 +8,8 @@
 - The `Curve` object should be instantiated with `index` instead of `basis`.
 - You can now create a project with `welly.read_las('path/to/*.las')`. Note: this always gives you a project, even if it only contains a single well. You can get the single well from a path like `'data/myfile.las'` with a singleton assignment like `well, = welly.read_las('data/myfile.las')`.
 - As previously indicated, dogleg severity is now given in units of degrees per course length.
-- `kwargs` are passed to `lasio` in `read_las()`, `Well.from_las()` and `Project.from_las()`, so you can add things like `ignore_header_errors=True`. See [the Lasio documentation](https://lasio.readthedocs.io/en/latest/) for more on these options.
+- `kwargs` are passed to `lasio` in `read_las()`, `Well.from_las()` and `Project.from_las()`, so you can add things like `mnemonic_case='preserve'` or `ignore_header_errors=True`. See [the Lasio documentation](https://lasio.readthedocs.io/en/latest/) for more on these options.
+- A new argument on `well.to_las()` allows you to control the case of the mnemonics in the output LAS file. The behaviour has always been to preserve the case in the data dictionary; choose 'upper', 'title' or 'lower' to change it.
 
 
 ## 0.4.10, 22 June 2021

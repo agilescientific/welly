@@ -476,7 +476,7 @@ class Project(object):
                 warnings.simplefilter("always")
                 w = "The `keys` argument should be an iterable of keys in a "
                 w += "well's `data` dictionary. Try passing a list of strings."
-                warnings.warn(w, DeprecationWarning, stacklevel=2)
+                warnings.warn(w, stacklevel=2)
 
         funcs = {
             'any': any,

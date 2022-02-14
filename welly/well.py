@@ -488,7 +488,7 @@ class Well(object):
 
         return well
 
-    def to_lasio(self, keys=None, alias=None, basis=None, null_value=-999.25):
+    def to_lasio(self, keys=None, alias=None, basis=None, null_value=-999.25, mnemonic_case=None):
         """
         Makes a lasio object from the current well.
 
@@ -506,7 +506,7 @@ class Well(object):
         Returns:
             las (lasio.LASFile). The lasio object representation of a LAS file.
         """
-        las = to_lasio(self, keys, alias, basis, null_value)
+        las = to_lasio(self, keys, alias, basis, null_value, mnemonic_case=mnemonic_case)
 
         return las
 
@@ -515,6 +515,7 @@ class Well(object):
                keys=None,
                basis=None,
                null_value=-999.25,
+               mnemonic_case='preserve',
                **kwargs):
         """
         Writes the current well instance as a LAS file. Essentially just wraps
@@ -536,7 +537,7 @@ class Well(object):
             None. Writes the file as a side-effect.
         """
         with open(fname, 'w') as f:
-            las = self.to_lasio(keys=keys, basis=basis, null_value=null_value)
+            las = self.to_lasio(keys=keys, basis=basis, null_value=null_value, mnemonic_case=mnemonic_case)
             las.write(f, **kwargs)
 
     def to_datasets(self,
@@ -1092,7 +1093,7 @@ class Well(object):
             message = "In the next release, return_meta will be True by default."
             message += " Set it to False to suppress this message."
             message += " Set it to True to start using this feature now."
-            warnings.warn(message)
+            warnings.warn(message, DeprecationWarning, stacklevel=2)
             return_meta = False
 
         if keys is None:

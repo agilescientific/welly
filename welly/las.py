@@ -165,7 +165,7 @@ def from_lasio(las):
         try:
             m = f"Warning, LAS version {version} not yet supported. " \
                 f"Attempting to use LAS 1.2 and 2.0 parsing logic for LAS 3.0."
-            warnings.warn(m)
+            warnings.warn(m, stacklevel=2)
             datasets = from_las_2_or_older(las)
         except Exception:
             raise NotImplementedError(
@@ -231,7 +231,7 @@ def from_las_2_or_older(las):
 
         else:
             m = f'Section was not recognized and not parsed: {section}'
-            warnings.warn(m)
+            warnings.warn(m, stacklevel=2)
 
     header.drop(['data'], axis=1, inplace=True)
 
@@ -304,7 +304,7 @@ def datasets_to_las(path, datasets, **kwargs):
 
                 else:
                     m = f"LAS Section was not recognized: '{section_name}'"
-                    warnings.warn(m)
+                    warnings.warn(m, stacklevel=2)
 
         # dataset contains curve data
         if dataset_name in curve_sections:
@@ -336,7 +336,13 @@ def datasets_to_las(path, datasets, **kwargs):
         las.write(f, **kwargs)
 
 
-def to_lasio(well, keys=None, alias=None, basis=None, null_value=-999.25):
+def to_lasio(well,
+             keys=None,
+             alias=None,
+             basis=None,
+             null_value=-999.25,
+             mnemonic_case='preserve',
+             ):
     """
     Constructor. If you have a `well` object, this will create a
     `lasio.LASFile` object from it.
@@ -352,6 +358,8 @@ def to_lasio(well, keys=None, alias=None, basis=None, null_value=-999.25):
             `survey_basis()``.
         null_value (float): Optional. The null value representation in the
             LAS file.
+        mnemonic_case (str): Optional. Can be 'upper', 'lower', 'title',
+            or 'preserve'. Default: 'preserve'.
 
     Returns:
         las (lasio.LASFile). The lasio object representation of a LAS file.
@@ -433,17 +441,25 @@ def to_lasio(well, keys=None, alias=None, basis=None, null_value=-999.25):
         if isinstance(curve, Curve):
             # iterate over columns for 2D curve data
             for col in curve.df.columns:
+                case = {
+                    'upper': str.upper,
+                    'lower': str.lower,
+                    'title': str.title,
+                    'preserved': str,
+                }
+                key_ = case.get(mnemonic_case, str)(key)
                 try:
                     # take the series, reindex it and transform to np.array
                     new_data = curve.df[col].reindex(basis).values
                     descr = getattr(curve, 'description', '')
-                    l.add_curve(mnemonic=key.upper(),
+                    l.add_curve(mnemonic=key_,
                                 data=new_data,
                                 unit=curve.units,
                                 descr=descr)
                 except:
                     # appending curve failed, add to OTHER section
-                    other += "{}\n".format(key.upper()) + curve.to_csv()
+                    
+                    other += "{}\n".format(key_) + curve.to_csv()
         else:
             pass
 

@@ -11,7 +11,7 @@ Welly: Splash About in Well Data
 
     | ``welly`` facilitates the loading, processing, and analysis of subsurface wells and well data, such as striplogs, formation tops, well log curves, and synthetic seismograms.
 
-``welly`` runs on Python 3.6+ and builds on various other libraries, including `pandas` and `matplotlib`. It is licensed under a business-friendly Apache 2.0 license. Please consider supporting this open source project!
+``welly`` runs on Python 3.6+ and builds on various other libraries, including `pandas` and `matplotlib`. It is licensed under a business-friendly Apache 2.0 license. Please consider supporting this open project!
 
 
 Quick start
