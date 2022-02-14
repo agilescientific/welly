@@ -1,18 +1,24 @@
 """
 Utility functions for welly.
 
-:copyright: 2021 Agile Scientific
-:license: Apache 2.0
+Copyright: 2021 Agile Scientific
+Licence: Apache 2.0
 """
-import re
-import glob
-import warnings
-import inspect
+import decimal
 import functools
+import glob
+import inspect
+import re
+import warnings
 
-import numpy as np
-import matplotlib.pyplot as plt
 import matplotlib.cbook as cbook
+import matplotlib.pyplot as plt
+import numpy as np
+
+from welly.fields import las_objects
+
+# Most common numeric null values representation in LAS files.
+NULL_VALUES = [9999.25, -9999.25, -9999, 9999, 999.25, -999.25]
 
 
 def deprecated(instructions):
@@ -20,14 +26,16 @@ def deprecated(instructions):
     Flags a method as deprecated. This decorator can be used to mark functions
     as deprecated. It will result in a warning being emitted when the function
     is used.
+
     Args:
         instructions (str): A human-friendly string of instructions, such
             as: 'Please migrate to add_proxy() ASAP.'
+
     Returns:
         The decorated function.
     """
-    def decorator(func):
 
+    def decorator(func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
             message = 'Call to deprecated function {}. {}'.format(
@@ -55,8 +63,8 @@ def bbox(points):
 
 def aspect(points):
     """
-    Aspect like 2:1 is shape like |___ (twice as wide as high).
-    
+    Aspect like 2:1 is twice as wide as high.
+
     This function returns the WIDTH per unit height.
     """
     (minx, miny), (maxx, maxy) = bbox(points)
@@ -83,6 +91,7 @@ def null_default(x):
     Null function. Used for default in functions that can apply a user-
     supplied function to data before returning.
     """
+
     def null(y):
         return x
 
@@ -128,6 +137,7 @@ class Linker(object):
 
     By Joe Kington
     """
+
     def __init__(self, axes):
         self.axes = axes
         self._cids = {}
@@ -173,7 +183,7 @@ def flatten_list(L):
     """
     Flattens a list. For example:
 
-        >>> flatten_list([1, 2, [3, 4], [5, [6, 7]]])
+        >> flatten_list([1, 2, [3, 4], [5, [6, 7]]])
         [1, 2, 3, 4, 5, 6, 7]
     """
     return list(cbook.flatten(L)) if L else L
@@ -197,18 +207,20 @@ def list_and_add(a, b):
     return a + b
 
 
-def lasio_get(l,
-              section,
-              item,
-              attrib='value',
-              default=None,
-              remap=None,
-              funcs=None):
+def get_header_item(header,
+                    section,
+                    item,
+                    attrib='value',
+                    default=None,
+                    remap=None,
+                    funcs=None):
     """
-    Grabs, renames and transforms stuff from a lasio object.
+    Grabs a header item from a header pd.DataFrame and optionally renames and
+    transforms it.
 
     Args:
-        l (lasio): a lasio instance.
+        header (pd.DataFrame): Header from LAS file parsed to tabular form.
+            See `las.from_las()` for more information.
         section (str): The LAS section to grab from, eg ``well``
         item (str): The item in the LAS section to grab from, eg ``name``
         attrib (str): The attribute of the item to grab, eg ``value``
@@ -218,19 +230,21 @@ def lasio_get(l,
             implementing a transform before loading. Can be a lambda.
 
     Returns:
-        The transformed item.
+        The requested, optionally transformed, item.
     """
     remap = remap or {}
     item_to_fetch = remap.get(item, item)
+
     if item_to_fetch is None:
         return None
 
     try:
-        obj = getattr(l, section)
-        result = getattr(obj, item_to_fetch)[attrib]
-    except:
+        result = header[(header.mnemonic == item_to_fetch) &
+                        (header.section == las_objects[section])][attrib].values[0]
+    except Exception:
         return default
 
+    # apply input function on item
     if funcs is not None:
         f = funcs.get(item, null)
         result = f(result)
@@ -242,14 +256,15 @@ def parabolic(f, x):
     """
     Interpolation. From ageobot, from somewhere else.
     """
-    xv = 1/2. * (f[x-1] - f[x+1]) / (f[x-1] - 2 * f[x] + f[x+1]) + x
-    yv = f[x] - 1/4. * (f[x-1] - f[x+1]) * (xv - x)
+    xv = 1 / 2. * (f[x - 1] - f[x + 1]) / (f[x - 1] - 2 * f[x] + f[x + 1]) + x
+    yv = f[x] - 1 / 4. * (f[x - 1] - f[x + 1]) * (xv - x)
     return (xv, yv)
 
 
 def linear(u, v, d):
     """
     Linear interpolation.
+
     Args:
         u (float)
         v (float)
@@ -258,7 +273,7 @@ def linear(u, v, d):
     Returns:
         float. The interpolated value.
     """
-    return u + d*(v-u)
+    return u + d * (v - u)
 
 
 def find_nearest(a, value, index=False):
@@ -302,7 +317,7 @@ def find_previous(a, value, index=False, return_distance=False):
     """
     b = a - value
     i = np.where(b > 0)[0][0]
-    d = (value - a[i-1]) / (a[i] - a[i-1])
+    d = (value - a[i - 1]) / (a[i] - a[i - 1])
     if index:
         if return_distance:
             return i - 1, d
@@ -341,7 +356,7 @@ def rms(a):
     :returns: The RMS of the array.
     """
 
-    return np.sqrt(np.sum(a**2.0)/a.size)
+    return np.sqrt(np.sum(a ** 2.0) / a.size)
 
 
 def normalize(a, new_min=0.0, new_max=1.0):
@@ -381,14 +396,14 @@ def moving_average(a, length, mode='valid'):
     TODO:
         Other types of average.
     """
-    pad = np.floor(length/2)
+    pad = np.floor(length / 2)
 
     if mode == 'full':
         pad *= 2
     pad = int(pad)
 
     # Make a padded version, paddding with first and last values
-    r = np.zeros(a.shape[0] + 2*pad)
+    r = np.zeros(a.shape[0] + 2 * pad)
     r[:pad] = a[0]
     r[pad:-pad] = a
     r[-pad:] = a[-1]
@@ -396,7 +411,7 @@ def moving_average(a, length, mode='valid'):
     # Cumsum with shifting trick
     s = np.cumsum(r, dtype=float)
     s[length:] = s[length:] - s[:-length]
-    out = s[length-1:]/length
+    out = s[length - 1:] / length
 
     # Decide what to return
     if mode == 'same':
@@ -416,12 +431,13 @@ def moving_avg_conv(a, length):
 
     Moving average via convolution. Seems slower than naive.
     """
-    boxcar = np.ones(length)/length
+    boxcar = np.ones(length) / length
     return np.convolve(a, boxcar, mode="same")
 
 
 def nan_idx(y):
-    """Helper to handle indices and logical indices of NaNs.
+    """
+    Helper to handle indices and logical indices of NaNs.
 
     Args:
         y (ndarray): 1D array with possible NaNs
@@ -432,9 +448,9 @@ def nan_idx(y):
           to convert logical indices of NaNs to 'equivalent' indices
 
     Example:
-        >>> # linear interpolation of NaNs
-        >>> nans, x = nan_helper(y)
-        >>> y[nans] = np.interp(x(nans), x(~nans), y[~nans])
+        >> # linear interpolation of NaNs
+        >> nans, x = nan_helper(y)
+        >> y[nans] = np.interp(x(nans), x(~nans), y[~nans])
     """
     return np.isnan(y), lambda z: z.nonzero()[0]
 
@@ -460,13 +476,14 @@ def top_and_tail(a):
 
     Args:
         a (ndarray): An array.
+
     Returns:
         ndarray: The top and tailed array.
     """
     if np.all(np.isnan(a)):
         return np.array([])
     nans = np.where(~np.isnan(a))[0]
-    last = None if nans[-1]+1 == a.size else nans[-1]+1
+    last = None if nans[-1] + 1 == a.size else nans[-1] + 1
     return a[nans[0]:last]
 
 
@@ -477,11 +494,11 @@ def dms2dd(dms):
     Args:
         dms (list). d must be negative for S and W.
 
-    Return:
+    Returns:
         float.
     """
     d, m, s = dms
-    return d + m/60. + s/3600.
+    return d + m / 60. + s / 3600.
 
 
 def dd2dms(dd):
@@ -491,7 +508,7 @@ def dd2dms(dd):
     Args:
         dd (float). Decimal degrees.
 
-    Return:
+    Returns:
         tuple. Degrees, minutes, and seconds.
     """
     m, s = divmod(dd * 3600, 60)
@@ -511,8 +528,8 @@ def ricker(f, length, dt):
     Returns:
         tuple. time basis, amplitude values.
     """
-    t = np.linspace(-int(length/2), int((length-dt)/2), int(length/dt))
-    y = (1. - 2.*(np.pi**2)*(f**2)*(t**2))*np.exp(-(np.pi**2)*(f**2)*(t**2))
+    t = np.linspace(-int(length / 2), int((length - dt) / 2), int(length / dt))
+    y = (1. - 2. * (np.pi ** 2) * (f ** 2) * (t ** 2)) * np.exp(-(np.pi ** 2) * (f ** 2) * (t ** 2))
     return t, y
 
 
@@ -530,7 +547,7 @@ def hex_to_rgb(hexx):
     h = hexx.strip('#')
     l = len(h)
 
-    return tuple(int(h[i:i+l//3], 16) for i in range(0, l, l//3))
+    return tuple(int(h[i:i + l // 3], 16) for i in range(0, l, l // 3))
 
 
 def hex_is_dark(hexx, percent=50):
@@ -601,3 +618,93 @@ def to_filename(path):
         return path.absolute().__str__()
     else:
         return path
+
+
+def get_columns_decimal_formatter(data, null_value=None):
+    """
+    Get the column decimal point formatter from the two-dimensional numpy.ndarray.
+    Get the number of decimal points from columns with numerical values (float or int).
+    Take the highest number of decimal points of the column values.
+    The dictionary maps the column order of occurrence to the numerical formatter function.
+    If a column has no numerical values, don't create a mapping for that column in the dictionary.
+
+    For example, an input np.ndarray might look like this.
+
+        - 1st column values: most occurring 2 decimal points
+        - 2nd column values: most occurring 5 decimal points
+        - 3rd column values: most occurring 10 decimal points
+
+    This will return the following.
+    
+        column_fmt = {0: '%.2f', 1: '%.5f', 2: '%.10f'}
+
+    Args:
+        data (numpy.ndarray): two-dimensional array with floats and/or ints (columns and rows).
+        null_value (float): Optional. A float that represents null/NaN in the column values from which we do not take
+                            the number of decimals.
+
+    Returns:
+        column_fmt (dict): Mapping of order of column occurrence to most occurring decimal point formatting function
+    """
+    if null_value:
+        NULL_VALUES.append(null_value)
+
+    column_fmt = {}
+
+    # iterate over the transpose to iterate over columns
+    for i, arr in enumerate(data.T):
+
+        # get most occurring decimal points for the values in the column, excluding null representation
+        column_values_n_decimal_points = [get_number_of_decimal_points(x) for x in arr if isinstance(x, (int, float))
+                                          and x not in NULL_VALUES]
+
+        # remove None values from list in place
+        column_values_n_decimal_points = [x for x in column_values_n_decimal_points if x is not None]
+
+        if len(column_values_n_decimal_points) > 0:
+            # get the highest number of decimal points that were found in column
+            mode = max(column_values_n_decimal_points)
+
+            if mode:
+                # create string formatter and map in dictionary to curve number of occurrence
+                column_fmt[i] = '%.{}f'.format(mode)
+
+    return column_fmt
+
+
+def get_number_of_decimal_points(value):
+    """
+    Get the number of decimal points from a numeric value (float or int).
+
+    Args:
+        value (float or int): Numeric value
+    Returns:
+        n_decimals (int): Number of decimal points if value is of type float or int, otherwise return None.
+    """
+    if isinstance(value, (int, float)) and not np.isnan(value):
+        # get and return the number of decimal points from the value
+        return -decimal.Decimal(str(value)).as_tuple().exponent
+    else:
+        return None
+
+
+def get_step_from_array(arr):
+    """
+    Gets the 'step' or increment of the array. Requires numeric values in array
+
+    Args:
+        arr (np.array): The array
+
+    Returns:
+        Float. If the index is numeric and equally sampled
+        0. If the index is numeric and not equally sampled
+        None. If the index is not numeric
+    """
+    # compute differences between subsequent elements in index array
+    dif = np.diff(arr)
+    if np.allclose(dif - np.mean(dif), np.zeros_like(dif)):
+        # index evenly sampled
+        return np.nanmedian(dif)
+    else:
+        # index unevenly sampled so cannot derive `step`
+        return 0

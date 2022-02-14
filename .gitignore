@@ -1,6 +1,11 @@
-test.las
-tutorial/.ipynb_checkpoints
+# Keep out of change control.
+docs/_notebooks
+_version.py
+.ipynb_checkpoints
 .vscode
+
+# Mac
+.DS_Store
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -60,3 +65,9 @@ docs/_build/
 # PyBuilder
 target/
 
+# PyCharm
+.idea/
+csv-plugin.xml
+
+# temporary test folder
+tests/temp

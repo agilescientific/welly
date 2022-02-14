@@ -8,17 +8,17 @@ from __future__ import print_function
 
 import glob
 from collections import Counter
-import re
+from urllib.parse import non_hierarchical
 import warnings
 
 import numpy as np
-import matplotlib.pyplot as plt
+import pandas as pd
 from tqdm import tqdm
 
 from .well import Well, WellError
 from . import utils
 from .utils import deprecated
-from .defaults import ALIAS  # For access by user.
+from .plot import plot_kdes_project, plot_map_project
 
 
 class Project(object):
@@ -28,6 +28,7 @@ class Project(object):
     One day it might want its own CRS, but then we'd have to cast the CRSs of
     the contained data.
     """
+
     def __init__(self, list_of_Wells, source=''):
         self.alias = {}
         self.source = source
@@ -57,6 +58,9 @@ class Project(object):
 
     def __setitem__(self, key, value):
         self.__list[key] = value
+
+    def __delitem__(self, key):
+        del(self.__list[key])
 
     def __iter__(self):
         for w in self.__list:
@@ -118,16 +122,17 @@ class Project(object):
                  req=None,
                  alias=None,
                  max=None,
-                 encoding=None, 
+                 encoding=None,
                  printfname=None,
                  index=None,
-                ):
+                 **kwargs,
+                 ):
         """
         Constructor. Essentially just wraps ``Well.from_las()``, but is more
         convenient for most purposes.
 
         Args:
-            path (str): The path of the LAS files, e.g. ``./*.las`` (the
+            path (str or list): The path of the LAS files, e.g. ``./*.las`` (the
                 default). It will attempt to load everything it finds, so
                 make sure it only leads to LAS files.
             remap (dict): Optional. A dict of 'old': 'new' LAS field names.
@@ -152,23 +157,35 @@ class Project(object):
             max = 1e12
         if (req is not None) and (alias is None):
             raise WellError("You need to provide an alias dict as well as requirement list.")
-        if path is None:
-            path = './*.[LlAaSs]'
-        list_of_Wells = [Well.from_las(f,
-                                       remap=remap,
-                                       funcs=funcs, 
-                                       data=data,
-                                       req=req,
-                                       alias=alias,
-                                       encoding=encoding,
-                                       printfname=printfname,
-                                       index=index,
-                                      )
-                         for i, f in tqdm(enumerate(glob.iglob(path))) if i < max]
-        return cls(list(filter(None, list_of_Wells)))
 
-    def add_canstrat_striplogs(self,
-                               path, uwi_transform=None, name='canstrat'):
+        if path is None:
+            uris = glob.glob('./*.[LlAaSs]')
+        elif isinstance(path, str):
+            uris = glob.glob(path)
+            if not uris:
+                # The glob produced nothing.
+                # URLs to 'folders' (eg a bucket) are not supported.
+                # If it's a non-existent file, we'll get an error later.
+                uris = [path]
+        else:
+            uris = path  # It's a list-like of files and/or URLs.
+
+        wells = [Well.from_las(f,
+                               remap=remap,
+                               funcs=funcs,
+                               data=data,
+                               req=req,
+                               alias=alias,
+                               encoding=encoding,
+                               printfname=printfname,
+                               index=index,
+                               **kwargs,
+                               )
+                 for i, f in tqdm(enumerate(uris)) if i < max]
+
+        return cls(list(filter(None, wells)))
+
+    def add_canstrat_striplogs(self, path, uwi_transform=None, name='canstrat'):
         """
         This may be too specific a method... just move it to the workflow.
 
@@ -284,7 +301,7 @@ class Project(object):
         alias = alias or self.alias
 
         # Make header.
-        keys_ = [k+'*' if k in alias else k for k in keys]
+        keys_ = [k + '*' if k in alias else k for k in keys]
         r = '</th><th>'.join(['Idx', 'UWI', 'Data', 'Passing'] + keys_)
         rows = '<tr><th>{}</th></tr>'.format(r)
 
@@ -329,7 +346,7 @@ class Project(object):
                                 num_passes = sum(results)
                                 q = num_passes / num_tests
                     q_colour = q_colours.get(q, '#FFCC33')
-                    c_mean = '{:.2f}'.format(float(np.nanmean(c))) if np.any(c[~np.isnan(c)]) else np.nan
+                    c_mean = '{:.2f}'.format(float(np.nanmean(c.df.values))) if np.any(c.df.values[~np.isnan(c.df.values)]) else np.nan
                     curves.append(('#CCEECC', c.mnemonic, f"{num_passes}/{num_tests}", q_colour, c_mean, c.units))
                 q_total += num_passes
                 q_count += num_tests
@@ -339,7 +356,7 @@ class Project(object):
             if count == 0:
                 score = '–'
             else:
-                score = '{:.0f}'.format(100*(q_total/q_count)) if (q_total >= 0) and (q_count > 0) else '–'
+                score = '{:.0f}'.format(100 * (q_total / q_count)) if (q_total >= 0) and (q_count > 0) else '–'
             s = '<td>{}</td><td><span style="font-weight:bold;">{}</span></td><td>{}/{}&nbsp;curves</td><td>{}</td>'
             rows += s.format(i, w.uwi, count, len(w.data), score)
 
@@ -378,71 +395,31 @@ class Project(object):
             matplotlib.figure.Figure, or matplotlib.axes.Axes if you passed in
                 an axes object as `ax`.
         """
-        xattr, yattr = fields
-        xys = np.array([[getattr(w.location, xattr), getattr(w.location, yattr)] for w in self])
+        return plot_map_project(project=self,
+                                fields=fields,
+                                ax=ax,
+                                label=label,
+                                width=width)
 
-        if ax is None:
-            fig, ax = plt.subplots(figsize=(1+width, width/utils.aspect(xys)))
-            return_ax = True
-        else:
-            return_ax = False
-
-        ax.scatter(*xys.T, s=60)
-        ax.axis('equal')
-        ax.grid(which='both', axis='both', color='k', alpha=0.2)
-        
-        if label:
-            labels = [getattr(w.header, label) for w in self]
-            for xy, label in zip(xys, labels):
-                ax.annotate(label, xy+1000, color='gray')
-
-        if return_ax:
-            return ax
-        else:
-            return fig
-
-    def plot_kdes(self, mnemonic, alias=None, uwi_regex=None, return_fig=False):
+    def plot_kdes(self, mnemonic, alias=None, uwi_regex=None):
         """
         Plot KDEs for all curves with the given name.
 
         Args:
-            menmonic (str): the name of the curve to look for.
+            mnemonic (str): the name of the curve to look for.
             alias (dict): a welly alias dictionary.
+                e.g. {'density': ['DEN', 'DENS']}
             uwi_regex (str): a regex pattern. Only this part of the UWI will be displayed
                 on the plot of KDEs.
-            return_fig (bool): whether to return the matplotlib figure object.
 
         Returns:
             None or figure.
         """
-        wells = self.find_wells_with_curve(mnemonic, alias=alias)
-        fig, axs = plt.subplots(len(self), 1, figsize=(10, 1.5*len(self)))
-
-        curves = [w.get_curve(mnemonic, alias=alias) for w in wells]
-        all_data = np.hstack(curves)
-        all_data = all_data[~np.isnan(all_data)]
-
-        # Find values for common axis to exclude outliers.
-        amax = np.percentile(all_data, 99)
-        amin = np.percentile(all_data,  1)
-
-        for i, w in enumerate(self):
-            c = w.get_curve(mnemonic, alias=alias)
-
-            if uwi_regex is not None:
-                label = re.sub(uwi_regex, r'\1', w.uwi)
-            else:
-                label = w.uwi
-
-            if c is not None:
-                axs[i] = c.plot_kde(ax=axs[i], amax=amax, amin=amin, label=label+'-'+str(c.mnemonic))
-            else:
-                continue
-
-        if return_fig:
-            return fig
-        else:
-            return
+        return plot_kdes_project(project=self,
+                                 mnemonic=mnemonic,
+                                 alias=alias,
+                                 uwi_regex=uwi_regex,
+                                )
 
     @deprecated('Project.find_wells_with_curve() is deprecated; use Project.filter_wells_by_data().')
     def find_wells_with_curve(self, mnemonic, alias=None):
@@ -452,6 +429,7 @@ class Project(object):
         Args:
             mnemonic (str): the name of the curve to look for.
             alias (dict): a welly alias dictionary.
+                e.g. {'density': ['DEN', 'DENS']}
         
         Returns:
             project.
@@ -466,6 +444,7 @@ class Project(object):
         Args:
             menmonic (str): the name of the curve to look for.
             alias (dict): a welly alias dictionary.
+                e.g. {'density': ['DEN', 'DENS']}
         
         Returns:
             project.
@@ -479,6 +458,7 @@ class Project(object):
         Args:
             keys (list): the names of the data or curves to look for.
             alias (dict): a welly alias dictionary.
+                e.g. {'density': ['DEN', 'DENS']}
             func (str or function): a string from ['any', 'all', 'nany', 'nall']
                 or a runnable function returning a boolean. Return True for
                 wells you want to select. 'any' means you want wells which have
@@ -496,7 +476,7 @@ class Project(object):
                 warnings.simplefilter("always")
                 w = "The `keys` argument should be an iterable of keys in a "
                 w += "well's `data` dictionary. Try passing a list of strings."
-                warnings.warn(w, DeprecationWarning, stacklevel=2)
+                warnings.warn(w, stacklevel=2)
 
         funcs = {
             'any': any,
@@ -546,8 +526,6 @@ class Project(object):
         Returns:
             well
         """
-        if uwi is None:
-            raise ValueError('a UWI must be provided')
         matching_wells = [w for w in self if w.uwi == uwi]
         return matching_wells[0] if len(matching_wells) >= 1 else None
 
@@ -556,13 +534,14 @@ class Project(object):
         Returns a new Project object containing wells from self where
         curves from the wells on the right have been added. Matching between
         wells in self and right is based on uwi match and ony wells in self
-        are considered
+        are considered.
 
         Args:
-            uwi (string): the UWI string for the well.
+            right (Project): Project with well that needs to be merged.
+            keys (list): list of mnemonics to merge.
         
         Returns:
-            project
+            Project
         """
         wells = []
         for w in self:
@@ -590,6 +569,7 @@ class Project(object):
             basis (array): A basis, if you want to enforce one, otherwise
                 you'll get the result of ``survey_basis()``.
             alias (dict): Alias dictionary.
+                e.g. {'density': ['DEN', 'DENS']}
             rename_aliased (bool): Whether to name the columns after the alias,
                 i.e. the alias dictionary key, or after the curve mnemonic.
                 Default is False, do not rename: use the mnemonic.
@@ -597,8 +577,6 @@ class Project(object):
         Returns:
             ``pandas.DataFrame``.
         """
-        import pandas as pd
-
         dfs = []
         for w in self:
             try:
@@ -610,7 +588,8 @@ class Project(object):
 
         return pd.concat(dfs)
 
-    def data_as_matrix(self, X_keys,
+    def data_as_matrix(self,
+                       X_keys,
                        y_key=None,
                        alias=None,
                        legend=None,
@@ -627,19 +606,60 @@ class Project(object):
                        remove_zeros=False,
                        include_basis=False,
                        include_index=False,
-                       include=None,
-                       complete_only=False,
-                       ):
+                       include=None):
+        """
+        Create train matrices of wells in project for mnemonic keys. Optionally add test
+        matrices.
 
+        Args:
+            X_keys (list): list mnemonics to create `X_train` matrices from
+            y_key (str): mnemonic to create `y_train` matrix
+            alias (dict): a dictionary mapping mnemonics to lists of mnemonics.
+                e.g. {'density': ['DEN', 'DENS']}
+            legend (Legend): Passed to `striplog.to_log()`. If you want the codes to come
+                from a legend, provide one. Otherwise the codes come from the log, using
+                integers in the order of prevalence. If you use a legend,
+                they are assigned in the order of the legend.
+            match_only (list): Passed to `striplog.to_log()`. If you only want to match
+                some attributes of the Components (e.g. lithology), provide a list of
+                those you want to match.
+            field (str): Passed to `striplog.to_log()`. If you want the data to come from
+                one of the attributes of the components in the striplog, provide it.
+            field_function (function): Passed to `striplog.to_log()`. Provide a function
+                to apply to the field you are asking for. It's up to you to make sure the
+                function does what you want.
+            table (list): Passed to `striplog.to_log()`. Provide a look-up table of values
+                if you want. If you don't, then it will be constructed from the data.
+            legend_field (str): Passed to `striplog.to_log()`. If you want to get a log
+                representing one of the fields in the legend, such as 'width' or
+                'grainsize'.
+            basis (np.array or list): basis to be used for returned sliced data
+            step (float or int): step used for reindexing curve basis
+            window_length (int): The number of samples to return around each sample.
+                This will provide one or more shifted versions of the features.
+            window_step (int): How much to step the offset versions.
+            test (list): UWIs to create test matrices from.
+            remove_zeros (bool): Whether to remove zeros from matrices
+            include_basis (bool): Whether to include basis in matrices
+            include_index (bool): Whether to include index in matrices
+            include (np.array): An additional array to include in the matrices.
+
+        Returns:
+            X_train, X_test, y_train, y_test (np.arrays): train and test matrices.
+        """
         test = test or []
+
         train_, test_ = [], []
+
         for w in self.__list:
             if w.uwi in test:
                 test_.append(w.uwi)
             else:
                 train_.append(w.uwi)
 
-        X_train, y_train = self._data_as_matrix(X_keys=X_keys, y_key=y_key,
+        # create matrices for train wells
+        X_train, y_train = self._data_as_matrix(X_keys=X_keys,
+                                                y_key=y_key,
                                                 alias=alias,
                                                 legend=legend,
                                                 match_only=match_only,
@@ -654,12 +674,10 @@ class Project(object):
                                                 uwis=train_,
                                                 include_basis=include_basis,
                                                 include_index=include_index,
-                                                include=include,
-                                                complete_only=False,
-                                                )
+                                                include=include)
 
         if y_train is None:
-        	return
+            return
 
         if remove_zeros:
             X_train = X_train[np.nonzero(y_train)]
@@ -668,7 +686,9 @@ class Project(object):
         if not test:
             return X_train, y_train
 
-        X_test, y_test = self._data_as_matrix(X_keys=X_keys, y_key=y_key,
+        # create matrices for test wells
+        X_test, y_test = self._data_as_matrix(X_keys=X_keys,
+                                              y_key=y_key,
                                               alias=alias,
                                               legend=legend,
                                               match_only=match_only,
@@ -683,9 +703,7 @@ class Project(object):
                                               uwis=test_,
                                               include_basis=include_basis,
                                               include_index=include_index,
-                                              include=include,
-                                              complete_only=False,
-                                              )
+                                              include=include)
 
         if remove_zeros:
             X_test = X_test[np.nonzero(y_test)]
@@ -693,7 +711,9 @@ class Project(object):
 
         return X_train, X_test, y_train, y_test
 
-    def _data_as_matrix(self, X_keys, y_key=None,
+    def _data_as_matrix(self,
+                        X_keys,
+                        y_key=None,
                         alias=None,
                         legend=None,
                         match_only=None,
@@ -708,12 +728,9 @@ class Project(object):
                         uwis=None,
                         include_basis=False,
                         include_index=False,
-                        include=None,
-                        complete_only=False,
-                        ):
+                        include=None):
         """
-        Make X.
-
+        Make X and y matrices
         """
         alias = alias or self.alias
         if include is not None:
@@ -734,6 +751,7 @@ class Project(object):
             except IndexError:
                 s = 1
             return s
+
         cols += get_cols(include)
 
         X = np.zeros(cols)
@@ -770,7 +788,7 @@ class Project(object):
                     else:
                         raise IndexError('Too many dimensions in include.')
                 except:
-                    raise WellError('Problem braodcasting include into X matrix.')
+                    raise WellError('Problem broadcasting include into X matrix.')
 
             if include_basis:
                 _X = np.hstack([np.expand_dims(z, 1), _X])
@@ -782,27 +800,27 @@ class Project(object):
             X = np.vstack([X, _X])
             print(_X.shape[0])
 
-            if y_key is None:
-                continue
+            y_key_sel = w.get_mnemonic(y_key, alias=alias)
 
-            y_key = w.get_mnemonic(y_key, alias=alias)
-
-            if y_key is None:
+            if y_key_sel is None:
                 continue
 
             try:
-                _y = w.data[y_key].to_basis(basis=z)
+                # it's a `curve` object
+                _y = w.data[y_key_sel].to_basis(basis=z)
             except:
-                _y = w.data[y_key].to_log(basis=z,
-                                          legend=legend,
-                                          match_only=match_only,
-                                          field=field,
-                                          field_function=field_function,
-                                          table=table,
-                                          legend_field=legend_field,
-                                          )
-
-            y = np.hstack([y, _y])
+                # it's probably a `striplog` object
+                _y = w.data[y_key_sel].to_log(basis=z,
+                                              legend=legend,
+                                              match_only=match_only,
+                                              field=field,
+                                              field_function=field_function,
+                                              table=table,
+                                              legend_field=legend_field)
+            if _y.shape[1] == 1:
+                y = np.hstack([y, _y.df.to_numpy()[:, 0]])
+            else:
+                y = np.hstack([y, _y.df.to_numpy()])
 
         # Get rid of the 'seed'.
         X = X[1:]

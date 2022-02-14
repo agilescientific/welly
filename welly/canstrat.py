@@ -131,7 +131,7 @@ def well_to_card_1(well):
     dictionary['location'] = ''
     dictionary['loctype'] = ''
     dictionary['metric'] = 'M'
-    dictionary['name'] = well.header.name
+    dictionary['name'] = well.header[(well.header.mnemonic == 'WELL')].value.iloc[0]
     dictionary['td'] = well.location.td or 0.0
     dictionary['units'] = 'M'
     return dictionary
@@ -140,7 +140,7 @@ def well_to_card_1(well):
 def well_to_card_2(well, key):
     """
     Args:
-        well (Well)
+        well (welly.Well): Well object.
         key (str): The key of the predicted Striplog in `well.data`.
 
     Returns:
@@ -152,7 +152,7 @@ def well_to_card_2(well, key):
     dictionary['start'] = well.data[key].start.z
     dictionary['stop'] = well.data[key].stop.z
     dictionary['status'] = ''
-    dictionary['uwi'] = well.header.uwi
+    dictionary['uwi'] = well.header[(well.header.mnemonic == 'UWI')].value.iloc[0]
     return dictionary
 
 
