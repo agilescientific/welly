@@ -628,20 +628,15 @@ def get_columns_decimal_formatter(data, null_value=None):
     The dictionary maps the column order of occurrence to the numerical formatter function.
     If a column has no numerical values, don't create a mapping for that column in the dictionary.
 
-    Example:
+    For example, an input np.ndarray might look like this.
 
-        Input np.ndarray:
+        - 1st column values: most occurring 2 decimal points
+        - 2nd column values: most occurring 5 decimal points
+        - 3rd column values: most occurring 10 decimal points
 
-            - 1st column values: most occurring 2 decimal points
-            - 2nd column values: most occurring 5 decimal points
-            - 3rd column values: most occurring 10 decimal points
-
-        Returns:
-            column_fmt = {
-                0 : '%.2f',
-                1 : '%.5f',
-                2 : '%.10f'
-            }
+    This will return the following.
+    
+        column_fmt = {0: '%.2f', 1: '%.5f', 2: '%.10f'}
 
     Args:
         data (numpy.ndarray): two-dimensional array with floats and/or ints (columns and rows).

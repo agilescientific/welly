@@ -10,6 +10,7 @@
 - As previously indicated, dogleg severity is now given in units of degrees per course length.
 - `kwargs` are passed to `lasio` in `read_las()`, `Well.from_las()` and `Project.from_las()`, so you can add things like `mnemonic_case='preserve'` or `ignore_header_errors=True`. See [the Lasio documentation](https://lasio.readthedocs.io/en/latest/) for more on these options.
 - A new argument on `well.to_las()` allows you to control the case of the mnemonics in the output LAS file. The behaviour has always been to preserve the case in the data dictionary; choose 'upper', 'title' or 'lower' to change it.
+- New docs! They are live at [code.agilescientific.com/welly](https://code.agilescientific.com/welly). Feedback welcome!
 
 
 ## 0.4.10, 22 June 2021
