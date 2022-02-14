@@ -164,6 +164,7 @@
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="_notebooks/Quick_start.html">Quick start</a></li>
 <li class="toctree-l1"><a class="reference internal" href="_notebooks/Wells.html">Wells</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_notebooks/Curves.html">Curves</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API reference</span></p>
 <ul>
@@ -222,7 +223,9 @@
 <li><p>The <code class="docutils literal notranslate"><span class="pre">Curve</span></code> object should be instantiated with <code class="docutils literal notranslate"><span class="pre">index</span></code> instead of <code class="docutils literal notranslate"><span class="pre">basis</span></code>.</p></li>
 <li><p>You can now create a project with <code class="docutils literal notranslate"><span class="pre">welly.read_las('path/to/*.las')</span></code>. Note: this always gives you a project, even if it only contains a single well. You can get the single well from a path like <code class="docutils literal notranslate"><span class="pre">'data/myfile.las'</span></code> with a singleton assignment like <code class="docutils literal notranslate"><span class="pre">well,</span> <span class="pre">=</span> <span class="pre">welly.read_las('data/myfile.las')</span></code>.</p></li>
 <li><p>As previously indicated, dogleg severity is now given in units of degrees per course length.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">kwargs</span></code> are passed to <code class="docutils literal notranslate"><span class="pre">lasio</span></code> in <code class="docutils literal notranslate"><span class="pre">read_las()</span></code>, <code class="docutils literal notranslate"><span class="pre">Well.from_las()</span></code> and <code class="docutils literal notranslate"><span class="pre">Project.from_las()</span></code>, so you can add things like <code class="docutils literal notranslate"><span class="pre">ignore_header_errors=True</span></code>. See <a class="reference external" href="https://lasio.readthedocs.io/en/latest/">the Lasio documentation</a> for more on these options.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">kwargs</span></code> are passed to <code class="docutils literal notranslate"><span class="pre">lasio</span></code> in <code class="docutils literal notranslate"><span class="pre">read_las()</span></code>, <code class="docutils literal notranslate"><span class="pre">Well.from_las()</span></code> and <code class="docutils literal notranslate"><span class="pre">Project.from_las()</span></code>, so you can add things like <code class="docutils literal notranslate"><span class="pre">mnemonic_case='preserve'</span></code> or <code class="docutils literal notranslate"><span class="pre">ignore_header_errors=True</span></code>. See <a class="reference external" href="https://lasio.readthedocs.io/en/latest/">the Lasio documentation</a> for more on these options.</p></li>
+<li><p>A new argument on <code class="docutils literal notranslate"><span class="pre">well.to_las()</span></code> allows you to control the case of the mnemonics in the output LAS file. The behaviour has always been to preserve the case in the data dictionary; choose ‘upper’, ‘title’ or ‘lower’ to change it.</p></li>
+<li><p>New docs! They are live at <a class="reference external" href="https://code.agilescientific.com/welly">code.agilescientific.com/welly</a>. Feedback welcome!</p></li>
 </ul>
 </section>
 <section id="june-2021">

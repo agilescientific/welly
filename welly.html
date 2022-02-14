@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Development" href="development.html" /><link rel="prev" title="Wells" href="_notebooks/Wells.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Development" href="development.html" /><link rel="prev" title="Curves" href="_notebooks/Curves.html" />
 
     <link rel="shortcut icon" href="_static/favicon.ico"/><meta name="generator" content="sphinx-4.4.0, furo 2022.01.02"/>
         <title>welly package - welly documentation</title>
@@ -164,6 +164,7 @@
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="_notebooks/Quick_start.html">Quick start</a></li>
 <li class="toctree-l1"><a class="reference internal" href="_notebooks/Wells.html">Wells</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_notebooks/Curves.html">Curves</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API reference</span></p>
 <ul class="current">
@@ -1161,7 +1162,7 @@ section translate both to a <cite>pd.DataFrame</cite>.</p>
 </dd></dl>
 <dl class="py function">
 <dt class="sig sig-object py" id="welly.las.to_lasio">
-<span class="sig-prename descclassname"><span class="pre">welly.las.</span></span><span class="sig-name descname"><span class="pre">to_lasio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">well</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">null_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">999.25</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#welly.las.to_lasio" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">welly.las.</span></span><span class="sig-name descname"><span class="pre">to_lasio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">well</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">null_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">999.25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mnemonic_case</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'preserve'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#welly.las.to_lasio" title="Permalink to this definition">¶</a></dt>
 <dd><p>Constructor. If you have a <cite>well</cite> object, this will create a
 <cite>lasio.LASFile</cite> object from it.</p>
 <dl class="field-list simple">
@@ -1177,6 +1178,8 @@ If you don’t specify one, it will survey all the curves with
 <cite>survey_basis()`</cite>.</p></li>
 <li><p><strong>null_value</strong> (<em>float</em>) – Optional. The null value representation in the
 LAS file.</p></li>
+<li><p><strong>mnemonic_case</strong> (<em>str</em>) – Optional. Can be ‘upper’, ‘lower’, ‘title’,
+or ‘preserve’. Default: ‘preserve’.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -2594,8 +2597,7 @@ Get the number of decimal points from columns with numerical values (float or in
 Take the highest number of decimal points of the column values.
 The dictionary maps the column order of occurrence to the numerical formatter function.
 If a column has no numerical values, don’t create a mapping for that column in the dictionary.</p>
-<p class="rubric">Example</p>
-<p>Input np.ndarray:</p>
+<p>For example, an input np.ndarray might look like this.</p>
 <blockquote>
 <div><ul class="simple">
 <li><p>1st column values: most occurring 2 decimal points</p></li>
@@ -2603,16 +2605,10 @@ If a column has no numerical values, don’t create a mapping for that column in
 <li><p>3rd column values: most occurring 10 decimal points</p></li>
 </ul>
 </div></blockquote>
-<dl>
-<dt>Returns:</dt><dd><dl class="simple">
-<dt>column_fmt = {</dt><dd><p>0 : ‘%.2f’,
-1 : ‘%.5f’,
-2 : ‘%.10f’</p>
-</dd>
-</dl>
-<p>}</p>
-</dd>
-</dl>
+<p>This will return the following.</p>
+<blockquote>
+<div><p>column_fmt = {0: ‘%.2f’, 1: ‘%.5f’, 2: ‘%.10f’}</p>
+</div></blockquote>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -3415,7 +3411,7 @@ survey, if not all of them.</p></li>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="welly.well.Well.to_las">
-<span class="sig-name descname"><span class="pre">to_las</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">null_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">999.25</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#welly.well.Well.to_las" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">to_las</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">null_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">999.25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mnemonic_case</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'preserve'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#welly.well.Well.to_las" title="Permalink to this definition">¶</a></dt>
 <dd><p>Writes the current well instance as a LAS file. Essentially just wraps
 <code class="docutils literal notranslate"><span class="pre">to_lasio()</span></code>, but is more convenient for most purposes.</p>
 <dl class="field-list simple">
@@ -3441,7 +3437,7 @@ as you might use for <code class="docutils literal notranslate"><span class="pre
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="welly.well.Well.to_lasio">
-<span class="sig-name descname"><span class="pre">to_lasio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">null_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">999.25</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#welly.well.Well.to_lasio" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">to_lasio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">null_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">999.25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mnemonic_case</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#welly.well.Well.to_lasio" title="Permalink to this definition">¶</a></dt>
 <dd><p>Makes a lasio object from the current well.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -5108,7 +5104,7 @@ survey, if not all of them.</p></li>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="welly.Well.to_las">
-<span class="sig-name descname"><span class="pre">to_las</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">null_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">999.25</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#welly.Well.to_las" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">to_las</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">null_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">999.25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mnemonic_case</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'preserve'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#welly.Well.to_las" title="Permalink to this definition">¶</a></dt>
 <dd><p>Writes the current well instance as a LAS file. Essentially just wraps
 <code class="docutils literal notranslate"><span class="pre">to_lasio()</span></code>, but is more convenient for most purposes.</p>
 <dl class="field-list simple">
@@ -5134,7 +5130,7 @@ as you might use for <code class="docutils literal notranslate"><span class="pre
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="welly.Well.to_lasio">
-<span class="sig-name descname"><span class="pre">to_lasio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">null_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">999.25</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#welly.Well.to_lasio" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">to_lasio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">null_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">999.25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mnemonic_case</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#welly.Well.to_lasio" title="Permalink to this definition">¶</a></dt>
 <dd><p>Makes a lasio object from the current well.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -5225,14 +5221,14 @@ in dir</p></li>
               </div>
               <svg><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="_notebooks/Wells.html">
+          <a class="prev-page" href="_notebooks/Curves.html">
               <svg><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Wells</div>
+                <div class="title">Curves</div>
                 
               </div>
             </a>

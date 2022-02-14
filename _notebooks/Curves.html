@@ -1,0 +1,742 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="welly package" href="../welly.html" /><link rel="prev" title="Wells" href="Wells.html" />
+
+    <link rel="shortcut icon" href="../_static/favicon.ico"/><meta name="generator" content="sphinx-4.4.0, furo 2022.01.02"/>
+        <title>Curves - welly documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=df49af52631e7917044a9c21a57f7b83170a6dd0" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=fade93df149f7c5fedb3ff897f799dc7d283b420" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  body[data-theme="dark"] {
+    --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+  }
+  @media (prefers-color-scheme: dark) {
+    body:not([data-theme="light"]) {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+  }
+</style></head>
+  <body>
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path stroke="none" d="M0 0h24v24H0z" />
+      <line x1="4" y1="6" x2="20" y2="6" />
+      <line x1="10" y1="12" x2="20" y2="12" />
+      <line x1="6" y1="18" x2="20" y2="18" />
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">welly  documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand centered" href="../index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="../_static/welly_simple_alpha.png" alt="Logo"/>
+  </div>
+  
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">User guide</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Quick_start.html">Quick start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Wells.html">Wells</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Curves</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../welly.html">welly package</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Other resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development.html">Development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../authors.html">Authors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Project links</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://pypi.org/project/welly/">PyPI releases</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/agile-geoscience/welly">Code in GitHub</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/agile-geoscience/welly/issues">Issue tracker</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://code.agilescientific.com/community">Community guidelines</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://code.agilescientific.com">Agile's software</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.agilescientific.com">Agile's website</a></li>
+</ul>
+
+</div>
+</div>
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <section class="tex2jax_ignore mathjax_ignore" id="curves">
+<h1>Curves<a class="headerlink" href="#curves" title="Permalink to this headline">¶</a></h1>
+<p><strong>Curves are one of the fundamental objects in <code class="docutils literal notranslate"><span class="pre">welly</span></code>.</strong></p>
+<p><code class="docutils literal notranslate"><span class="pre">Well</span></code> objects include collections of <code class="docutils literal notranslate"><span class="pre">Curve</span></code> objects. Multiple <code class="docutils literal notranslate"><span class="pre">Well</span></code> objects can be stored in a <code class="docutils literal notranslate"><span class="pre">Project</span></code>.</p>
+<p>On this page, we take a closer look at the <code class="docutils literal notranslate"><span class="pre">Curve</span></code> object.</p>
+<p>Some preliminaries…</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="kn">import</span> <span class="nn">welly</span>
+<span class="n">welly</span><span class="o">.</span><span class="n">__version__</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>'0.1.dev1+g492e05b'
+</pre></div>
+</div>
+</div>
+</div>
+<section id="load-a-well-from-las">
+<h2>Load a well from LAS<a class="headerlink" href="#load-a-well-from-las" title="Permalink to this headline">¶</a></h2>
+<p>Use the <code class="docutils literal notranslate"><span class="pre">from_las()</span></code> method to load a well by passing a filename as a <code class="docutils literal notranslate"><span class="pre">str</span></code>.</p>
+<p>This is really just a wrapper for <code class="docutils literal notranslate"><span class="pre">lasio</span></code> but instantiates a <code class="docutils literal notranslate"><span class="pre">Header</span></code>, <code class="docutils literal notranslate"><span class="pre">Curve</span></code>s, etc.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">welly</span> <span class="kn">import</span> <span class="n">Well</span>
+
+<span class="n">p129</span> <span class="o">=</span> <span class="n">Well</span><span class="o">.</span><span class="n">from_las</span><span class="p">(</span><span class="s1">'https://geocomp.s3.amazonaws.com/data/P-129.LAS'</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">p129</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/Curves_4_0.png" src="../_images/Curves_4_0.png"/>
+</div>
+</div>
+<p>The curves are stored in the <code class="docutils literal notranslate"><span class="pre">data</span></code> attribute, which is an ordinary dictionary:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">p129</span><span class="o">.</span><span class="n">data</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{'CALI': Curve(mnemonic=CALI, units=in, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
+ 'HCAL': Curve(mnemonic=HCAL, units=in, start=1.0668, stop=1939.1376, step=0.1524, count=[2139]),
+ 'PEF': Curve(mnemonic=PEF, units=, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
+ 'DT': Curve(mnemonic=DT, units=us/ft, start=1.0668, stop=1939.1376, step=0.1524, count=[10850]),
+ 'DTS': Curve(mnemonic=DTS, units=us/ft, start=1.0668, stop=1939.1376, step=0.1524, count=[10850]),
+ 'DPHI_SAN': Curve(mnemonic=DPHI_SAN, units=m3/m3, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
+ 'DPHI_LIM': Curve(mnemonic=DPHI_LIM, units=m3/m3, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
+ 'DPHI_DOL': Curve(mnemonic=DPHI_DOL, units=m3/m3, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
+ 'NPHI_SAN': Curve(mnemonic=NPHI_SAN, units=m3/m3, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
+ 'NPHI_LIM': Curve(mnemonic=NPHI_LIM, units=m3/m3, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
+ 'NPHI_DOL': Curve(mnemonic=NPHI_DOL, units=m3/m3, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
+ 'RLA5': Curve(mnemonic=RLA5, units=ohm.m, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
+ 'RLA3': Curve(mnemonic=RLA3, units=ohm.m, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
+ 'RLA4': Curve(mnemonic=RLA4, units=ohm.m, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
+ 'RLA1': Curve(mnemonic=RLA1, units=ohm.m, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
+ 'RLA2': Curve(mnemonic=RLA2, units=ohm.m, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
+ 'RXOZ': Curve(mnemonic=RXOZ, units=ohm.m, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
+ 'RXO_HRLT': Curve(mnemonic=RXO_HRLT, units=ohm.m, start=1.0668, stop=1939.1376, step=0.1524, count=[2139]),
+ 'RT_HRLT': Curve(mnemonic=RT_HRLT, units=ohm.m, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
+ 'RM_HRLT': Curve(mnemonic=RM_HRLT, units=ohm.m, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
+ 'DRHO': Curve(mnemonic=DRHO, units=g/cm3, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
+ 'RHOB': Curve(mnemonic=RHOB, units=g/cm3, start=1.0668, stop=1939.1376, step=0.1524, count=[12707]),
+ 'GR': Curve(mnemonic=GR, units=gAPI, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
+ 'SP': Curve(mnemonic=SP, units=mV, start=1.0668, stop=1939.1376, step=0.1524, count=[12718])}
+</pre></div>
+</div>
+</div>
+</div>
+<p>Let’s look at one log:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gr</span> <span class="o">=</span> <span class="n">p129</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">'GR'</span><span class="p">]</span>
+
+<span class="n">gr</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div class="table-wrapper"><table><tr><th colspan="2" style="text-align:center;">GR [gAPI]</th></tr><tr><td colspan="2" style="text-align:center;">1.0668 : 1939.1376 : 0.1524</td></tr><tr><td><strong>index_units</strong></td><td>m</td></tr><tr><td><strong>code</strong></td><td>None</td></tr><tr><td><strong>description</strong></td><td>Gamma-Ray</td></tr><tr><td><strong>log_type</strong></td><td>None</td></tr><tr><td><strong>api</strong></td><td>None</td></tr><tr><td><strong>date</strong></td><td>10-Oct-2007</td></tr><tr><td><strong>null</strong></td><td>-999.25</td></tr><tr><td><strong>run</strong></td><td>1</td></tr><tr><td><strong>service_company</strong></td><td>Schlumberger</td></tr><tr><td><strong>_alias</strong></td><td>GR</td></tr><tr><th colspan="2" style="border-top: 2px solid #000; text-align:center;"><strong>Stats</strong></th></tr><tr><td><strong>samples (NaNs)</strong></td><td>12718 (0)</td></tr><tr><td><strong><sub>min</sub> mean <sup>max</sup></strong></td><td><sub>3.89</sub> 78.986 <sup>267.94</sup></td></tr><tr><th style="border-top: 2px solid #000;">Depth</th><th style="border-top: 2px solid #000;">Value</th></tr><tr><td>1.0668</td><td>46.6987</td></tr><tr><td>1.2192</td><td>46.6987</td></tr><tr><td>1.3716</td><td>46.6987</td></tr><tr><td>⋮</td><td>⋮</td></tr><tr><td>1938.8328</td><td>92.2462</td></tr><tr><td>1938.9852</td><td>92.2462</td></tr><tr><td>1939.1376</td><td>92.2462</td></tr></table></div></div></div>
+</div>
+<p>The object knows some things about itself:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gr</span><span class="o">.</span><span class="n">mnemonic</span><span class="p">,</span> <span class="n">gr</span><span class="o">.</span><span class="n">units</span><span class="p">,</span> <span class="n">gr</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="n">gr</span><span class="o">.</span><span class="n">stop</span><span class="p">,</span> <span class="n">gr</span><span class="o">.</span><span class="n">step</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>('GR', 'gAPI', 1.0668, 1939.1376, 0.1524000000000001)
+</pre></div>
+</div>
+</div>
+</div>
+<p>Curves have various methods on them, such as <code class="docutils literal notranslate"><span class="pre">plot()</span></code>…</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gr</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;AxesSubplot:title={'center':'GR'}, xlabel='gAPI'&gt;
+</pre></div>
+</div>
+<img alt="../_images/Curves_12_1.png" src="../_images/Curves_12_1.png"/>
+</div>
+</div>
+<p>Often we just want to look at or deal with a portion of the curve, or maybe resample it:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gr</span><span class="o">.</span><span class="n">to_basis</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">stop</span><span class="o">=</span><span class="mi">1250</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mf">10.0</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;AxesSubplot:title={'center':'GR'}, xlabel='gAPI'&gt;
+</pre></div>
+</div>
+<img alt="../_images/Curves_14_1.png" src="../_images/Curves_14_1.png"/>
+</div>
+</div>
+</section>
+<section id="interpolation-and-slicing">
+<h2>Interpolation and slicing<a class="headerlink" href="#interpolation-and-slicing" title="Permalink to this headline">¶</a></h2>
+<p>We can read the curve at any depth (or depths) and get an interpolated reading:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gr</span><span class="o">.</span><span class="n">read_at</span><span class="p">([</span><span class="mi">1200</span><span class="p">,</span> <span class="mi">1300</span><span class="p">,</span> <span class="mi">1400</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[105.9837716184255, 103.79578067107755, 96.33845173590835]
+</pre></div>
+</div>
+</div>
+</div>
+<p>There are no samples at those depths; the well is sampled at a 0.1524 m interval:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gr</span><span class="o">.</span><span class="n">step</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.1524000000000001
+</pre></div>
+</div>
+</div>
+</div>
+<p>The actual depths of the samples are in the ‘index’:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gr</span><span class="o">.</span><span class="n">index</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Float64Index([   1.0668,    1.2192,    1.3716,     1.524,    1.6764,    1.8288,
+                 1.9812,    2.1336,     2.286,    2.4384,
+              ...
+               1937.766, 1937.9184, 1938.0708, 1938.2232, 1938.3756,  1938.528,
+              1938.6804, 1938.8328, 1938.9852, 1939.1376],
+             dtype='float64', name='DEPT', length=12718)
+</pre></div>
+</div>
+</div>
+</div>
+<p>You can slice a curve by this index; in other words, <strong>by depth</strong>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gr</span><span class="p">[</span><span class="mi">1000</span><span class="p">:</span><span class="mi">1010</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div class="table-wrapper"><table><tr><th colspan="2" style="text-align:center;">GR [gAPI]</th></tr><tr><td colspan="2" style="text-align:center;">1000.0488 : 1009.9548 : 0.1524</td></tr><tr><td><strong>index_units</strong></td><td>m</td></tr><tr><td><strong>code</strong></td><td>None</td></tr><tr><td><strong>description</strong></td><td>Gamma-Ray</td></tr><tr><td><strong>log_type</strong></td><td>None</td></tr><tr><td><strong>api</strong></td><td>None</td></tr><tr><td><strong>date</strong></td><td>10-Oct-2007</td></tr><tr><td><strong>null</strong></td><td>-999.25</td></tr><tr><td><strong>run</strong></td><td>1</td></tr><tr><td><strong>service_company</strong></td><td>Schlumberger</td></tr><tr><td><strong>_alias</strong></td><td>GR</td></tr><tr><th colspan="2" style="border-top: 2px solid #000; text-align:center;"><strong>Stats</strong></th></tr><tr><td><strong>samples (NaNs)</strong></td><td>66 (0)</td></tr><tr><td><strong><sub>min</sub> mean <sup>max</sup></strong></td><td><sub>74.87</sub> 109.108 <sup>134.61</sup></td></tr><tr><th style="border-top: 2px solid #000;">Depth</th><th style="border-top: 2px solid #000;">Value</th></tr><tr><td>1000.0488</td><td>111.2134</td></tr><tr><td>1000.2012</td><td>110.6463</td></tr><tr><td>1000.3536</td><td>102.9604</td></tr><tr><td>⋮</td><td>⋮</td></tr><tr><td>1009.6500</td><td>116.1571</td></tr><tr><td>1009.8024</td><td>121.8580</td></tr><tr><td>1009.9548</td><td>126.4625</td></tr></table></div></div></div>
+</div>
+<p>You can get a statistical description of a curve:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gr</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span>  <span class="c1"># Equivalent to get_stats()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<div class="table-wrapper"><table border="1" class="dataframe">
+<thead>
+<tr style="text-align: right;">
+<th></th>
+<th>GR</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th>count</th>
+<td>12718.0000000000</td>
+</tr>
+<tr>
+<th>mean</th>
+<td>78.9863535888</td>
+</tr>
+<tr>
+<th>std</th>
+<td>37.0719153332</td>
+</tr>
+<tr>
+<th>min</th>
+<td>3.8940699100</td>
+</tr>
+<tr>
+<th>25%</th>
+<td>51.3325605393</td>
+</tr>
+<tr>
+<th>50%</th>
+<td>76.5569686890</td>
+</tr>
+<tr>
+<th>75%</th>
+<td>109.8330020900</td>
+</tr>
+<tr>
+<th>max</th>
+<td>267.9404296900</td>
+</tr>
+</tbody>
+</table></div>
+</div></div></div>
+</div>
+</section>
+<section id="mathematics">
+<h2>Mathematics<a class="headerlink" href="#mathematics" title="Permalink to this headline">¶</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gr</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>GR    78.9863535888
+dtype: float64
+</pre></div>
+</div>
+</div>
+</div>
+<p>Mathematical operations results in another Curve object, but the values are transformed:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="mi">1000</span> <span class="o">*</span> <span class="n">p129</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">'RHOB'</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div class="table-wrapper"><table><tr><th colspan="2" style="text-align:center;">RHOB [g/cm3]</th></tr><tr><td colspan="2" style="text-align:center;">1.0668 : 1939.1376 : 0.1524</td></tr><tr><td><strong>index_units</strong></td><td>m</td></tr><tr><td><strong>code</strong></td><td>None</td></tr><tr><td><strong>description</strong></td><td>Bulk Density</td></tr><tr><td><strong>log_type</strong></td><td>None</td></tr><tr><td><strong>api</strong></td><td>None</td></tr><tr><td><strong>date</strong></td><td>10-Oct-2007</td></tr><tr><td><strong>null</strong></td><td>-999.25</td></tr><tr><td><strong>run</strong></td><td>1</td></tr><tr><td><strong>service_company</strong></td><td>Schlumberger</td></tr><tr><td><strong>_alias</strong></td><td>RHOB</td></tr><tr><th colspan="2" style="border-top: 2px solid #000; text-align:center;"><strong>Stats</strong></th></tr><tr><td><strong>samples (NaNs)</strong></td><td>12718 (11)</td></tr><tr><td><strong><sub>min</sub> mean <sup>max</sup></strong></td><td><sub>1173.95</sub> 2613.912 <sup>4628.80</sup></td></tr><tr><th style="border-top: 2px solid #000;">Depth</th><th style="border-top: 2px solid #000;">Value</th></tr><tr><td>1.0668</td><td>2390.1498</td></tr><tr><td>1.2192</td><td>2390.1498</td></tr><tr><td>1.3716</td><td>2390.1498</td></tr><tr><td>⋮</td><td>⋮</td></tr><tr><td>1938.8328</td><td>nan</td></tr><tr><td>1938.9852</td><td>nan</td></tr><tr><td>1939.1376</td><td>nan</td></tr></table></div></div></div>
+</div>
+<p><strong>Beware, for the time being, units are not transformed by mathematical operations!</strong></p>
+</section>
+<section id="plotting">
+<h2>Plotting<a class="headerlink" href="#plotting" title="Permalink to this headline">¶</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gr</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">c</span><span class="o">=</span><span class="s1">'r'</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;AxesSubplot:title={'center':'GR'}, xlabel='gAPI'&gt;
+</pre></div>
+</div>
+<img alt="../_images/Curves_31_1.png" src="../_images/Curves_31_1.png"/>
+</div>
+</div>
+<p>There’s also a pseudocolor 2D ribbon plot:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gr</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;AxesSubplot:&gt;
+</pre></div>
+</div>
+<img alt="../_images/Curves_33_1.png" src="../_images/Curves_33_1.png"/>
+</div>
+</div>
+<p>You can optionally show the curve trace as well with <code class="docutils literal notranslate"><span class="pre">curve=True</span></code>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gr</span><span class="o">.</span><span class="n">plot_2d</span><span class="p">(</span><span class="n">cmap</span><span class="o">=</span><span class="s1">'viridis_r'</span><span class="p">,</span> <span class="n">curve</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s1">'k'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">200</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(0.0, 200.0)
+</pre></div>
+</div>
+<img alt="../_images/Curves_35_1.png" src="../_images/Curves_35_1.png"/>
+</div>
+</div>
+</section>
+<section id="despike">
+<h2>Despike<a class="headerlink" href="#despike" title="Permalink to this headline">¶</a></h2>
+<p>You can despike with a window length for the trend and a Z-score to clip at — the curve is compared to the median <em>in the window</em> using the standard deviation <em>from the entire curve</em>. Here’s the difference:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">p129</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">'DESP'</span><span class="p">]</span> <span class="o">=</span> <span class="n">gr</span><span class="o">.</span><span class="n">despike</span><span class="p">(</span><span class="n">z</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">p129</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">'DIFF'</span><span class="p">]</span> <span class="o">=</span> <span class="n">gr</span> <span class="o">-</span> <span class="n">p129</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">'DESP'</span><span class="p">]</span>
+<span class="n">p129</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">tracks</span><span class="o">=</span><span class="p">[</span><span class="s1">'GR'</span><span class="p">,</span> <span class="s1">'DESP'</span><span class="p">,</span> <span class="s1">'DIFF'</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/Curves_37_0.png" src="../_images/Curves_37_0.png"/>
+</div>
+</div>
+</section>
+<section id="blocking">
+<h2>Blocking<a class="headerlink" href="#blocking" title="Permalink to this headline">¶</a></h2>
+<p>We can block a curve. Let’s look at a small segment:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">segment</span> <span class="o">=</span> <span class="n">gr</span><span class="o">.</span><span class="n">to_basis</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="mi">600</span><span class="p">,</span> <span class="n">stop</span><span class="o">=</span><span class="mi">680</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We can create a binary log (0’s and 1’s) with a simple cutoff:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">ncols</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="c1"># The original log on the left.</span>
+<span class="n">segment</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><span class="s1">'r'</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="mi">80</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">'c'</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span>
+
+<span class="c1"># Make and plot a blocked version.</span>
+<span class="n">segment</span><span class="o">.</span><span class="n">block</span><span class="p">(</span><span class="n">cutoffs</span><span class="o">=</span><span class="mi">80</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">''</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Text(0.5, 0, '')
+</pre></div>
+</div>
+<img alt="../_images/Curves_41_1.png" src="../_images/Curves_41_1.png"/>
+</div>
+</div>
+<p>Or we can use two cutoffs and get a blocked log with three different values. By default the new values will be 0, 1, 2, but we can assign whatever we like:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+
+<span class="n">segment</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="n">segment</span><span class="o">.</span><span class="n">block</span><span class="p">(</span><span class="n">cutoffs</span><span class="o">=</span><span class="p">(</span><span class="mi">80</span><span class="p">,</span> <span class="mi">120</span><span class="p">),</span> <span class="n">values</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">120</span><span class="p">))</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;AxesSubplot:title={'center':'GR'}, xlabel='gAPI'&gt;
+</pre></div>
+</div>
+<img alt="../_images/Curves_43_1.png" src="../_images/Curves_43_1.png"/>
+</div>
+</div>
+<p>You can send a function in to determine replacement values from the original log. E.g., to replace the values with the block’s mean value:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+
+<span class="n">segment</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="n">segment</span><span class="o">.</span><span class="n">block</span><span class="p">(</span><span class="n">cutoffs</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="n">function</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="mi">80</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'c'</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.lines.Line2D at 0x7f7cb440b5e0&gt;
+</pre></div>
+</div>
+<img alt="../_images/Curves_45_1.png" src="../_images/Curves_45_1.png"/>
+</div>
+</div>
+</section>
+<section id="instantiating-a-new-curve">
+<h2>Instantiating a new curve<a class="headerlink" href="#instantiating-a-new-curve" title="Permalink to this headline">¶</a></h2>
+<p>Let’s add a curve from a list of values (<code class="docutils literal notranslate"><span class="pre">data</span></code>) with depths (<code class="docutils literal notranslate"><span class="pre">basis</span></code>):</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">welly</span> <span class="kn">import</span> <span class="n">Curve</span>
+
+<span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'mnemonic'</span><span class="p">:</span> <span class="s1">'FOO'</span><span class="p">,</span> <span class="s1">'run'</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span> <span class="p">}</span>
+<span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">]</span>
+<span class="n">c</span> <span class="o">=</span> <span class="n">Curve</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">],</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">c</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;AxesSubplot:title={'center':'FOO'}&gt;
+</pre></div>
+</div>
+<img alt="../_images/Curves_48_1.png" src="../_images/Curves_48_1.png"/>
+</div>
+</div>
+<hr class="docutils"/>
+<p>© 2022 Agile Scientific, CC BY</p>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="../welly.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">welly package</div>
+              </div>
+              <svg><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="Wells.html">
+              <svg><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Wells</div>
+                
+              </div>
+            </a>
+        </div>
+
+        <div class="related-information">
+              Copyright &#169; 2022, The Welly Authors |
+          Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+          <a href="https://github.com/pradyunsg/furo">Furo theme</a>.
+            | <a class="muted-link" href="../_sources/_notebooks/Curves.ipynb.txt"
+               rel="nofollow">
+              Show Source
+            </a>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            Contents
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Curves</a><ul>
+<li><a class="reference internal" href="#load-a-well-from-las">Load a well from LAS</a></li>
+<li><a class="reference internal" href="#interpolation-and-slicing">Interpolation and slicing</a></li>
+<li><a class="reference internal" href="#mathematics">Mathematics</a></li>
+<li><a class="reference internal" href="#plotting">Plotting</a></li>
+<li><a class="reference internal" href="#despike">Despike</a></li>
+<li><a class="reference internal" href="#blocking">Blocking</a></li>
+<li><a class="reference internal" href="#instantiating-a-new-curve">Instantiating a new curve</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/scripts/furo.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    </body>
+</html>
