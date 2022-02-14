@@ -88,7 +88,7 @@ def from_las(file_ref, **kwargs):
             'Header':   header, # for all (LAS 1.2, LAS 2.0, LAS 3.0)
         }
 
-    Where:
+    Where...
         data (pd.DataFrame):   where:
 
             - every row represents a data index.
