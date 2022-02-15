@@ -24,7 +24,7 @@ from welly import Well, Project
 w = Well.from_las('my_wells/my_well.las')  # Load a single well.
 p = Project.from_las('my_wells/*.las')     # Load lots of wells.
 
-gr = w.data['GR']  # One log; this is a subclassed NumPy array...
+gr = w.data['GR']  # One log...
 gr.plot()          # ...with some superpowers!
 ```
 
