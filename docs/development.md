@@ -41,13 +41,14 @@ This builds both `.tar.gz` and `.whl` files, either of which you can install wit
 
 ## Building the docs
 
-You can build the docs with the following command in the root directory:
+You can build the docs with the following commands:
 
-    sphinx-build -E -b html docs docs/_build/html
+    cd docs
+    make html
 
-You can also run `make html` from the `docs` directory.
+Don't just run `sphinx-build` manually: there is other stuff happening in the `Makefile`.
 
-There is a continuous integration script to update welly's docs on all published releases.
+There is a continuous integration script to update the docs on published releases.
 
 
 ## Continuous integration

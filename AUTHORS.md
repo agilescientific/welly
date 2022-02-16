@@ -12,4 +12,4 @@ The following people have contributed to the project (in alphabetical order):
 - [Patrick Reinhard](https://github.com/patrick-reinhard), Shell, The Netherlands
 - [DC Slagel](https://github.com/dcslagel), Shell, The Netherlands
 - [Miguel de la Varga](https://github.com/Leguark), Germany
-- Wenting Xiong, Shell, The Netherlands
+- [Wenting Xiong](https://github.com/wenting-x), Shell, The Netherlands
