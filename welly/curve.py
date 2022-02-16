@@ -304,9 +304,11 @@ class Curve(object):
     @property
     def values(self):
         """
-        The numpy.array representation of the pd.DataFrame of the Curve
+        The numpy.array representation of the pd.DataFrame of the Curve.
+
+        Returns a 1D array if the Curve is 1D, a 2D array if the Curve is 2D.
         """
-        return self.df.values
+        return np.squeeze(self.df.values)
 
     @property
     def mnemonic(self):
