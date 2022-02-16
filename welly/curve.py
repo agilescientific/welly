@@ -122,7 +122,7 @@ class Curve(object):
         Index into pd.DataFrame that holds the curve data.
         """
         curve = copy.deepcopy(self)
-        setattr(curve, 'df', self.df[index])
+        setattr(curve, 'df', self.df.loc[index])
         return curve
 
     def __add__(self, other):
