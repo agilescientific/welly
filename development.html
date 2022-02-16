@@ -245,12 +245,13 @@
 </section>
 <section id="building-the-docs">
 <h2>Building the docs<a class="headerlink" href="#building-the-docs" title="Permalink to this headline">#</a></h2>
-<p>You can build the docs with the following command in the root directory:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>sphinx-build -E -b html docs docs/_build/html
+<p>You can build the docs with the following commands:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>cd docs
+make html
 </pre></div>
 </div>
-<p>You can also run <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">html</span></code> from the <code class="docutils literal notranslate"><span class="pre">docs</span></code> directory.</p>
-<p>There is a continuous integration script to update welly’s docs on all published releases.</p>
+<p>Don’t just run <code class="docutils literal notranslate"><span class="pre">sphinx-build</span></code> manually: there is other stuff happening in the <code class="docutils literal notranslate"><span class="pre">Makefile</span></code>.</p>
+<p>There is a continuous integration script to update the docs on published releases.</p>
 </section>
 <section id="continuous-integration">
 <h2>Continuous integration<a class="headerlink" href="#continuous-integration" title="Permalink to this headline">#</a></h2>

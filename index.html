@@ -224,16 +224,16 @@
 <div class="toctree-wrapper compound">
 </div>
 <p>To install <code class="docutils literal notranslate"><span class="pre">welly</span></code>, simply:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">welly</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip install welly
 </pre></div>
 </div>
 <p>To load some wells from LAS files:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">welly</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">welly</span>
 <span class="n">project</span> <span class="o">=</span> <span class="n">welly</span><span class="o">.</span><span class="n">read_las</span><span class="p">(</span><span class="s2">"path/to/well_*.las"</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>The project is a collection of well objects, each of which contains well logs. Plot the gamma-ray like:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gr</span> <span class="o">=</span> <span class="n">project</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">'GR'</span><span class="p">]</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">gr</span> <span class="o">=</span> <span class="n">project</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">'GR'</span><span class="p">]</span>
 <span class="n">gr</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 </pre></div>
 </div>

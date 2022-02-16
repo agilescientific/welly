@@ -20,16 +20,22 @@ Quick start
 .. toctree::
     :caption: Quick start
 
-To install ``welly``, simply::
+To install ``welly``, simply:
+
+.. code-block:: shell
 
     pip install welly
 
-To load some wells from LAS files::
+To load some wells from LAS files:
+
+.. code-block:: python
 
     import welly
     project = welly.read_las("path/to/well_*.las")
 
-The project is a collection of well objects, each of which contains well logs. Plot the gamma-ray like::
+The project is a collection of well objects, each of which contains well logs. Plot the gamma-ray like:
+
+.. code-block:: python
 
     gr = project[0].data['GR']
     gr.plot()
