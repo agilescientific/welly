@@ -111,7 +111,17 @@ class Project(object):
 
     @property
     def uwis(self):
+        """Returns the UWIs of the wells in the project."""
         return [w.uwi for w in self.__list]
+
+    @property
+    def basis_range(self):
+        """
+        Returns a tuple of the min and max of all the curves in the wells in the
+        project.
+        """
+        idx = self.df().index.get_level_values('DEPT')
+        return idx.min(), idx.max()
 
     @classmethod
     def from_las(cls,
