@@ -17,7 +17,7 @@ def test_curve(curve):
     assert curve.shape[1] == 1
     assert curve.size == 12718
     assert curve.df.index.size == 12718
-    assert curve.values[0][0] - 46.69865036 < 0.0001
+    assert curve.values[0]- 46.69865036 < 0.0001
     assert curve.index_name == 'DEPT'
 
     # Check HTML repr.
