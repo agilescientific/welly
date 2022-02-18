@@ -1,8 +1,6 @@
 name: Build docs
 
 on:
-  push:
-    branches: [ develop, master ]
   release:
     types: [ published ]
 
