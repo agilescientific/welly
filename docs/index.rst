@@ -54,6 +54,7 @@ User guide
     _notebooks/Quick_start.ipynb
     _notebooks/Wells.ipynb
     _notebooks/Curves.ipynb
+    _notebooks/Projects.ipynb
 
 
 API reference
