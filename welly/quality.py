@@ -68,7 +68,8 @@ def qc_data_well(well, tests, keys=None, alias=None):
             ({curve_name: {test_name: test_result}}
 
     """
-    keys = well._get_curve_mnemonics(keys, alias=alias, curves_only=False)
+    keys = well._get_curve_mnemonics(keys, alias=alias, curves_only=True)
+
     r = {k: well.data.get(k).quality(tests, alias) for k in keys}
     s = qc_curve_group_well(well=well, tests=tests, keys=keys, alias=alias)
     for m, results in r.items():
@@ -151,6 +152,7 @@ def quality_curve(curve, tests, alias=None):
     # Second, anything with the name of the curve we're in now.
     # Third, anything that the alias list has for this curve.
     # (This requires a reverse look-up so it's a bit messy.)
+
     this_tests = \
         tests.get('each', []) + tests.get('Each', []) + tests.get('EACH', []) \
         + tests.get(curve.mnemonic, []) \

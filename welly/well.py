@@ -209,7 +209,7 @@ class Well(object):
         else:
             keys = [k for k in keys_ if k in self.data]
 
-        return keys
+        return [self.get_mnemonic(k, alias=alias) for k in keys]
 
     @classmethod
     def from_lasio(cls,
