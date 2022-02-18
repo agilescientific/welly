@@ -18,19 +18,6 @@ blockquote div.line {
     line-height: 125%;
 }
 
-/* Adds the Agile logo in the footer. */
-.related-information:before{
-    display: block;
-    width:48px;
-    content: url('agile-open-logo-nocircle-grey_40px.png');
-    float: left;
-    margin-top: -4px;
-}
-
-.related-information {
-    padding-left: 0px;
-}
-
 /* Adds the GitHub ribbon. */
 #forkongithub a {
     background:rgb(158, 158, 158);
