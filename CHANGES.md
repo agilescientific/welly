@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.5.1, 18 February 2022
+
+- `Curve.values` now returns a 1D array for a 1D curve.
+- Added `Project.basis_range` to provide the min and max of all curves in the project.
+- Added [a user guide page for `Project`](https://code.agilescientific.com/welly/userguide/projects.html).
+- Fixed [bug #202](https://github.com/agile-geoscience/welly/issues/202) with curve indexing.
+- Fixed [bug #206](https://github.com/agile-geoscience/welly/issues/206) that prvented quality tests from running on aliased curves.
+- Fixed [bug #207](https://github.com/agile-geoscience/welly/issues/207) that was causing the quality table not to render correctly in some situations.
+
 ## 0.5.0, 14 February 2022
 
 - Major change: Everything in `welly` is now much closer to `pandas`. Chiefly, `Curve` objects are now represented by wrapped `pandas.DataFrame` objects (note: not `Series` as you might expect, so they can be two-dimensional). They were previously subclassed NumPy `ndarray` objects, so while we've tried to preserve as much of the API as possible, expect some changes. Please let us know if there's something you miss, it can probably be implemented. Many thanks to the developers that made this happen, especially Patrick Reinhard and Wenting Xiong in the Netherlands.
