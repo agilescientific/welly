@@ -51,10 +51,10 @@ User guide
     :caption: User guide
 
     installation
-    _notebooks/Quick_start.ipynb
-    _notebooks/Wells.ipynb
-    _notebooks/Curves.ipynb
-    _notebooks/Projects.ipynb
+    userguide/Quick_start.ipynb
+    userguide/Wells.ipynb
+    userguide/Curves.ipynb
+    userguide/Projects.ipynb
 
 
 API reference

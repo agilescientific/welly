@@ -24,7 +24,7 @@ def main(path):
     Process the IPYNB files in path, save in place (side-effect).
     """
     fnames = glob.glob(path.strip('/') + '/[!_]*.ipynb')  # Not files with underscore.
-    outpath = pathlib.Path('_notebooks')
+    outpath = pathlib.Path('userguide')
     if outpath.exists():
         shutil.rmtree(outpath)
     outpath.mkdir(exist_ok=True)

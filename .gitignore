@@ -1,5 +1,5 @@
 # Keep out of change control.
-docs/_notebooks
+docs/userguide
 _version.py
 .ipynb_checkpoints
 .vscode

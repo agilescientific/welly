@@ -13,7 +13,7 @@ help:
 .PHONY: help html
 
 html:
-	python pre_process_ipynb.py $(SOURCEDIR)/notebooks
+	python pre_process_ipynb.py $(SOURCEDIR)/_userguide
 	$(SPHINXBUILD) -E -b html $(SPHINXOPTS) $(SOURCEDIR) $(BUILDDIR)/html
 	python post_process_html.py $(BUILDDIR)/html
 	@echo
