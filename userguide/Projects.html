@@ -224,7 +224,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>'0.5.1'
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>'0.5.2rc0'
 </pre></div>
 </div>
 </div>
@@ -243,10 +243,10 @@
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0it [00:00, ?it/s]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2it [00:00,  7.77it/s]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2it [00:00,  9.23it/s]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2it [00:00,  7.74it/s]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2it [00:00,  9.19it/s]
 </pre></div>
 </div>
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
@@ -278,16 +278,16 @@
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0it [00:00, ?it/s]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>1it [00:02,  2.54s/it]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>1it [00:02,  2.02s/it]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2it [00:04,  2.47s/it]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2it [00:04,  2.12s/it]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>3it [00:06,  1.83s/it]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>3it [00:05,  1.55s/it]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>3it [00:06,  2.01s/it]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>3it [00:05,  1.70s/it]
 </pre></div>
 </div>
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
@@ -375,9 +375,21 @@
 <p>When creating the DataFrame, you can pass a list of the keys (mnemonics) you want, and use aliases as usual.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">alias</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{'Sonic': ['DT', 'DT4P'], 'Caliper': ['HCAL', 'CALI']}
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'Caliper'</span><span class="p">,</span> <span class="s1">'GR'</span><span class="p">,</span> <span class="s1">'Sonic'</span><span class="p">]</span>
 
-<span class="n">df</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">df</span><span class="p">(</span><span class="n">keys</span><span class="o">=</span><span class="n">keys</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">)</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">df</span><span class="p">(</span><span class="n">keys</span><span class="o">=</span><span class="n">keys</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">,</span> <span class="n">rename_aliased</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">df</span>
 </pre></div>
 </div>
@@ -402,17 +414,13 @@
 <tr style="text-align: right;">
 <th></th>
 <th></th>
-<th>HCAL</th>
+<th>Caliper</th>
 <th>GR</th>
-<th>DT</th>
-<th>CALI</th>
-<th>DT4P</th>
+<th>Sonic</th>
 </tr>
 <tr>
 <th>UWI</th>
 <th>DEPT</th>
-<th></th>
-<th></th>
 <th></th>
 <th></th>
 <th></th>
@@ -425,15 +433,11 @@
 <td>4.3912849426</td>
 <td>46.6986503600</td>
 <td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
 </tr>
 <tr>
 <th>1.2192000000</th>
 <td>4.3912849426</td>
 <td>46.6986503600</td>
-<td>NaN</td>
-<td>NaN</td>
 <td>NaN</td>
 </tr>
 <tr>
@@ -441,15 +445,11 @@
 <td>4.3912849426</td>
 <td>46.6986503600</td>
 <td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
 </tr>
 <tr>
 <th>1.5240000000</th>
 <td>4.3912849426</td>
 <td>46.6986503600</td>
-<td>NaN</td>
-<td>NaN</td>
 <td>NaN</td>
 </tr>
 <tr>
@@ -457,14 +457,10 @@
 <td>4.3912849426</td>
 <td>46.6986503600</td>
 <td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
 </tr>
 <tr>
 <th>...</th>
 <th>...</th>
-<td>...</td>
-<td>...</td>
 <td>...</td>
 <td>...</td>
 <td>...</td>
@@ -472,47 +468,37 @@
 <tr>
 <th rowspan="5" valign="top">303N764340060300</th>
 <th>3387.5471999996</th>
-<td>NaN</td>
+<td>303.7090000000</td>
 <td>32.0276000039</td>
-<td>NaN</td>
-<td>303.709</td>
 <td>252.4951</td>
 </tr>
 <tr>
 <th>3387.6995999996</th>
-<td>NaN</td>
+<td>303.7090000000</td>
 <td>32.0276000000</td>
-<td>NaN</td>
-<td>303.709</td>
 <td>252.4951</td>
 </tr>
 <tr>
 <th>3387.8519999996</th>
-<td>NaN</td>
+<td>303.7090000000</td>
 <td>32.0276000000</td>
-<td>NaN</td>
-<td>303.709</td>
 <td>252.4951</td>
 </tr>
 <tr>
 <th>3388.0043999996</th>
-<td>NaN</td>
+<td>303.7090000000</td>
 <td>32.0276000000</td>
-<td>NaN</td>
-<td>303.709</td>
 <td>252.4951</td>
 </tr>
 <tr>
 <th>3388.1567999996</th>
-<td>NaN</td>
+<td>303.7090000000</td>
 <td>32.0276000000</td>
-<td>NaN</td>
-<td>303.709</td>
 <td>252.4951</td>
 </tr>
 </tbody>
 </table></div>
-<p>46594 rows × 5 columns</p>
+<p>46594 rows × 3 columns</p>
 </div></div></div>
 </div>
 </section>
@@ -586,19 +572,6 @@
 </div>
 <div class="cell_output docutils container">
 <div class="output text_html"><div class="table-wrapper"><table><tr><th>Idx</th><th>UWI</th><th>Data</th><th>Passing</th><th>Caliper*</th><th>GR</th><th>Sonic*</th><th>SP</th><th>RHOB</th></tr><tr><td></td><td></td><td></td><td>%</td><td>3/3 wells</td><td>3/3 wells</td><td>3/3 wells</td><td>2/3 wells</td><td>3/3 wells</td></tr><tr><td>0</td><td><span style="font-weight:bold;">Kennetcook #2</span></td><td>5/24 curves</td><td>54</td><td style="background-color:#CCEECC; line-height:80%; padding:5px 4px 2px 4px;">HCAL<div style="font-size:80%; float:right; cursor: default; padding:4px 0px 4px 6px; color:#FFCC33;" title="2/5">⬤</div><br><span style="font-size:70%; color:#33AA33">4.39 in</span></br></td><td style="background-color:#CCEECC; line-height:80%; padding:5px 4px 2px 4px;">GR<div style="font-size:80%; float:right; cursor: default; padding:4px 0px 4px 6px; color:#FFCC33;" title="4/6">⬤</div><br><span style="font-size:70%; color:#33AA33">78.99 gAPI</span></br></td><td style="background-color:#CCEECC; line-height:80%; padding:5px 4px 2px 4px;">DT<div style="font-size:80%; float:right; cursor: default; padding:4px 0px 4px 6px; color:#FFCC33;" title="5/7">⬤</div><br/><span style="font-size:70%; color:#33AA33">63.08 us/ft</span></td><td style="background-color:#CCEECC; line-height:80%; padding:5px 4px 2px 4px;">SP<div style="font-size:80%; float:right; cursor: default; padding:4px 0px 4px 6px; color:#FFCC33;" title="2/5">⬤</div><br/><span style="font-size:70%; color:#33AA33">52.47 mV</span></td><td style="background-color:#CCEECC; line-height:80%; padding:5px 4px 2px 4px;">RHOB<div style="font-size:80%; float:right; cursor: default; padding:4px 0px 4px 6px; color:#FFCC33;" title="2/5">⬤</div><br/><span style="font-size:70%; color:#33AA33">2.61 g/cm3</span></td></tr><tr><td>1</td><td><span style="font-weight:bold;">100/N14A/11E05</span></td><td>5/18 curves</td><td>79</td><td style="background-color:#CCEECC; line-height:80%; padding:5px 4px 2px 4px;">CALI<div style="font-size:80%; float:right; cursor: default; padding:4px 0px 4px 6px; color:#FFCC33;" title="2/5">⬤</div><br/><span style="font-size:70%; color:#33AA33">8.90 in</span></td><td style="background-color:#CCEECC; line-height:80%; padding:5px 4px 2px 4px;">GR<div style="font-size:80%; float:right; cursor: default; padding:4px 0px 4px 6px; color:#33EE33;" title="6/6">⬤</div><br/><span style="font-size:70%; color:#33AA33">103.74 gAPI</span></td><td style="background-color:#CCEECC; line-height:80%; padding:5px 4px 2px 4px;">DT<div style="font-size:80%; float:right; cursor: default; padding:4px 0px 4px 6px; color:#FFCC33;" title="6/7">⬤</div><br/><span style="font-size:70%; color:#33AA33">74.90 us/ft</span></td><td style="background-color:#CCEECC; line-height:80%; padding:5px 4px 2px 4px;">SP<div style="font-size:80%; float:right; cursor: default; padding:4px 0px 4px 6px; color:#FFCC33;" title="4/5">⬤</div><br/><span style="font-size:70%; color:#33AA33">101.60 mV</span></td><td style="background-color:#CCEECC; line-height:80%; padding:5px 4px 2px 4px;">RHOB<div style="font-size:80%; float:right; cursor: default; padding:4px 0px 4px 6px; color:#FFCC33;" title="4/5">⬤</div><br/><span style="font-size:70%; color:#33AA33">2.62 g/cm3</span></td></tr><tr><td>2</td><td><span style="font-weight:bold;">303N764340060300</span></td><td>4/22 curves</td><td>78</td><td style="background-color:#CCEECC; line-height:80%; padding:5px 4px 2px 4px;">CALI<div style="font-size:80%; float:right; cursor: default; padding:4px 0px 4px 6px; color:#FFCC33;" title="3/5">⬤</div><br/><span style="font-size:70%; color:#33AA33">311.97 MM</span></td><td style="background-color:#CCEECC; line-height:80%; padding:5px 4px 2px 4px;">GR<div style="font-size:80%; float:right; cursor: default; padding:4px 0px 4px 6px; color:#33EE33;" title="6/6">⬤</div><br/><span style="font-size:70%; color:#33AA33">67.49 GAPI</span></td><td style="background-color:#CCEECC; line-height:80%; padding:5px 4px 2px 4px;">DT4P<div style="font-size:80%; float:right; cursor: default; padding:4px 0px 4px 6px; color:#FFCC33;" title="6/7">⬤</div><br/><span style="font-size:70%; color:#33AA33">279.84 US/M</span></td><td style="background-color:#CCCCCC; line-height:80%; padding:5px 4px 2px 4px;"><div style="font-size:80%; float:right; cursor: default; padding:4px 0px 4px 6px; color:#CCCCCC;" title="">⬤</div><br/><span style="font-size:70%; color:#33AA33"> </span></td><td style="background-color:#CCEECC; line-height:80%; padding:5px 4px 2px 4px;">RHOB<div style="font-size:80%; float:right; cursor: default; padding:4px 0px 4px 6px; color:#FFCC33;" title="3/5">⬤</div><br/><span style="font-size:70%; color:#33AA33">2493.56 K/M3</span></td></tr></table></div></div></div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">p</span><span class="o">.</span><span class="n">curve_table_html</span><span class="p">(</span><span class="n">keys</span><span class="o">=</span><span class="p">[</span><span class="s1">'Caliper'</span><span class="p">,</span> <span class="s1">'GR'</span><span class="p">,</span> <span class="s1">'Sonic'</span><span class="p">,</span> <span class="s1">'SP'</span><span class="p">,</span> <span class="s1">'RHOB'</span><span class="p">],</span>
-                        <span class="n">tests</span><span class="o">=</span><span class="n">tests</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>'&lt;table&gt;&lt;tr&gt;&lt;th&gt;Idx&lt;/th&gt;&lt;th&gt;UWI&lt;/th&gt;&lt;th&gt;Data&lt;/th&gt;&lt;th&gt;Passing&lt;/th&gt;&lt;th&gt;Caliper*&lt;/th&gt;&lt;th&gt;GR&lt;/th&gt;&lt;th&gt;Sonic*&lt;/th&gt;&lt;th&gt;SP&lt;/th&gt;&lt;th&gt;RHOB&lt;/th&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;%&lt;/td&gt;&lt;td&gt;3/3&amp;nbsp;wells&lt;/td&gt;&lt;td&gt;3/3&amp;nbsp;wells&lt;/td&gt;&lt;td&gt;3/3&amp;nbsp;wells&lt;/td&gt;&lt;td&gt;2/3&amp;nbsp;wells&lt;/td&gt;&lt;td&gt;3/3&amp;nbsp;wells&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;0&lt;/td&gt;&lt;td&gt;&lt;span style="font-weight:bold;"&gt;Kennetcook #2&lt;/span&gt;&lt;/td&gt;&lt;td&gt;5/24&amp;nbsp;curves&lt;/td&gt;&lt;td&gt;54&lt;/td&gt;&lt;td style="background-color:#CCEECC; line-height:80%; padding:5px 4px 2px 4px;"&gt;HCAL&lt;div title="2/5" style="font-size:80%; float:right; cursor: default; padding:4px 0px 4px 6px; color:#FFCC33;"&gt;&amp;#x2b24;&lt;/div&gt;&lt;br /&gt;&lt;span style="font-size:70%; color:#33AA33"&gt;4.39 in&lt;/span&gt;&lt;/td&gt;&lt;td style="background-color:#CCEECC; line-height:80%; padding:5px 4px 2px 4px;"&gt;GR&lt;div title="4/6" style="font-size:80%; float:right; cursor: default; padding:4px 0px 4px 6px; color:#FFCC33;"&gt;&amp;#x2b24;&lt;/div&gt;&lt;br /&gt;&lt;span style="font-size:70%; color:#33AA33"&gt;78.99 gAPI&lt;/span&gt;&lt;/td&gt;&lt;td style="background-color:#CCEECC; line-height:80%; padding:5px 4px 2px 4px;"&gt;DT&lt;div title="5/7" style="font-size:80%; float:right; cursor: default; padding:4px 0px 4px 6px; color:#FFCC33;"&gt;&amp;#x2b24;&lt;/div&gt;&lt;br /&gt;&lt;span style="font-size:70%; color:#33AA33"&gt;63.08 us/ft&lt;/span&gt;&lt;/td&gt;&lt;td style="background-color:#CCEECC; line-height:80%; padding:5px 4px 2px 4px;"&gt;SP&lt;div title="2/5" style="font-size:80%; float:right; cursor: default; padding:4px 0px 4px 6px; color:#FFCC33;"&gt;&amp;#x2b24;&lt;/div&gt;&lt;br /&gt;&lt;span style="font-size:70%; color:#33AA33"&gt;52.47 mV&lt;/span&gt;&lt;/td&gt;&lt;td style="background-color:#CCEECC; line-height:80%; padding:5px 4px 2px 4px;"&gt;RHOB&lt;div title="2/5" style="font-size:80%; float:right; cursor: default; padding:4px 0px 4px 6px; color:#FFCC33;"&gt;&amp;#x2b24;&lt;/div&gt;&lt;br /&gt;&lt;span style="font-size:70%; color:#33AA33"&gt;2.61 g/cm3&lt;/span&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;1&lt;/td&gt;&lt;td&gt;&lt;span style="font-weight:bold;"&gt;100/N14A/11E05&lt;/span&gt;&lt;/td&gt;&lt;td&gt;5/18&amp;nbsp;curves&lt;/td&gt;&lt;td&gt;79&lt;/td&gt;&lt;td style="background-color:#CCEECC; line-height:80%; padding:5px 4px 2px 4px;"&gt;CALI&lt;div title="2/5" style="font-size:80%; float:right; cursor: default; padding:4px 0px 4px 6px; color:#FFCC33;"&gt;&amp;#x2b24;&lt;/div&gt;&lt;br /&gt;&lt;span style="font-size:70%; color:#33AA33"&gt;8.90 in&lt;/span&gt;&lt;/td&gt;&lt;td style="background-color:#CCEECC; line-height:80%; padding:5px 4px 2px 4px;"&gt;GR&lt;div title="6/6" style="font-size:80%; float:right; cursor: default; padding:4px 0px 4px 6px; color:#33EE33;"&gt;&amp;#x2b24;&lt;/div&gt;&lt;br /&gt;&lt;span style="font-size:70%; color:#33AA33"&gt;103.74 gAPI&lt;/span&gt;&lt;/td&gt;&lt;td style="background-color:#CCEECC; line-height:80%; padding:5px 4px 2px 4px;"&gt;DT&lt;div title="6/7" style="font-size:80%; float:right; cursor: default; padding:4px 0px 4px 6px; color:#FFCC33;"&gt;&amp;#x2b24;&lt;/div&gt;&lt;br /&gt;&lt;span style="font-size:70%; color:#33AA33"&gt;74.90 us/ft&lt;/span&gt;&lt;/td&gt;&lt;td style="background-color:#CCEECC; line-height:80%; padding:5px 4px 2px 4px;"&gt;SP&lt;div title="4/5" style="font-size:80%; float:right; cursor: default; padding:4px 0px 4px 6px; color:#FFCC33;"&gt;&amp;#x2b24;&lt;/div&gt;&lt;br /&gt;&lt;span style="font-size:70%; color:#33AA33"&gt;101.60 mV&lt;/span&gt;&lt;/td&gt;&lt;td style="background-color:#CCEECC; line-height:80%; padding:5px 4px 2px 4px;"&gt;RHOB&lt;div title="4/5" style="font-size:80%; float:right; cursor: default; padding:4px 0px 4px 6px; color:#FFCC33;"&gt;&amp;#x2b24;&lt;/div&gt;&lt;br /&gt;&lt;span style="font-size:70%; color:#33AA33"&gt;2.62 g/cm3&lt;/span&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;2&lt;/td&gt;&lt;td&gt;&lt;span style="font-weight:bold;"&gt;303N764340060300&lt;/span&gt;&lt;/td&gt;&lt;td&gt;4/22&amp;nbsp;curves&lt;/td&gt;&lt;td&gt;78&lt;/td&gt;&lt;td style="background-color:#CCEECC; line-height:80%; padding:5px 4px 2px 4px;"&gt;CALI&lt;div title="3/5" style="font-size:80%; float:right; cursor: default; padding:4px 0px 4px 6px; color:#FFCC33;"&gt;&amp;#x2b24;&lt;/div&gt;&lt;br /&gt;&lt;span style="font-size:70%; color:#33AA33"&gt;311.97 MM&lt;/span&gt;&lt;/td&gt;&lt;td style="background-color:#CCEECC; line-height:80%; padding:5px 4px 2px 4px;"&gt;GR&lt;div title="6/6" style="font-size:80%; float:right; cursor: default; padding:4px 0px 4px 6px; color:#33EE33;"&gt;&amp;#x2b24;&lt;/div&gt;&lt;br /&gt;&lt;span style="font-size:70%; color:#33AA33"&gt;67.49 GAPI&lt;/span&gt;&lt;/td&gt;&lt;td style="background-color:#CCEECC; line-height:80%; padding:5px 4px 2px 4px;"&gt;DT4P&lt;div title="6/7" style="font-size:80%; float:right; cursor: default; padding:4px 0px 4px 6px; color:#FFCC33;"&gt;&amp;#x2b24;&lt;/div&gt;&lt;br /&gt;&lt;span style="font-size:70%; color:#33AA33"&gt;279.84 US/M&lt;/span&gt;&lt;/td&gt;&lt;td style="background-color:#CCCCCC; line-height:80%; padding:5px 4px 2px 4px;"&gt;&lt;div title="" style="font-size:80%; float:right; cursor: default; padding:4px 0px 4px 6px; color:#CCCCCC;"&gt;&amp;#x2b24;&lt;/div&gt;&lt;br /&gt;&lt;span style="font-size:70%; color:#33AA33"&gt; &lt;/span&gt;&lt;/td&gt;&lt;td style="background-color:#CCEECC; line-height:80%; padding:5px 4px 2px 4px;"&gt;RHOB&lt;div title="3/5" style="font-size:80%; float:right; cursor: default; padding:4px 0px 4px 6px; color:#FFCC33;"&gt;&amp;#x2b24;&lt;/div&gt;&lt;br /&gt;&lt;span style="font-size:70%; color:#33AA33"&gt;2493.56 K/M3&lt;/span&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;'
-</pre></div>
-</div>
-</div>
 </div>
 <p>Here’s how to interpret the result:</p>
 <ul class="simple">

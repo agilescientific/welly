@@ -2454,6 +2454,29 @@ Licence: Apache 2.0</p>
 <dd></dd></dl>
 </dd></dl>
 <dl class="py function">
+<dt class="sig sig-object py" id="welly.utils.alias_map">
+<span class="sig-prename descclassname"><span class="pre">welly.utils.</span></span><span class="sig-name descname"><span class="pre">alias_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alias</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#welly.utils.alias_map" title="Permalink to this definition">#</a></dt>
+<dd><p>Reverse an alias dictionary, returning a new dict mapping mnemonics
+to alias names.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>alias</strong> (<em>dict</em>) – An alias dictionary.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A new dictionary mapping mnemonics to alias names.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">alias</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'Sonic'</span><span class="p">:</span> <span class="p">[</span><span class="s1">'DT'</span><span class="p">,</span> <span class="s1">'DT4P'</span><span class="p">],</span> <span class="s1">'Caliper'</span><span class="p">:</span> <span class="p">[</span><span class="s1">'HCAL'</span><span class="p">,</span> <span class="s1">'CALI'</span><span class="p">]}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">alias_map</span><span class="p">(</span><span class="n">alias</span><span class="p">)</span>
+<span class="go">{'DT': 'Sonic', 'DT4P': 'Sonic', 'HCAL': 'Caliper', 'CALI': 'Caliper'}</span>
+</pre></div>
+</div>
+</dd></dl>
+<dl class="py function">
 <dt class="sig sig-object py" id="welly.utils.are_close">
 <span class="sig-prename descclassname"><span class="pre">welly.utils.</span></span><span class="sig-name descname"><span class="pre">are_close</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#welly.utils.are_close" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
@@ -5249,7 +5272,7 @@ in dir</p></li>
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2022, The Welly Authors
+                &#169; 2022, The Welly Authors | <a href="https://creativecommons.org/licenses/by/4.0/">CC BY</a>
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and 
             
