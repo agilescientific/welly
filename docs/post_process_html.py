@@ -12,9 +12,9 @@ def simplify_credits(html):
     pattern = re.compile(s)
     html = pattern.sub(r'', html)
 
-    s = r'Copyright &#169; 2022, Agile Scientific'
+    s = r'Copyright &#169; 2022, The Welly Authors'
     pattern = re.compile(s)
-    new_s = '&#169; 2022, Agile Scientific | <a href="https://creativecommons.org/licenses/by/4.0/">CC BY</a>'
+    new_s = '&#169; 2022, The Welly Authors | <a href="https://creativecommons.org/licenses/by/4.0/">CC BY</a>'
     html = pattern.sub(new_s, html)
 
     return html

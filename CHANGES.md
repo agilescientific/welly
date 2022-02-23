@@ -1,12 +1,16 @@
 # Changelog
 
+## 0.5.2rc0, 23 February 2022
+
+- Fixed [bug #208](https://github.com/agile-geoscience/welly/issues/208) which essentially meant `rename_alias` was always `False` when getting a well or project as a DataFrame.
+
 ## 0.5.1, 18 February 2022
 
 - `Curve.values` now returns a 1D array for a 1D curve.
 - Added `Project.basis_range` to provide the min and max of all curves in the project.
 - Added [a user guide page for `Project`](https://code.agilescientific.com/welly/userguide/projects.html).
 - Fixed [bug #202](https://github.com/agile-geoscience/welly/issues/202) with curve indexing.
-- Fixed [bug #206](https://github.com/agile-geoscience/welly/issues/206) that prvented quality tests from running on aliased curves.
+- Fixed [bug #206](https://github.com/agile-geoscience/welly/issues/206) that prevented quality tests from running on aliased curves.
 - Fixed [bug #207](https://github.com/agile-geoscience/welly/issues/207) that was causing the quality table not to render correctly in some situations.
 
 ## 0.5.0, 14 February 2022
