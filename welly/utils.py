@@ -21,6 +21,27 @@ from welly.fields import las_objects
 NULL_VALUES = [9999.25, -9999.25, -9999, 9999, 999.25, -999.25]
 
 
+def alias_map(alias):
+    """
+    Reverse an alias dictionary, returning a new dict mapping mnemonics
+    to alias names.
+
+    Args:
+        alias (dict): An alias dictionary.
+    
+    Returns:
+        dict: A new dictionary mapping mnemonics to alias names.
+
+    Example:
+        >>> alias = {'Sonic': ['DT', 'DT4P'], 'Caliper': ['HCAL', 'CALI']}
+        >>> alias_map(alias)
+        {'DT': 'Sonic', 'DT4P': 'Sonic', 'HCAL': 'Caliper', 'CALI': 'Caliper'}
+    """
+    if alias is None:
+        return {}
+    return {v: k for k, vs in alias.items() for v in vs}
+
+
 def deprecated(instructions):
     """
     Flags a method as deprecated. This decorator can be used to mark functions

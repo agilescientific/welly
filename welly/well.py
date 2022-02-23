@@ -591,14 +591,12 @@ class Well(object):
             m = "No basis was provided and welly could not retrieve common basis."
             raise WellError(m)
 
-        data = {k: self.get_curve(k, alias=alias).to_basis(basis).df
-                for k in keys}
-
-        df = pd.concat(list(data.values()), axis=1)
-
+        data = [self.get_curve(k, alias=alias).to_basis(basis).df for k in keys]
+        
         if rename_aliased:
-            mapper = {self.get_mnemonic(k, alias=alias): k for k in keys}
-            df = df.rename(columns=mapper)
+            data = [df.rename(columns=utils.alias_map(alias)) for df in data if df is not None]
+
+        df = pd.concat(data, axis=1)
 
         if uwi:
             df['UWI'] = self.uwi
