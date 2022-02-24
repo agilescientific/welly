@@ -177,6 +177,18 @@ def test_create_2d_curve_cat():
     assert c.df.iloc[1, 1] == 'sand'
 
 
+def test_gele_curve():
+    """
+    Test adding to curve
+    """
+    c1 = Curve(data=data_num, mnemonic='test')
+    c2 = c1 < 50
+    assert c2.df.iloc[0][0]
+
+    c2 = c1 > 50
+    assert c2.df.iloc[-1][0]
+
+
 def test_add_curve():
     """
     Test adding to curve

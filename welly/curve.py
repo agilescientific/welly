@@ -216,6 +216,68 @@ class Curve(object):
     def __rmod__(self, other):
         return self.__mod__(other)
 
+    def __pos__(self):
+        """
+        Greater or equal.
+        """
+        curve = copy.deepcopy(self)
+        setattr(curve, 'df', self.df.__pos__())
+        return curve
+        
+    def __neg__(self):
+        """
+        Greater or equal.
+        """
+        curve = copy.deepcopy(self)
+        setattr(curve, 'df', self.df.__neg__())
+        return curve
+
+    def __abs__(self):
+        """
+        Greater or equal.
+        """
+        curve = copy.deepcopy(self)
+        setattr(curve, 'df', self.df.__abs__())
+        return curve
+
+    def __round__(self, n):
+        """
+        Greater or equal.
+        """
+        curve = copy.deepcopy(self)
+        setattr(curve, 'df', self.df.__round__(n))
+        return curve
+
+    def __eq__(self, other):
+        """
+        Greater or equal.
+        """
+        curve = copy.deepcopy(self)
+        if isinstance(other, Curve):
+            other = other.df
+        setattr(curve, 'df', self.df.eq(other))
+        return curve
+
+    def __ge__(self, other):
+        """
+        Greater or equal.
+        """
+        curve = copy.deepcopy(self)
+        if isinstance(other, Curve):
+            other = other.df
+        setattr(curve, 'df', self.df.ge(other))
+        return curve
+    
+    def __le__(self, other):
+        """
+        Greater or equal.
+        """
+        curve = copy.deepcopy(self)
+        if isinstance(other, Curve):
+            other = other.df
+        setattr(curve, 'df', self.df.le(other))
+        return curve
+
     def __len__(self):
         """
         Return length of the pd.DataFrame.
