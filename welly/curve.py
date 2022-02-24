@@ -223,7 +223,7 @@ class Curve(object):
         curve = copy.deepcopy(self)
         setattr(curve, 'df', self.df.__pos__())
         return curve
-        
+
     def __neg__(self):
         """
         Greater or equal.
@@ -258,6 +258,26 @@ class Curve(object):
         setattr(curve, 'df', self.df.eq(other))
         return curve
 
+    def __gt__(self, other):
+        """
+        Greater than.
+        """
+        curve = copy.deepcopy(self)
+        if isinstance(other, Curve):
+            other = other.df
+        setattr(curve, 'df', self.df.gt(other))
+        return curve
+    
+    def __lt__(self, other):
+        """
+        Less than.
+        """
+        curve = copy.deepcopy(self)
+        if isinstance(other, Curve):
+            other = other.df
+        setattr(curve, 'df', self.df.lt(other))
+        return curve
+
     def __ge__(self, other):
         """
         Greater or equal.
@@ -270,7 +290,7 @@ class Curve(object):
     
     def __le__(self, other):
         """
-        Greater or equal.
+        Less or equal.
         """
         curve = copy.deepcopy(self)
         if isinstance(other, Curve):
