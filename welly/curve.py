@@ -927,7 +927,7 @@ class Curve(object):
             Curve. The current instance in the new basis.
         """
         # category data type or a string in data defaults to 'nearest'
-        if self.df.dtypes[0] == 'category' or self.df.applymap(type).eq(str).any()[0]:
+        if pd.api.types.is_categorical_dtype(self.df.iloc[:, 0]) or pd.api.types.is_string_dtype(self.df.iloc[:, 0]):
             interp_kind = 'nearest'
 
         new_curve = copy.deepcopy(self)
