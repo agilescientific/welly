@@ -1,1 +1,6 @@
-*.las -linguist-vendored
+*.las linguist-vendored
+*.LAS linguist-vendored
+tests/assets/* linguist-vendored
+tests/baseline/* linguist-vendored
+docs/** linguist-documentation
+tutorial/** linguist-documentation
