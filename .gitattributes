@@ -1,2 +1,3 @@
-*.las linguist-vendored
-*.LAS linguist-vendored
+docs/** linguist-vendored
+tests/** linguist-vendored
+tutorial/** linguist-vendored
