@@ -3,6 +3,7 @@
 ## 0.5.2rc0, 23 February 2022
 
 - Fixed [bug #208](https://github.com/agile-geoscience/welly/issues/208) which essentially meant `rename_alias` was always `False` when getting a well or project as a DataFrame.
+- Fixed [bug #209](https://github.com/agile-geoscience/welly/issues/209) that prevented Well (and therefore Project) from exporting a DataFrame for some recent versions of `pandas`.
 
 ## 0.5.1, 18 February 2022
 

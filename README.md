@@ -36,6 +36,15 @@ Next, check out the tutorial notebooks.
 [The `welly` documentation](https://code.agilescientific.com/welly) is a work in progress.
 
 
+## Questions or suggestions?
+
+[![slack](https://img.shields.io/badge/chat-on_slack-808493.svg?longCache=true&style=flat&logo=slack)](https://swung.slack.com/)
+
+**If you'd like to chat about `welly` with us or other users, look for the **#welly-and-lasio** channel in the [Software Underground's Slack](https://softwareunderground.org/slack).**
+
+To report bugs or suggest new features/improvements to the code, please [open an issue](https://github.com/agile-geoscience/welly/issues).
+
+
 ## Contributing
 
 Please see [`CONTRIBUTING.md`](https://github.com/agile-geoscience/redflag/blob/main/CONTRIBUTING.md).
@@ -43,12 +52,8 @@ Please see [`CONTRIBUTING.md`](https://github.com/agile-geoscience/redflag/blob/
 
 ## Philosophy
 
-The [`lasio`](https://github.com/kinverarity1/lasio) project provides a very nice way to read and 
-write [CWLS](http://www.cwls.org/) Log ASCII Standard files. The result is an object that contains all the LAS data — it's more or less analogous to the LAS file.
+The [`lasio`](https://github.com/kinverarity1/lasio) project provides a very nice way to read and write [CWLS](http://www.cwls.org/) Log ASCII Standard files. The result is an object that contains all the LAS data — it's more or less analogous to the LAS file.
 
-Sometimes we want a higher-level object, for example to contain methods that have nothing to do 
-with LAS files. We may want to handle other well data, such as deviation surveys, tops (aka picks),
-engineering data, striplogs, synthetics, and so on. This is where `welly` comes in.
+Sometimes we want a higher-level object, for example to contain methods that have nothing to do with LAS files. We may want to handle other well data, such as deviation surveys, tops (aka picks), engineering data, striplogs, synthetics, and so on. This is where `welly` comes in.
 
-`welly` uses `lasio` for data I/O, but hides much of it from the user. We recommend you look at 
-both projects before deciding if you need the 'well-level' functionality that `welly` provides.
+`welly` uses `lasio` for data I/O, but hides much of it from the user. We recommend you look at both projects before deciding if you need the 'well-level' functionality that `welly` provides.
