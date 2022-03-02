@@ -6,6 +6,7 @@ Defines wells.
 """
 from __future__ import division
 
+import copy
 import re
 import warnings
 
@@ -583,15 +584,22 @@ class Well(object):
         Returns:
             pandas.DataFrame.
         """
-        keys = self._get_curve_mnemonics(keys, alias=alias)
+        # copy to not work on well when unifying basis
+        well = copy.deepcopy(self)
+
+        keys = well._get_curve_mnemonics(keys, alias=alias)
+
+        # unify basis on basis passed
+        if basis is not None:
+            well.unify_basis(basis=basis)
 
         if basis is None:
-            basis = self.survey_basis(keys=keys, alias=alias)
+            basis = well.survey_basis(keys=keys, alias=alias)
         if basis is None:
             m = "No basis was provided and welly could not retrieve common basis."
             raise WellError(m)
 
-        data = [self.get_curve(k, alias=alias).to_basis(basis).df for k in keys]
+        data = [well.get_curve(k, alias=alias).to_basis(basis).df for k in keys]
         
         if rename_aliased:
             data = [df.rename(columns=utils.alias_map(alias)) for df in data if df is not None]
@@ -599,7 +607,7 @@ class Well(object):
         df = pd.concat(data, axis=1)
 
         if uwi:
-            df['UWI'] = self.uwi
+            df['UWI'] = well.uwi
             # add UWI as index as part of a MultiIndex
             df.set_index(['UWI'], append=True, inplace=True)
             # swap MultiIndex levels
