@@ -2,17 +2,17 @@
 
 ## 0.5.2, 28 February 2022
 
-- Fixed [bug #208](https://github.com/agile-geoscience/welly/issues/208) which essentially meant `rename_alias` was always `False` when getting a well or project as a DataFrame.
-- Fixed [bug #209](https://github.com/agile-geoscience/welly/issues/209) that prevented Well (and therefore Project) from exporting a DataFrame for some recent versions of `pandas`.
+- Fixed [bug #208](https://github.com/agilescientific/welly/issues/208) which essentially meant `rename_alias` was always `False` when getting a well or project as a DataFrame.
+- Fixed [bug #209](https://github.com/agilescientific/welly/issues/209) that prevented Well (and therefore Project) from exporting a DataFrame for some recent versions of `pandas`.
 
 ## 0.5.1, 18 February 2022
 
 - `Curve.values` now returns a 1D array for a 1D curve.
 - Added `Project.basis_range` to provide the min and max of all curves in the project.
 - Added [a user guide page for `Project`](https://code.agilescientific.com/welly/userguide/projects.html).
-- Fixed [bug #202](https://github.com/agile-geoscience/welly/issues/202) with curve indexing.
-- Fixed [bug #206](https://github.com/agile-geoscience/welly/issues/206) that prevented quality tests from running on aliased curves.
-- Fixed [bug #207](https://github.com/agile-geoscience/welly/issues/207) that was causing the quality table not to render correctly in some situations.
+- Fixed [bug #202](https://github.com/agilescientific/welly/issues/202) with curve indexing.
+- Fixed [bug #206](https://github.com/agilescientific/welly/issues/206) that prevented quality tests from running on aliased curves.
+- Fixed [bug #207](https://github.com/agilescientific/welly/issues/207) that was causing the quality table not to render correctly in some situations.
 
 ## 0.5.0, 14 February 2022
 
@@ -49,7 +49,7 @@
 - Reorganized the `tutorials` a bit and made sure they all run as-is.
 - A new `Location.from_petrel()` function accepts a Petrel `.dev` deviation file. It will extract the x and y location, and the KB, as well as the position log and/or deviation survey.
 - `Curve.plot_2d()` now handles NaNs in the curve.
-- The test functions now accept a `keys` argument to limit the number of items the tests will be applied to, or to order the appearance of curves in `qc_table_html`. For example, if you pass `keys=['GR']` then tests will only be run on `w.data['GR']`, regardless of what's in the `tests` dictionary. This was [issue #104](https://github.com/agile-geoscience/welly/issues/104).
+- The test functions now accept a `keys` argument to limit the number of items the tests will be applied to, or to order the appearance of curves in `qc_table_html`. For example, if you pass `keys=['GR']` then tests will only be run on `w.data['GR']`, regardless of what's in the `tests` dictionary. This was [issue #104](https://github.com/agilescientific/welly/issues/104).
 - You can now pass a `pathlib.Path` object to `from_las`. Thank you to Kent Inverarity for implementing this feature.
 - Added `XCOORD` and `YCOORD` as standard fields; these are read in as `location.x` and `location.y` repsectively.
 - Added `Project.plot_map()` to make a quick (ugly) scatter plot from x and y location (whatever two field you provide from the `location` object).
