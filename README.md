@@ -1,7 +1,7 @@
 ![Welly banner](https://www.dropbox.com/s/a8jg7zomi4wgolb/welly_banner.png?raw=1)
 
-[![Run tests](https://github.com/agile-geoscience/welly/actions/workflows/run-tests.yml/badge.svg)](https://github.com/agile-geoscience/welly/actions/workflows/run-tests.yml)
-[![Build docs](https://github.com/agile-geoscience/welly/actions/workflows/build-docs.yml/badge.svg)](https://github.com/agile-geoscience/welly/actions/workflows/build-docs.yml)
+[![Run tests](https://github.com/agilescientific/welly/actions/workflows/run-tests.yml/badge.svg)](https://github.com/agilescientific/welly/actions/workflows/run-tests.yml)
+[![Build docs](https://github.com/agilescientific/welly/actions/workflows/build-docs.yml/badge.svg)](https://github.com/agilescientific/welly/actions/workflows/build-docs.yml)
 [![PyPI version](https://img.shields.io/pypi/v/welly.svg)](https://pypi.python.org/pypi/welly/)
 [![PyPI versions](https://img.shields.io/pypi/pyversions/welly.svg)](https://pypi.org/project/welly//)
 [![PyPI license](https://img.shields.io/pypi/l/welly.svg)](https://pypi.org/project/welly/)
@@ -42,12 +42,12 @@ Next, check out the tutorial notebooks.
 
 **If you'd like to chat about `welly` with us or other users, look for the **#welly-and-lasio** channel in the [Software Underground's Slack](https://softwareunderground.org/slack).**
 
-To report bugs or suggest new features/improvements to the code, please [open an issue](https://github.com/agile-geoscience/welly/issues).
+To report bugs or suggest new features/improvements to the code, please [open an issue](https://github.com/agilescientific/welly/issues).
 
 
 ## Contributing
 
-Please see [`CONTRIBUTING.md`](https://github.com/agile-geoscience/redflag/blob/main/CONTRIBUTING.md).
+Please see [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
 
 ## Philosophy
