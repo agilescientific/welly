@@ -12,9 +12,21 @@ def simplify_credits(html):
     pattern = re.compile(s)
     html = pattern.sub(r'', html)
 
-    s = r'Copyright &#169; 2022, The Welly Authors'
+    s = r'Copyright &#169; 2022, The Bruges Authors'
     pattern = re.compile(s)
-    new_s = '&#169; 2022, The Welly Authors | <a href="https://creativecommons.org/licenses/by/4.0/">CC BY</a>'
+    new_s = '&#169; 2022, The Bruges Authors | <a href="https://creativecommons.org/licenses/by/4.0/">CC BY</a>'
+    html = pattern.sub(new_s, html)
+
+    return html
+
+
+def add_analytics(html):
+    """
+    Add snippet to head.
+    """
+    s = r'</head>'
+    pattern = re.compile(s)
+    new_s = '<script defer data-domain="code.agilescientific.com" src="https://plausible.io/js/plausible.js"></script></head>'
     html = pattern.sub(new_s, html)
 
     return html
@@ -30,6 +42,7 @@ def main(path):
             html = f.read()
 
             new_html = simplify_credits(html)
+            new_html = add_analytics(html)
 
             f.seek(0)
             f.write(new_html)
