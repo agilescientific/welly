@@ -297,13 +297,13 @@ class Well(object):
         if printfname:
             print(fname)
 
-        # if https URL is passed try reading and formatting it to text file
+        # If https URL is passed try reading and formatting it to text file.
         if re.match(r'https?://.+\..+/.+?', fname) is not None:
             fname = file_from_url(fname)
 
         datasets = from_las(fname, encoding=encoding, **kwargs)
 
-        # create well from datasets
+        # Create well from datasets.
         well = cls.from_datasets(datasets,
                                  remap=remap,
                                  funcs=funcs,
@@ -313,6 +313,12 @@ class Well(object):
                                  fname=fname,
                                  index_units=index,
                                  )
+
+        # Warn about bad curve steps.
+        bad_steps = [m for m, c in well.data.items() if c.step == 0]
+        if bad_steps:
+            message = f"Curves {bad_steps} have step 0. Consider reampling them with `curve.to_basis(step=0.1524)` or similar."
+            warnings.warn(message, stacklevel=2)
 
         return well
 
