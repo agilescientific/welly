@@ -565,7 +565,9 @@ class Well(object):
            basis=None,
            uwi=False,
            alias=None,
-           rename_aliased=True):
+           rename_aliased=True,
+           use_mnemonics=False
+           ):
         """
         Return current curve data as a ``pandas.DataFrame`` object.
 
@@ -606,7 +608,8 @@ class Well(object):
         df = pd.concat(data, axis=1)
 
         # So rename them:
-        df.columns = keys
+        if not use_mnemonics:
+            df.columns = keys
 
         if uwi:
             df['UWI'] = self.uwi
@@ -615,10 +618,12 @@ class Well(object):
             # swap MultiIndex levels
             df = df.swaplevel()
 
-        for column in df.columns:
-            if is_object_dtype(df[column].dtype):
+        # I think this is the wrong place to do this.
+        # Anyway, use i not name just in case there are duplicate names.
+        for i, (_, column) in enumerate(df.iteritems()):
+            if is_object_dtype(column.dtype):
                 try:
-                    df[column] = df[column].astype(np.float64)
+                    df.iloc[:, i] = column.astype(np.float64)
                 except ValueError:
                     pass
 
