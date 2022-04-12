@@ -610,6 +610,10 @@ class Well(object):
         # So rename them:
         if not use_mnemonics:
             df.columns = keys
+        else:
+            if len(set(df.columns)) < len(keys):
+                message = "There are duplicate curve mnemonics in the DataFrame."
+                warnings.warn(message, stacklevel=2)
 
         if uwi:
             df['UWI'] = self.uwi

@@ -2,6 +2,7 @@
 
 ## 0.5.3, spring 2022
 
+- Added option `use_mnemomics` to `well.df()`. The default `False` uses the keys of `well.data` as the column names in the DataFrame. Note that there may be duplicate mnemonics in the resulting DataFrame.
 - Fixed [bug #217](https://github.com/agilescientific/welly/issues/217) which made it impossible to change (set) a curve mnemonic.
 - Fixed [bug #216](https://github.com/agilescientific/welly/issues/216) which caused problems creating a DataFrame when two curves have the same mnemonic.
 - Fixed [bug #214](https://github.com/agilescientific/welly/issues/214) which threw no warnings if a LAS with non-increasing depths was loaded, and no warnings when the curve with step=0 was used.
