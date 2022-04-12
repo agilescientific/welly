@@ -404,6 +404,20 @@ class Curve(object):
 
         return mnemonic
 
+    @mnemonic.setter
+    def mnemonic(self, value):
+        """
+        Set the mnemonic. For a 1d curve, the mnemonic is a string.
+        For a multiple dimension curve, the mnemonic is a list.
+        """
+        if len(self.df.columns) == 1:
+            if not isinstance(value, str):
+                raise ValueError("mnemonic for a 1D curve must be a string")
+            self.df.columns = [value]
+        else:
+            # Must be a list or tuple or similar.
+            self.df.columns = value
+
     @property
     def dtypes(self):
         """

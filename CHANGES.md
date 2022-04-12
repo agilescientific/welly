@@ -2,6 +2,7 @@
 
 ## 0.5.3, spring 2022
 
+- Fixed [bug #216](https://github.com/agilescientific/welly/issues/216) which made it impossible to change (set) a curve mnemonic.
 - Fixed [bug #214](https://github.com/agilescientific/welly/issues/214) which threw no warnings if a LAS with non-increasing depths was loaded, and no warnings when the curve with step=0 was used.
 - Added (open source, non-tracking) analytics for [code.agilescientific.com/welly](https://code.agilescientific.com/welly) with plausible.io.
 
