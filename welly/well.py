@@ -602,7 +602,11 @@ class Well(object):
         if rename_aliased:
             data = [df.rename(columns=utils.alias_map(alias)) for df in data if df is not None]
 
+        # This has curve.mnemonics as the column names.
         df = pd.concat(data, axis=1)
+
+        # So rename them:
+        df.columns = keys
 
         if uwi:
             df['UWI'] = self.uwi
