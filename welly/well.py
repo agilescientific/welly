@@ -317,7 +317,7 @@ class Well(object):
         # Warn about bad curve steps.
         bad_steps = [m for m, c in well.data.items() if c.step == 0]
         if bad_steps:
-            message = f"Curves {bad_steps} have step 0. Consider reampling them with `curve.to_basis(step=0.1524)` or similar."
+            message = f"{well.uwi}: Curves have step 0. Consider reampling them with `curve.to_basis(step=0.1524)` or similar."
             warnings.warn(message, stacklevel=2)
 
         return well

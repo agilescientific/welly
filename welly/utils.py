@@ -722,10 +722,10 @@ def get_step_from_array(arr):
         None. If the index is not numeric
     """
     # Compute differences between subsequent elements in index array.
-    dif = np.diff(arr)
-    if np.allclose(dif - np.mean(dif), np.zeros_like(dif)):
+    diff = np.diff(arr)
+    if np.allclose(diff - np.mean(diff), np.zeros_like(diff)):
         # Index evenly sampled
-        return np.nanmedian(dif)
+        return np.nanmedian(diff)
     else:
         # Index unevenly sampled so cannot derive `step`.
         warnings.warn('Index is not evenly sampled. Cannot derive step. '
