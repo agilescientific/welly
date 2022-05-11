@@ -106,6 +106,15 @@ def test_df(well):
     assert df.iloc[10, 1] - 46.69865036 < 0.001
     assert df.shape == (12718, 3)
 
+    # test with passing a basis
+    basis = df.reset_index().DEPT.iloc[20:40].values
+    df = well.df(basis=basis)
+    assert len(df) == 20
+    assert all(df.index.values == basis)
+
+    df = well.df(basis=[4, 5, 6, 7])
+    assert all(df.index.values == [4, 5, 6, 7])
+
 
 def test_read_df(df):
     """
