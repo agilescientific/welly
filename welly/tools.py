@@ -42,8 +42,13 @@ def compute_position_log(deviation,
     # Adjust to TD.
     if td is not None:
         last_row = np.copy(deviation[-1, :])
-        last_row[0] = td
-        deviation = np.vstack([deviation, last_row])
+        if td <= last_row[0]:
+            m = "TD must be greater than deepest deviation depth. "
+            m += "Use `td=None` to use the deepest deviation depth as TD."
+            raise ValueError(m)
+        else:
+            last_row[0] = td
+            deviation = np.vstack([deviation, last_row])
 
     # Adjust to surface if necessary.
     if deviation[0, 0] > 0:
