@@ -587,6 +587,8 @@ class Well(object):
             rename_aliased (bool): Whether to name the columns after the alias,
                 i.e. the alias dictionary key, or after the curve mnemonic.
                 Default is True, use the alias names.
+            use_mnemonics (bool): Whether to use the curve mnemonics as the
+                column names. Default is False, use `data` key names.
 
         Returns:
             pandas.DataFrame.
@@ -601,16 +603,16 @@ class Well(object):
 
         data = [self.get_curve(k, alias=alias).to_basis(basis).df for k in keys]
         
-        if rename_aliased:
+        if rename_aliased and (not use_mnemonics):
             data = [df.rename(columns=utils.alias_map(alias)) for df in data if df is not None]
 
-        # This has curve.mnemonics as the column names.
+        # If we didn't rename_aliased, this has curve.mnemonics as the columns.
         df = pd.concat(data, axis=1)
 
-        # So rename them:
-        if not use_mnemonics:
+        # So rename them as the alias keys, unless use_mnemonics is True.
+        if (not use_mnemonics) and (not rename_aliased):
             df.columns = keys
-        else:
+        elif use_mnemonics and (not rename_aliased):
             if len(set(df.columns)) < len(keys):
                 message = "There are duplicate curve mnemonics in the DataFrame."
                 warnings.warn(message, stacklevel=2)
