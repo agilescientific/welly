@@ -5,6 +5,7 @@ Define a suite a tests for the Location module.
 import os
 import re
 
+import pytest
 import numpy as np
 
 from welly import Well, Location
@@ -26,6 +27,19 @@ def test_deviation(well):
     assert well.location.md2tvd(1000) - 998.45378 < 0.001
     assert well.location.tvd2md(998.45378) - 1000 < 0.001
     assert (well.location.dogleg < 1.15).all()
+
+def test_bad_td():
+    """
+    Test that bad TD (i.e. less than or equal to the last deviation survey
+    depth) raises ValueError.
+    """
+    w = Well()
+
+    # This works:
+    _ = w.location.add_deviation([[0, 0, 0], [515, 0.5, 131], [546, 0.2, 131.6]], td=None)
+
+    with pytest.raises(ValueError):
+        _ = w.location.add_deviation([[0, 0, 0], [515, 0.5, 131], [546, 0.2, 131.6]], td=546)
 
 
 def test_well_remap():
