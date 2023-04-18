@@ -136,7 +136,11 @@ class Curve(object):
         return curve
 
     def __radd__(self, other):
-        return self.__add__(other)
+        curve = copy.deepcopy(self)
+        if isinstance(other, Curve):
+            other = other.df
+        setattr(curve, 'df', other + self.df)
+        return curve
 
     def __sub__(self, other):
         """
@@ -149,7 +153,11 @@ class Curve(object):
         return curve
 
     def __rsub__(self, other):
-        return self.__sub__(other)
+        curve = copy.deepcopy(self)
+        if isinstance(other, Curve):
+            other = other.df
+        setattr(curve, 'df', other - self.df)
+        return curve
 
     def __mul__(self, other):
         """
@@ -162,7 +170,11 @@ class Curve(object):
         return curve
 
     def __rmul__(self, other):
-        return self.__mul__(other)
+        curve = copy.deepcopy(self)
+        if isinstance(other, Curve):
+            other = other.df
+        setattr(curve, 'df', other * self.df)
+        return curve
 
     def __pow__(self, other):
         """
@@ -175,7 +187,11 @@ class Curve(object):
         return curve
 
     def __rpow__(self, other):
-        return self.__pow__(other)
+        curve = copy.deepcopy(self)
+        if isinstance(other, Curve):
+            other = other.df
+        setattr(curve, 'df', other ** self.df)
+        return curve
 
     def __truediv__(self, other):
         """
@@ -188,7 +204,11 @@ class Curve(object):
         return curve
 
     def __rtruediv__(self, other):
-        return self.__truediv__(other)
+        curve = copy.deepcopy(self)
+        if isinstance(other, Curve):
+            other = other.df
+        setattr(curve, 'df', other / self.df)
+        return curve
 
     def __floordiv__(self, other):
         """
@@ -201,7 +221,11 @@ class Curve(object):
         return curve
 
     def __rfloordiv__(self, other):
-        return self.__floordiv__(other)
+        curve = copy.deepcopy(self)
+        if isinstance(other, Curve):
+            other = other.df
+        setattr(curve, 'df', other // self.df)
+        return curve
 
     def __mod__(self, other):
         """
@@ -214,7 +238,11 @@ class Curve(object):
         return curve
 
     def __rmod__(self, other):
-        return self.__mod__(other)
+        curve = copy.deepcopy(self)
+        if isinstance(other, Curve):
+            other = other.df
+        setattr(curve, 'df', other % self.df)
+        return curve
 
     def __pos__(self):
         """

@@ -218,11 +218,20 @@ def test_multiply_curve():
 
 def test_divide_curve():
     """
-    Test multiplying curve
+    Test L dividing curve
     """
     c1 = Curve(data=data_num, mnemonic='test')
     c2 = c1 / 2
     assert (c2.df.iloc[0][0] - 0.5) < 0.0001
+
+
+def test_rdivide_curve():
+    """
+    Test R dividing curve
+    """
+    c1 = Curve(data=data_num, mnemonic='test')
+    c2 = 400 / c1
+    assert (c2.df.iloc[-1][0] - 2.0) < 0.0001
 
 
 def test_exponent_curve():

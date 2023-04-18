@@ -1,8 +1,9 @@
 # Changelog
 
-## 0.5.3, spring 2022
+## 0.5.3, spring 2023
 
 - Added option `use_mnemomics` to `well.df()`. The default `False` uses the keys of `well.data` as the column names in the DataFrame. Note that there may be duplicate mnemonics in the resulting DataFrame. This was [issue #218](https://github.com/agilescientific/welly/issues/218). 
+- Fixed [bug #224](https://github.com/agilescientific/welly/issues/224) which resulted in incorrect mathematical calculations when curves were only on the right-hand side of some operators.
 - Fixed [bug #219](https://github.com/agilescientific/welly/issues/219) which gave a non-useful error if td was shallower than the deviation survey.
 - Fixed [bug #217](https://github.com/agilescientific/welly/issues/217) which made it impossible to change (set) a curve mnemonic.
 - Fixed [bug #216](https://github.com/agilescientific/welly/issues/216) which caused problems creating a DataFrame when two curves have the same mnemonic.
