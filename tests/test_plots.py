@@ -81,7 +81,7 @@ def test_curve_2d_plot(well):
     curve.plot_2d()
 
     # subtract curve values from 200
-    curve2 = 200-curve
+    curve2 = 200 - curve
 
     # plot a curve with clipped colored mask
     fig = curve2.plot_2d(cmap='viridis', curve=True, lw=-.5, edgecolor='k').get_figure()

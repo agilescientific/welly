@@ -534,7 +534,7 @@ def _get_curve_las_df(las, section):
                     str(las.well["NULL"].value) + '.0', np.nan)
                 try:
                     # try to convert numeric curve values to floats
-                    data[column] = data[column].astype(np.float64)
+                    data[column] = data[column].astype(float)
                 except ValueError:
                     pass
         return data

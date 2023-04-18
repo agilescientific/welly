@@ -637,7 +637,7 @@ class Well(object):
         for i, (_, column) in enumerate(df.iteritems()):
             if is_object_dtype(column.dtype):
                 try:
-                    df.iloc[:, i] = column.astype(np.float64)
+                    df.iloc[:, i] = column.astype(float)
                 except ValueError:
                     pass
 
