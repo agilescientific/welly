@@ -17,4 +17,9 @@ We're fortunate to be part of a large professional community that conducts itsel
 
 ## Authorship
 
-If you contribute a pull request to the project, please add yourself to `AUTHORS.md`.
+If you contribute a pull request to the project and you wish to be identified as an author, please add yourself to `AUTHORS.md`.
+
+
+## License
+
+By making a contribution, you agree that it shall be governed by the terms of [the license](LICENSE) unless another, specific agreement is made with Agile.

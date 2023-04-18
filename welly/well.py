@@ -6,6 +6,7 @@ Defines wells.
 """
 from __future__ import division
 
+import copy
 import re
 import warnings
 
@@ -297,13 +298,13 @@ class Well(object):
         if printfname:
             print(fname)
 
-        # if https URL is passed try reading and formatting it to text file
+        # If https URL is passed try reading and formatting it to text file.
         if re.match(r'https?://.+\..+/.+?', fname) is not None:
             fname = file_from_url(fname)
 
         datasets = from_las(fname, encoding=encoding, **kwargs)
 
-        # create well from datasets
+        # Create well from datasets.
         well = cls.from_datasets(datasets,
                                  remap=remap,
                                  funcs=funcs,
@@ -313,6 +314,12 @@ class Well(object):
                                  fname=fname,
                                  index_units=index,
                                  )
+
+        # Warn about bad curve steps.
+        bad_steps = [m for m, c in well.data.items() if c.step == 0]
+        if bad_steps:
+            message = f"{well.uwi}: Curves have step 0. Consider reampling them with `curve.to_basis(step=0.1524)` or similar."
+            warnings.warn(message, stacklevel=2)
 
         return well
 
@@ -559,7 +566,9 @@ class Well(object):
            basis=None,
            uwi=False,
            alias=None,
-           rename_aliased=True):
+           rename_aliased=True,
+           use_mnemonics=False
+           ):
         """
         Return current curve data as a ``pandas.DataFrame`` object.
 
@@ -579,36 +588,56 @@ class Well(object):
             rename_aliased (bool): Whether to name the columns after the alias,
                 i.e. the alias dictionary key, or after the curve mnemonic.
                 Default is True, use the alias names.
+            use_mnemonics (bool): Whether to use the curve mnemonics as the
+                column names. Default is False, use `data` key names.
 
         Returns:
             pandas.DataFrame.
         """
-        keys = self._get_curve_mnemonics(keys, alias=alias)
+        # copy to not work on well when unifying basis
+        well = copy.deepcopy(self)
+
+        keys = well._get_curve_mnemonics(keys, alias=alias)
+
+        # unify basis on basis passed
+        if basis is not None:
+            well.unify_basis(basis=basis)
 
         if basis is None:
-            basis = self.survey_basis(keys=keys, alias=alias)
+            basis = well.survey_basis(keys=keys, alias=alias)
         if basis is None:
             m = "No basis was provided and welly could not retrieve common basis."
             raise WellError(m)
 
-        data = [self.get_curve(k, alias=alias).to_basis(basis).df for k in keys]
+        data = [well.get_curve(k, alias=alias).to_basis(basis).df for k in keys]
         
-        if rename_aliased:
+        if rename_aliased and (not use_mnemonics):
             data = [df.rename(columns=utils.alias_map(alias)) for df in data if df is not None]
 
+        # If we didn't rename_aliased, this has curve.mnemonics as the columns.
         df = pd.concat(data, axis=1)
 
+        # So rename them as the alias keys, unless use_mnemonics is True.
+        if (not use_mnemonics) and (not rename_aliased):
+            df.columns = keys
+        elif use_mnemonics and (not rename_aliased):
+            if len(set(df.columns)) < len(keys):
+                message = "There are duplicate curve mnemonics in the DataFrame."
+                warnings.warn(message, stacklevel=2)
+
         if uwi:
-            df['UWI'] = self.uwi
+            df['UWI'] = well.uwi
             # add UWI as index as part of a MultiIndex
             df.set_index(['UWI'], append=True, inplace=True)
             # swap MultiIndex levels
             df = df.swaplevel()
 
-        for column in df.columns:
-            if is_object_dtype(df[column].dtype):
+        # I think this is the wrong place to do this.
+        # Anyway, use i not name just in case there are duplicate names.
+        for i, (_, column) in enumerate(df.iteritems()):
+            if is_object_dtype(column.dtype):
                 try:
-                    df[column] = df[column].astype(np.float64)
+                    df.iloc[:, i] = column.astype(float)
                 except ValueError:
                     pass
 

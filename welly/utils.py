@@ -721,11 +721,14 @@ def get_step_from_array(arr):
         0. If the index is numeric and not equally sampled
         None. If the index is not numeric
     """
-    # compute differences between subsequent elements in index array
-    dif = np.diff(arr)
-    if np.allclose(dif - np.mean(dif), np.zeros_like(dif)):
-        # index evenly sampled
-        return np.nanmedian(dif)
+    # Compute differences between subsequent elements in index array.
+    diff = np.diff(arr)
+    if np.allclose(diff - np.mean(diff), np.zeros_like(diff)):
+        # Index evenly sampled
+        return np.nanmedian(diff)
     else:
-        # index unevenly sampled so cannot derive `step`
+        # Index unevenly sampled so cannot derive `step`.
+        warnings.warn('Index is not evenly sampled. Cannot derive step. '
+                      'Try resampling the curve with, for example '
+                      '`curve.to_basis(step=0.1524)`', stacklevel=2)
         return 0
