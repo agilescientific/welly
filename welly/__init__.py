@@ -12,6 +12,7 @@ from .location import Location
 from .crs import CRS
 from . import tools
 from . import quality
+from . import defaults
 
 
 def read_las(path, **kwargs):
