@@ -5,98 +5,80 @@ Some extra bits.
 :license: Apache 2.0
 """
 import numpy as np
-
-from . import utils
-from .curve import Curve
-
-
-class RGBLog(object):
-    """
-    Attempt at RGB. Incomplete.
-    """
-    def __init__(self, curves):
-        pass
+import wellpathpy as wp
+import warnings
 
 
 def compute_position_log(deviation,
                          td=None,
                          method='mc',
-                         azimuth_datum=0
-                        ):
-    """
+                         azimuth_datum=0,
+                         course_length=1,
+                         ):
+    """Use wellpathpy to return the required welly objects
+
     Args:
         deviation (ndarray): A deviation survey with rows like MD, INC, AZI
-        td (Number): The TD of the well, if not the end of the deviation
+        td (float): The TD of the well, if not the end of the deviation
             survey you're passing.
         method (str):
+            'mc': minimum curvature
             'aa': average angle
             'bt': balanced tangential
-            'mc': minimum curvature
-        update_deviation: This function makes some adjustments to the dev-
-            iation survey, to account for the surface and TD. If you do not
-            want to change the stored deviation survey, set to False.
-        azimuth_datum (Number): The orientation of the azimuth datum,
-            relative to the y-axis.
+            'hi': high tangential
+            'lo': low tangential
+            'rc': radius of curvature
+        azimuth_datum (float): The orientation of the azimuth datum, relative
+            to the y-axis.
+        course_length (float): Default: 1. The length over which to normalize
+            the dogleg severity. Typical values are 30 m or 100 ft. Use 1 for
+            no normalization. Note: from v0.5, default will be 30.
 
     Returns:
         ndarray. A position log with rows like X-offset, Y-offset, Z-offset
     """
-    deviation = np.array(deviation)
+    deviation = np.asanyarray(deviation)
 
     # Adjust to TD.
     if td is not None:
         last_row = np.copy(deviation[-1, :])
-        last_row[0] = td
-        deviation = np.vstack([deviation, last_row])
+        if td <= last_row[0]:
+            m = "TD must be greater than deepest deviation depth. "
+            m += "Use `td=None` to use the deepest deviation depth as TD."
+            raise ValueError(m)
+        else:
+            last_row[0] = td
+            deviation = np.vstack([deviation, last_row])
 
     # Adjust to surface if necessary.
     if deviation[0, 0] > 0:
         deviation = np.vstack([np.array([0, 0, 0]), deviation])
 
-    last = deviation[:-1] + [0, 0, azimuth_datum]
-    this = deviation[1:] + [0, 0, azimuth_datum]
+    # Adjust to azimuth_datum.
+    deviation += [0, 0, azimuth_datum]
 
-    diff = this[:, 0] - last[:, 0]
+    # Make wellpathpy deviation object.
+    dev = wp.deviation(*deviation.T)
 
-    Ia, Aa = np.radians(last[:, 1]), np.radians(last[:, 2])
-    Ib, Ab = np.radians(this[:, 1]), np.radians(this[:, 2])
+    # Compute position log.
+    methods = {
+        'mc': dev.minimum_curvature(course_length),
+        'rc': dev.radius_curvature(),
+        'aa': dev.tan_method(),
+        'bt': dev.tan_method(choice='bal'),
+        'hi': dev.tan_method(choice='high'),
+        'lo': dev.tan_method(choice='low'),
+    }
+    try:
+        pos = methods[method]
+    except KeyError:
+        msg = 'Unknown choice of method: {}. '.format(method)
+        msg += 'Method must be one of mc, aa, bt, hi, lo, or rc.'
+        raise KeyError(msg)
 
-    if method == 'aa':
-        Iavg = (Ia + Ib) / 2
-        Aavg = (Aa + Ab) / 2
-        delta_E = diff * np.sin(Iavg) * np.cos(Aavg)
-        delta_N = diff * np.sin(Iavg) * np.sin(Aavg)
-        delta_V = diff * np.cos(Iavg)
-    elif method in ('bt', 'mc'):
-        delta_E = 0.5 * diff * np.sin(Ia) * np.cos(Aa)
-        delta_E += 0.5 * diff * np.sin(Ib) * np.cos(Ab)
-        delta_N = 0.5 * diff * np.sin(Ia) * np.sin(Aa)
-        delta_N += 0.5 * diff * np.sin(Ib) * np.sin(Ab)
-        delta_V = 0.5 * diff * np.cos(Ia)
-        delta_V += 0.5 * diff * np.cos(Ib)
-    else:
-        raise Exception("Method must be one of 'aa', 'bt', 'mc'")
-
-    # Compute dogleg severity and ratio factor.
-    _x = np.sin(Ib) * (1 - np.cos(Ab - Aa))
-    dogleg = np.arccos(np.cos(Ib - Ia) - np.sin(Ia) * _x)
-    dogleg[dogleg == 0] = 1e-12
-
-    rf = 2 / dogleg * np.tan(dogleg / 2)
-    rf[np.isnan(rf)] = 1
-
-    if method == 'mc':
-        delta_N *= rf
-        delta_E *= rf
-        delta_V *= rf
-
-    # Prepare the output array.
-    position = np.zeros_like(deviation, dtype=np.float)
-
-    # Stack the results, add the surface.
-    dogleg = np.hstack([[0], dogleg])
-    _offsets = np.squeeze(np.dstack([delta_N, delta_E, delta_V]))
-    _offsets = np.vstack([np.array([0, 0, 0]), _offsets])
-    position += _offsets.cumsum(axis=0)
+    # Convert to welly formats.
+    # deviation = np.hstack((dev.md, dev.inc, dev.azi))
+    position = np.stack([pos.easting, pos.northing, pos.depth]).T
+    dogleg = dev.minimum_curvature(course_length=course_length).dls
 
     return deviation, position, dogleg

@@ -14,7 +14,7 @@ matplotlib.use('agg')
 
 # To generate new images, uncomment this line and instead
 # comment out the last one (below).
-#pytest.main(["--mpl-generate-path=tests/baseline", "--cov", "welly"])
+# pytest.main(["--mpl-generate-path=tests/baseline", "--cov", "welly"])
 
 # To test as normal
 pytest.main(["--mpl", "--cov", "welly"])

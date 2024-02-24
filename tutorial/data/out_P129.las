@@ -32,9 +32,9 @@ DPHI_DOL.m3/m3  : Density Porosity (matrix Dolomite)
 NPHI_SAN.m3/m3  : Thermal Neutron Porosity (matrix Sandstone)
 DPHI_LIM.m3/m3  : Density Porosity (matrix Limestone)
 RM_HRLT .ohm.m  : HRLT Mud Resistivity
-HCAL    .in     : HRCC Cal. Caliper
+Hcal    .in     : HRCC Cal. Caliper
 DTS     .us/ft  : DTS
-CALI    .in     : Caliper
+cali    .in     : Caliper
 RHOB    .g/cm3  : Bulk Density
 SP      .mV     : SP
 RLA4    .ohm.m  : HRLT Borehole Corrected Resistivity 4

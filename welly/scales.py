@@ -54,7 +54,7 @@ class PiecewiseLinearScale(mscale.ScaleBase):
             raise ValueError('x and y must be specified for a piecewise scale')
         self.xpoints = x
         self.ypoints = y
-        mscale.ScaleBase.__init__(self)
+        # mscale.ScaleBase.__init__(self)
 
     def get_transform(self):
         return PiecewiseLinearTransform(self.xpoints, self.ypoints)

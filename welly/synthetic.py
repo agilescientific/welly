@@ -69,7 +69,7 @@ class Synthetic(np.ndarray):
         data = np.interp(np.arange(params['start'], stop+step, step), self.basis, self)
         return Curve(data, params=params)
 
-    def plot(self, ax=None, return_fig=False, **kwargs):
+    def plot(self, ax=None, **kwargs):
         """
         Plot a synthetic.
 
@@ -77,8 +77,6 @@ class Synthetic(np.ndarray):
             ax (ax): A matplotlib axis.
             legend (Legend): For now, only here to match API for other plot
                 methods.
-            return_fig (bool): whether to return the matplotlib figure.
-                Default False.
 
         Returns:
             ax. If you passed in an ax, otherwise None.
@@ -93,15 +91,12 @@ class Synthetic(np.ndarray):
         hypertime = np.linspace(self.start, self.stop, (10 * self.size - 1) + 1)
         hyperamp = np.interp(hypertime, self.basis, self)
 
-        ax.plot(hyperamp, hypertime, 'k')
+        ax.plot(hyperamp, hypertime, 'k', **kwargs)
         ax.fill_betweenx(hypertime, hyperamp, 0, hyperamp > 0.0, facecolor='k', lw=0)
         ax.invert_yaxis()
         ax.set_title(self.name)
 
         if return_ax:
             return ax
-        elif return_fig:
-            return fig
         else:
-
             return None

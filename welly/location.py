@@ -4,15 +4,15 @@ Defines well location.
 :copyright: 2021 Agile Geoscience
 :license: Apache 2.0
 """
+import warnings
+import re
+import io
+
 import numpy as np
 from scipy.interpolate import interp1d
 from scipy.interpolate import splprep
 from scipy.interpolate import splev
-import warnings
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
-import re
-import io
 
 from . import utils
 from .fields import las_fields
@@ -48,7 +48,10 @@ class Location(object):
                         v = None
                     setattr(self, k, v)
 
-        td = getattr(self, 'td', getattr(self, 'TDD', getattr(self, 'TDL', None)))
+        td = getattr(self,
+                     'td',
+                     getattr(self, 'TDD', getattr(self, 'TDL', None))
+                     )
         if isinstance(td, str):
             try:
                 td = float(td)
@@ -59,14 +62,7 @@ class Location(object):
         if getattr(self, 'deviation', None) is None:
             self.deviation = None
         else:
-            try:
-                dev_new, pos, dog = compute_position_log(self.deviation, td=td)
-            except:
-                m = "The position log could not be computed. Consider "
-                m += "trying another setting for the 'method' argument."
-                warnings.warn(m)
-                dev_new, pos, dog = deviation, None, None
-
+            dev_new, pos, dog = compute_position_log(self.deviation, td=td)
             self.position = pos
             self.dogleg = dog
 
@@ -102,13 +98,13 @@ class Location(object):
         return
 
     @classmethod
-    def from_lasio(cls, l, remap=None, funcs=None):
+    def from_lasio(cls, header, remap=None, funcs=None):
         """
-        Make a Location object from a lasio object. Assumes we're starting
-        with a lasio object, l.
+        Make a Location object from a header object.
+        See `las.from_las()` for header object description.
 
         Args:
-            l (lasio).
+            header (pd.DataFrame). Header meta data from LAS file
             remap (dict): Optional. A dict of 'old': 'new' LAS field names.
             funcs (dict): Optional. A dict of 'las field': function() for
                 implementing a transform before loading. Can be a lambda.
@@ -119,16 +115,23 @@ class Location(object):
         params = {}
         funcs = funcs or {}
         funcs['location'] = str
-        for field, (sect, code) in las_fields['location'].items():
-            params[field] = utils.lasio_get(l,
-                                            sect,
-                                            code,
-                                            remap=remap,
-                                            funcs=funcs)
+        for field, (sect, item) in las_fields['location'].items():
+            params[field] = utils.get_header_item(header,
+                                                  section=sect,
+                                                  item=item,
+                                                  remap=remap,
+                                                  funcs=funcs)
         return cls(params)
 
     @classmethod
-    def from_petrel(cls, fname, recalc=False, north='grid', columns=None, update=True, **kwargs):
+    def from_petrel(cls,
+                    fname,
+                    recalc=False,
+                    north='grid',
+                    columns=None,
+                    update=True,
+                    **kwargs
+                    ):
         """
         Add a location object from a Petrel `dev` file. Should contain the
         (x, y), the CRS, the KB, and the position log.
@@ -144,15 +147,16 @@ class Location(object):
                 recalc is False (default), then this will be the indices of
                 (x, y, TVDSS), in that order and zero-indexed. Default in that
                 case: `[1, 2, 3]`. However, if `recalc` is True then this will
-                be the indices of the dev file columns holding (MD, INCL, AZIM),
+                be the indices of the dev file columns giving (MD, INCL, AZIM),
                 in that order. In this case the default is `[0, 8, 10]` for
                 'grid' north, or `[0, 8, 7]` for 'true' north.
             update: This function makes some adjustments to the position or
-                deviation data, to account for the surface and TD. If you do not
-                want to change the data from the file, set to False. (The Petrel
-                file probably has absolute position, whereas `welly` computes
-                relative position, so the first row is always (0, 0, 0). Also,
-                `welly` always adds points for the 3D position of TD and KB.)
+                deviation data, to account for the surface and TD. If you don't
+                want to change the data from the file, set to False. (The
+                Petrel file probably has absolute position, whereas `welly`
+                computes relative position, so the first row is always
+                (0, 0, 0). Also, `welly` always adds points for the 3D position
+                of TD and KB.)
             **kwargs: passed to `welly.tools.compute_position_log`.
 
         Returns:
@@ -175,15 +179,9 @@ class Location(object):
 
         if recalc:
             if columns is None:
-                columns = [0, 8, 10] if north=='grid' else [0, 8, 7]
+                columns = [0, 8, 10] if north == 'grid' else [0, 8, 7]
             deviation = np.genfromtxt(data)[:, columns]
-            try:
-                dev_new, pos, dog = compute_position_log(deviation, **kwargs)
-            except Exception:
-                m = "The position log could not be computed. Consider "
-                m += "trying another setting for the 'method' argument."
-                warnings.warn(m)
-                dev_new, pos, dog = deviation, None, None
+            dev_new, pos, dog = compute_position_log(deviation, **kwargs)
 
             if update:
                 params['deviation'] = dev_new
@@ -197,7 +195,8 @@ class Location(object):
                 columns = [1, 2, 3]
             position = np.genfromtxt(data)[:, columns]
             try:
-                pos_new = position - np.array([params['x'], params['y'], params['kb']])
+                rel_pos = np.array([params['x'], params['y'], params['kb']])
+                pos_new = position - rel_pos
             except KeyError:
                 m = "The position log could not be adjusted to relative "
                 m += "position; leaving it as-is. Take care to check it."
@@ -215,7 +214,9 @@ class Location(object):
                       td=None,
                       method='mc',
                       update_deviation=True,
-                      azimuth_datum=0):
+                      azimuth_datum=0,
+                      course_length=30,
+                      ):
         """
         Add a deviation survey to this instance, and try to compute a position
         log from it. Acts in place, modifying the Location instance directly.
@@ -231,26 +232,27 @@ class Location(object):
             update_deviation: This function makes some adjustments to the dev-
                 iation survey, to account for the surface and TD. If you do not
                 want to change the stored deviation survey, set to False.
-            azimuth_datum (Number): The orientation of the azimuth datum,
+            azimuth_datum (float): The orientation of the azimuth datum,
                 relative to the y-axis.
+            course_length (float): The length over which to normalize the dogleg
+                severity. Typical values are 30 m or 100 ft. Use 1 for no normal-
+                ization.
 
         Returns:
             None. Adds the position log to `well.location` in place.
         """
-        try:
-            dev_new, pos, dog = compute_position_log(deviation,
-                                                     td,
-                                                     method,
-                                                     azimuth_datum,
-                                                    )
-        except:
-            warnings.warn("The position log could not be computed.")
-            dev_new, pos, dog = deviation, None, None
+        dev_new, pos, dog = compute_position_log(deviation,
+                                                 td,
+                                                 method,
+                                                 azimuth_datum,
+                                                 course_length,
+                                                 )
 
         if update_deviation:
             self.deviation = dev_new
         else:
             self.deviation = deviation
+
         self.position = pos
         self.dogleg = dog
 
@@ -325,9 +327,9 @@ class Location(object):
         deviation survey.
 
         Args:
-            datum (array-like): A 3-element array with adjustments to (x, y, z).
-                For example, the x-position, y-position, and KB of the tophole
-                location.
+            datum (array-like): A 3-element array with adjustments to
+                (x, y, z). For example, the x-position, y-position, and KB of
+                the tophole location.
             elev (bool): In general the (x, y, z) array of positions will have
                 z as TVD, which is positive down. If `elev` is True, positive
                 will be upwards.
@@ -364,7 +366,8 @@ class Location(object):
         """
         return_ax = True
         if ax is None:
-            fig, ax = plt.subplots(figsize=(15, 7), subplot_kw={'projection': '3d'})
+            subplot_kw = {'projection': '3d'}
+            fig, ax = plt.subplots(figsize=(15, 7), subplot_kw=subplot_kw)
             return_ax = False
 
         ax.plot(*self.trajectory().T, lw=3, alpha=0.75)
