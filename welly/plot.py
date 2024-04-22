@@ -400,7 +400,7 @@ def plot_2d_curve(curve,
         merged_paths = mpl.path.Path(vertices, codes)
 
         # Make the 'fill' mask and clip the background image with it.
-        patch = mpl.patches.PathPatch(merged_paths, visible=False)
+        patch = PathPatch(merged_paths, visible=False)
         ax.add_artist(patch)
         im.set_clip_path(patch)
     else:
