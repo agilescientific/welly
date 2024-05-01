@@ -420,7 +420,7 @@ def to_lasio(well,
         if basis:
             df_merged = df_merged.reindex(basis)
         try:
-            l.add_curve('DEPT', df_merged.index.values)
+            l.append_curve('DEPT', df_merged.index.values)
         except:
             raise Exception("Please provide an index.")
 
@@ -452,7 +452,7 @@ def to_lasio(well,
                     # take the series, reindex it and transform to np.array
                     new_data = curve.df[col].reindex(basis).values
                     descr = getattr(curve, 'description', '')
-                    l.add_curve(mnemonic=key_,
+                    l.append_curve(mnemonic=key_,
                                 data=new_data,
                                 unit=curve.units,
                                 descr=descr)
