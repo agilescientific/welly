@@ -367,15 +367,15 @@ class Curve(object):
         # Curve preview.
         s = '<tr><th style="border-top: 2px solid #000;">Depth</th><th style="border-top: 2px solid #000;">Value</th></tr>'
         rows += s.format(self.start, self.df.values[0][0])
-        if self.dtypes[0] == float:
+        if self.dtypes.iloc[0] == float:
             s = '<tr><td>{:.4f}</td><td>{:.4f}</td></tr>'
         else:
             s = '<tr><td>{}</td><td>{}</td></tr>'
         for depth, value in self.df.iloc[:3].iterrows():
-            rows += s.format(depth, value[0])
+            rows += s.format(depth, value.iloc[0])
         rows += '<tr><td>⋮</td><td>⋮</td></tr>'
         for depth, value in self.df.iloc[-3:].iterrows():
-            rows += s.format(depth, value[0])
+            rows += s.format(depth, value.iloc[0])
 
         # Footer.
         # ...
