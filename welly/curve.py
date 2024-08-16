@@ -9,6 +9,7 @@ import warnings
 
 import numpy as np
 import pandas as pd
+from pandas.api.types import is_any_real_numeric_dtype
 from scipy.interpolate import interp1d
 
 from welly.plot import plot_2d_curve, plot_curve, plot_kde_curve
@@ -509,7 +510,7 @@ class Curve(object):
             0. If the index is numeric and not equally sampled
             None. If the index is not numeric
         """
-        if self.df.index.is_numeric() and not self.df.index.empty:
+        if is_any_real_numeric_dtype(self.df.index) and not self.df.index.empty:
             return get_step_from_array(self.df.index.values)
         else:
             return None
