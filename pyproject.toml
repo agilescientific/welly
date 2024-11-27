@@ -45,6 +45,19 @@ packages = ["welly"]
 [tool.hatch.version]
 source = "vcs"
 
+[tool.hatch.build.hooks.vcs]
+version-file = "_version.py"
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = [
+  "--cov=welly",
+  "--cov-config=pyproject.toml",
+  "--mpl",
+  "--mpl-baseline-path=tests/baseline",
+]
+testpaths = ["tests"]
+
 [tool.setuptools_scm]
 write_to = "welly/_version.py"
 git_describe_command = "git describe --dirty --tags --long --match v* --first-parent"
