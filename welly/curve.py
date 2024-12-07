@@ -10,6 +10,7 @@ import warnings
 import numpy as np
 import pandas as pd
 from pandas.api.types import is_any_real_numeric_dtype
+from pandas.api.types import is_numeric_dtype
 from scipy.interpolate import interp1d
 
 from welly.plot import plot_2d_curve, plot_curve, plot_kde_curve
@@ -970,7 +971,7 @@ class Curve(object):
             Curve. The current instance in the new basis.
         """
         # category data type or a string in data defaults to 'nearest'
-        if pd.api.types.is_categorical_dtype(self.df.iloc[:, 0]) or pd.api.types.is_string_dtype(self.df.iloc[:, 0]):
+        if not is_numeric_dtype(self.df.iloc[:, 0]):
             interp_kind = 'nearest'
 
         new_curve = copy.deepcopy(self)
