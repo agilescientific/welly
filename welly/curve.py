@@ -9,6 +9,7 @@ import warnings
 
 import numpy as np
 import pandas as pd
+from pandas.api.types import is_any_real_numeric_dtype
 from scipy.interpolate import interp1d
 
 from welly.plot import plot_2d_curve, plot_curve, plot_kde_curve
@@ -367,15 +368,15 @@ class Curve(object):
         # Curve preview.
         s = '<tr><th style="border-top: 2px solid #000;">Depth</th><th style="border-top: 2px solid #000;">Value</th></tr>'
         rows += s.format(self.start, self.df.values[0][0])
-        if self.dtypes[0] == float:
+        if self.dtypes.iloc[0] == float:
             s = '<tr><td>{:.4f}</td><td>{:.4f}</td></tr>'
         else:
             s = '<tr><td>{}</td><td>{}</td></tr>'
         for depth, value in self.df.iloc[:3].iterrows():
-            rows += s.format(depth, value[0])
+            rows += s.format(depth, value.iloc[0])
         rows += '<tr><td>⋮</td><td>⋮</td></tr>'
         for depth, value in self.df.iloc[-3:].iterrows():
-            rows += s.format(depth, value[0])
+            rows += s.format(depth, value.iloc[0])
 
         # Footer.
         # ...
@@ -509,7 +510,7 @@ class Curve(object):
             0. If the index is numeric and not equally sampled
             None. If the index is not numeric
         """
-        if self.df.index.is_numeric() and not self.df.index.empty:
+        if is_any_real_numeric_dtype(self.df.index) and not self.df.index.empty:
             return get_step_from_array(self.df.index.values)
         else:
             return None
