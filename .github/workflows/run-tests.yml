@@ -7,7 +7,7 @@ on:
   push:
     branches: [ develop, main ]
   pull_request:
-    branches: [ develop ]
+    branches: [ develop, main ]
 
 jobs:
   build:
@@ -16,7 +16,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11"]
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
 
     steps:
     - uses: actions/checkout@v3
@@ -29,5 +29,4 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install .[test]
     - name: Test with pytest
-      run: |
-        python run_tests.py
+      run: pytest
