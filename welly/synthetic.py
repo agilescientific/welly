@@ -55,19 +55,22 @@ class Synthetic(np.ndarray):
         precision_adj = self.dt / 100
         return np.arange(self.start, self.stop - precision_adj, self.dt)
 
-    def as_curve(self, start=None, stop=None, step=0.1524):
+    def as_curve(self, depth_start=0., depth_stop=99999., depth_step=0.1524, mnemonic="SYN"):
         """
         Get the synthetic as a Curve, in depth. Facilitates plotting along-
         side other curve data.
         """
-        params = {'start': start or getattr(self, 'depth_start', None),
-                  'mnemonic': 'SYN',
-                  'step': step
-                  }
+        if depth_stop <= 0.:
+            depth_stop = 99999.
 
-        stop = stop or getattr(self, 'depth_stop', None)
-        data = np.interp(np.arange(params['start'], stop+step, step), self.basis, self)
-        return Curve(data, params=params)
+        new_crv = None
+        if depth_stop > depth_start:
+            depth_basis = np.arange(depth_start, depth_stop+depth_step, depth_step)
+            data = np.interp(depth_basis, self.basis, self)
+
+            new_crv = Curve(data, mnemonic=mnemonic, index=depth_basis)
+
+        return new_crv
 
     def plot(self, ax=None, **kwargs):
         """
