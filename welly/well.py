@@ -632,16 +632,27 @@ class Well(object):
             # swap MultiIndex levels
             df = df.swaplevel()
 
-        # I think this is the wrong place to do this.
-        # Anyway, use i not name just in case there are duplicate names.
-        for i, (_, column) in enumerate(df.iteritems()):
-            if is_object_dtype(column.dtype):
-                try:
-                    df.iloc[:, i] = column.astype(float)
-                except ValueError:
-                    pass
+        df = self._convert_object_cols_to_numeric(df)
 
         return df
+
+    def _convert_object_cols_to_numeric(self, df):
+        """
+        Convert object columns into numeric columns, if possible.
+
+        Args:
+            df (pd.DataFrame): dataframe to work
+        Returns:
+            pd.DataFrame. Whole dataframe with conversions
+        """
+        df_nonobject = df.select_dtypes(exclude="object")
+        df_object = df.select_dtypes(include="object")
+        for col in df_object.columns:
+            try:
+                df_object[col] = pd.to_numeric(df_object[col])
+            except ValueError:
+                pass
+        return pd.concat([df_nonobject, df_object], axis=1)
 
     def add_curves_from_las(self, fname, remap=None, funcs=None):
         """
