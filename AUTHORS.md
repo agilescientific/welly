@@ -10,6 +10,6 @@ The following people have contributed to the project (in alphabetical order):
 - [Thomas Martin](https://github.com/ThomasMGeo), Colorado, USA
 - [Steve Purves](https://github.com/stevejpurves), Curvenote, Spain
 - [Patrick Reinhard](https://github.com/patrick-reinhard), Shell, The Netherlands
-- [DC Slagel](https://github.com/dcslagel), Shell, The Netherlands
+- [DC Slagel](https://github.com/dcslagel), Code Farm, Colorado, USA
 - [Miguel de la Varga](https://github.com/Leguark), Germany
 - [Wenting Xiong](https://github.com/wenting-x), Shell, The Netherlands

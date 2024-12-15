@@ -1,11 +1,62 @@
 [build-system]
-requires = [
-    "setuptools>=48",
-    "setuptools_scm[toml] >= 4, <6",
-    "setuptools_scm_git_archive",
-    "wheel >= 0.29.0",
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
+
+[project]
+name = "welly"
+dynamic = ["version"]
+authors = [{ name = "The Welly Authors", email = "hello@agilescientific.com" }]
+description = "Tools for making and managing well data."
+readme = "README.md"
+readme-content-type = "text/markdown"
+homepage = "https://github.com/agilescientific/welly"
+classifiers = [
+    "Intended Audience :: Science/Research",
+    "Development Status :: 4 - Beta",
+    "Natural Language :: English",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent"
 ]
-build-backend = "setuptools.build_meta"
+dependencies = [
+    "numpy",
+    "scipy",
+    "pandas",
+    "matplotlib",
+    "lasio",
+    "striplog",
+    "tqdm",
+    "wellpathpy",
+    "requests"
+]
+
+[project.optional-dependencies]
+docs = ["sphinx", "sphinxcontrib-apidoc", "myst_nb", "furo"]
+test = ["pytest", "pytest-cov", "pytest-mpl"]
+dev = ["build", "pytest", "pytest-cov", "pytest-mpl", "sphinx", "sphinxcontrib-apidoc", "myst_nb", "furo"]
+
+[tool.hatch.metadata]
+packages = ["welly"]
+
+[tool.hatch.version]
+source = "vcs"
+
+[tool.hatch.build.hooks.vcs]
+version-file = "_version.py"
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = [
+  "--cov=welly",
+  "--cov-config=pyproject.toml",
+  "--mpl",
+  "--mpl-baseline-path=tests/baseline",
+]
+testpaths = ["tests"]
 
 [tool.setuptools_scm]
 write_to = "welly/_version.py"

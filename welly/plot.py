@@ -393,9 +393,14 @@ def plot_2d_curve(curve,
                                  x2=np.nanmin(curve_data),
                                  facecolor='none',
                                  **kwargs)
+        
+        # Combine the paths into a single Path object
+        vertices = np.concatenate([p.vertices for p in paths._paths])
+        codes = np.concatenate([p.codes for p in paths._paths])
+        merged_paths = mpl.path.Path(vertices, codes)
 
         # Make the 'fill' mask and clip the background image with it.
-        patch = PathPatch(paths._paths[0], visible=False)
+        patch = PathPatch(merged_paths, visible=False)
         ax.add_artist(patch)
         im.set_clip_path(patch)
     else:
