@@ -1,18 +1,17 @@
 <!doctype html>
-<html class="no-js" lang="en">
+<html class="no-js" lang="en" data-content_root="../">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Wells" href="Wells.html" /><link rel="prev" title="Installation" href="../installation.html" />
 
-    <link rel="shortcut icon" href="../_static/favicon.ico"/><meta name="generator" content="sphinx-4.4.0, furo 2022.02.23"/>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/><!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
         <title>Quick start - welly documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=3c656993158f05539f962c5cea52a5e6c184bb8c" />
-    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=25ceb02ed1c46dc30f2321ff83e92799f69dfdb9" />
-    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=645ab05b" />
     
     
 
@@ -23,24 +22,28 @@
   --color-code-foreground: black;
   
   }
-  body[data-theme="dark"] {
-    --color-code-background: #202020;
-  --color-code-foreground: #d0d0d0;
-  
-  }
-  @media (prefers-color-scheme: dark) {
-    body:not([data-theme="light"]) {
+  @media not print {
+    body[data-theme="dark"] {
       --color-code-background: #202020;
   --color-code-foreground: #d0d0d0;
   
     }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
   }
 </style></head>
   <body>
+    
     <script>
       document.body.dataset.theme = localStorage.getItem("theme") || "auto";
     </script>
     
+
 <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
   <symbol id="svg-toc" viewBox="0 0 24 24">
     <title>Contents</title>
@@ -67,7 +70,7 @@
   <symbol id="svg-sun" viewBox="0 0 24 24">
     <title>Light mode</title>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
       <circle cx="12" cy="12" r="5"></circle>
       <line x1="12" y1="1" x2="12" y2="3"></line>
       <line x1="12" y1="21" x2="12" y2="23"></line>
@@ -82,22 +85,63 @@
   <symbol id="svg-moon" viewBox="0 0 24 24">
     <title>Dark mode</title>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
       <path stroke="none" d="M0 0h24v24H0z" fill="none" />
       <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
     </svg>
   </symbol>
-  <symbol id="svg-sun-half" viewBox="0 0 24 24">
-    <title>Auto light/dark mode</title>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
-      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-      <circle cx="12" cy="12" r="9" />
-      <path d="M13 12h5" />
-      <path d="M13 15h4" />
-      <path d="M13 18h1" />
-      <path d="M13 9h4" />
-      <path d="M13 6h1" />
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
     </svg>
   </symbol>
 </svg>
@@ -110,6 +154,8 @@
 <label class="overlay toc-overlay" for="__toc">
   <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
 
 
 
@@ -128,7 +174,8 @@
       <div class="theme-toggle-container theme-toggle-header">
         <button class="theme-toggle">
           <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
-          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
           <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
@@ -142,7 +189,7 @@
   <aside class="sidebar-drawer">
     <div class="sidebar-container">
       
-      <div class="sidebar-sticky"><a class="sidebar-brand centered" href="../index.html">
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
   
   <div class="sidebar-logo-container">
     <img class="sidebar-logo" src="../_static/welly_simple_alpha.png" alt="Logo"/>
@@ -150,7 +197,7 @@
   
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
-  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
@@ -178,8 +225,8 @@
 <p class="caption" role="heading"><span class="caption-text">Project links</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference external" href="https://pypi.org/project/welly/">PyPI releases</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/agile-geoscience/welly">Code in GitHub</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/agile-geoscience/welly/issues">Issue tracker</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/agilescientific/welly">Code in GitHub</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/agilescientific/welly/issues">Issue tracker</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://code.agilescientific.com/community">Community guidelines</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://code.agilescientific.com">Agile's software</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://www.agilescientific.com">Agile's website</a></li>
@@ -201,10 +248,18 @@
           </svg>
           <span>Back to top</span>
         </a>
-        <div class="content-icon-container"><div class="theme-toggle-container theme-toggle-content">
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="../_sources/userguide/Quick_start.ipynb.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
             <button class="theme-toggle">
               <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
-              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
               <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
@@ -214,9 +269,9 @@
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
-        <article role="main">
+        <article role="main" id="furo-main-content">
           <section class="tex2jax_ignore mathjax_ignore" id="quick-start">
-<h1>Quick start<a class="headerlink" href="#quick-start" title="Permalink to this headline">#</a></h1>
+<h1>Quick start<a class="headerlink" href="#quick-start" title="Link to this heading">¶</a></h1>
 <p>Welcome to the <strong>Quick start</strong> guide! This should help you get started using <code class="docutils literal notranslate"><span class="pre">welly</span></code>.</p>
 <p>First some preliminaries…</p>
 <div class="cell docutils container">
@@ -230,18 +285,18 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>'0.5.2'
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&#39;0.5.3rc0&#39;
 </pre></div>
 </div>
 </div>
 </div>
 <section id="create-a-project-from-las">
-<h2>Create a project from LAS<a class="headerlink" href="#create-a-project-from-las" title="Permalink to this headline">#</a></h2>
+<h2>Create a project from LAS<a class="headerlink" href="#create-a-project-from-las" title="Link to this heading">¶</a></h2>
 <p>Use the <code class="docutils literal notranslate"><span class="pre">read_las()</span></code> function to load a well by passing a single filename, a POSIX-style path with wildcards (e.g. <code class="docutils literal notranslate"><span class="pre">'file_*.las'</span></code>) or URL as a <code class="docutils literal notranslate"><span class="pre">str</span></code>.</p>
 <p>This creates a project containing one (or more, depending on the wildcard) wells.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">project</span> <span class="o">=</span> <span class="n">welly</span><span class="o">.</span><span class="n">read_las</span><span class="p">(</span><span class="s1">'https://geocomp.s3.amazonaws.com/data/P-129.LAS'</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">project</span> <span class="o">=</span> <span class="n">welly</span><span class="o">.</span><span class="n">read_las</span><span class="p">(</span><span class="s1">&#39;https://geocomp.s3.amazonaws.com/data/P-129.LAS&#39;</span><span class="p">)</span>
 
 <span class="n">project</span>
 </pre></div>
@@ -251,18 +306,102 @@
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0it [00:00, ?it/s]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>1it [00:01,  1.90s/it]
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>1it [00:01,  1.90s/it]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0it [00:00, ?it/s]
 </pre></div>
 </div>
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
 </pre></div>
 </div>
-<div class="output text_html"><div class="table-wrapper"><table><tr><th>Index</th><th>UWI</th><th>Data</th><th>Curves</th></tr><tr><td>0</td><td><strong>Long = 63* 45'24.460  W</strong></td><td>24 curves</td><td>CALI, HCAL, PEF, DT, DTS, DPHI_SAN, DPHI_LIM, DPHI_DOL, NPHI_SAN, NPHI_LIM, NPHI_DOL, RLA5, RLA3, RLA4, RLA1, RLA2, RXOZ, RXO_HRLT, RT_HRLT, RM_HRLT, DRHO, RHOB, GR, SP</td></tr></table></div></div></div>
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">HTTPError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
+<span class="nn">File /opt/hostedtoolcache/Python/3.12.8/x64/lib/python3.12/site-packages/welly/las.py:485,</span> in <span class="ni">file_from_url</span><span class="nt">(url)</span>
+<span class="g g-Whitespace">    </span><span class="mi">484</span> <span class="k">try</span><span class="p">:</span>
+<span class="ne">--&gt; </span><span class="mi">485</span>     <span class="n">text_file</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="n">url</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span>
+<span class="g g-Whitespace">    </span><span class="mi">486</span> <span class="k">except</span> <span class="n">error</span><span class="o">.</span><span class="n">HTTPError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+
+<span class="nn">File /opt/hostedtoolcache/Python/3.12.8/x64/lib/python3.12/urllib/request.py:215,</span> in <span class="ni">urlopen</span><span class="nt">(url, data, timeout, cafile, capath, cadefault, context)</span>
+<span class="g g-Whitespace">    </span><span class="mi">214</span>     <span class="n">opener</span> <span class="o">=</span> <span class="n">_opener</span>
+<span class="ne">--&gt; </span><span class="mi">215</span> <span class="k">return</span> <span class="n">opener</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">timeout</span><span class="p">)</span>
+
+<span class="nn">File /opt/hostedtoolcache/Python/3.12.8/x64/lib/python3.12/urllib/request.py:521,</span> in <span class="ni">OpenerDirector.open</span><span class="nt">(self, fullurl, data, timeout)</span>
+<span class="g g-Whitespace">    </span><span class="mi">520</span>     <span class="n">meth</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">processor</span><span class="p">,</span> <span class="n">meth_name</span><span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">521</span>     <span class="n">response</span> <span class="o">=</span> <span class="n">meth</span><span class="p">(</span><span class="n">req</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">523</span> <span class="k">return</span> <span class="n">response</span>
+
+<span class="nn">File /opt/hostedtoolcache/Python/3.12.8/x64/lib/python3.12/urllib/request.py:630,</span> in <span class="ni">HTTPErrorProcessor.http_response</span><span class="nt">(self, request, response)</span>
+<span class="g g-Whitespace">    </span><span class="mi">629</span> <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="mi">200</span> <span class="o">&lt;=</span> <span class="n">code</span> <span class="o">&lt;</span> <span class="mi">300</span><span class="p">):</span>
+<span class="ne">--&gt; </span><span class="mi">630</span>     <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">631</span>         <span class="s1">&#39;http&#39;</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">hdrs</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">633</span> <span class="k">return</span> <span class="n">response</span>
+
+<span class="nn">File /opt/hostedtoolcache/Python/3.12.8/x64/lib/python3.12/urllib/request.py:559,</span> in <span class="ni">OpenerDirector.error</span><span class="nt">(self, proto, *args)</span>
+<span class="g g-Whitespace">    </span><span class="mi">558</span> <span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="s1">&#39;default&#39;</span><span class="p">,</span> <span class="s1">&#39;http_error_default&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="n">orig_args</span>
+<span class="ne">--&gt; </span><span class="mi">559</span> <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call_chain</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+
+<span class="nn">File /opt/hostedtoolcache/Python/3.12.8/x64/lib/python3.12/urllib/request.py:492,</span> in <span class="ni">OpenerDirector._call_chain</span><span class="nt">(self, chain, kind, meth_name, *args)</span>
+<span class="g g-Whitespace">    </span><span class="mi">491</span> <span class="n">func</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">handler</span><span class="p">,</span> <span class="n">meth_name</span><span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">492</span> <span class="n">result</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">493</span> <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+
+<span class="nn">File /opt/hostedtoolcache/Python/3.12.8/x64/lib/python3.12/urllib/request.py:639,</span> in <span class="ni">HTTPDefaultErrorHandler.http_error_default</span><span class="nt">(self, req, fp, code, msg, hdrs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">638</span> <span class="k">def</span> <span class="nf">http_error_default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">,</span> <span class="n">fp</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">hdrs</span><span class="p">):</span>
+<span class="ne">--&gt; </span><span class="mi">639</span>     <span class="k">raise</span> <span class="n">HTTPError</span><span class="p">(</span><span class="n">req</span><span class="o">.</span><span class="n">full_url</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">hdrs</span><span class="p">,</span> <span class="n">fp</span><span class="p">)</span>
+
+<span class="ne">HTTPError</span>: HTTP Error 403: Forbidden
+
+<span class="n">During</span> <span class="n">handling</span> <span class="n">of</span> <span class="n">the</span> <span class="n">above</span> <span class="n">exception</span><span class="p">,</span> <span class="n">another</span> <span class="n">exception</span> <span class="n">occurred</span><span class="p">:</span>
+
+<span class="ne">Exception</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">project</span> <span class="o">=</span> <span class="n">welly</span><span class="o">.</span><span class="n">read_las</span><span class="p">(</span><span class="s1">&#39;https://geocomp.s3.amazonaws.com/data/P-129.LAS&#39;</span><span class="p">)</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="n">project</span>
+
+<span class="nn">File /opt/hostedtoolcache/Python/3.12.8/x64/lib/python3.12/site-packages/welly/__init__.py:34,</span> in <span class="ni">read_las</span><span class="nt">(path, **kwargs)</span>
+<span class="g g-Whitespace">     </span><span class="mi">20</span> <span class="k">def</span> <span class="nf">read_las</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="g g-Whitespace">     </span><span class="mi">21</span><span class="w">     </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="g g-Whitespace">     </span><span class="mi">22</span><span class="sd">     A package namespace method to be called as `welly.read_las`.</span>
+<span class="g g-Whitespace">     </span><span class="mi">23</span><span class="sd"> </span>
+<span class="sd">   (...)</span>
+<span class="g g-Whitespace">     </span><span class="mi">32</span><span class="sd">         welly.Project. The Project object.</span>
+<span class="g g-Whitespace">     </span><span class="mi">33</span><span class="sd">     &quot;&quot;&quot;</span>
+<span class="ne">---&gt; </span><span class="mi">34</span>     <span class="k">return</span> <span class="n">Project</span><span class="o">.</span><span class="n">from_las</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+<span class="nn">File /opt/hostedtoolcache/Python/3.12.8/x64/lib/python3.12/site-packages/welly/project.py:183,</span> in <span class="ni">Project.from_las</span><span class="nt">(cls, path, remap, funcs, data, req, alias, max, encoding, printfname, index, **kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">180</span> <span class="k">else</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">181</span>     <span class="n">uris</span> <span class="o">=</span> <span class="n">path</span>  <span class="c1"># It&#39;s a list-like of files and/or URLs.</span>
+<span class="ne">--&gt; </span><span class="mi">183</span> <span class="n">wells</span> <span class="o">=</span> <span class="p">[</span><span class="n">Well</span><span class="o">.</span><span class="n">from_las</span><span class="p">(</span><span class="n">f</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">184</span>                        <span class="n">remap</span><span class="o">=</span><span class="n">remap</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">185</span>                        <span class="n">funcs</span><span class="o">=</span><span class="n">funcs</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">186</span>                        <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">187</span>                        <span class="n">req</span><span class="o">=</span><span class="n">req</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">188</span>                        <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">189</span>                        <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">190</span>                        <span class="n">printfname</span><span class="o">=</span><span class="n">printfname</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">191</span>                        <span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">192</span>                        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">193</span>                        <span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">194</span>          <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">enumerate</span><span class="p">(</span><span class="n">uris</span><span class="p">))</span> <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">max</span><span class="p">]</span>
+<span class="g g-Whitespace">    </span><span class="mi">196</span> <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">wells</span><span class="p">)))</span>
+
+<span class="nn">File /opt/hostedtoolcache/Python/3.12.8/x64/lib/python3.12/site-packages/welly/well.py:303,</span> in <span class="ni">Well.from_las</span><span class="nt">(cls, fname, remap, funcs, data, req, alias, encoding, printfname, index, **kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">301</span> <span class="c1"># If https URL is passed try reading and formatting it to text file.</span>
+<span class="g g-Whitespace">    </span><span class="mi">302</span> <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;https?://.+\..+/.+?&#39;</span><span class="p">,</span> <span class="n">fname</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+<span class="ne">--&gt; </span><span class="mi">303</span>     <span class="n">fname</span> <span class="o">=</span> <span class="n">file_from_url</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">305</span> <span class="n">datasets</span> <span class="o">=</span> <span class="n">from_las</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">307</span> <span class="c1"># Create well from datasets.</span>
+
+<span class="nn">File /opt/hostedtoolcache/Python/3.12.8/x64/lib/python3.12/site-packages/welly/las.py:487,</span> in <span class="ni">file_from_url</span><span class="nt">(url)</span>
+<span class="g g-Whitespace">    </span><span class="mi">485</span>     <span class="n">text_file</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="n">url</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span>
+<span class="g g-Whitespace">    </span><span class="mi">486</span> <span class="k">except</span> <span class="n">error</span><span class="o">.</span><span class="n">HTTPError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+<span class="ne">--&gt; </span><span class="mi">487</span>     <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Could not retrieve url: &#39;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">489</span> <span class="k">return</span> <span class="n">text_file</span>
+
+<span class="ne">Exception</span>: (&#39;Could not retrieve url: &#39;, &lt;HTTPError 403: &#39;Forbidden&#39;&gt;)
+</pre></div>
 </div>
-<p>Clearly there are some issues with this well. Have a look at the <a class="reference internal" href="Wells.html"><span class="doc std std-doc">Well object docs</span></a> to see how to fix them.</p>
+</div>
+</div>
+<p>Clearly there are some issues with this well. Have a look at the <a class="reference internal" href="Wells.html"><span class="std std-doc">Well object docs</span></a> to see how to fix them.</p>
 <p>You can index into a project to get at a single well.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -273,7 +412,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_html"><div class="table-wrapper"><table><tr><th colspan="2" style="text-align:center;">Kennetcook #2<br/><small>Long = 63* 45'24.460  W</small></th></tr><tr><td><strong>crs</strong></td><td>CRS({})</td></tr><tr><td><strong>location</strong></td><td>Lat = 45* 12' 34.237" N</td></tr><tr><td><strong>country</strong></td><td>CA</td></tr><tr><td><strong>province</strong></td><td>Nova Scotia</td></tr><tr><td><strong>latitude</strong></td><td></td></tr><tr><td><strong>longitude</strong></td><td></td></tr><tr><td><strong>datum</strong></td><td></td></tr><tr><td><strong>section</strong></td><td>45.20 Deg N</td></tr><tr><td><strong>range</strong></td><td>PD 176</td></tr><tr><td><strong>township</strong></td><td>63.75 Deg W</td></tr><tr><td><strong>ekb</strong></td><td>94.8</td></tr><tr><td><strong>egl</strong></td><td>90.3</td></tr><tr><td><strong>gl</strong></td><td>90.3</td></tr><tr><td><strong>tdd</strong></td><td>1935.0</td></tr><tr><td><strong>tdl</strong></td><td>1935.0</td></tr><tr><td><strong>td</strong></td><td>None</td></tr><tr><td><strong>data</strong></td><td>CALI, DPHI_DOL, DPHI_LIM, DPHI_SAN, DRHO, DT, DTS, GR, HCAL, NPHI_DOL, NPHI_LIM, NPHI_SAN, PEF, RHOB, RLA1, RLA2, RLA3, RLA4, RLA5, RM_HRLT, RT_HRLT, RXOZ, RXO_HRLT, SP</td></tr></table></div></div></div>
+<div class="output text_html"><table><tr><th style="text-align:center;" colspan="2">Kennetcook #2<br><small>Long = 63* 45'24.460  W</small></th></tr><tr><td><strong>crs</strong></td><td>CRS({})</td></tr><tr><td><strong>location</strong></td><td>Lat = 45* 12' 34.237" N</td></tr><tr><td><strong>country</strong></td><td>CA</td></tr><tr><td><strong>province</strong></td><td>Nova Scotia</td></tr><tr><td><strong>latitude</strong></td><td></td></tr><tr><td><strong>longitude</strong></td><td></td></tr><tr><td><strong>datum</strong></td><td></td></tr><tr><td><strong>section</strong></td><td>45.20 Deg N</td></tr><tr><td><strong>range</strong></td><td>PD 176</td></tr><tr><td><strong>township</strong></td><td>63.75 Deg W</td></tr><tr><td><strong>ekb</strong></td><td>94.8</td></tr><tr><td><strong>egl</strong></td><td>90.3</td></tr><tr><td><strong>gl</strong></td><td>90.3</td></tr><tr><td><strong>tdd</strong></td><td>1935.0</td></tr><tr><td><strong>tdl</strong></td><td>1935.0</td></tr><tr><td><strong>td</strong></td><td>None</td></tr><tr><td><strong>data</strong></td><td>CALI, DPHI_DOL, DPHI_LIM, DPHI_SAN, DRHO, DT, DTS, GR, HCAL, NPHI_DOL, NPHI_LIM, NPHI_SAN, PEF, RHOB, RLA1, RLA2, RLA3, RLA4, RLA5, RM_HRLT, RT_HRLT, RXOZ, RXO_HRLT, SP</td></tr></table></div></div>
 </div>
 <p>The well’s <code class="docutils literal notranslate"><span class="pre">header</span></code> contains the well information from the <strong>WELL</strong> part of the file.</p>
 <p><strong>PLEASE NOTE</strong> The <code class="docutils literal notranslate"><span class="pre">header</span></code> attribute is under active development and will change in the next release of <code class="docutils literal notranslate"><span class="pre">welly</span></code>. We will make it more natural to find basic information about the well, without having to know how to read an LAS file.</p>
@@ -285,7 +424,7 @@
 </div>
 <div class="cell_output docutils container">
 <div class="output text_html"><div>
-<style scoped="">
+<style scoped>
     .dataframe tbody tr th:only-of-type {
         vertical-align: middle;
     }
@@ -298,120 +437,120 @@
         text-align: right;
     }
 </style>
-<div class="table-wrapper"><table border="1" class="dataframe">
-<thead>
-<tr style="text-align: right;">
-<th></th>
-<th>original_mnemonic</th>
-<th>mnemonic</th>
-<th>unit</th>
-<th>value</th>
-<th>descr</th>
-<th>section</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<th>0</th>
-<td>VERS</td>
-<td>VERS</td>
-<td></td>
-<td>2.0</td>
-<td></td>
-<td>Version</td>
-</tr>
-<tr>
-<th>1</th>
-<td>WRAP</td>
-<td>WRAP</td>
-<td></td>
-<td>YES</td>
-<td></td>
-<td>Version</td>
-</tr>
-<tr>
-<th>2</th>
-<td>STRT</td>
-<td>STRT</td>
-<td>M</td>
-<td>1.0668</td>
-<td>START DEPTH</td>
-<td>Well</td>
-</tr>
-<tr>
-<th>3</th>
-<td>STOP</td>
-<td>STOP</td>
-<td>M</td>
-<td>1939.1376</td>
-<td>STOP DEPTH</td>
-<td>Well</td>
-</tr>
-<tr>
-<th>4</th>
-<td>STEP</td>
-<td>STEP</td>
-<td>M</td>
-<td>0.1524</td>
-<td>STEP</td>
-<td>Well</td>
-</tr>
-<tr>
-<th>...</th>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-</tr>
-<tr>
-<th>137</th>
-<td>TLI</td>
-<td>TLI</td>
-<td>M</td>
-<td>280.0</td>
-<td>Top Log Interval</td>
-<td>Parameter</td>
-</tr>
-<tr>
-<th>138</th>
-<td>UWID</td>
-<td>UWID</td>
-<td></td>
-<td></td>
-<td>Unique Well Identification Number</td>
-<td>Parameter</td>
-</tr>
-<tr>
-<th>139</th>
-<td>WN</td>
-<td>WN</td>
-<td></td>
-<td>Kennetcook #2</td>
-<td>Well Name</td>
-<td>Parameter</td>
-</tr>
-<tr>
-<th>140</th>
-<td>EPD</td>
-<td>EPD</td>
-<td>M</td>
-<td>90.300003</td>
-<td>Elevation of Permanent Datum above Mean Sea Level</td>
-<td>Parameter</td>
-</tr>
-<tr>
-<th>141</th>
-<td></td>
-<td>UNKNOWN</td>
-<td></td>
-<td></td>
-<td></td>
-<td>Other</td>
-</tr>
-</tbody>
-</table></div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>original_mnemonic</th>
+      <th>mnemonic</th>
+      <th>unit</th>
+      <th>value</th>
+      <th>descr</th>
+      <th>section</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>VERS</td>
+      <td>VERS</td>
+      <td></td>
+      <td>2.0</td>
+      <td></td>
+      <td>Version</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>WRAP</td>
+      <td>WRAP</td>
+      <td></td>
+      <td>YES</td>
+      <td></td>
+      <td>Version</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>STRT</td>
+      <td>STRT</td>
+      <td>M</td>
+      <td>1.0668</td>
+      <td>START DEPTH</td>
+      <td>Well</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>STOP</td>
+      <td>STOP</td>
+      <td>M</td>
+      <td>1939.1376</td>
+      <td>STOP DEPTH</td>
+      <td>Well</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>STEP</td>
+      <td>STEP</td>
+      <td>M</td>
+      <td>0.1524</td>
+      <td>STEP</td>
+      <td>Well</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>137</th>
+      <td>TLI</td>
+      <td>TLI</td>
+      <td>M</td>
+      <td>280.0</td>
+      <td>Top Log Interval</td>
+      <td>Parameter</td>
+    </tr>
+    <tr>
+      <th>138</th>
+      <td>UWID</td>
+      <td>UWID</td>
+      <td></td>
+      <td></td>
+      <td>Unique Well Identification Number</td>
+      <td>Parameter</td>
+    </tr>
+    <tr>
+      <th>139</th>
+      <td>WN</td>
+      <td>WN</td>
+      <td></td>
+      <td>Kennetcook #2</td>
+      <td>Well Name</td>
+      <td>Parameter</td>
+    </tr>
+    <tr>
+      <th>140</th>
+      <td>EPD</td>
+      <td>EPD</td>
+      <td>M</td>
+      <td>90.300003</td>
+      <td>Elevation of Permanent Datum above Mean Sea Level</td>
+      <td>Parameter</td>
+    </tr>
+    <tr>
+      <th>141</th>
+      <td></td>
+      <td>UNKNOWN</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td>Other</td>
+    </tr>
+  </tbody>
+</table>
 <p>142 rows × 6 columns</p>
 </div></div></div>
 </div>
@@ -423,31 +562,31 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Location({'position': None, 'crs': CRS({}), 'location': 'Lat = 45* 12\' 34.237" N', 'country': 'CA', 'province': 'Nova Scotia', 'latitude': '', 'longitude': '', 'datum': '', 'section': '45.20 Deg N', 'range': 'PD 176', 'township': '63.75 Deg W', 'ekb': 94.8, 'egl': 90.3, 'gl': 90.3, 'tdd': 1935.0, 'tdl': 1935.0, 'td': None, 'deviation': None})
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Location({&#39;position&#39;: None, &#39;crs&#39;: CRS({}), &#39;location&#39;: &#39;Lat = 45* 12\&#39; 34.237&quot; N&#39;, &#39;country&#39;: &#39;CA&#39;, &#39;province&#39;: &#39;Nova Scotia&#39;, &#39;latitude&#39;: &#39;&#39;, &#39;longitude&#39;: &#39;&#39;, &#39;datum&#39;: &#39;&#39;, &#39;section&#39;: &#39;45.20 Deg N&#39;, &#39;range&#39;: &#39;PD 176&#39;, &#39;township&#39;: &#39;63.75 Deg W&#39;, &#39;ekb&#39;: 94.8, &#39;egl&#39;: 90.3, &#39;gl&#39;: 90.3, &#39;tdd&#39;: 1935.0, &#39;tdl&#39;: 1935.0, &#39;td&#39;: None, &#39;deviation&#39;: None})
 </pre></div>
 </div>
 </div>
 </div>
 </section>
 <section id="basic-plots">
-<h2>Basic plots<a class="headerlink" href="#basic-plots" title="Permalink to this headline">#</a></h2>
+<h2>Basic plots<a class="headerlink" href="#basic-plots" title="Link to this heading">¶</a></h2>
 <p>Welly produces simple <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code> plots. You can add your own Matplotlib code to build on them.</p>
 <p>Let’s plot some important logs. We can put two logs in the same track, as shown, and add depth tracks:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tracks</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'MD'</span><span class="p">,</span> <span class="s1">'CALI'</span><span class="p">,</span> <span class="s1">'GR'</span><span class="p">,</span> <span class="s1">'SP'</span><span class="p">,</span> <span class="s1">'RHOB'</span><span class="p">,</span> <span class="p">[</span><span class="s1">'DT'</span><span class="p">,</span> <span class="s1">'DTS'</span><span class="p">],</span> <span class="s1">'MD'</span><span class="p">]</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tracks</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;MD&#39;</span><span class="p">,</span> <span class="s1">&#39;CALI&#39;</span><span class="p">,</span> <span class="s1">&#39;GR&#39;</span><span class="p">,</span> <span class="s1">&#39;SP&#39;</span><span class="p">,</span> <span class="s1">&#39;RHOB&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;DT&#39;</span><span class="p">,</span> <span class="s1">&#39;DTS&#39;</span><span class="p">],</span> <span class="s1">&#39;MD&#39;</span><span class="p">]</span>
 
 <span class="n">well</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">tracks</span><span class="o">=</span><span class="n">tracks</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/Quick_start_11_0.png" src="../_images/Quick_start_11_0.png"/>
+<img alt="../_images/863c001652c486bcb9555e07cec36e801e6559fa40a051d05077bb7a12c281e9.png" src="../_images/863c001652c486bcb9555e07cec36e801e6559fa40a051d05077bb7a12c281e9.png" />
 </div>
 </div>
 </section>
 <section id="curve-data">
-<h2>Curve data<a class="headerlink" href="#curve-data" title="Permalink to this headline">#</a></h2>
+<h2>Curve data<a class="headerlink" href="#curve-data" title="Link to this heading">¶</a></h2>
 <p>The well curves are stored in <code class="docutils literal notranslate"><span class="pre">well.data</span></code>, which is a dictionary mapping mnemonic to <code class="docutils literal notranslate"><span class="pre">welly.Curve</span></code> object:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -456,30 +595,30 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{'CALI': Curve(mnemonic=CALI, units=in, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
- 'HCAL': Curve(mnemonic=HCAL, units=in, start=1.0668, stop=1939.1376, step=0.1524, count=[2139]),
- 'PEF': Curve(mnemonic=PEF, units=, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
- 'DT': Curve(mnemonic=DT, units=us/ft, start=1.0668, stop=1939.1376, step=0.1524, count=[10850]),
- 'DTS': Curve(mnemonic=DTS, units=us/ft, start=1.0668, stop=1939.1376, step=0.1524, count=[10850]),
- 'DPHI_SAN': Curve(mnemonic=DPHI_SAN, units=m3/m3, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
- 'DPHI_LIM': Curve(mnemonic=DPHI_LIM, units=m3/m3, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
- 'DPHI_DOL': Curve(mnemonic=DPHI_DOL, units=m3/m3, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
- 'NPHI_SAN': Curve(mnemonic=NPHI_SAN, units=m3/m3, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
- 'NPHI_LIM': Curve(mnemonic=NPHI_LIM, units=m3/m3, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
- 'NPHI_DOL': Curve(mnemonic=NPHI_DOL, units=m3/m3, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
- 'RLA5': Curve(mnemonic=RLA5, units=ohm.m, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
- 'RLA3': Curve(mnemonic=RLA3, units=ohm.m, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
- 'RLA4': Curve(mnemonic=RLA4, units=ohm.m, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
- 'RLA1': Curve(mnemonic=RLA1, units=ohm.m, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
- 'RLA2': Curve(mnemonic=RLA2, units=ohm.m, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
- 'RXOZ': Curve(mnemonic=RXOZ, units=ohm.m, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
- 'RXO_HRLT': Curve(mnemonic=RXO_HRLT, units=ohm.m, start=1.0668, stop=1939.1376, step=0.1524, count=[2139]),
- 'RT_HRLT': Curve(mnemonic=RT_HRLT, units=ohm.m, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
- 'RM_HRLT': Curve(mnemonic=RM_HRLT, units=ohm.m, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
- 'DRHO': Curve(mnemonic=DRHO, units=g/cm3, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
- 'RHOB': Curve(mnemonic=RHOB, units=g/cm3, start=1.0668, stop=1939.1376, step=0.1524, count=[12707]),
- 'GR': Curve(mnemonic=GR, units=gAPI, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
- 'SP': Curve(mnemonic=SP, units=mV, start=1.0668, stop=1939.1376, step=0.1524, count=[12718])}
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;CALI&#39;: Curve(mnemonic=CALI, units=in, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
+ &#39;HCAL&#39;: Curve(mnemonic=HCAL, units=in, start=1.0668, stop=1939.1376, step=0.1524, count=[2139]),
+ &#39;PEF&#39;: Curve(mnemonic=PEF, units=, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
+ &#39;DT&#39;: Curve(mnemonic=DT, units=us/ft, start=1.0668, stop=1939.1376, step=0.1524, count=[10850]),
+ &#39;DTS&#39;: Curve(mnemonic=DTS, units=us/ft, start=1.0668, stop=1939.1376, step=0.1524, count=[10850]),
+ &#39;DPHI_SAN&#39;: Curve(mnemonic=DPHI_SAN, units=m3/m3, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
+ &#39;DPHI_LIM&#39;: Curve(mnemonic=DPHI_LIM, units=m3/m3, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
+ &#39;DPHI_DOL&#39;: Curve(mnemonic=DPHI_DOL, units=m3/m3, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
+ &#39;NPHI_SAN&#39;: Curve(mnemonic=NPHI_SAN, units=m3/m3, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
+ &#39;NPHI_LIM&#39;: Curve(mnemonic=NPHI_LIM, units=m3/m3, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
+ &#39;NPHI_DOL&#39;: Curve(mnemonic=NPHI_DOL, units=m3/m3, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
+ &#39;RLA5&#39;: Curve(mnemonic=RLA5, units=ohm.m, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
+ &#39;RLA3&#39;: Curve(mnemonic=RLA3, units=ohm.m, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
+ &#39;RLA4&#39;: Curve(mnemonic=RLA4, units=ohm.m, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
+ &#39;RLA1&#39;: Curve(mnemonic=RLA1, units=ohm.m, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
+ &#39;RLA2&#39;: Curve(mnemonic=RLA2, units=ohm.m, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
+ &#39;RXOZ&#39;: Curve(mnemonic=RXOZ, units=ohm.m, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
+ &#39;RXO_HRLT&#39;: Curve(mnemonic=RXO_HRLT, units=ohm.m, start=1.0668, stop=1939.1376, step=0.1524, count=[2139]),
+ &#39;RT_HRLT&#39;: Curve(mnemonic=RT_HRLT, units=ohm.m, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
+ &#39;RM_HRLT&#39;: Curve(mnemonic=RM_HRLT, units=ohm.m, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
+ &#39;DRHO&#39;: Curve(mnemonic=DRHO, units=g/cm3, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
+ &#39;RHOB&#39;: Curve(mnemonic=RHOB, units=g/cm3, start=1.0668, stop=1939.1376, step=0.1524, count=[12707]),
+ &#39;GR&#39;: Curve(mnemonic=GR, units=gAPI, start=1.0668, stop=1939.1376, step=0.1524, count=[12718]),
+ &#39;SP&#39;: Curve(mnemonic=SP, units=mV, start=1.0668, stop=1939.1376, step=0.1524, count=[12718])}
 </pre></div>
 </div>
 </div>
@@ -487,14 +626,14 @@
 <p>Let’s assign <code class="docutils literal notranslate"><span class="pre">gr</span></code> to the gamma-ray log so we can inspect it more easily:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gr</span> <span class="o">=</span> <span class="n">well</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">'GR'</span><span class="p">]</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gr</span> <span class="o">=</span> <span class="n">well</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;GR&#39;</span><span class="p">]</span>
 
 <span class="n">gr</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_html"><div class="table-wrapper"><table><tr><th colspan="2" style="text-align:center;">GR [gAPI]</th></tr><tr><td colspan="2" style="text-align:center;">1.0668 : 1939.1376 : 0.1524</td></tr><tr><td><strong>index_units</strong></td><td>m</td></tr><tr><td><strong>code</strong></td><td>None</td></tr><tr><td><strong>description</strong></td><td>Gamma-Ray</td></tr><tr><td><strong>log_type</strong></td><td>None</td></tr><tr><td><strong>api</strong></td><td>None</td></tr><tr><td><strong>date</strong></td><td>10-Oct-2007</td></tr><tr><td><strong>null</strong></td><td>-999.25</td></tr><tr><td><strong>run</strong></td><td>1</td></tr><tr><td><strong>service_company</strong></td><td>Schlumberger</td></tr><tr><td><strong>_alias</strong></td><td>GR</td></tr><tr><th colspan="2" style="border-top: 2px solid #000; text-align:center;"><strong>Stats</strong></th></tr><tr><td><strong>samples (NaNs)</strong></td><td>12718 (0)</td></tr><tr><td><strong><sub>min</sub> mean <sup>max</sup></strong></td><td><sub>3.89</sub> 78.986 <sup>267.94</sup></td></tr><tr><th style="border-top: 2px solid #000;">Depth</th><th style="border-top: 2px solid #000;">Value</th></tr><tr><td>1.0668</td><td>46.6987</td></tr><tr><td>1.2192</td><td>46.6987</td></tr><tr><td>1.3716</td><td>46.6987</td></tr><tr><td>⋮</td><td>⋮</td></tr><tr><td>1938.8328</td><td>92.2462</td></tr><tr><td>1938.9852</td><td>92.2462</td></tr><tr><td>1939.1376</td><td>92.2462</td></tr></table></div></div></div>
+<div class="output text_html"><table><tr><th style="text-align:center;" colspan="2">GR [gAPI]</th></tr><tr><td style="text-align:center;" colspan="2">1.0668 : 1939.1376 : 0.1524</td></tr><tr><td><strong>index_units</strong></td><td>m</td></tr><tr><td><strong>code</strong></td><td>None</td></tr><tr><td><strong>description</strong></td><td>Gamma-Ray</td></tr><tr><td><strong>log_type</strong></td><td>None</td></tr><tr><td><strong>api</strong></td><td>None</td></tr><tr><td><strong>date</strong></td><td>10-Oct-2007</td></tr><tr><td><strong>null</strong></td><td>-999.25</td></tr><tr><td><strong>run</strong></td><td>1</td></tr><tr><td><strong>service_company</strong></td><td>Schlumberger</td></tr><tr><td><strong>_alias</strong></td><td>GR</td></tr><tr><th style="border-top: 2px solid #000; text-align:center;" colspan="2"><strong>Stats</strong></th></tr><tr><td><strong>samples (NaNs)</strong></td><td>12718 (0)</td></tr><tr><td><strong><sub>min</sub> mean <sup>max</sup></strong></td><td><sub>3.89</sub> 78.986 <sup>267.94</sup></td></tr><tr><th style="border-top: 2px solid #000;">Depth</th><th style="border-top: 2px solid #000;">Value</th></tr><tr><td>1.0668</td><td>46.6987</td></tr><tr><td>1.2192</td><td>46.6987</td></tr><tr><td>1.3716</td><td>46.6987</td></tr><tr><td>⋮</td><td>⋮</td></tr><tr><td>1938.8328</td><td>92.2462</td></tr><tr><td>1938.9852</td><td>92.2462</td></tr><tr><td>1939.1376</td><td>92.2462</td></tr></table></div></div>
 </div>
 <p>It’s often helpful to make a quick plot:</p>
 <div class="cell docutils container">
@@ -504,15 +643,15 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;AxesSubplot:title={'center':'GR'}, xlabel='gAPI'&gt;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;AxesSubplot:title={&#39;center&#39;:&#39;GR&#39;}, xlabel=&#39;gAPI&#39;&gt;
 </pre></div>
 </div>
-<img alt="../_images/Quick_start_17_1.png" src="../_images/Quick_start_17_1.png"/>
+<img alt="../_images/2d0445c7c3c3c880e61cb9d5ac3667a7cc1c8edbaff08b49f9e79c492371610d.png" src="../_images/2d0445c7c3c3c880e61cb9d5ac3667a7cc1c8edbaff08b49f9e79c492371610d.png" />
 </div>
 </div>
 </section>
 <section id="curve-data-as-a-pandas-dataframe">
-<h2>Curve data as a <code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code><a class="headerlink" href="#curve-data-as-a-pandas-dataframe" title="Permalink to this headline">#</a></h2>
+<h2>Curve data as a <code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code><a class="headerlink" href="#curve-data-as-a-pandas-dataframe" title="Link to this heading">¶</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">df</span></code> attribute (attributes are like ordinary variables; they do not have parentheses after them) of a single curve is a dataframe:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -522,7 +661,7 @@
 </div>
 <div class="cell_output docutils container">
 <div class="output text_html"><div>
-<style scoped="">
+<style scoped>
     .dataframe tbody tr th:only-of-type {
         vertical-align: middle;
     }
@@ -535,64 +674,64 @@
         text-align: right;
     }
 </style>
-<div class="table-wrapper"><table border="1" class="dataframe">
-<thead>
-<tr style="text-align: right;">
-<th></th>
-<th>GR</th>
-</tr>
-<tr>
-<th>DEPT</th>
-<th></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<th>1.0668</th>
-<td>46.69865036</td>
-</tr>
-<tr>
-<th>1.2192</th>
-<td>46.69865036</td>
-</tr>
-<tr>
-<th>1.3716</th>
-<td>46.69865036</td>
-</tr>
-<tr>
-<th>1.5240</th>
-<td>46.69865036</td>
-</tr>
-<tr>
-<th>1.6764</th>
-<td>46.69865036</td>
-</tr>
-<tr>
-<th>...</th>
-<td>...</td>
-</tr>
-<tr>
-<th>1938.5280</th>
-<td>92.24622345</td>
-</tr>
-<tr>
-<th>1938.6804</th>
-<td>92.24622345</td>
-</tr>
-<tr>
-<th>1938.8328</th>
-<td>92.24622345</td>
-</tr>
-<tr>
-<th>1938.9852</th>
-<td>92.24622345</td>
-</tr>
-<tr>
-<th>1939.1376</th>
-<td>92.24622345</td>
-</tr>
-</tbody>
-</table></div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>GR</th>
+    </tr>
+    <tr>
+      <th>DEPT</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>1.0668</th>
+      <td>46.69865036</td>
+    </tr>
+    <tr>
+      <th>1.2192</th>
+      <td>46.69865036</td>
+    </tr>
+    <tr>
+      <th>1.3716</th>
+      <td>46.69865036</td>
+    </tr>
+    <tr>
+      <th>1.5240</th>
+      <td>46.69865036</td>
+    </tr>
+    <tr>
+      <th>1.6764</th>
+      <td>46.69865036</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>1938.5280</th>
+      <td>92.24622345</td>
+    </tr>
+    <tr>
+      <th>1938.6804</th>
+      <td>92.24622345</td>
+    </tr>
+    <tr>
+      <th>1938.8328</th>
+      <td>92.24622345</td>
+    </tr>
+    <tr>
+      <th>1938.9852</th>
+      <td>92.24622345</td>
+    </tr>
+    <tr>
+      <th>1939.1376</th>
+      <td>92.24622345</td>
+    </tr>
+  </tbody>
+</table>
 <p>12718 rows × 1 columns</p>
 </div></div></div>
 </div>
@@ -605,7 +744,7 @@
 </div>
 <div class="cell_output docutils container">
 <div class="output text_html"><div>
-<style scoped="">
+<style scoped>
     .dataframe tbody tr th:only-of-type {
         vertical-align: middle;
     }
@@ -618,340 +757,340 @@
         text-align: right;
     }
 </style>
-<div class="table-wrapper"><table border="1" class="dataframe">
-<thead>
-<tr style="text-align: right;">
-<th></th>
-<th>CALI</th>
-<th>HCAL</th>
-<th>PEF</th>
-<th>DT</th>
-<th>DTS</th>
-<th>DPHI_SAN</th>
-<th>DPHI_LIM</th>
-<th>DPHI_DOL</th>
-<th>NPHI_SAN</th>
-<th>NPHI_LIM</th>
-<th>...</th>
-<th>RLA1</th>
-<th>RLA2</th>
-<th>RXOZ</th>
-<th>RXO_HRLT</th>
-<th>RT_HRLT</th>
-<th>RM_HRLT</th>
-<th>DRHO</th>
-<th>RHOB</th>
-<th>GR</th>
-<th>SP</th>
-</tr>
-<tr>
-<th>DEPT</th>
-<th></th>
-<th></th>
-<th></th>
-<th></th>
-<th></th>
-<th></th>
-<th></th>
-<th></th>
-<th></th>
-<th></th>
-<th></th>
-<th></th>
-<th></th>
-<th></th>
-<th></th>
-<th></th>
-<th></th>
-<th></th>
-<th></th>
-<th></th>
-<th></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<th>1.0668</th>
-<td>2.4438154697</td>
-<td>4.3912849426</td>
-<td>3.5864000320</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>0.1574800014</td>
-<td>0.1984400004</td>
-<td>0.2590999901</td>
-<td>0.4650999904</td>
-<td>0.3364700079</td>
-<td>...</td>
-<td>0.0320999995</td>
-<td>0.0279399995</td>
-<td>0.0576100014</td>
-<td>0.0255800001</td>
-<td>0.0255800001</td>
-<td>0.0550099984</td>
-<td>0.1942329407</td>
-<td>2.3901498318</td>
-<td>46.69865036</td>
-<td>120.1250</td>
-</tr>
-<tr>
-<th>1.2192</th>
-<td>2.4438154697</td>
-<td>4.3912849426</td>
-<td>3.5864000320</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>0.1574800014</td>
-<td>0.1984400004</td>
-<td>0.2590999901</td>
-<td>0.4650999904</td>
-<td>0.3364700079</td>
-<td>...</td>
-<td>0.0320999995</td>
-<td>0.0279399995</td>
-<td>0.0576100014</td>
-<td>0.0255800001</td>
-<td>0.0255800001</td>
-<td>0.0550099984</td>
-<td>0.1942329407</td>
-<td>2.3901498318</td>
-<td>46.69865036</td>
-<td>120.1250</td>
-</tr>
-<tr>
-<th>1.3716</th>
-<td>2.4438154697</td>
-<td>4.3912849426</td>
-<td>3.5864000320</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>0.1574800014</td>
-<td>0.1984400004</td>
-<td>0.2590999901</td>
-<td>0.4650999904</td>
-<td>0.3364700079</td>
-<td>...</td>
-<td>0.0320999995</td>
-<td>0.0279399995</td>
-<td>0.0576100014</td>
-<td>0.0255800001</td>
-<td>0.0255800001</td>
-<td>0.0550099984</td>
-<td>0.1942329407</td>
-<td>2.3901498318</td>
-<td>46.69865036</td>
-<td>120.1250</td>
-</tr>
-<tr>
-<th>1.5240</th>
-<td>2.4438154697</td>
-<td>4.3912849426</td>
-<td>3.5864000320</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>0.1574800014</td>
-<td>0.1984400004</td>
-<td>0.2590999901</td>
-<td>0.4650999904</td>
-<td>0.3364700079</td>
-<td>...</td>
-<td>0.0320999995</td>
-<td>0.0279399995</td>
-<td>0.0576100014</td>
-<td>0.0255800001</td>
-<td>0.0255800001</td>
-<td>0.0550099984</td>
-<td>0.1942329407</td>
-<td>2.3901498318</td>
-<td>46.69865036</td>
-<td>120.1250</td>
-</tr>
-<tr>
-<th>1.6764</th>
-<td>2.4438154697</td>
-<td>4.3912849426</td>
-<td>3.5864000320</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>0.1574800014</td>
-<td>0.1984400004</td>
-<td>0.2590999901</td>
-<td>0.4650999904</td>
-<td>0.3364700079</td>
-<td>...</td>
-<td>0.0320999995</td>
-<td>0.0279399995</td>
-<td>0.0576100014</td>
-<td>0.0255800001</td>
-<td>0.0255800001</td>
-<td>0.0550099984</td>
-<td>0.1942329407</td>
-<td>2.3901498318</td>
-<td>46.69865036</td>
-<td>120.1250</td>
-</tr>
-<tr>
-<th>...</th>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-</tr>
-<tr>
-<th>1938.5280</th>
-<td>2.4202680588</td>
-<td>NaN</td>
-<td>2.2369799614</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>0.5464199781</td>
-<td>585.9415283200</td>
-<td>541.6757202100</td>
-<td>0.1283400059</td>
-<td>0.0841699988</td>
-<td>...</td>
-<td>274.0264892600</td>
-<td>663.1040649400</td>
-<td>7.1023502350</td>
-<td>NaN</td>
-<td>7.3863301277</td>
-<td>0.0272899996</td>
-<td>0.0613951497</td>
-<td>NaN</td>
-<td>92.24622345</td>
-<td>73.4375</td>
-</tr>
-<tr>
-<th>1938.6804</th>
-<td>2.4202680588</td>
-<td>NaN</td>
-<td>2.2369799614</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>0.5464199781</td>
-<td>585.9415283200</td>
-<td>541.6757202100</td>
-<td>0.1283400059</td>
-<td>0.0841699988</td>
-<td>...</td>
-<td>274.0264892600</td>
-<td>663.1040649400</td>
-<td>7.1022100449</td>
-<td>NaN</td>
-<td>7.3860998154</td>
-<td>0.0272899996</td>
-<td>0.0613951497</td>
-<td>NaN</td>
-<td>92.24622345</td>
-<td>73.6875</td>
-</tr>
-<tr>
-<th>1938.8328</th>
-<td>2.4202680588</td>
-<td>NaN</td>
-<td>2.2369799614</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>0.5464199781</td>
-<td>585.9415283200</td>
-<td>541.6757202100</td>
-<td>0.1283400059</td>
-<td>0.0841699988</td>
-<td>...</td>
-<td>274.0264892600</td>
-<td>663.1040649400</td>
-<td>7.0968699455</td>
-<td>NaN</td>
-<td>7.3806500435</td>
-<td>0.0272899996</td>
-<td>0.0613951497</td>
-<td>NaN</td>
-<td>92.24622345</td>
-<td>73.0000</td>
-</tr>
-<tr>
-<th>1938.9852</th>
-<td>2.4202680588</td>
-<td>NaN</td>
-<td>2.2369799614</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>0.5464199781</td>
-<td>585.9415283200</td>
-<td>541.6757202100</td>
-<td>0.1283400059</td>
-<td>0.0841699988</td>
-<td>...</td>
-<td>274.0264892600</td>
-<td>663.1040649400</td>
-<td>7.0391001701</td>
-<td>NaN</td>
-<td>7.3211698532</td>
-<td>0.0272899996</td>
-<td>0.0613951497</td>
-<td>NaN</td>
-<td>92.24622345</td>
-<td>73.9375</td>
-</tr>
-<tr>
-<th>1939.1376</th>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>...</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-</tbody>
-</table></div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>CALI</th>
+      <th>HCAL</th>
+      <th>PEF</th>
+      <th>DT</th>
+      <th>DTS</th>
+      <th>DPHI_SAN</th>
+      <th>DPHI_LIM</th>
+      <th>DPHI_DOL</th>
+      <th>NPHI_SAN</th>
+      <th>NPHI_LIM</th>
+      <th>...</th>
+      <th>RLA1</th>
+      <th>RLA2</th>
+      <th>RXOZ</th>
+      <th>RXO_HRLT</th>
+      <th>RT_HRLT</th>
+      <th>RM_HRLT</th>
+      <th>DRHO</th>
+      <th>RHOB</th>
+      <th>GR</th>
+      <th>SP</th>
+    </tr>
+    <tr>
+      <th>DEPT</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>1.0668</th>
+      <td>2.4438154697</td>
+      <td>4.3912849426</td>
+      <td>3.5864000320</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.1574800014</td>
+      <td>0.1984400004</td>
+      <td>0.2590999901</td>
+      <td>0.4650999904</td>
+      <td>0.3364700079</td>
+      <td>...</td>
+      <td>0.0320999995</td>
+      <td>0.0279399995</td>
+      <td>0.0576100014</td>
+      <td>0.0255800001</td>
+      <td>0.0255800001</td>
+      <td>0.0550099984</td>
+      <td>0.1942329407</td>
+      <td>2.3901498318</td>
+      <td>46.69865036</td>
+      <td>120.1250</td>
+    </tr>
+    <tr>
+      <th>1.2192</th>
+      <td>2.4438154697</td>
+      <td>4.3912849426</td>
+      <td>3.5864000320</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.1574800014</td>
+      <td>0.1984400004</td>
+      <td>0.2590999901</td>
+      <td>0.4650999904</td>
+      <td>0.3364700079</td>
+      <td>...</td>
+      <td>0.0320999995</td>
+      <td>0.0279399995</td>
+      <td>0.0576100014</td>
+      <td>0.0255800001</td>
+      <td>0.0255800001</td>
+      <td>0.0550099984</td>
+      <td>0.1942329407</td>
+      <td>2.3901498318</td>
+      <td>46.69865036</td>
+      <td>120.1250</td>
+    </tr>
+    <tr>
+      <th>1.3716</th>
+      <td>2.4438154697</td>
+      <td>4.3912849426</td>
+      <td>3.5864000320</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.1574800014</td>
+      <td>0.1984400004</td>
+      <td>0.2590999901</td>
+      <td>0.4650999904</td>
+      <td>0.3364700079</td>
+      <td>...</td>
+      <td>0.0320999995</td>
+      <td>0.0279399995</td>
+      <td>0.0576100014</td>
+      <td>0.0255800001</td>
+      <td>0.0255800001</td>
+      <td>0.0550099984</td>
+      <td>0.1942329407</td>
+      <td>2.3901498318</td>
+      <td>46.69865036</td>
+      <td>120.1250</td>
+    </tr>
+    <tr>
+      <th>1.5240</th>
+      <td>2.4438154697</td>
+      <td>4.3912849426</td>
+      <td>3.5864000320</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.1574800014</td>
+      <td>0.1984400004</td>
+      <td>0.2590999901</td>
+      <td>0.4650999904</td>
+      <td>0.3364700079</td>
+      <td>...</td>
+      <td>0.0320999995</td>
+      <td>0.0279399995</td>
+      <td>0.0576100014</td>
+      <td>0.0255800001</td>
+      <td>0.0255800001</td>
+      <td>0.0550099984</td>
+      <td>0.1942329407</td>
+      <td>2.3901498318</td>
+      <td>46.69865036</td>
+      <td>120.1250</td>
+    </tr>
+    <tr>
+      <th>1.6764</th>
+      <td>2.4438154697</td>
+      <td>4.3912849426</td>
+      <td>3.5864000320</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.1574800014</td>
+      <td>0.1984400004</td>
+      <td>0.2590999901</td>
+      <td>0.4650999904</td>
+      <td>0.3364700079</td>
+      <td>...</td>
+      <td>0.0320999995</td>
+      <td>0.0279399995</td>
+      <td>0.0576100014</td>
+      <td>0.0255800001</td>
+      <td>0.0255800001</td>
+      <td>0.0550099984</td>
+      <td>0.1942329407</td>
+      <td>2.3901498318</td>
+      <td>46.69865036</td>
+      <td>120.1250</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>1938.5280</th>
+      <td>2.4202680588</td>
+      <td>NaN</td>
+      <td>2.2369799614</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.5464199781</td>
+      <td>585.9415283200</td>
+      <td>541.6757202100</td>
+      <td>0.1283400059</td>
+      <td>0.0841699988</td>
+      <td>...</td>
+      <td>274.0264892600</td>
+      <td>663.1040649400</td>
+      <td>7.1023502350</td>
+      <td>NaN</td>
+      <td>7.3863301277</td>
+      <td>0.0272899996</td>
+      <td>0.0613951497</td>
+      <td>NaN</td>
+      <td>92.24622345</td>
+      <td>73.4375</td>
+    </tr>
+    <tr>
+      <th>1938.6804</th>
+      <td>2.4202680588</td>
+      <td>NaN</td>
+      <td>2.2369799614</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.5464199781</td>
+      <td>585.9415283200</td>
+      <td>541.6757202100</td>
+      <td>0.1283400059</td>
+      <td>0.0841699988</td>
+      <td>...</td>
+      <td>274.0264892600</td>
+      <td>663.1040649400</td>
+      <td>7.1022100449</td>
+      <td>NaN</td>
+      <td>7.3860998154</td>
+      <td>0.0272899996</td>
+      <td>0.0613951497</td>
+      <td>NaN</td>
+      <td>92.24622345</td>
+      <td>73.6875</td>
+    </tr>
+    <tr>
+      <th>1938.8328</th>
+      <td>2.4202680588</td>
+      <td>NaN</td>
+      <td>2.2369799614</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.5464199781</td>
+      <td>585.9415283200</td>
+      <td>541.6757202100</td>
+      <td>0.1283400059</td>
+      <td>0.0841699988</td>
+      <td>...</td>
+      <td>274.0264892600</td>
+      <td>663.1040649400</td>
+      <td>7.0968699455</td>
+      <td>NaN</td>
+      <td>7.3806500435</td>
+      <td>0.0272899996</td>
+      <td>0.0613951497</td>
+      <td>NaN</td>
+      <td>92.24622345</td>
+      <td>73.0000</td>
+    </tr>
+    <tr>
+      <th>1938.9852</th>
+      <td>2.4202680588</td>
+      <td>NaN</td>
+      <td>2.2369799614</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.5464199781</td>
+      <td>585.9415283200</td>
+      <td>541.6757202100</td>
+      <td>0.1283400059</td>
+      <td>0.0841699988</td>
+      <td>...</td>
+      <td>274.0264892600</td>
+      <td>663.1040649400</td>
+      <td>7.0391001701</td>
+      <td>NaN</td>
+      <td>7.3211698532</td>
+      <td>0.0272899996</td>
+      <td>0.0613951497</td>
+      <td>NaN</td>
+      <td>92.24622345</td>
+      <td>73.9375</td>
+    </tr>
+    <tr>
+      <th>1939.1376</th>
+      <td>2.4202680588</td>
+      <td>NaN</td>
+      <td>2.2369799614</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.5464199781</td>
+      <td>585.9415283200</td>
+      <td>541.6757202100</td>
+      <td>0.1283400059</td>
+      <td>0.0841699988</td>
+      <td>...</td>
+      <td>274.0264892600</td>
+      <td>663.1040649400</td>
+      <td>7.0019497871</td>
+      <td>NaN</td>
+      <td>7.1535902023</td>
+      <td>0.0272899996</td>
+      <td>0.0613951497</td>
+      <td>NaN</td>
+      <td>92.24622345</td>
+      <td>74.2500</td>
+    </tr>
+  </tbody>
+</table>
 <p>12718 rows × 24 columns</p>
 </div></div></div>
 </div>
 <p>It has to be a method because we can pass in extra options like aliases.</p>
 </section>
 <section id="curve-aliases">
-<h2>Curve aliases<a class="headerlink" href="#curve-aliases" title="Permalink to this headline">#</a></h2>
+<h2>Curve aliases<a class="headerlink" href="#curve-aliases" title="Link to this heading">¶</a></h2>
 <p>We can make a dictionary mapping alias names (what we want to call curves) to a list of mnemonics (what they are actually called). The list of mnemonics is <em>ordered</em>, and this order expresses your preference. So, for example, in the alias dictionary below, the <strong>GR</strong> log will be used in preference to the <strong>GAM</strong> log.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">alias</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">"Gamma"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"GR"</span><span class="p">,</span> <span class="s2">"GAM"</span><span class="p">,</span> <span class="s2">"GRC"</span><span class="p">,</span> <span class="s2">"SGR"</span><span class="p">,</span> <span class="s2">"NGT"</span><span class="p">],</span>
-    <span class="s2">"Density"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"RHOZ"</span><span class="p">,</span> <span class="s2">"RHOB"</span><span class="p">,</span> <span class="s2">"DEN"</span><span class="p">,</span> <span class="s2">"RHOZ"</span><span class="p">],</span>
-    <span class="s2">"Sonic"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"DT"</span><span class="p">,</span> <span class="s2">"AC"</span><span class="p">,</span> <span class="s2">"DTP"</span><span class="p">,</span> <span class="s2">"DT4P"</span><span class="p">],</span>
-    <span class="s2">"Caliper"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"CAL"</span><span class="p">,</span> <span class="s2">"CALI"</span><span class="p">,</span> <span class="s2">"CALS"</span><span class="p">,</span> <span class="s2">"C1"</span><span class="p">],</span>
-    <span class="s1">'Porosity SS'</span><span class="p">:</span> <span class="p">[</span><span class="s1">'NPSS'</span><span class="p">,</span> <span class="s1">'DPSS'</span><span class="p">],</span>
+    <span class="s2">&quot;Gamma&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;GR&quot;</span><span class="p">,</span> <span class="s2">&quot;GAM&quot;</span><span class="p">,</span> <span class="s2">&quot;GRC&quot;</span><span class="p">,</span> <span class="s2">&quot;SGR&quot;</span><span class="p">,</span> <span class="s2">&quot;NGT&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;Density&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;RHOZ&quot;</span><span class="p">,</span> <span class="s2">&quot;RHOB&quot;</span><span class="p">,</span> <span class="s2">&quot;DEN&quot;</span><span class="p">,</span> <span class="s2">&quot;RHOZ&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;Sonic&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;DT&quot;</span><span class="p">,</span> <span class="s2">&quot;AC&quot;</span><span class="p">,</span> <span class="s2">&quot;DTP&quot;</span><span class="p">,</span> <span class="s2">&quot;DT4P&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;Caliper&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;CAL&quot;</span><span class="p">,</span> <span class="s2">&quot;CALI&quot;</span><span class="p">,</span> <span class="s2">&quot;CALS&quot;</span><span class="p">,</span> <span class="s2">&quot;C1&quot;</span><span class="p">],</span>
+    <span class="s1">&#39;Porosity SS&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;NPSS&#39;</span><span class="p">,</span> <span class="s1">&#39;DPSS&#39;</span><span class="p">],</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -961,13 +1100,13 @@
 <p>Here, the <code class="docutils literal notranslate"><span class="pre">keys</span></code> argument narrows down the columns to include in the dataframe.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">well</span><span class="o">.</span><span class="n">df</span><span class="p">(</span><span class="n">keys</span><span class="o">=</span><span class="p">[</span><span class="s1">'Gamma'</span><span class="p">,</span> <span class="s1">'Density'</span><span class="p">,</span> <span class="s1">'Sonic'</span><span class="p">,</span> <span class="s1">'DTS'</span><span class="p">],</span> <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">well</span><span class="o">.</span><span class="n">df</span><span class="p">(</span><span class="n">keys</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Gamma&#39;</span><span class="p">,</span> <span class="s1">&#39;Density&#39;</span><span class="p">,</span> <span class="s1">&#39;Sonic&#39;</span><span class="p">,</span> <span class="s1">&#39;DTS&#39;</span><span class="p">],</span> <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
 <div class="output text_html"><div>
-<style scoped="">
+<style scoped>
     .dataframe tbody tr th:only-of-type {
         vertical-align: middle;
     }
@@ -980,103 +1119,103 @@
         text-align: right;
     }
 </style>
-<div class="table-wrapper"><table border="1" class="dataframe">
-<thead>
-<tr style="text-align: right;">
-<th></th>
-<th>Gamma</th>
-<th>Density</th>
-<th>Sonic</th>
-<th>DTS</th>
-</tr>
-<tr>
-<th>DEPT</th>
-<th></th>
-<th></th>
-<th></th>
-<th></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<th>1.0668</th>
-<td>46.69865036</td>
-<td>2.3901498318</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr>
-<th>1.2192</th>
-<td>46.69865036</td>
-<td>2.3901498318</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr>
-<th>1.3716</th>
-<td>46.69865036</td>
-<td>2.3901498318</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr>
-<th>1.5240</th>
-<td>46.69865036</td>
-<td>2.3901498318</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr>
-<th>1.6764</th>
-<td>46.69865036</td>
-<td>2.3901498318</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr>
-<th>...</th>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-</tr>
-<tr>
-<th>1938.5280</th>
-<td>92.24622345</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr>
-<th>1938.6804</th>
-<td>92.24622345</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr>
-<th>1938.8328</th>
-<td>92.24622345</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr>
-<th>1938.9852</th>
-<td>92.24622345</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-<tr>
-<th>1939.1376</th>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-<td>NaN</td>
-</tr>
-</tbody>
-</table></div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Gamma</th>
+      <th>Density</th>
+      <th>Sonic</th>
+      <th>DTS</th>
+    </tr>
+    <tr>
+      <th>DEPT</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>1.0668</th>
+      <td>46.69865036</td>
+      <td>2.3901498318</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>1.2192</th>
+      <td>46.69865036</td>
+      <td>2.3901498318</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>1.3716</th>
+      <td>46.69865036</td>
+      <td>2.3901498318</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>1.5240</th>
+      <td>46.69865036</td>
+      <td>2.3901498318</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>1.6764</th>
+      <td>46.69865036</td>
+      <td>2.3901498318</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>1938.5280</th>
+      <td>92.24622345</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>1938.6804</th>
+      <td>92.24622345</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>1938.8328</th>
+      <td>92.24622345</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>1938.9852</th>
+      <td>92.24622345</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>1939.1376</th>
+      <td>92.24622345</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+  </tbody>
+</table>
 <p>12718 rows × 4 columns</p>
 </div></div></div>
 </div>
@@ -1086,13 +1225,13 @@
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">basis</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">1501</span><span class="p">)</span>
 
-<span class="n">well</span><span class="o">.</span><span class="n">df</span><span class="p">(</span><span class="n">keys</span><span class="o">=</span><span class="p">[</span><span class="s1">'Gamma'</span><span class="p">,</span> <span class="s1">'Density'</span><span class="p">,</span> <span class="s1">'Sonic'</span><span class="p">,</span> <span class="s1">'DTS'</span><span class="p">],</span> <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">,</span> <span class="n">basis</span><span class="o">=</span><span class="n">basis</span><span class="p">)</span>
+<span class="n">well</span><span class="o">.</span><span class="n">df</span><span class="p">(</span><span class="n">keys</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Gamma&#39;</span><span class="p">,</span> <span class="s1">&#39;Density&#39;</span><span class="p">,</span> <span class="s1">&#39;Sonic&#39;</span><span class="p">,</span> <span class="s1">&#39;DTS&#39;</span><span class="p">],</span> <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">,</span> <span class="n">basis</span><span class="o">=</span><span class="n">basis</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
 <div class="output text_html"><div>
-<style scoped="">
+<style scoped>
     .dataframe tbody tr th:only-of-type {
         vertical-align: middle;
     }
@@ -1105,129 +1244,129 @@
         text-align: right;
     }
 </style>
-<div class="table-wrapper"><table border="1" class="dataframe">
-<thead>
-<tr style="text-align: right;">
-<th></th>
-<th>Gamma</th>
-<th>Density</th>
-<th>Sonic</th>
-<th>DTS</th>
-</tr>
-<tr>
-<th>DEPT</th>
-<th></th>
-<th></th>
-<th></th>
-<th></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<th>1000.0</th>
-<td>109.4141766008</td>
-<td>2.6799457361</td>
-<td>64.2276356014</td>
-<td>106.9954482717</td>
-</tr>
-<tr>
-<th>1001.0</th>
-<td>97.9911234089</td>
-<td>2.6556390146</td>
-<td>66.5059106783</td>
-<td>114.9005662249</td>
-</tr>
-<tr>
-<th>1002.0</th>
-<td>121.8829895962</td>
-<td>2.7326798533</td>
-<td>72.6423786195</td>
-<td>128.5069715885</td>
-</tr>
-<tr>
-<th>1003.0</th>
-<td>116.8162654985</td>
-<td>2.7270846667</td>
-<td>67.0266704008</td>
-<td>114.4374434938</td>
-</tr>
-<tr>
-<th>1004.0</th>
-<td>104.1488654040</td>
-<td>2.7105148702</td>
-<td>66.5885520597</td>
-<td>112.6149668241</td>
-</tr>
-<tr>
-<th>...</th>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-<td>...</td>
-</tr>
-<tr>
-<th>1496.0</th>
-<td>48.4150835474</td>
-<td>2.5053586284</td>
-<td>57.5187979772</td>
-<td>91.2555331735</td>
-</tr>
-<tr>
-<th>1497.0</th>
-<td>35.7518339679</td>
-<td>2.2265663635</td>
-<td>59.8886118010</td>
-<td>98.4930620567</td>
-</tr>
-<tr>
-<th>1498.0</th>
-<td>43.7772705495</td>
-<td>2.3508678784</td>
-<td>59.2961889052</td>
-<td>99.9149563203</td>
-</tr>
-<tr>
-<th>1499.0</th>
-<td>36.5637318164</td>
-<td>2.3360053329</td>
-<td>63.2269721143</td>
-<td>98.0971322843</td>
-</tr>
-<tr>
-<th>1500.0</th>
-<td>64.5593145777</td>
-<td>2.6044978626</td>
-<td>53.9417406514</td>
-<td>89.4845678370</td>
-</tr>
-</tbody>
-</table></div>
-<p>501 rows × 4 columns</p>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Gamma</th>
+      <th>Density</th>
+      <th>Sonic</th>
+      <th>DTS</th>
+    </tr>
+    <tr>
+      <th>DEPT</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>1.0668</th>
+      <td>46.69865036</td>
+      <td>2.3901498318</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>1.2192</th>
+      <td>46.69865036</td>
+      <td>2.3901498318</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>1.3716</th>
+      <td>46.69865036</td>
+      <td>2.3901498318</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>1.5240</th>
+      <td>46.69865036</td>
+      <td>2.3901498318</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>1.6764</th>
+      <td>46.69865036</td>
+      <td>2.3901498318</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>1938.5280</th>
+      <td>92.24622345</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>1938.6804</th>
+      <td>92.24622345</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>1938.8328</th>
+      <td>92.24622345</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>1938.9852</th>
+      <td>92.24622345</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>1939.1376</th>
+      <td>92.24622345</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+  </tbody>
+</table>
+<p>12718 rows × 4 columns</p>
 </div></div></div>
 </div>
 </section>
 <section id="curve-quality">
-<h2>Curve quality<a class="headerlink" href="#curve-quality" title="Permalink to this headline">#</a></h2>
+<h2>Curve quality<a class="headerlink" href="#curve-quality" title="Link to this heading">¶</a></h2>
 <p>We can check the quality of curves with a dictionary of tests. There are some predefined tests in the <code class="docutils literal notranslate"><span class="pre">welly.quality</span></code> module, but you can write your own functions and pass them in instead (the function should take a curve as its argument, and return <code class="docutils literal notranslate"><span class="pre">True</span></code> if the test passed).</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">welly.quality</span> <span class="k">as</span> <span class="nn">q</span>
 
 <span class="n">tests</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">'Each'</span><span class="p">:</span> <span class="p">[</span>
+    <span class="s1">&#39;Each&#39;</span><span class="p">:</span> <span class="p">[</span>
         <span class="n">q</span><span class="o">.</span><span class="n">no_flat</span><span class="p">,</span>
         <span class="n">q</span><span class="o">.</span><span class="n">no_monotonic</span><span class="p">,</span>
         <span class="n">q</span><span class="o">.</span><span class="n">no_gaps</span><span class="p">,</span>
     <span class="p">],</span>
-    <span class="s1">'Gamma'</span><span class="p">:</span> <span class="p">[</span>
+    <span class="s1">&#39;Gamma&#39;</span><span class="p">:</span> <span class="p">[</span>
         <span class="n">q</span><span class="o">.</span><span class="n">all_positive</span><span class="p">,</span>
         <span class="n">q</span><span class="o">.</span><span class="n">all_below</span><span class="p">(</span><span class="mi">450</span><span class="p">),</span>
-        <span class="n">q</span><span class="o">.</span><span class="n">check_units</span><span class="p">([</span><span class="s1">'API'</span><span class="p">,</span> <span class="s1">'GAPI'</span><span class="p">]),</span>
+        <span class="n">q</span><span class="o">.</span><span class="n">check_units</span><span class="p">([</span><span class="s1">&#39;API&#39;</span><span class="p">,</span> <span class="s1">&#39;GAPI&#39;</span><span class="p">]),</span>
     <span class="p">],</span>
-    <span class="s1">'DT'</span><span class="p">:</span> <span class="p">[</span>
+    <span class="s1">&#39;DT&#39;</span><span class="p">:</span> <span class="p">[</span>
         <span class="n">q</span><span class="o">.</span><span class="n">all_positive</span><span class="p">,</span>
     <span class="p">],</span>
-    <span class="s1">'Sonic'</span><span class="p">:</span> <span class="p">[</span>
+    <span class="s1">&#39;Sonic&#39;</span><span class="p">:</span> <span class="p">[</span>
         <span class="n">q</span><span class="o">.</span><span class="n">all_between</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10000</span><span class="p">),</span>  <span class="c1"># 1333 to 5000 m/s</span>
         <span class="n">q</span><span class="o">.</span><span class="n">no_spikes</span><span class="p">(</span><span class="mi">10</span><span class="p">),</span>          <span class="c1"># 10 spikes allowed</span>
     <span class="p">],</span>
@@ -1251,40 +1390,40 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{'CALI': {'no_flat': False, 'no_monotonic': False, 'no_gaps': True},
- 'HCAL': {'no_flat': False, 'no_monotonic': False, 'no_gaps': True},
- 'PEF': {'no_flat': False, 'no_monotonic': False, 'no_gaps': True},
- 'DT': {'no_flat': True,
-  'no_monotonic': True,
-  'no_gaps': True,
-  'all_positive': True,
-  'all_between': True,
-  'no_spikes': False},
- 'DTS': {'no_flat': True, 'no_monotonic': True, 'no_gaps': True},
- 'DPHI_SAN': {'no_flat': False, 'no_monotonic': False, 'no_gaps': True},
- 'DPHI_LIM': {'no_flat': False, 'no_monotonic': False, 'no_gaps': True},
- 'DPHI_DOL': {'no_flat': False, 'no_monotonic': False, 'no_gaps': True},
- 'NPHI_SAN': {'no_flat': False, 'no_monotonic': False, 'no_gaps': True},
- 'NPHI_LIM': {'no_flat': False, 'no_monotonic': False, 'no_gaps': True},
- 'NPHI_DOL': {'no_flat': False, 'no_monotonic': False, 'no_gaps': True},
- 'RLA5': {'no_flat': False, 'no_monotonic': False, 'no_gaps': True},
- 'RLA3': {'no_flat': False, 'no_monotonic': False, 'no_gaps': True},
- 'RLA4': {'no_flat': False, 'no_monotonic': False, 'no_gaps': True},
- 'RLA1': {'no_flat': False, 'no_monotonic': False, 'no_gaps': True},
- 'RLA2': {'no_flat': False, 'no_monotonic': False, 'no_gaps': True},
- 'RXOZ': {'no_flat': False, 'no_monotonic': False, 'no_gaps': True},
- 'RXO_HRLT': {'no_flat': False, 'no_monotonic': False, 'no_gaps': True},
- 'RT_HRLT': {'no_flat': False, 'no_monotonic': False, 'no_gaps': True},
- 'RM_HRLT': {'no_flat': False, 'no_monotonic': False, 'no_gaps': True},
- 'DRHO': {'no_flat': False, 'no_monotonic': False, 'no_gaps': True},
- 'RHOB': {'no_flat': False, 'no_monotonic': False, 'no_gaps': True},
- 'GR': {'no_flat': False,
-  'no_monotonic': False,
-  'no_gaps': True,
-  'all_positive': True,
-  'all_below': True,
-  'check_units': False},
- 'SP': {'no_flat': False, 'no_monotonic': False, 'no_gaps': True}}
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;CALI&#39;: {&#39;no_flat&#39;: False, &#39;no_monotonic&#39;: False, &#39;no_gaps&#39;: True},
+ &#39;HCAL&#39;: {&#39;no_flat&#39;: False, &#39;no_monotonic&#39;: False, &#39;no_gaps&#39;: True},
+ &#39;PEF&#39;: {&#39;no_flat&#39;: False, &#39;no_monotonic&#39;: False, &#39;no_gaps&#39;: True},
+ &#39;DT&#39;: {&#39;no_flat&#39;: True,
+  &#39;no_monotonic&#39;: True,
+  &#39;no_gaps&#39;: True,
+  &#39;all_positive&#39;: True,
+  &#39;all_between&#39;: True,
+  &#39;no_spikes&#39;: False},
+ &#39;DTS&#39;: {&#39;no_flat&#39;: True, &#39;no_monotonic&#39;: True, &#39;no_gaps&#39;: True},
+ &#39;DPHI_SAN&#39;: {&#39;no_flat&#39;: False, &#39;no_monotonic&#39;: False, &#39;no_gaps&#39;: True},
+ &#39;DPHI_LIM&#39;: {&#39;no_flat&#39;: False, &#39;no_monotonic&#39;: False, &#39;no_gaps&#39;: True},
+ &#39;DPHI_DOL&#39;: {&#39;no_flat&#39;: False, &#39;no_monotonic&#39;: False, &#39;no_gaps&#39;: True},
+ &#39;NPHI_SAN&#39;: {&#39;no_flat&#39;: False, &#39;no_monotonic&#39;: False, &#39;no_gaps&#39;: True},
+ &#39;NPHI_LIM&#39;: {&#39;no_flat&#39;: False, &#39;no_monotonic&#39;: False, &#39;no_gaps&#39;: True},
+ &#39;NPHI_DOL&#39;: {&#39;no_flat&#39;: False, &#39;no_monotonic&#39;: False, &#39;no_gaps&#39;: True},
+ &#39;RLA5&#39;: {&#39;no_flat&#39;: False, &#39;no_monotonic&#39;: False, &#39;no_gaps&#39;: True},
+ &#39;RLA3&#39;: {&#39;no_flat&#39;: False, &#39;no_monotonic&#39;: False, &#39;no_gaps&#39;: True},
+ &#39;RLA4&#39;: {&#39;no_flat&#39;: False, &#39;no_monotonic&#39;: False, &#39;no_gaps&#39;: True},
+ &#39;RLA1&#39;: {&#39;no_flat&#39;: False, &#39;no_monotonic&#39;: False, &#39;no_gaps&#39;: True},
+ &#39;RLA2&#39;: {&#39;no_flat&#39;: False, &#39;no_monotonic&#39;: False, &#39;no_gaps&#39;: True},
+ &#39;RXOZ&#39;: {&#39;no_flat&#39;: False, &#39;no_monotonic&#39;: False, &#39;no_gaps&#39;: True},
+ &#39;RXO_HRLT&#39;: {&#39;no_flat&#39;: False, &#39;no_monotonic&#39;: False, &#39;no_gaps&#39;: True},
+ &#39;RT_HRLT&#39;: {&#39;no_flat&#39;: False, &#39;no_monotonic&#39;: False, &#39;no_gaps&#39;: True},
+ &#39;RM_HRLT&#39;: {&#39;no_flat&#39;: False, &#39;no_monotonic&#39;: False, &#39;no_gaps&#39;: True},
+ &#39;DRHO&#39;: {&#39;no_flat&#39;: False, &#39;no_monotonic&#39;: False, &#39;no_gaps&#39;: True},
+ &#39;RHOB&#39;: {&#39;no_flat&#39;: False, &#39;no_monotonic&#39;: False, &#39;no_gaps&#39;: True},
+ &#39;GR&#39;: {&#39;no_flat&#39;: False,
+  &#39;no_monotonic&#39;: False,
+  &#39;no_gaps&#39;: True,
+  &#39;all_positive&#39;: True,
+  &#39;all_below&#39;: True,
+  &#39;check_units&#39;: False},
+ &#39;SP&#39;: {&#39;no_flat&#39;: False, &#39;no_monotonic&#39;: False, &#39;no_gaps&#39;: True}}
 </pre></div>
 </div>
 </div>
@@ -1300,54 +1439,54 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_html"><div class="table-wrapper"><table><tr><th>Curve</th><th>Passed</th><th>Score</th><th>all_between</th><th>no_spikes</th><th>all_positive</th><th>no_flat</th><th>check_units</th><th>no_gaps</th><th>all_below</th><th>no_monotonic</th></tr><tr><th>CALI</th><td>1 / 3</td><td>0.333</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td></tr><tr><th>HCAL</th><td>1 / 3</td><td>0.333</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td></tr><tr><th>PEF</th><td>1 / 3</td><td>0.333</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td></tr><tr><th>DT</th><td>5 / 6</td><td>0.833</td><td style="background-color:#CCEECC;">True</td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#CCEECC;">True</td><td style="background-color:#CCEECC;">True</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td></tr><tr><th>DTS</th><td>3 / 3</td><td>1.000</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td></tr><tr><th>DPHI_SAN</th><td>1 / 3</td><td>0.333</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td></tr><tr><th>DPHI_LIM</th><td>1 / 3</td><td>0.333</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td></tr><tr><th>DPHI_DOL</th><td>1 / 3</td><td>0.333</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td></tr><tr><th>NPHI_SAN</th><td>1 / 3</td><td>0.333</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td></tr><tr><th>NPHI_LIM</th><td>1 / 3</td><td>0.333</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td></tr><tr><th>NPHI_DOL</th><td>1 / 3</td><td>0.333</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td></tr><tr><th>RLA5</th><td>1 / 3</td><td>0.333</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td></tr><tr><th>RLA3</th><td>1 / 3</td><td>0.333</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td></tr><tr><th>RLA4</th><td>1 / 3</td><td>0.333</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td></tr><tr><th>RLA1</th><td>1 / 3</td><td>0.333</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td></tr><tr><th>RLA2</th><td>1 / 3</td><td>0.333</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td></tr><tr><th>RXOZ</th><td>1 / 3</td><td>0.333</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td></tr><tr><th>RXO_HRLT</th><td>1 / 3</td><td>0.333</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td></tr><tr><th>RT_HRLT</th><td>1 / 3</td><td>0.333</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td></tr><tr><th>RM_HRLT</th><td>1 / 3</td><td>0.333</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td></tr><tr><th>DRHO</th><td>1 / 3</td><td>0.333</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td></tr><tr><th>RHOB</th><td>1 / 3</td><td>0.333</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td></tr><tr><th>GR</th><td>3 / 6</td><td>0.500</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#CCEECC;">True</td><td style="background-color:#CCEECC;">True</td><td style="background-color:#FFCCCC;">False</td></tr><tr><th>SP</th><td>1 / 3</td><td>0.333</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td></tr></table></div></div></div>
+<div class="output text_html"><table><tr><th>Curve</th><th>Passed</th><th>Score</th><th>all_below</th><th>no_flat</th><th>all_positive</th><th>no_monotonic</th><th>no_spikes</th><th>check_units</th><th>all_between</th><th>no_gaps</th></tr><tr><th>CALI</th><td>1 / 3</td><td>0.333</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td></tr><tr><th>HCAL</th><td>1 / 3</td><td>0.333</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td></tr><tr><th>PEF</th><td>1 / 3</td><td>0.333</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td></tr><tr><th>DT</th><td>5 / 6</td><td>0.833</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td><td style="background-color:#CCEECC;">True</td><td style="background-color:#CCEECC;">True</td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td><td style="background-color:#CCEECC;">True</td></tr><tr><th>DTS</th><td>3 / 3</td><td>1.000</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td></tr><tr><th>DPHI_SAN</th><td>1 / 3</td><td>0.333</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td></tr><tr><th>DPHI_LIM</th><td>1 / 3</td><td>0.333</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td></tr><tr><th>DPHI_DOL</th><td>1 / 3</td><td>0.333</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td></tr><tr><th>NPHI_SAN</th><td>1 / 3</td><td>0.333</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td></tr><tr><th>NPHI_LIM</th><td>1 / 3</td><td>0.333</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td></tr><tr><th>NPHI_DOL</th><td>1 / 3</td><td>0.333</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td></tr><tr><th>RLA5</th><td>1 / 3</td><td>0.333</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td></tr><tr><th>RLA3</th><td>1 / 3</td><td>0.333</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td></tr><tr><th>RLA4</th><td>1 / 3</td><td>0.333</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td></tr><tr><th>RLA1</th><td>1 / 3</td><td>0.333</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td></tr><tr><th>RLA2</th><td>1 / 3</td><td>0.333</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td></tr><tr><th>RXOZ</th><td>1 / 3</td><td>0.333</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td></tr><tr><th>RXO_HRLT</th><td>1 / 3</td><td>0.333</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td></tr><tr><th>RT_HRLT</th><td>1 / 3</td><td>0.333</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td></tr><tr><th>RM_HRLT</th><td>1 / 3</td><td>0.333</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td></tr><tr><th>DRHO</th><td>1 / 3</td><td>0.333</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td></tr><tr><th>RHOB</th><td>1 / 3</td><td>0.333</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td></tr><tr><th>GR</th><td>3 / 6</td><td>0.500</td><td style="background-color:#CCEECC;">True</td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#CCEECC;">True</td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td></tr><tr><th>SP</th><td>1 / 3</td><td>0.333</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#FFCCCC;">False</td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#EEEEEE;"></td><td style="background-color:#CCEECC;">True</td></tr></table></div></div>
 </div>
 </section>
 <section id="add-a-striplog">
-<h2>Add a striplog<a class="headerlink" href="#add-a-striplog" title="Permalink to this headline">#</a></h2>
+<h2>Add a striplog<a class="headerlink" href="#add-a-striplog" title="Link to this heading">¶</a></h2>
 <p>In principle, Welly can hold data from anywhere. Let’s add data from another source. <a class="reference external" href="https://code.agilescientific.com/striplog">Striplog</a> can create a geological log from an image or a CSV. Let’s try it:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">striplog</span> <span class="kn">import</span> <span class="n">Legend</span><span class="p">,</span> <span class="n">Striplog</span>
 
-<span class="n">legend</span> <span class="o">=</span> <span class="n">Legend</span><span class="o">.</span><span class="n">builtin</span><span class="p">(</span><span class="s1">'NSDOE'</span><span class="p">)</span>
-<span class="n">strip</span> <span class="o">=</span> <span class="n">Striplog</span><span class="o">.</span><span class="n">from_image</span><span class="p">(</span><span class="s1">'https://geocomp.s3.amazonaws.com/data/P-129_280_1935.png'</span><span class="p">,</span> <span class="mi">280</span><span class="p">,</span> <span class="mi">1935</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="n">legend</span><span class="p">)</span>
+<span class="n">legend</span> <span class="o">=</span> <span class="n">Legend</span><span class="o">.</span><span class="n">builtin</span><span class="p">(</span><span class="s1">&#39;NSDOE&#39;</span><span class="p">)</span>
+<span class="n">strip</span> <span class="o">=</span> <span class="n">Striplog</span><span class="o">.</span><span class="n">from_image</span><span class="p">(</span><span class="s1">&#39;https://geocomp.s3.amazonaws.com/data/P-129_280_1935.png&#39;</span><span class="p">,</span> <span class="mi">280</span><span class="p">,</span> <span class="mi">1935</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="n">legend</span><span class="p">)</span>
 <span class="n">strip</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/Quick_start_37_0.png" src="../_images/Quick_start_37_0.png"/>
+<img alt="../_images/6358acdf43f39a001632708bb722485bdd734afe62f9d0fe1b1b2efd0ebac430.png" src="../_images/6358acdf43f39a001632708bb722485bdd734afe62f9d0fe1b1b2efd0ebac430.png" />
 </div>
 </div>
 <p>Add this to the well data:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">well</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">'strip'</span><span class="p">]</span> <span class="o">=</span> <span class="n">strip</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">well</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;strip&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">strip</span>
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tracks</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'MD'</span><span class="p">,</span> <span class="s1">'strip'</span><span class="p">,</span> <span class="s1">'GR'</span><span class="p">,</span> <span class="s1">'RHOB'</span><span class="p">,</span> <span class="p">[</span><span class="s1">'DT'</span><span class="p">,</span> <span class="s1">'DTS'</span><span class="p">],</span> <span class="s1">'MD'</span><span class="p">]</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tracks</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;MD&#39;</span><span class="p">,</span> <span class="s1">&#39;strip&#39;</span><span class="p">,</span> <span class="s1">&#39;GR&#39;</span><span class="p">,</span> <span class="s1">&#39;RHOB&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;DT&#39;</span><span class="p">,</span> <span class="s1">&#39;DTS&#39;</span><span class="p">],</span> <span class="s1">&#39;MD&#39;</span><span class="p">]</span>
 
 <span class="n">well</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">tracks</span><span class="o">=</span><span class="n">tracks</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/Quick_start_40_0.png" src="../_images/Quick_start_40_0.png"/>
+<img alt="../_images/b06569493e88c16788f620c6e26e65430dcea72e49e6c0e4174729b728d25aff.png" src="../_images/b06569493e88c16788f620c6e26e65430dcea72e49e6c0e4174729b728d25aff.png" />
 </div>
 </div>
 </section>
 <section id="write-a-las-file">
-<h2>Write a LAS file<a class="headerlink" href="#write-a-las-file" title="Permalink to this headline">#</a></h2>
+<h2>Write a LAS file<a class="headerlink" href="#write-a-las-file" title="Link to this heading">¶</a></h2>
 <p>At any point, you can write out a new LAS file.</p>
 <p>Let’s write a new file with only the DT and DTS logs, and a different NULL value to the original:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">well</span><span class="o">.</span><span class="n">to_las</span><span class="p">(</span><span class="s1">'out.las'</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="p">[</span><span class="s1">'DT'</span><span class="p">,</span> <span class="s1">'DTS'</span><span class="p">],</span> <span class="n">null_value</span><span class="o">=-</span><span class="mf">111.111</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">well</span><span class="o">.</span><span class="n">to_las</span><span class="p">(</span><span class="s1">&#39;out.las&#39;</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;DT&#39;</span><span class="p">,</span> <span class="s1">&#39;DTS&#39;</span><span class="p">],</span> <span class="n">null_value</span><span class="o">=-</span><span class="mf">111.111</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1355,19 +1494,19 @@
 <p>You can perform a shell command in Jupyter Notebooks by putting a <code class="docutils literal notranslate"><span class="pre">!</span></code> before the command. So on Linux, here’s how we can check the new file exists:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>ls -l out.las
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>ls<span class="w"> </span>-l<span class="w"> </span>out.las
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>-rw-r--r-- 1 runner docker 434247 Feb 28 13:55 out.las
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>-rw-rw-r-- 1 matt matt 434247 Feb 13 14:22 out.las
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>head -12 out.las
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>head<span class="w"> </span>-12<span class="w"> </span>out.las
 </pre></div>
 </div>
 </div>
@@ -1377,8 +1516,8 @@ VERS.   2.0 : CWLS log ASCII Standard -VERSION 2.0
 WRAP.    NO : One line per depth step
 DLM . SPACE : Column Data Section Delimiter
 ~Well ------------------------------------------------------
-STRT  .m                     1.0668 : START DEPTH
-STOP  .m                  1939.1376 : STOP DEPTH
+STRT  .m                    1.06680 : START DEPTH
+STOP  .m                 1939.13760 : STOP DEPTH
 STEP  .m                    0.15240 : STEP
 NULL  .                    -111.111 : NULL VALUE
 COMP  . Elmworth Energy Corporation : COMPANY
@@ -1388,7 +1527,7 @@ FLD   .               Windsor Block : FIELD
 </div>
 </div>
 </div>
-<hr class="docutils"/>
+<hr class="docutils" />
 <p>© 2022 Agile Scientific, CC BY</p>
 </section>
 </section>
@@ -1405,10 +1544,10 @@ FLD   .               Windsor Block : FIELD
                 </div>
                 <div class="title">Wells</div>
               </div>
-              <svg><use href="#svg-arrow-right"></use></svg>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
           <a class="prev-page" href="../installation.html">
-              <svg><use href="#svg-arrow-right"></use></svg>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
@@ -1451,7 +1590,7 @@ FLD   .               Windsor Block : FIELD
       <div class="toc-sticky toc-scroll">
         <div class="toc-title-container">
           <span class="toc-title">
-            Contents
+            On this page
           </span>
         </div>
         <div class="toc-tree-container">
@@ -1477,15 +1616,9 @@ FLD   .               Windsor Block : FIELD
       
     </aside>
   </div>
-</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <script src="../_static/scripts/furo.js"></script>
-    <script>let toggleHintShow = 'Click to show';</script>
-    <script>let toggleHintHide = 'Click to hide';</script>
-    <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="../_static/togglebutton.js"></script>
-    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+</div><script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=5fa4622c"></script>
     </body>
 </html>

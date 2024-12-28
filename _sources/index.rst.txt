@@ -3,7 +3,7 @@
 .. container:: noclass
    :name: forkongithub
 
-   `Fork on GitHub <https://github.com/agile-geoscience/welly>`_
+   `Fork on GitHub <https://github.com/agilescientific/welly>`_
 
 
 Welly: Splash About in Well Data
@@ -94,8 +94,8 @@ Indices and tables
     :hidden:
 
     PyPI releases <https://pypi.org/project/welly/>
-    Code in GitHub <https://github.com/agile-geoscience/welly>
-    Issue tracker <https://github.com/agile-geoscience/welly/issues>
+    Code in GitHub <https://github.com/agilescientific/welly>
+    Issue tracker <https://github.com/agilescientific/welly/issues>
     Community guidelines <https://code.agilescientific.com/community>
     Agile's software <https://code.agilescientific.com>
     Agile's website <https://www.agilescientific.com>

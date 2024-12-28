@@ -1,18 +1,17 @@
 <!doctype html>
-<html class="no-js" lang="en">
+<html class="no-js" lang="en" data-content_root="./">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="prev" title="License" href="license.html" />
 
-    <link rel="shortcut icon" href="_static/favicon.ico"/><meta name="generator" content="sphinx-4.4.0, furo 2022.02.23"/>
+    <link rel="shortcut icon" href="_static/favicon.ico"/><!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
         <title>Changelog - welly documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=3c656993158f05539f962c5cea52a5e6c184bb8c" />
-    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
-    <link rel="stylesheet" type="text/css" href="_static/mystnb.css" />
-    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?digest=25ceb02ed1c46dc30f2321ff83e92799f69dfdb9" />
-    <link rel="stylesheet" type="text/css" href="_static/custom.css" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=302659d7" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=645ab05b" />
     
     
 
@@ -23,24 +22,28 @@
   --color-code-foreground: black;
   
   }
-  body[data-theme="dark"] {
-    --color-code-background: #202020;
-  --color-code-foreground: #d0d0d0;
-  
-  }
-  @media (prefers-color-scheme: dark) {
-    body:not([data-theme="light"]) {
+  @media not print {
+    body[data-theme="dark"] {
       --color-code-background: #202020;
   --color-code-foreground: #d0d0d0;
   
     }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
   }
-</style></head>
+</style><script defer data-domain="code.agilescientific.com" src="https://plausible.io/js/plausible.js"></script></head>
   <body>
+    
     <script>
       document.body.dataset.theme = localStorage.getItem("theme") || "auto";
     </script>
     
+
 <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
   <symbol id="svg-toc" viewBox="0 0 24 24">
     <title>Contents</title>
@@ -67,7 +70,7 @@
   <symbol id="svg-sun" viewBox="0 0 24 24">
     <title>Light mode</title>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
       <circle cx="12" cy="12" r="5"></circle>
       <line x1="12" y1="1" x2="12" y2="3"></line>
       <line x1="12" y1="21" x2="12" y2="23"></line>
@@ -82,22 +85,63 @@
   <symbol id="svg-moon" viewBox="0 0 24 24">
     <title>Dark mode</title>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
       <path stroke="none" d="M0 0h24v24H0z" fill="none" />
       <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
     </svg>
   </symbol>
-  <symbol id="svg-sun-half" viewBox="0 0 24 24">
-    <title>Auto light/dark mode</title>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
-      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-      <circle cx="12" cy="12" r="9" />
-      <path d="M13 12h5" />
-      <path d="M13 15h4" />
-      <path d="M13 18h1" />
-      <path d="M13 9h4" />
-      <path d="M13 6h1" />
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
     </svg>
   </symbol>
 </svg>
@@ -110,6 +154,8 @@
 <label class="overlay toc-overlay" for="__toc">
   <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
 
 
 
@@ -128,7 +174,8 @@
       <div class="theme-toggle-container theme-toggle-header">
         <button class="theme-toggle">
           <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
-          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
           <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
@@ -142,7 +189,7 @@
   <aside class="sidebar-drawer">
     <div class="sidebar-container">
       
-      <div class="sidebar-sticky"><a class="sidebar-brand centered" href="index.html">
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
   
   <div class="sidebar-logo-container">
     <img class="sidebar-logo" src="_static/welly_simple_alpha.png" alt="Logo"/>
@@ -150,7 +197,7 @@
   
   
 </a><form class="sidebar-search-container" method="get" action="search.html" role="search">
-  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
@@ -178,8 +225,8 @@
 <p class="caption" role="heading"><span class="caption-text">Project links</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference external" href="https://pypi.org/project/welly/">PyPI releases</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/agile-geoscience/welly">Code in GitHub</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/agile-geoscience/welly/issues">Issue tracker</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/agilescientific/welly">Code in GitHub</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/agilescientific/welly/issues">Issue tracker</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://code.agilescientific.com/community">Community guidelines</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://code.agilescientific.com">Agile's software</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://www.agilescientific.com">Agile's website</a></li>
@@ -201,10 +248,18 @@
           </svg>
           <span>Back to top</span>
         </a>
-        <div class="content-icon-container"><div class="theme-toggle-container theme-toggle-content">
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="_sources/changelog.md.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
             <button class="theme-toggle">
               <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
-              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
               <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
@@ -214,29 +269,41 @@
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
-        <article role="main">
+        <article role="main" id="furo-main-content">
           <section class="tex2jax_ignore mathjax_ignore" id="changelog">
-<h1>Changelog<a class="headerlink" href="#changelog" title="Permalink to this headline">#</a></h1>
-<section id="february-2022">
-<h2>0.5.2, 28 February 2022<a class="headerlink" href="#february-2022" title="Permalink to this headline">#</a></h2>
+<h1>Changelog<a class="headerlink" href="#changelog" title="Link to this heading">¶</a></h1>
+<section id="spring-2023">
+<h2>0.5.3, spring 2023<a class="headerlink" href="#spring-2023" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li><p>Fixed <a class="reference external" href="https://github.com/agile-geoscience/welly/issues/208">bug #208</a> which essentially meant <code class="docutils literal notranslate"><span class="pre">rename_alias</span></code> was always <code class="docutils literal notranslate"><span class="pre">False</span></code> when getting a well or project as a DataFrame.</p></li>
-<li><p>Fixed <a class="reference external" href="https://github.com/agile-geoscience/welly/issues/209">bug #209</a> that prevented Well (and therefore Project) from exporting a DataFrame for some recent versions of <code class="docutils literal notranslate"><span class="pre">pandas</span></code>.</p></li>
+<li><p>Added option <code class="docutils literal notranslate"><span class="pre">use_mnemomics</span></code> to <code class="docutils literal notranslate"><span class="pre">well.df()</span></code>. The default <code class="docutils literal notranslate"><span class="pre">False</span></code> uses the keys of <code class="docutils literal notranslate"><span class="pre">well.data</span></code> as the column names in the DataFrame. Note that there may be duplicate mnemonics in the resulting DataFrame. This was <a class="reference external" href="https://github.com/agilescientific/welly/issues/218">issue #218</a>.</p></li>
+<li><p>Fixed <a class="reference external" href="https://github.com/agilescientific/welly/issues/224">bug #224</a> which resulted in incorrect mathematical calculations when curves were only on the right-hand side of some operators.</p></li>
+<li><p>Fixed <a class="reference external" href="https://github.com/agilescientific/welly/issues/219">bug #219</a> which gave a non-useful error if td was shallower than the deviation survey.</p></li>
+<li><p>Fixed <a class="reference external" href="https://github.com/agilescientific/welly/issues/217">bug #217</a> which made it impossible to change (set) a curve mnemonic.</p></li>
+<li><p>Fixed <a class="reference external" href="https://github.com/agilescientific/welly/issues/216">bug #216</a> which caused problems creating a DataFrame when two curves have the same mnemonic.</p></li>
+<li><p>Fixed <a class="reference external" href="https://github.com/agilescientific/welly/issues/214">bug #214</a> which threw no warnings if a LAS with non-increasing depths was loaded, and no warnings when the curve with step=0 was used.</p></li>
+<li><p>Added (open source, non-tracking) analytics for <a class="reference external" href="https://code.agilescientific.com/welly">code.agilescientific.com/welly</a> with plausible.io.</p></li>
+</ul>
+</section>
+<section id="february-2022">
+<h2>0.5.2, 28 February 2022<a class="headerlink" href="#february-2022" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Fixed <a class="reference external" href="https://github.com/agilescientific/welly/issues/208">bug #208</a> which essentially meant <code class="docutils literal notranslate"><span class="pre">rename_alias</span></code> was always <code class="docutils literal notranslate"><span class="pre">False</span></code> when getting a well or project as a DataFrame.</p></li>
+<li><p>Fixed <a class="reference external" href="https://github.com/agilescientific/welly/issues/209">bug #209</a> that prevented Well (and therefore Project) from exporting a DataFrame for some recent versions of <code class="docutils literal notranslate"><span class="pre">pandas</span></code>.</p></li>
 </ul>
 </section>
 <section id="id1">
-<h2>0.5.1, 18 February 2022<a class="headerlink" href="#id1" title="Permalink to this headline">#</a></h2>
+<h2>0.5.1, 18 February 2022<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">Curve.values</span></code> now returns a 1D array for a 1D curve.</p></li>
 <li><p>Added <code class="docutils literal notranslate"><span class="pre">Project.basis_range</span></code> to provide the min and max of all curves in the project.</p></li>
 <li><p>Added <a class="reference external" href="https://code.agilescientific.com/welly/userguide/projects.html">a user guide page for <code class="docutils literal notranslate"><span class="pre">Project</span></code></a>.</p></li>
-<li><p>Fixed <a class="reference external" href="https://github.com/agile-geoscience/welly/issues/202">bug #202</a> with curve indexing.</p></li>
-<li><p>Fixed <a class="reference external" href="https://github.com/agile-geoscience/welly/issues/206">bug #206</a> that prevented quality tests from running on aliased curves.</p></li>
-<li><p>Fixed <a class="reference external" href="https://github.com/agile-geoscience/welly/issues/207">bug #207</a> that was causing the quality table not to render correctly in some situations.</p></li>
+<li><p>Fixed <a class="reference external" href="https://github.com/agilescientific/welly/issues/202">bug #202</a> with curve indexing.</p></li>
+<li><p>Fixed <a class="reference external" href="https://github.com/agilescientific/welly/issues/206">bug #206</a> that prevented quality tests from running on aliased curves.</p></li>
+<li><p>Fixed <a class="reference external" href="https://github.com/agilescientific/welly/issues/207">bug #207</a> that was causing the quality table not to render correctly in some situations.</p></li>
 </ul>
 </section>
 <section id="id2">
-<h2>0.5.0, 14 February 2022<a class="headerlink" href="#id2" title="Permalink to this headline">#</a></h2>
+<h2>0.5.0, 14 February 2022<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h2>
 <ul class="simple">
 <li><p>Major change: Everything in <code class="docutils literal notranslate"><span class="pre">welly</span></code> is now much closer to <code class="docutils literal notranslate"><span class="pre">pandas</span></code>. Chiefly, <code class="docutils literal notranslate"><span class="pre">Curve</span></code> objects are now represented by wrapped <code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code> objects (note: not <code class="docutils literal notranslate"><span class="pre">Series</span></code> as you might expect, so they can be two-dimensional). They were previously subclassed NumPy <code class="docutils literal notranslate"><span class="pre">ndarray</span></code> objects, so while we’ve tried to preserve as much of the API as possible, expect some changes. Please let us know if there’s something you miss, it can probably be implemented. Many thanks to the developers that made this happen, especially Patrick Reinhard and Wenting Xiong in the Netherlands.</p></li>
 <li><p>Major change: as previously indicated, the default behaviour is now to load the depth curve in its original units. That is: <code class="docutils literal notranslate"><span class="pre">welly</span></code> no longer converts everything to metres. Use <code class="docutils literal notranslate"><span class="pre">index='metres'</span></code> in <code class="docutils literal notranslate"><span class="pre">from_las()</span></code> to get the old behaviour.</p></li>
@@ -250,7 +317,7 @@
 </ul>
 </section>
 <section id="june-2021">
-<h2>0.4.10, 22 June 2021<a class="headerlink" href="#june-2021" title="Permalink to this headline">#</a></h2>
+<h2>0.4.10, 22 June 2021<a class="headerlink" href="#june-2021" title="Link to this heading">¶</a></h2>
 <ul class="simple">
 <li><p>No longer supporting versions of Python before 3.6.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">Curve.top_and_tail()</span></code> has been implemented. It removes NaNs from the start and end — but not the middle — of a log.</p></li>
@@ -261,7 +328,7 @@
 </ul>
 </section>
 <section id="january-2021">
-<h2>0.4.9, 29 January 2021<a class="headerlink" href="#january-2021" title="Permalink to this headline">#</a></h2>
+<h2>0.4.9, 29 January 2021<a class="headerlink" href="#january-2021" title="Link to this heading">¶</a></h2>
 <ul class="simple">
 <li><p>Fixed a bug that was preventing Alias names from appearing in the DataFrame view, <code class="docutils literal notranslate"><span class="pre">project.df()</span></code> and <code class="docutils literal notranslate"><span class="pre">well.df</span></code>. Updated the <code class="docutils literal notranslate"><span class="pre">Project</span></code> tutorial to reflect this.</p></li>
 <li><p>Fixed a bug that was preventing Aliases from applying properly to well plots.</p></li>
@@ -269,12 +336,12 @@
 </ul>
 </section>
 <section id="december-2020">
-<h2>0.4.8, 11 December 2020<a class="headerlink" href="#december-2020" title="Permalink to this headline">#</a></h2>
+<h2>0.4.8, 11 December 2020<a class="headerlink" href="#december-2020" title="Link to this heading">¶</a></h2>
 <ul class="simple">
 <li><p>Reorganized the <code class="docutils literal notranslate"><span class="pre">tutorials</span></code> a bit and made sure they all run as-is.</p></li>
 <li><p>A new <code class="docutils literal notranslate"><span class="pre">Location.from_petrel()</span></code> function accepts a Petrel <code class="docutils literal notranslate"><span class="pre">.dev</span></code> deviation file. It will extract the x and y location, and the KB, as well as the position log and/or deviation survey.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">Curve.plot_2d()</span></code> now handles NaNs in the curve.</p></li>
-<li><p>The test functions now accept a <code class="docutils literal notranslate"><span class="pre">keys</span></code> argument to limit the number of items the tests will be applied to, or to order the appearance of curves in <code class="docutils literal notranslate"><span class="pre">qc_table_html</span></code>. For example, if you pass <code class="docutils literal notranslate"><span class="pre">keys=['GR']</span></code> then tests will only be run on <code class="docutils literal notranslate"><span class="pre">w.data['GR']</span></code>, regardless of what’s in the <code class="docutils literal notranslate"><span class="pre">tests</span></code> dictionary. This was <a class="reference external" href="https://github.com/agile-geoscience/welly/issues/104">issue #104</a>.</p></li>
+<li><p>The test functions now accept a <code class="docutils literal notranslate"><span class="pre">keys</span></code> argument to limit the number of items the tests will be applied to, or to order the appearance of curves in <code class="docutils literal notranslate"><span class="pre">qc_table_html</span></code>. For example, if you pass <code class="docutils literal notranslate"><span class="pre">keys=['GR']</span></code> then tests will only be run on <code class="docutils literal notranslate"><span class="pre">w.data['GR']</span></code>, regardless of what’s in the <code class="docutils literal notranslate"><span class="pre">tests</span></code> dictionary. This was <a class="reference external" href="https://github.com/agilescientific/welly/issues/104">issue #104</a>.</p></li>
 <li><p>You can now pass a <code class="docutils literal notranslate"><span class="pre">pathlib.Path</span></code> object to <code class="docutils literal notranslate"><span class="pre">from_las</span></code>. Thank you to Kent Inverarity for implementing this feature.</p></li>
 <li><p>Added <code class="docutils literal notranslate"><span class="pre">XCOORD</span></code> and <code class="docutils literal notranslate"><span class="pre">YCOORD</span></code> as standard fields; these are read in as <code class="docutils literal notranslate"><span class="pre">location.x</span></code> and <code class="docutils literal notranslate"><span class="pre">location.y</span></code> repsectively.</p></li>
 <li><p>Added <code class="docutils literal notranslate"><span class="pre">Project.plot_map()</span></code> to make a quick (ugly) scatter plot from x and y location (whatever two field you provide from the <code class="docutils literal notranslate"><span class="pre">location</span></code> object).</p></li>
@@ -286,7 +353,7 @@
 </ul>
 </section>
 <section id="june-2020">
-<h2>0.4.7, 6 June 2020<a class="headerlink" href="#june-2020" title="Permalink to this headline">#</a></h2>
+<h2>0.4.7, 6 June 2020<a class="headerlink" href="#june-2020" title="Link to this heading">¶</a></h2>
 <ul class="simple">
 <li><p>Load your well in feet! The number one most hated ‘feature’ has been ‘fixed’… you can now pass the <code class="docutils literal notranslate"><span class="pre">index</span></code> argument to <code class="docutils literal notranslate"><span class="pre">Well.from_las()</span></code> or <code class="docutils literal notranslate"><span class="pre">Well.from_lasio()</span></code> to control how the index is interpreted. Use <code class="docutils literal notranslate"><span class="pre">'existing'</span></code> or <code class="docutils literal notranslate"><span class="pre">'original'</span></code> to keep whatever is specified in the LAS file (probably what you want).  To convert to metres, use <code class="docutils literal notranslate"><span class="pre">'m'</span></code>; to convert to feet use <code class="docutils literal notranslate"><span class="pre">'ft'</span></code>.</p></li>
 <li><p>In the next point release, v0.5, we will change the default behaviour to <code class="docutils literal notranslate"><span class="pre">'original'</span></code>, so if you want to keep forcing to metres, you’ll have to change your code to <code class="docutils literal notranslate"><span class="pre">Well.from_las(fname,</span> <span class="pre">index='m')</span></code>. There is a <code class="docutils literal notranslate"><span class="pre">FutureWarning</span></code> about this.</p></li>
@@ -296,26 +363,26 @@
 </ul>
 </section>
 <section id="may-2020">
-<h2>0.4.6, 7 May 2020<a class="headerlink" href="#may-2020" title="Permalink to this headline">#</a></h2>
+<h2>0.4.6, 7 May 2020<a class="headerlink" href="#may-2020" title="Link to this heading">¶</a></h2>
 <ul class="simple">
 <li><p>Big fix in <code class="docutils literal notranslate"><span class="pre">Location</span></code>.</p></li>
 </ul>
 </section>
 <section id="november-2019">
-<h2>0.4.5, 14 November 2019<a class="headerlink" href="#november-2019" title="Permalink to this headline">#</a></h2>
+<h2>0.4.5, 14 November 2019<a class="headerlink" href="#november-2019" title="Link to this heading">¶</a></h2>
 <ul class="simple">
 <li><p>Allowed adding the NULL value when writing an LAS file with <code class="docutils literal notranslate"><span class="pre">w.to_las()</span></code>.</p></li>
 </ul>
 </section>
 <section id="october-2019">
-<h2>0.4.4, 22 October 2019<a class="headerlink" href="#october-2019" title="Permalink to this headline">#</a></h2>
+<h2>0.4.4, 22 October 2019<a class="headerlink" href="#october-2019" title="Link to this heading">¶</a></h2>
 <ul class="simple">
 <li><p>Dropped support for Python 2.7 and Python 3.4, and added support for Python 3.7 and 3.8.</p></li>
 <li><p>Fixed <code class="docutils literal notranslate"><span class="pre">location</span></code>, whose changes were inadvertently rolled back.</p></li>
 </ul>
 </section>
 <section id="id3">
-<h2>0.4.3, October 2019<a class="headerlink" href="#id3" title="Permalink to this headline">#</a></h2>
+<h2>0.4.3, October 2019<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h2>
 <ul class="simple">
 <li><p>You can now pass an <code class="docutils literal notranslate"><span class="pre">alias</span></code> dictionary to <code class="docutils literal notranslate"><span class="pre">Well.df()</span></code>, along with the list of <code class="docutils literal notranslate"><span class="pre">keys</span></code>. You can pass <code class="docutils literal notranslate"><span class="pre">keys</span></code> and <code class="docutils literal notranslate"><span class="pre">alias</span></code> to <code class="docutils literal notranslate"><span class="pre">Project.df()</span></code> as well.</p></li>
 <li><p>A new function, <code class="docutils literal notranslate"><span class="pre">location.trajectory()</span></code>, generates an evenly sampled trajectory, given a sample spacing in metres.</p></li>
@@ -326,20 +393,20 @@
 </ul>
 </section>
 <section id="april-2019">
-<h2>0.4.2, April 2019<a class="headerlink" href="#april-2019" title="Permalink to this headline">#</a></h2>
+<h2>0.4.2, April 2019<a class="headerlink" href="#april-2019" title="Link to this heading">¶</a></h2>
 <ul class="simple">
 <li><p>Implemented basis updating when slicing. In general, you probably want to ‘slice’ (get a subcurve) using <code class="docutils literal notranslate"><span class="pre">curve.to_basis()</span></code> because you can use depth to get the section you want. But if you want to use indexing, like <code class="docutils literal notranslate"><span class="pre">curve[100:110]</span></code>, this operation now updates <code class="docutils literal notranslate"><span class="pre">curve.start</span></code> so that <code class="docutils literal notranslate"><span class="pre">curve.basis</span></code> is therefore updated.</p></li>
 <li><p>Breaking change: <code class="docutils literal notranslate"><span class="pre">utils.top_and_tail</span></code> now only works on single arrays, and returns a single array.</p></li>
 </ul>
 </section>
 <section id="november-2018">
-<h2>0.4.1, 24 November 2018<a class="headerlink" href="#november-2018" title="Permalink to this headline">#</a></h2>
+<h2>0.4.1, 24 November 2018<a class="headerlink" href="#november-2018" title="Link to this heading">¶</a></h2>
 <ul class="simple">
 <li><p>Fixed a bug in <code class="docutils literal notranslate"><span class="pre">project.df()</span></code> that was building the DataFrame incorrectly.</p></li>
 </ul>
 </section>
 <section id="id4">
-<h2>0.4.0, 20 November 2018<a class="headerlink" href="#id4" title="Permalink to this headline">#</a></h2>
+<h2>0.4.0, 20 November 2018<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h2>
 <ul class="simple">
 <li><p>There are breaking changes in this release.</p></li>
 <li><p>Export the curves in the current <code class="docutils literal notranslate"><span class="pre">well.data</span></code> to Pandas DataFrame with <code class="docutils literal notranslate"><span class="pre">well.df()</span></code>. Previously, this function returned the DataFrame of the associated LAS file, which is still available in <code class="docutils literal notranslate"><span class="pre">well.las.df()</span></code>.</p></li>
@@ -352,10 +419,10 @@
 </ul>
 </section>
 <section id="march-2018">
-<h2>0.3.5, 20 March 2018<a class="headerlink" href="#march-2018" title="Permalink to this headline">#</a></h2>
+<h2>0.3.5, 20 March 2018<a class="headerlink" href="#march-2018" title="Link to this heading">¶</a></h2>
 </section>
 <section id="november-2017">
-<h2>0.3.4, 15 November 2017<a class="headerlink" href="#november-2017" title="Permalink to this headline">#</a></h2>
+<h2>0.3.4, 15 November 2017<a class="headerlink" href="#november-2017" title="Link to this heading">¶</a></h2>
 </section>
 </section>
 
@@ -366,7 +433,7 @@
         <div class="related-pages">
           
           <a class="prev-page" href="license.html">
-              <svg><use href="#svg-arrow-right"></use></svg>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
@@ -380,9 +447,9 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                &#169; 2022, The Welly Authors | <a href="https://creativecommons.org/licenses/by/4.0/">CC BY</a>
+                Copyright &#169; 2022, The Welly Authors
             </div>
-            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and 
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
             <a href="https://github.com/pradyunsg/furo">Furo</a>
             
@@ -409,13 +476,14 @@
       <div class="toc-sticky toc-scroll">
         <div class="toc-title-container">
           <span class="toc-title">
-            Contents
+            On this page
           </span>
         </div>
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Changelog</a><ul>
+<li><a class="reference internal" href="#spring-2023">0.5.3, spring 2023</a></li>
 <li><a class="reference internal" href="#february-2022">0.5.2, 28 February 2022</a></li>
 <li><a class="reference internal" href="#id1">0.5.1, 18 February 2022</a></li>
 <li><a class="reference internal" href="#id2">0.5.0, 14 February 2022</a></li>
@@ -443,15 +511,9 @@
       
     </aside>
   </div>
-</div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-    <script src="_static/jquery.js"></script>
-    <script src="_static/underscore.js"></script>
-    <script src="_static/doctools.js"></script>
-    <script src="_static/scripts/furo.js"></script>
-    <script>let toggleHintShow = 'Click to show';</script>
-    <script>let toggleHintHide = 'Click to hide';</script>
-    <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="_static/togglebutton.js"></script>
-    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+</div><script src="_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/scripts/furo.js?v=5fa4622c"></script>
     </body>
 </html>
