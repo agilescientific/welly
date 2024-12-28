@@ -5,6 +5,8 @@ Define a suite a tests for the Well module.
 import os
 from pathlib import Path
 
+import pandas as pd
+
 import welly
 from welly import Well
 
@@ -148,3 +150,11 @@ def test_iter_well(well):
     for curve in well:
         assert curve == well.data['CALI']
         break
+
+def test_df_object_cols(df):
+
+    df["Test object"] = "54"
+    df["test_str"] = '1z'
+    well = Well.from_df(df)
+    assert all(well.df()["Test object"] == 54)
+    assert all(well.df()["test_str"] == "1z")

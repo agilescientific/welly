@@ -84,7 +84,7 @@ def bbox(points):
 
 def aspect(points):
     """
-    Aspect like 2:1 is twice as wide as high.
+    Aspect like 2:1 is shape like |___ (twice as wide as high).
 
     This function returns the WIDTH per unit height.
     """
@@ -542,16 +542,16 @@ def ricker(f, length, dt):
     A Ricker wavelet.
 
     Args:
-        f (float): frequency in Haz, e.g. 25 Hz.
+        f (float): frequency in Hz, e.g. 25 Hz.
         length (float): Length in s, e.g. 0.128.
         dt (float): sample interval in s, e.g. 0.001.
 
     Returns:
         tuple. time basis, amplitude values.
     """
-    t = np.linspace(-int(length / 2), int((length - dt) / 2), int(length / dt))
-    y = (1. - 2. * (np.pi ** 2) * (f ** 2) * (t ** 2)) * np.exp(-(np.pi ** 2) * (f ** 2) * (t ** 2))
-    return t, y
+    time = np.arange(-length/2, length/2, dt)
+    amp = (1. - 2.*(np.pi**2)*(f**2)*(time**2))*np.exp(-(np.pi**2)*(f**2)*(time**2))
+    return time, amp
 
 
 def hex_to_rgb(hexx):

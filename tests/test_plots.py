@@ -9,6 +9,7 @@ welly/run_tests.py
 
 https://pypi.python.org/pypi/pytest-mpl/0.3
 """
+import matplotlib.pyplot as plt
 import pytest
 
 from welly import Well
@@ -114,7 +115,8 @@ def test_synthetic_plot():
     test_params = {'dt': 0.004}
     s = Synthetic(data, params=test_params)
 
-    fig = s.plot().get_figure()
+    fig, ax = plt.subplots(figsize=(2, 10))
+    s.plot(ax)
 
     return fig
 
@@ -127,7 +129,8 @@ def test_well_synthetic_plot():
     w = Well.from_las(FNAME)
     w.make_synthetic()
 
-    fig = w.data['Synthetic'].plot().get_figure()
+    fig, ax = plt.subplots(figsize=(2, 10))
+    w.data['Synthetic'].plot(ax)
 
     return fig
 
