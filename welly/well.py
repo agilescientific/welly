@@ -935,27 +935,33 @@ class Well(object):
     def alias_has_multiple(self, mnemonic, alias):
         return 1 < len([a for a in alias[mnemonic] if a in self.data])
 
-    def make_synthetic(self, srd=0, v_repl_seismic=2000, v_repl_log=2000, f=50,
+    def make_synthetic(self,
+                       srd=0,
+                       sonic_mnemonic="DT",
+                       density_mnemonic="RHOB",
+                       v_repl_seismic=2000,
+                       v_repl_log=2000,
+                       f=50,
                        dt=0.001):
         """
         Early hack. Use with extreme caution.
 
         Hands-free. There'll be a more granualr version in synthetic.py.
 
-        Assumes DT is in µs/m and RHOB is kg/m3.
+        Assumes Sonic is in µs/m and Density is kg/m3.
 
         There is no handling yet for TVD.
 
         The datum handling is probably sketchy.
         """
         kb = getattr(self.location, 'kb', None) or 0
-        data0 = self.data['DT'].start
+        data0 = self.data[sonic_mnemonic].start
         log_start_time = ((srd - kb) / v_repl_seismic) + (data0 / v_repl_log)
 
         # Basic log values.
-        dt_log = self.data['DT'].despike()  # assume µs/m
-        rho_log = self.data['RHOB'].despike()  # assume kg/m3
-        if not np.allclose(dt_log.df.index, rho_log.df.index):
+        dt_log = self.data[sonic_mnemonic].despike()  # assume µs/m
+        rho_log = self.data[density_mnemonic].despike()  # assume kg/m3
+        if not np.allclose(dt_log.basis, rho_log.basis):
             rho_log = rho_log.to_basis_like(dt_log)
         Z = (1e6 / dt_log.df.values) * rho_log.df.values
 
@@ -977,12 +983,13 @@ class Well(object):
 
         # Convolve.
         _, ricker = utils.ricker(f=f, length=0.128, dt=dt)
-        synth = np.convolve(ricker, rc_t, mode='same')
+        synth = np.convolve(rc_t, ricker, mode='same')
 
-        params = {'dt': dt, 'z start': dt_log.start, 'z stop': dt_log.stop}
+        params = {'dt': dt,
+                  'start': dt_log.start,
+                  }
 
         self.data['Synthetic'] = Synthetic(synth, basis=t_reg, params=params)
-
         return None
 
     def qc_curve_group(self, tests, keys=None, alias=None):
