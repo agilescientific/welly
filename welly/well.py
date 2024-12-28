@@ -987,7 +987,6 @@ class Well(object):
 
         params = {'dt': dt,
                   'start': dt_log.start,
-                  'stop': dt_log.stop
                   }
 
         self.data['Synthetic'] = Synthetic(synth, basis=t_reg, params=params)
