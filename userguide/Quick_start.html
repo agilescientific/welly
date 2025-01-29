@@ -7,7 +7,7 @@
 
     <link rel="shortcut icon" href="../_static/favicon.ico"/><!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
         <title>Quick start - welly documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
@@ -276,16 +276,16 @@
 <p>First some preliminaries…</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
-<span class="kn">import</span> <span class="nn">welly</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">welly</span>
 <span class="n">welly</span><span class="o">.</span><span class="n">__version__</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&#39;0.5.3rc0&#39;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&#39;0.5.3rc1&#39;
 </pre></div>
 </div>
 </div>
@@ -344,7 +344,7 @@
 <span class="g g-Whitespace">    </span><span class="mi">493</span> <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
 
 <span class="nn">File /opt/hostedtoolcache/Python/3.12.8/x64/lib/python3.12/urllib/request.py:639,</span> in <span class="ni">HTTPDefaultErrorHandler.http_error_default</span><span class="nt">(self, req, fp, code, msg, hdrs)</span>
-<span class="g g-Whitespace">    </span><span class="mi">638</span> <span class="k">def</span> <span class="nf">http_error_default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">,</span> <span class="n">fp</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">hdrs</span><span class="p">):</span>
+<span class="g g-Whitespace">    </span><span class="mi">638</span> <span class="k">def</span><span class="w"> </span><span class="nf">http_error_default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">,</span> <span class="n">fp</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">hdrs</span><span class="p">):</span>
 <span class="ne">--&gt; </span><span class="mi">639</span>     <span class="k">raise</span> <span class="n">HTTPError</span><span class="p">(</span><span class="n">req</span><span class="o">.</span><span class="n">full_url</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">hdrs</span><span class="p">,</span> <span class="n">fp</span><span class="p">)</span>
 
 <span class="ne">HTTPError</span>: HTTP Error 403: Forbidden
@@ -357,7 +357,7 @@
 <span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="n">project</span>
 
 <span class="nn">File /opt/hostedtoolcache/Python/3.12.8/x64/lib/python3.12/site-packages/welly/__init__.py:34,</span> in <span class="ni">read_las</span><span class="nt">(path, **kwargs)</span>
-<span class="g g-Whitespace">     </span><span class="mi">20</span> <span class="k">def</span> <span class="nf">read_las</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="g g-Whitespace">     </span><span class="mi">20</span> <span class="k">def</span><span class="w"> </span><span class="nf">read_las</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="g g-Whitespace">     </span><span class="mi">21</span><span class="w">     </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="g g-Whitespace">     </span><span class="mi">22</span><span class="sd">     A package namespace method to be called as `welly.read_las`.</span>
 <span class="g g-Whitespace">     </span><span class="mi">23</span><span class="sd"> </span>
@@ -1350,7 +1350,7 @@
 <p>We can check the quality of curves with a dictionary of tests. There are some predefined tests in the <code class="docutils literal notranslate"><span class="pre">welly.quality</span></code> module, but you can write your own functions and pass them in instead (the function should take a curve as its argument, and return <code class="docutils literal notranslate"><span class="pre">True</span></code> if the test passed).</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">welly.quality</span> <span class="k">as</span> <span class="nn">q</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">welly.quality</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">q</span>
 
 <span class="n">tests</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s1">&#39;Each&#39;</span><span class="p">:</span> <span class="p">[</span>
@@ -1431,7 +1431,7 @@
 <p>There’s also an HTML table for rendering in Notebooks:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">HTML</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">IPython.display</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTML</span>
 
 <span class="n">html</span> <span class="o">=</span> <span class="n">well</span><span class="o">.</span><span class="n">qc_table_html</span><span class="p">(</span><span class="n">tests</span><span class="p">,</span> <span class="n">alias</span><span class="o">=</span><span class="n">alias</span><span class="p">)</span>
 <span class="n">HTML</span><span class="p">(</span><span class="n">html</span><span class="p">)</span>
@@ -1447,7 +1447,7 @@
 <p>In principle, Welly can hold data from anywhere. Let’s add data from another source. <a class="reference external" href="https://code.agilescientific.com/striplog">Striplog</a> can create a geological log from an image or a CSV. Let’s try it:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">striplog</span> <span class="kn">import</span> <span class="n">Legend</span><span class="p">,</span> <span class="n">Striplog</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">striplog</span><span class="w"> </span><span class="kn">import</span> <span class="n">Legend</span><span class="p">,</span> <span class="n">Striplog</span>
 
 <span class="n">legend</span> <span class="o">=</span> <span class="n">Legend</span><span class="o">.</span><span class="n">builtin</span><span class="p">(</span><span class="s1">&#39;NSDOE&#39;</span><span class="p">)</span>
 <span class="n">strip</span> <span class="o">=</span> <span class="n">Striplog</span><span class="o">.</span><span class="n">from_image</span><span class="p">(</span><span class="s1">&#39;https://geocomp.s3.amazonaws.com/data/P-129_280_1935.png&#39;</span><span class="p">,</span> <span class="mi">280</span><span class="p">,</span> <span class="mi">1935</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="n">legend</span><span class="p">)</span>

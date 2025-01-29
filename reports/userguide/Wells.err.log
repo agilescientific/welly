@@ -57,7 +57,7 @@ File [0;32m/opt/hostedtoolcache/Python/3.12.8/x64/lib/python3.12/urllib/request
 [1;32m    493[0m [38;5;28;01mif[39;00m result [38;5;129;01mis[39;00m [38;5;129;01mnot[39;00m [38;5;28;01mNone[39;00m:
 
 File [0;32m/opt/hostedtoolcache/Python/3.12.8/x64/lib/python3.12/urllib/request.py:639[0m, in [0;36mHTTPDefaultErrorHandler.http_error_default[0;34m(self, req, fp, code, msg, hdrs)[0m
-[1;32m    638[0m [38;5;28;01mdef[39;00m [38;5;21mhttp_error_default[39m([38;5;28mself[39m, req, fp, code, msg, hdrs):
+[1;32m    638[0m [38;5;28;01mdef[39;00m[38;5;250m [39m[38;5;21mhttp_error_default[39m([38;5;28mself[39m, req, fp, code, msg, hdrs):
 [0;32m--> 639[0m     [38;5;28;01mraise[39;00m HTTPError(req[38;5;241m.[39mfull_url, code, msg, hdrs, fp)
 
 [0;31mHTTPError[0m: HTTP Error 403: Forbidden
@@ -66,7 +66,7 @@ During handling of the above exception, another exception occurred:
 
 [0;31mException[0m                                 Traceback (most recent call last)
 Cell [0;32mIn[2], line 3[0m
-[1;32m      1[0m [38;5;28;01mfrom[39;00m [38;5;21;01mwelly[39;00m [38;5;28;01mimport[39;00m Well
+[1;32m      1[0m [38;5;28;01mfrom[39;00m[38;5;250m [39m[38;5;21;01mwelly[39;00m[38;5;250m [39m[38;5;28;01mimport[39;00m Well
 [0;32m----> 3[0m p129 [38;5;241m=[39m [43mWell[49m[38;5;241;43m.[39;49m[43mfrom_las[49m[43m([49m[38;5;124;43m'[39;49m[38;5;124;43mhttps://geocomp.s3.amazonaws.com/data/P-129.LAS[39;49m[38;5;124;43m'[39;49m[43m)[49m
 [1;32m      4[0m p129
 
