@@ -38,9 +38,9 @@ Next, check out the tutorial notebooks.
 
 ## Questions or suggestions?
 
-[![slack](https://img.shields.io/badge/chat-on_slack-808493.svg?longCache=true&style=flat&logo=slack)](https://swung.slack.com/)
+[![mattermost](https://img.shields.io/badge/mattermost-software_underground-green)](https://mattermost.softwareunderground.org/)
 
-**If you'd like to chat about `welly` with us or other users, look for the **#welly-and-lasio** channel in the [Software Underground's Slack](https://softwareunderground.org/slack).**
+**If you'd like to chat about `welly` with us or other users, look for the **#welly-and-lasio** channel in the [Software Underground's Mattermost](https://mattermost.softwareunderground.org/).**
 
 To report bugs or suggest new features/improvements to the code, please [open an issue](https://github.com/agilescientific/welly/issues).
 
