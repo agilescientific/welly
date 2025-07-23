@@ -35,6 +35,7 @@ dependencies = [
 docs = ["sphinx", "sphinxcontrib-apidoc", "myst_nb", "furo"]
 test = ["pytest", "pytest-cov", "pytest-mpl"]
 dev = ["build", "pytest", "pytest-cov", "pytest-mpl", "sphinx", "sphinxcontrib-apidoc", "myst_nb", "furo"]
+mcp = ["mcp>=1.0.0"]
 
 [tool.hatch.metadata]
 packages = ["welly"]

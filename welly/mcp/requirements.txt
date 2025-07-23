@@ -1,0 +1,21 @@
+# Welly MCP Server Requirements
+# Core MCP protocol
+mcp>=1.0.0
+
+# Scientific computing stack
+numpy>=1.21.0
+pandas>=1.3.0
+matplotlib>=3.5.0
+
+# LAS file handling
+lasio>=0.30
+
+# Welly dependencies
+scipy>=1.7.0
+requests>=2.25.0
+tqdm>=4.60.0
+striplog>=0.9.0
+wellpathpy>=0.5.0
+
+# Optional: For enhanced functionality
+# Pillow>=8.0.0  # For image processing

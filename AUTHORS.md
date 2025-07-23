@@ -13,3 +13,4 @@ The following people have contributed to the project (in alphabetical order):
 - [DC Slagel](https://github.com/dcslagel), Code Farm, Colorado, USA
 - [Miguel de la Varga](https://github.com/Leguark), Germany
 - [Wenting Xiong](https://github.com/wenting-x), Shell, The Netherlands
+- [Almaz Ermilov](https://github.com/AlmazErmilov), UiT University of Tromsø, Norway
