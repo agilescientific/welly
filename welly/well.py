@@ -12,7 +12,6 @@ import warnings
 
 import numpy as np
 import pandas as pd
-from pandas.api.types import is_object_dtype
 
 from . import utils
 from .fields import las_fields as LAS_FIELDS
@@ -389,10 +388,10 @@ class Well(object):
             # remap index time/depth column if specified
             if remap and df_data.columns[0] in remap.keys():
                 mapper = {df_data.columns[0]: remap[df_data.columns[0]]}
-                df_data.rename(columns=mapper, inplace=True)
+                df_data = df_data.rename(columns=mapper)
 
             # set time/depth index, LAS requires it to be the first curve
-            df_data.set_index(df_data.columns[0], inplace=True)
+            df_data = df_data.set_index(df_data.columns[0])
 
             # get index unit from the first curve
             unit = df_header[(df_header["section"] == dataset_name)].iloc[0].unit
@@ -571,7 +570,8 @@ class Well(object):
            uwi=False,
            alias=None,
            rename_aliased=True,
-           use_mnemonics=False
+           use_mnemonics=False,
+           auto_interpolate=True
            ):
         """
         Return current curve data as a ``pandas.DataFrame`` object.
@@ -581,6 +581,10 @@ class Well(object):
         Everything has to have the same basis, because the depth
         is going to become the index of the DataFrame. If you don't
         provide one, ``welly`` will make one using ``survey_basis()``.
+
+        If curves have different bases and no common basis can be found,
+        welly will automatically interpolate to a computed basis (unless
+        ``auto_interpolate=False``).
 
         Args:
             keys (list): List of strings: the keys of the data items to
@@ -594,6 +598,9 @@ class Well(object):
                 Default is True, use the alias names.
             use_mnemonics (bool): Whether to use the curve mnemonics as the
                 column names. Default is False, use `data` key names.
+            auto_interpolate (bool): If True (default), automatically interpolate
+                curves to a common basis when they have different bases. If False,
+                raise WellError when no common basis can be found.
 
         Returns:
             pandas.DataFrame.
@@ -609,9 +616,22 @@ class Well(object):
 
         if basis is None:
             basis = well.survey_basis(keys=keys, alias=alias)
+        
         if basis is None:
-            m = "No basis was provided and welly could not retrieve common basis."
-            raise WellError(m)
+            if auto_interpolate:
+                # Try to compute a basis from the curves' individual bases
+                basis = well._compute_union_basis(keys=keys, alias=alias)
+                if basis is not None:
+                    warnings.warn(
+                        "Curves have different bases. Interpolating to computed common basis. "
+                        "For explicit control, pass the basis parameter.",
+                        UserWarning,
+                        stacklevel=2
+                    )
+            
+            if basis is None:
+                m = "No basis was provided and welly could not retrieve common basis."
+                raise WellError(m)
 
         data = [well.get_curve(k, alias=alias).to_basis(basis).df for k in keys]
         
@@ -630,9 +650,10 @@ class Well(object):
                 warnings.warn(message, stacklevel=2)
 
         if uwi:
+            df = df.copy()  # Explicit copy for modification (CoW compatibility)
             df['UWI'] = well.uwi
             # add UWI as index as part of a MultiIndex
-            df.set_index(['UWI'], append=True, inplace=True)
+            df = df.set_index(['UWI'], append=True)
             # swap MultiIndex levels
             df = df.swaplevel()
 
@@ -642,21 +663,27 @@ class Well(object):
 
     def _convert_object_cols_to_numeric(self, df):
         """
-        Convert object columns into numeric columns, if possible.
+        Convert object and string columns into numeric columns, if possible.
 
         Args:
             df (pd.DataFrame): dataframe to work
         Returns:
             pd.DataFrame. Whole dataframe with conversions
         """
-        df_nonobject = df.select_dtypes(exclude="object")
-        df_object = df.select_dtypes(include="object")
-        for col in df_object.columns:
+        # In pandas 3.0+, strings may be 'str' dtype instead of 'object'
+        string_like_cols = df.select_dtypes(include=["object", "string"]).columns
+        numeric_cols = df.select_dtypes(exclude=["object", "string"]).columns
+
+        df_numeric = df[numeric_cols].copy()
+        df_string = df[string_like_cols].copy()
+
+        for col in df_string.columns:
             try:
-                df_object[col] = pd.to_numeric(df_object[col])
-            except ValueError:
+                df_string[col] = pd.to_numeric(df_string[col])
+            except (ValueError, TypeError):
                 pass
-        return pd.concat([df_nonobject, df_object], axis=1)
+
+        return pd.concat([df_numeric, df_string], axis=1)
 
     def add_curves_from_las(self, fname, remap=None, funcs=None):
         """
@@ -803,6 +830,62 @@ class Well(object):
 
         else:
             return None
+
+    def _compute_union_basis(self, keys=None, alias=None, step=None):
+        """
+        Compute a union basis that spans all curves, even if they have
+        different depth ranges. This is used when curves don't share a
+        common basis but we still want to create a DataFrame.
+
+        Unlike survey_basis(), this method computes a basis that covers
+        the union of all curve ranges (min of all starts to max of all stops).
+
+        Args:
+            keys (list): List of strings: the keys of the data items to
+                survey, if not all of them.
+            alias (dict): a dictionary mapping mnemonics to lists of mnemonics.
+            step (float): a new step, if you want to change it.
+
+        Returns:
+            ndarray. A basis spanning all curves, or None if no valid curves.
+        """
+        keys = self._get_curve_mnemonics(keys, alias=alias)
+
+        starts, stops, steps = [], [], []
+        for k in keys:
+            curve = self.get_curve(k, alias=alias)
+            if curve is None:
+                continue
+            try:
+                if curve.start is not None and curve.stop is not None:
+                    starts.append(curve.start)
+                    stops.append(curve.stop)
+                if curve.step is not None and curve.step != 0:
+                    steps.append(curve.step)
+            except Exception:
+                pass
+
+        if not starts or not stops:
+            return None
+
+        # Determine step: use provided, or minimum non-zero step, or default
+        if step is not None:
+            final_step = step
+        elif steps:
+            final_step = min(steps)
+        else:
+            # Default step if none available (0.1524m is common LAS step)
+            final_step = 0.1524
+
+        # Compute union range
+        start_val = min(starts)
+        stop_val = max(stops)
+
+        # Handle descending depth (rare but possible)
+        if start_val > stop_val:
+            return np.flipud(np.arange(stop_val, start_val + 1e-9, final_step))
+        else:
+            return np.arange(start_val, stop_val + 1e-9, final_step)
 
     def unify_basis(self,
                     keys=None,

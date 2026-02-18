@@ -617,8 +617,7 @@ class Curve(object):
         """
         Return only the numeric columns as numpy array
         """
-        numerics = ['int16', 'int32', 'int64', 'float16', 'float32', 'float64']
-        numeric_df = self.df.select_dtypes(include=numerics)
+        numeric_df = self.df.select_dtypes(include='number')
         if len(numeric_df.columns) == 1:
             return numeric_df.iloc[:, 0].values
         else:
@@ -1047,7 +1046,8 @@ class Curve(object):
               values=None,
               n_bins=0,
               right=False,
-              function=None):
+              function=None,
+              labels=None):
         """
         Block a log based on number of bins, or on cutoffs.
 
@@ -1065,9 +1065,15 @@ class Curve(object):
                 indicating that the interval does not include the right edge.
             function (function): transform the log with a reducing function,
                 such as `np.mean`.
+            labels (list): Optional. String labels for each block zone. If
+                provided, these are stored as `block_labels` attribute on the
+                returned curve for reference. There must be one more label
+                than you have `cutoffs` (same as `values`).
 
         Returns:
-            Curve.
+            Curve. The blocked curve. If `labels` was provided, the curve
+                will have a `block_labels` attribute mapping numeric values
+                to string labels.
         """
         # We'll return a copy.
         new_curve = copy.deepcopy(self)
@@ -1087,6 +1093,24 @@ class Curve(object):
             data = np.digitize(self.df.values, cutoffs, right)
         except ValueError:  # It's just a number.
             data = np.digitize(self.df.values, [cutoffs], right)
+
+        # Store labels if provided
+        if labels is not None:
+            # Validate labels length
+            try:
+                n_cutoffs = len(cutoffs)
+            except TypeError:
+                n_cutoffs = 1
+            expected_labels = n_cutoffs + 1
+            if len(labels) != expected_labels:
+                warnings.warn(
+                    f"Expected {expected_labels} labels for {n_cutoffs} cutoffs, "
+                    f"got {len(labels)}. Labels may not match all zones.",
+                    UserWarning,
+                    stacklevel=2
+                )
+            # Create mapping from numeric values to labels
+            new_curve.block_labels = {i: label for i, label in enumerate(labels)}
 
         if (function is None) and (values is None):
             new_curve.df.iloc[:, :] = data
@@ -1112,8 +1136,12 @@ class Curve(object):
             data[base:] = f(np.copy(self.df.values[base:]))  # See above
         else:
             for top, base, val in zip(tops[:-1], tops[1:], vals[:-1]):
-                data[top:base] = values[int(val)]
-            data[base:] = values[int(vals[-1])]  # See above
+                # Handle case where val might be an array (from 2D data)
+                val_scalar = int(np.asarray(val).flat[0]) if hasattr(val, '__iter__') else int(val)
+                data[top:base] = values[val_scalar]
+            # Handle last segment
+            last_val = int(np.asarray(vals[-1]).flat[0]) if hasattr(vals[-1], '__iter__') else int(vals[-1])
+            data[base:] = values[last_val]  # See above
 
         new_curve.df.iloc[:, :] = data
 

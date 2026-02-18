@@ -18,7 +18,7 @@ def test_well(well):
     # Check some basics.
     assert well.location.country == 'CA'
     assert len(well.data) == 24
-    assert well.data['GR'].df.iloc[0][0] - 46.69865036 < 0.001
+    assert well.data['GR'].df.iloc[0, 0] - 46.69865036 < 0.001
     assert len(well.survey_basis()) == 12718
 
     # This is garbled, but it is what it is.
@@ -89,7 +89,7 @@ def test_well_write(well):
     path = 'tests/assets/test.las'
     well.to_las(path)
     well = Well.from_las(path)
-    assert well.data['GR'].df.iloc[0][0] - 46.69865036 < 0.001
+    assert well.data['GR'].df.iloc[0, 0] - 46.69865036 < 0.001
     os.remove(path)
 
 
@@ -140,7 +140,7 @@ def test_assign_categorical(well):
     Test assigning category dtype to multiple curves in a well.
     """
     well.assign_categorical(['RXOZ', 'RXO_HRLT'])
-    assert well.data['RXOZ'].dtypes[0] == 'category'
+    assert well.data['RXOZ'].dtypes.iloc[0] == 'category'
 
 
 def test_iter_well(well):

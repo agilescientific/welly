@@ -15,6 +15,7 @@ import numpy as np
 import pandas as pd
 from lasio import HeaderItem, CurveItem, SectionItems
 from pandas._config.config import OptionError
+from pandas.api.types import is_object_dtype, is_string_dtype
 
 from welly.curve import Curve
 from welly import utils
@@ -233,9 +234,8 @@ def from_las_2_or_older(las):
             m = f'Section was not recognized and not parsed: {section}'
             warnings.warn(m, stacklevel=2)
 
-    header.drop(['data'], axis=1, inplace=True)
-
-    header.reset_index(drop=True, inplace=True)
+    header = header.drop(['data'], axis=1)
+    header = header.reset_index(drop=True)
 
     datasets['Header'] = header
 
@@ -364,6 +364,8 @@ def to_lasio(well,
     Returns:
         las (lasio.LASFile). The lasio object representation of a LAS file.
     """
+    from .well import WellError
+    
     # Create an empty lasio object.
     l = lasio.LASFile()
     l.well.DATE = str(datetime.today())
@@ -414,7 +416,22 @@ def to_lasio(well,
 
         # Get the mnemonics to select.
         keys = well._get_curve_mnemonics(keys, alias=alias)
-
+        
+        # Validate keys exist in the merged dataframe
+        valid_keys = [k for k in keys if k in df_merged.columns]
+        invalid_keys = [k for k in keys if k not in df_merged.columns]
+        
+        if invalid_keys:
+            warnings.warn(
+                f"Keys not found in well data, skipping: {invalid_keys}",
+                UserWarning,
+                stacklevel=2
+            )
+        
+        if not valid_keys:
+            raise WellError("No valid keys to export. Check that the requested curves exist in the well.")
+        
+        keys = valid_keys
         df_merged = df_merged[keys]
 
         if basis:
@@ -433,6 +450,9 @@ def to_lasio(well,
     other = ''
 
     keys = well._get_curve_mnemonics(keys, alias=alias)
+    
+    # Filter to only valid keys that exist in well.data
+    keys = [k for k in keys if k in well.data]
 
     for key in keys:
         # select curve from well
@@ -525,8 +545,9 @@ def _get_curve_las_df(las, section):
                             columns=df_section.mnemonic.values)
 
         # all curves are parsed as strings if there is a string
+        # pandas 3.0+ uses 'str' dtype instead of 'object' for strings
         for column in data.columns:
-            if data[column].dtype == 'O':
+            if is_object_dtype(data[column]) or is_string_dtype(data[column]):
                 # replace string null values with np.nan
                 data[column] = data[column].replace(
                     str(las.well["NULL"].value), np.nan)

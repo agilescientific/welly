@@ -38,11 +38,11 @@ def test_basis_numerical(curve):
     """
     curve_new = curve.to_basis(start=100, stop=200, step=1)
     assert curve_new.df.size == 101
-    assert curve_new.df.iloc[0][0] - 66.6059 < 0.001
+    assert curve_new.df.iloc[0, 0] - 66.6059 < 0.001
 
     curve_new2 = curve.to_basis_like(curve_new)
     assert curve_new2.df.size == 101
-    assert curve_new2.df.iloc[0][0] - 66.6059 < 0.001
+    assert curve_new2.df.iloc[0, 0] - 66.6059 < 0.001
 
 
 def test_basis_categorical():
@@ -70,9 +70,9 @@ def test_assign_categorical(curve):
     """
     Test assigning the categorical dtype to a curve. Calls the attribute setter.
     """
-    assert curve.dtypes[0] == 'float'
+    assert curve.dtypes.iloc[0] == 'float64'
     curve.dtypes = 'category'
-    assert curve.dtypes[0] == 'category'
+    assert curve.dtypes.iloc[0] == 'category'
 
 
 def test_block(curve):
@@ -82,21 +82,21 @@ def test_block(curve):
     b = curve.block(cutoffs=[50, 100])
     assert b.df.size == 12718
     assert b.index.size == 12718
-    assert b.df.max()[0] == 2
+    assert b.df.max().iloc[0] == 2
 
     b = curve.block()
-    assert b.df.mean()[0] - 0.46839 < 0.001
+    assert b.df.mean().iloc[0] - 0.46839 < 0.001
 
     b = curve.block(cutoffs=[50, 100, 110], values=[12, 24, 36, 40])
-    assert b.df.max()[0] == 40
-    assert b.df.mean()[0] - 26.072967 < 0.001
+    assert b.df.max().iloc[0] == 40
+    assert b.df.mean().iloc[0] - 26.072967 < 0.001
 
 
 def test_despike(curve):
     """
     Test despiker with even window and z != 2.
     """
-    assert curve.df.max()[0] - curve.despike(50, z=1).df.max()[0] - 91.83918 < 0.001
+    assert curve.df.max().iloc[0] - curve.despike(50, z=1).df.max().iloc[0] - 91.83918 < 0.001
 
 
 def test_repr_html_(curve):
@@ -183,10 +183,10 @@ def test_gele_curve():
     """
     c1 = Curve(data=data_num, mnemonic='test')
     c2 = c1 < 50
-    assert c2.df.iloc[0][0]
+    assert c2.df.iloc[0, 0]
 
     c2 = c1 > 50
-    assert c2.df.iloc[-1][0]
+    assert c2.df.iloc[-1, 0]
 
 
 def test_add_curve():
@@ -195,7 +195,7 @@ def test_add_curve():
     """
     c1 = Curve(data=data_num, mnemonic='test')
     c2 = c1 + 100
-    assert (c2.df.iloc[0][0] - 101) < 0.0001
+    assert (c2.df.iloc[0, 0] - 101) < 0.0001
 
 
 def test_subtract_curve():
@@ -204,7 +204,7 @@ def test_subtract_curve():
     """
     c1 = Curve(data=data_num, mnemonic='test')
     c2 = c1 - 100
-    assert (c2.df.iloc[0][0] + 99) < 0.0001
+    assert (c2.df.iloc[0, 0] + 99) < 0.0001
 
 
 def test_multiply_curve():
@@ -213,7 +213,7 @@ def test_multiply_curve():
     """
     c1 = Curve(data=data_num, mnemonic='test')
     c2 = c1 * 2
-    assert (c2.df.iloc[0][0] - 2) < 0.0001
+    assert (c2.df.iloc[0, 0] - 2) < 0.0001
 
 
 def test_divide_curve():
@@ -222,7 +222,7 @@ def test_divide_curve():
     """
     c1 = Curve(data=data_num, mnemonic='test')
     c2 = c1 / 2
-    assert (c2.df.iloc[0][0] - 0.5) < 0.0001
+    assert (c2.df.iloc[0, 0] - 0.5) < 0.0001
 
 
 def test_rdivide_curve():
@@ -231,7 +231,7 @@ def test_rdivide_curve():
     """
     c1 = Curve(data=data_num, mnemonic='test')
     c2 = 400 / c1
-    assert (c2.df.iloc[-1][0] - 2.0) < 0.0001
+    assert (c2.df.iloc[-1, 0] - 2.0) < 0.0001
 
 
 def test_exponent_curve():
@@ -240,7 +240,7 @@ def test_exponent_curve():
     """
     c1 = Curve(data=data_num, mnemonic='test')
     c2 = c1 ** 2
-    assert (c2.df.iloc[1][0] - 131.64542936288086) < 0.0001
+    assert (c2.df.iloc[1, 0] - 131.64542936288086) < 0.0001
 
 
 def test_curve_print(curve, capsys):
@@ -264,11 +264,11 @@ def test_curve_statistics():
     """
     c = Curve(data=np.linspace(1, 20, 2))
 
-    assert c.median()[0] == 10.5
-    assert c.mean()[0] == 10.5
-    assert c.min()[0] == 1
-    assert c.max()[0] == 20
-    assert c.describe()[0][0] == 2
+    assert c.median().iloc[0] == 10.5
+    assert c.mean().iloc[0] == 10.5
+    assert c.min().iloc[0] == 1
+    assert c.max().iloc[0] == 20
+    assert c.describe().iloc[0, 0] == 2
 
 
 def test_get_alias():
@@ -297,5 +297,5 @@ def test_curve_apply():
     c2 = c.apply(window_length=3)
     c3 = c.apply(window_length=3, func1d=np.min)
 
-    assert c2.df.iloc[0][0] - 4.491228070175438 < 0.0001
-    assert c3.df.iloc[0][0] - 1 < 0.0001
+    assert c2.df.iloc[0, 0] - 4.491228070175438 < 0.0001
+    assert c3.df.iloc[0, 0] - 1 < 0.0001
